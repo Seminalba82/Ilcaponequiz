@@ -743,6 +743,32 @@ body.barOn.barCollapsed .screen.active{padding-bottom:70px;}
 #puntoAns{width:120px; text-align:center; font-family:'Bungee'; font-size:26px; padding:12px; border-radius:12px; border:none;
   background:#0d0620; color:#fff; box-shadow:inset 0 0 0 2px rgba(255,255,255,.18);}
 .puntoProgress{font-size:13px; color:var(--muted); margin-top:8px;}
+/* ===== IL DADO DEL DESTINO — spirale ===== */
+.dadoBoard{position:relative; width:100%; max-width:900px; margin:14px auto; aspect-ratio:1;
+  background:#0d0620; border-radius:16px; padding:10px; box-sizing:border-box;
+  box-shadow:inset 0 3px 8px rgba(0,0,0,.5), 0 0 0 2px rgba(157,77,255,.22);}
+.dadoBoard.mini{max-width:220px; padding:6px; border-radius:12px;}
+.dadoGrid{position:absolute; inset:10px; display:grid; gap:2px;}
+.dadoBoard.mini .dadoGrid{inset:6px;}
+.dadoCell{background:rgba(255,255,255,.05); border-radius:3px; display:flex; align-items:center; justify-content:center;
+  font-size:9px; color:var(--muted); overflow:hidden;}
+.dadoCell.start{background:rgba(182,255,46,.22);}
+.dadoCell.finish{background:rgba(255,201,60,.32); font-size:12px;}
+.dadoDotsLayer{position:absolute; inset:10px; pointer-events:none;}
+.dadoBoard.mini .dadoDotsLayer{inset:6px;}
+.dadoDot{position:absolute; width:16px; height:16px; margin-left:-8px; margin-top:-8px; display:flex; align-items:center;
+  justify-content:center; font-size:13px; filter:drop-shadow(0 2px 3px rgba(0,0,0,.7)); transition:left .18s linear, top .18s linear; z-index:2;}
+.dadoDot.me{width:20px; height:20px; margin-left:-10px; margin-top:-10px; font-size:16px; z-index:3;
+  filter:drop-shadow(0 0 5px currentColor) drop-shadow(0 2px 3px rgba(0,0,0,.8));}
+.dadoDiceWrap{width:88px; height:88px; margin:14px auto 8px; perspective:400px;}
+.dadoDice{width:100%; height:100%; border-radius:18px; background:linear-gradient(160deg,#fff,#d8d8e8);
+  display:flex; align-items:center; justify-content:center; font-size:44px; color:#141024;
+  box-shadow:0 8px 0 #9a95b0, 0 12px 20px rgba(0,0,0,.5), inset 0 2px 3px rgba(255,255,255,.8);
+  transition:transform .08s;}
+.dadoDice.rolling{animation:dadoRoll .12s linear infinite;}
+@keyframes dadoRoll{0%{transform:rotate(0deg) scale(1);} 50%{transform:rotate(15deg) scale(1.06);} 100%{transform:rotate(-10deg) scale(.97);}}
+.dadoRollsLeft{text-align:center; font-family:'Bungee'; font-size:14px; color:var(--muted); margin-top:6px;}
+.dadoRollsLeft b{color:var(--gold);}
 .tmbPrizeRow{display:flex; align-items:center; gap:10px; margin-top:6px;}
 .tmbPrizeRow .medal{width:40px; font-size:20px; text-align:center;}
 .tmbPrizeRow.loss .medal{color:#ff5d5d;}
@@ -1307,7 +1333,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v12.64</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v12.65</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -3287,6 +3313,64 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="feedback mtb" id="puntoFbPts" style="display:none"></div>
 </div>
 
+<!-- ==================== HOST: IL DADO DEL DESTINO ==================== -->
+<div class="screen" id="scrDado">
+  <div class="brand"><div class="t1" style="font-size:clamp(18px,3.4vw,32px)">🎲 IL DADO DEL DESTINO</div></div>
+  <div class="panel mt" style="max-width:520px" id="dadoSetup">
+    <div class="row mt">
+      <div class="grow"><div class="label">Tacche della spirale</div><select id="dadoNotches">
+        <option value="30">30 tacche</option><option value="50" selected>50 tacche</option>
+        <option value="70">70 tacche</option><option value="100">100 tacche</option>
+      </select></div>
+      <div class="grow"><div class="label">Tiri a testa</div><select id="dadoMaxRolls">
+        <option value="30">30 tiri</option><option value="50" selected>50 tiri</option>
+        <option value="70">70 tiri</option><option value="90">90 tiri</option>
+      </select></div>
+    </div>
+    <div class="label mt">Quanti vincitori premiare</div>
+    <select id="dadoWinnersCount" onchange="dadoRebuildPrizeInputs()">
+      <option value="3">Primi 3</option><option value="4">Primi 4</option><option value="5" selected>Primi 5</option>
+    </select>
+    <div class="label mt">Punti per ogni posizione</div>
+    <div id="dadoPrizeInputs"></div>
+    <div class="byline mt" style="opacity:.75">🎲 Ogni giocatore tira il dado dal proprio telefono e avanza sulla spirale. Il dado si può tirare di nuovo solo dopo che la pedina ha finito di muoversi — niente lanci a raffica. La partita finisce da sola quando arrivano i primi vincitori, o quando tutti hanno esaurito i tiri.</div>
+    <button class="btn mg mt" style="width:100%" onclick="dadoStart()">🎲 SI PARTE!</button>
+  </div>
+  <div id="dadoLive" style="display:none; width:100%" class="center">
+    <div class="miniMsg" id="dadoMsg"></div>
+    <div class="dadoBoard" id="dadoBoardHost"><div class="dadoGrid"></div><div class="dadoDotsLayer"></div></div>
+    <div class="lead mt" id="dadoRanking" style="max-width:500px; width:100%"></div>
+    <div class="row mt">
+      <button class="btn ghost" id="dadoBtnEnd" onclick="dadoManualEnd()">🏁 Ferma qui la gara</button>
+      <button class="btn cy" id="dadoBtnAgain" onclick="openDado()" style="display:none">🔁 Un'altra gara</button>
+    </div>
+  </div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+</div>
+
+<!-- ==================== PROIETTORE: IL DADO DEL DESTINO ==================== -->
+<div class="screen" id="scrPjDado">
+  <div class="brand"><div class="t1" style="font-size:clamp(24px,3.6vw,42px)">🎲 IL DADO DEL DESTINO</div></div>
+  <div class="miniMsg" id="pjDadoMsg">TIRATE IL DADO DAL TELEFONO!</div>
+  <div class="dadoBoard" id="dadoBoardPj" style="max-width:800px"><div class="dadoGrid"></div><div class="dadoDotsLayer"></div></div>
+  <div class="lead mt" id="pjDadoRanking" style="max-width:600px; width:100%"></div>
+</div>
+
+<!-- ==================== PLAYER: IL DADO DEL DESTINO ==================== -->
+<div class="screen" id="scrPlayDado" style="align-items:center; justify-content:center">
+  <div class="row" style="width:100%; justify-content:space-between">
+    <div class="pill" id="dadopName" style="color:var(--gold)"></div>
+    <div class="pill" id="dadopScore"></div>
+  </div>
+  <div class="dadoBoard mini" id="dadoBoardMe"><div class="dadoGrid"></div><div class="dadoDotsLayer"></div></div>
+  <div class="dadoDiceWrap"><div class="dadoDice" id="dadoDiceFace">🎲</div></div>
+  <button class="btn mg" id="dadoBtnRoll" onclick="dadoRoll()" style="width:min(88vw,300px)">🎲 TIRA IL DADO!</button>
+  <div class="dadoRollsLeft" id="dadoRollsLeft">Tiri rimasti: 0</div>
+  <div class="puntoProgress" id="dadoProgress">Tacca 0</div>
+  <div class="feedback mtb" id="dadoFbMsg" style="display:none"></div>
+  <div class="feedback mtb" id="dadoFbPts" style="display:none"></div>
+</div>
+
 <!-- ==================== HOST: ROULETTE ==================== -->
 <div class="screen" id="scrCasino">
   <div class="brand"><div class="t1" style="font-size:clamp(20px,3.6vw,36px)">🎰 ROULETTE</div></div>
@@ -4064,7 +4148,7 @@ body.suspense-on #pfRank{ display:none !important; }
 /* ================================================================
    📋 ELENCO MINIGIOCHI — aggiornare questa lista ogni volta che se ne
    aggiunge uno nuovo (serve ad Alberto per la documentazione delle licenze).
-   Ultimo aggiornamento: v12.63 — 40 minigiochi totali.
+   Ultimo aggiornamento: v12.65 — 41 minigiochi totali.
    ================================================================
    1.  🥃 Bussolotti
    2.  🎲 Pari o Dispari
@@ -4106,6 +4190,7 @@ body.suspense-on #pfRank{ display:none !important; }
    38. 📣 Mercatista per un Giorno
    39. ✊✋✌️ Morra Cinese
    40. 🏁 Il Punto della Situazione
+   41. 🎲 Il Dado del Destino
 ================================================================ */
 
 /* ================================================================
@@ -4126,7 +4211,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1264; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1265; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -5680,6 +5765,7 @@ function listenGame(){
     else if (g.status==='mercatista') showPlayerMerc(g);
     else if (g.status==='morra') showPlayerMorra(g);
     else if (g.status==='punto') showPlayerPunto(g);
+    else if (g.status==='dado') showPlayerDado(g);
     else if (g.status==='xox') showPlayerXox(g);
     else if (g.status==='timer') {
       const t = g.timer||{};
@@ -7689,6 +7775,103 @@ function puntoSend(){
 document.addEventListener('keydown', e=>{
   if (e.key==='Enter' && document.activeElement && document.activeElement.id==='puntoAns') puntoSend();
 });
+/* ================================================================
+   IL DADO DEL DESTINO — telefono
+   Come Il Punto della Situazione, la posizione si tiene in locale e si scrive direttamente
+   (mai leggendo-e-poi-scrivendo). Il pulsante resta disabilitato per tutta la durata
+   dell'animazione della pedina: è così, naturalmente, che si evita di poter tirare a raffica
+   senza aspettare che il tiro precedente sia arrivato a destinazione.
+================================================================ */
+const DADO_FACES = ['⚀','⚁','⚂','⚃','⚄','⚅'];
+function showPlayerDado(g){
+  const m = g.dado||{};
+  $('dadopName').textContent = P.name;
+  $('dadopScore').textContent = (((g.players||{})[P.id]||{}).score||0)+' pt';
+  showScreen('scrPlayDado');
+  if (m.phase==='play'){
+    const myRacer = (m.racers||{})[P.id];
+    if (!myRacer) return;
+    if (P.dadoStartAt !== m.startAt){
+      P.dadoStartAt = m.startAt; P.dadoNotches = m.notches; P.dadoPos = myRacer.pos||0;
+      P.dadoRollsLeft = myRacer.rollsLeft!=null ? myRacer.rollsLeft : m.maxRolls;
+      P.dadoFinished = !!myRacer.finished; P.dadoBusy = false;
+      $('dadoFbMsg').style.display='none'; $('dadoFbPts').style.display='none';
+      $('dadoDiceFace').textContent='🎲'; $('dadoDiceFace').classList.remove('rolling');
+      $('dadoBtnRoll').style.display = P.dadoFinished ? 'none' : ''; $('dadoBtnRoll').disabled=false;
+      $('dadoRollsLeft').innerHTML = `Tiri rimasti: <b>${P.dadoRollsLeft}</b>`;
+      $('dadoProgress').textContent = P.dadoFinished ? '🏁 Sei arrivato!' : `Tacca ${P.dadoPos} / ${P.dadoNotches}`;
+    }
+    dadoRenderMyBoard(g);
+  } else if (m.phase==='result'){
+    const rv = m.results||{};
+    const rk = rv.ranking||[];
+    const idx = rk.findIndex(r=>r.pid===P.id);
+    const mine = idx>=0 ? rk[idx] : null;
+    $('dadoBtnRoll').style.display='none';
+    const msg=$('dadoFbMsg'), pts=$('dadoFbPts');
+    msg.style.display='block'; pts.style.display='block';
+    if (!mine){ msg.className='feedback mtb'; msg.style.color='var(--muted)'; msg.textContent='NON HAI GIOCATO'; pts.textContent='+0'; }
+    else if (idx===0){ msg.className='feedback mtb fb-ok'; msg.style.color=''; msg.textContent='🥇 SEI IL PRIMO A DESTINAZIONE!'; pts.textContent='+'+mine.pts+' PUNTI'; if(navigator.vibrate) navigator.vibrate([80,50,120]); }
+    else if (mine.pts>0){ msg.className='feedback mtb fb-ok'; msg.style.color=''; msg.textContent=(idx+1)+'° POSTO!'; pts.textContent='+'+mine.pts+' PUNTI'; if(navigator.vibrate) navigator.vibrate([60,40,60]); }
+    else { msg.className='feedback mtb'; msg.style.color='var(--muted)'; msg.textContent=(idx+1)+'° POSTO'; pts.textContent='Nessun punto'; }
+  }
+}
+function dadoRenderMyBoard(g){
+  const m = g.dado||{};
+  const racersObj = m.racers||{};
+  const all = Object.entries(racersObj).map(([pid,r])=>({id:pid,name:r.name,color:r.color,shape:r.shape,pos:r.pos||0}));
+  const top9 = all.slice().sort((a,b)=>b.pos-a.pos).slice(0,9);
+  const meIncluded = top9.some(r=>r.id===P.id);
+  const mine = all.find(r=>r.id===P.id);
+  const rows = meIncluded ? top9 : (mine ? top9.concat([mine]) : top9);
+  dadoRenderBoard($('dadoBoardMe'), rows, m.notches, P.id);
+}
+function dadoRoll(){
+  if (P.dadoBusy || P.dadoFinished || P.dadoRollsLeft<=0 || !P.dadoStartAt) return;
+  P.dadoBusy = true;
+  $('dadoBtnRoll').disabled = true;
+  const dice = $('dadoDiceFace');
+  dice.classList.add('rolling');
+  let spins = 0;
+  const spinInt = setInterval(()=>{
+    dice.textContent = DADO_FACES[Math.floor(Math.random()*6)];
+    spins++;
+    if (spins>=8){
+      clearInterval(spinInt);
+      dice.classList.remove('rolling');
+      const roll = 1+Math.floor(Math.random()*6);
+      dice.textContent = DADO_FACES[roll-1];
+      dadoAnimateMove(roll);
+    }
+  }, 70);
+}
+function dadoAnimateMove(roll){
+  let steps = 0;
+  const stepInt = setInterval(()=>{
+    steps++;
+    P.dadoPos = Math.min(P.dadoNotches, P.dadoPos+1);
+    $('dadoProgress').textContent = `Tacca ${P.dadoPos} / ${P.dadoNotches}`;
+    P.ref.child('dado/racers/'+P.id+'/pos').set(P.dadoPos);
+    if (steps>=roll || P.dadoPos>=P.dadoNotches){
+      clearInterval(stepInt);
+      P.dadoRollsLeft--;
+      P.ref.child('dado/racers/'+P.id+'/rollsLeft').set(P.dadoRollsLeft);
+      $('dadoRollsLeft').innerHTML = `Tiri rimasti: <b>${P.dadoRollsLeft}</b>`;
+      if (P.dadoPos>=P.dadoNotches){
+        P.dadoFinished = true;
+        P.ref.child('dado/racers/'+P.id+'/finished').set(true);
+        $('dadoBtnRoll').style.display='none';
+        $('dadoProgress').textContent = '🏁 Sei arrivato!';
+        if (navigator.vibrate) navigator.vibrate([80,50,120]);
+      } else if (P.dadoRollsLeft<=0){
+        $('dadoBtnRoll').style.display='none';
+        $('dadoProgress').textContent = `Tiri finiti! Tacca ${P.dadoPos} / ${P.dadoNotches}`;
+      }
+      P.dadoBusy = false;
+      $('dadoBtnRoll').disabled = false;
+    }
+  }, 200);
+}
 /* ================================================================
    XOX — motore condiviso (giocatore contro computer)
 ================================================================ */
@@ -12719,6 +12902,169 @@ function puntoFinish(){
 }
 
 /* ================================================================
+   IL DADO DEL DESTINO — spirale condivisa (regia + proiettore + telefono) e regia
+   La spirale si genera riempiendo una griglia quadrata dall'esterno verso il centro (come un
+   percorso del gioco dell'oca). Ogni giocatore riusa lo stesso sistema di colore/simbolo del
+   Punto della Situazione. Niente ascolto separato per il dado: ogni tiro scrive direttamente
+   la nuova posizione, un passo alla volta, così chi guarda vede la pedina "saltellare" dal vivo.
+================================================================ */
+function dadoSpiralCells(n){
+  let size = Math.ceil(Math.sqrt(n));
+  if (size%2===0) size++; // dimensione dispari: la spirale ha un centro netto
+  let top=0,bottom=size-1,left=0,right=size-1, idx=0;
+  const cells = [];
+  while (top<=bottom && left<=right && idx<n){
+    for (let c=left;c<=right && idx<n;c++){ cells.push({row:top,col:c}); idx++; }
+    top++;
+    for (let r=top;r<=bottom && idx<n;r++){ cells.push({row:r,col:right}); idx++; }
+    right--;
+    if (top<=bottom){ for (let c=right;c>=left && idx<n;c--){ cells.push({row:bottom,col:c}); idx++; } bottom--; }
+    if (left<=right){ for (let r=bottom;r>=top && idx<n;r--){ cells.push({row:r,col:left}); idx++; } left++; }
+  }
+  return { cells, size };
+}
+function dadoRenderBoard(el, racers, notches, meId){
+  if (!el) return;
+  const gridEl = el.querySelector('.dadoGrid'), dotsEl = el.querySelector('.dadoDotsLayer');
+  if (!gridEl || !dotsEl) return;
+  const key = 'n:'+notches;
+  if (el._key !== key){
+    el._key = key;
+    const total = notches+1; // casella 0 (partenza) + le tacche fino al traguardo compreso
+    const {cells, size} = dadoSpiralCells(total);
+    el._cells = cells; el._size = size;
+    gridEl.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+    gridEl.style.gridTemplateRows = `repeat(${size}, 1fr)`;
+    const step = notches>50 ? 10 : 5;
+    gridEl.innerHTML = cells.map((c,i)=>{
+      const isStart = i===0, isFinish = i===cells.length-1;
+      const label = isFinish ? '🏁' : (isStart ? '🚩' : (i%step===0 ? i : ''));
+      return `<div class="dadoCell ${isStart?'start':''} ${isFinish?'finish':''}" style="grid-row:${c.row+1}; grid-column:${c.col+1}">${label}</div>`;
+    }).join('');
+  }
+  const cells = el._cells, size = el._size;
+  const cellPct = 100/size;
+  const byCell = {};
+  racers.forEach(r=>{ const k = Math.min(r.pos, cells.length-1); (byCell[k]=byCell[k]||[]).push(r); });
+  const dotsHtml = [];
+  const jitters = [[0,0],[7,-7],[-7,7],[7,7],[-7,-7],[0,-9],[0,9],[9,0],[-9,0]];
+  Object.entries(byCell).forEach(([k,group])=>{
+    const cell = cells[+k];
+    const cx = (cell.col+0.5)*cellPct, cy = (cell.row+0.5)*cellPct;
+    group.forEach((r,gi)=>{
+      const j = group.length>1 ? jitters[gi%jitters.length] : [0,0];
+      const isMe = meId && r.id===meId;
+      dotsHtml.push(`<div class="dadoDot${isMe?' me':''}" style="left:calc(${cx}% + ${j[0]}px); top:calc(${cy}% + ${j[1]}px); color:${r.color}">${r.shape}</div>`);
+    });
+  });
+  dotsEl.innerHTML = dotsHtml.join('');
+}
+const DADO_MEDALS = ['🥇','🥈','🥉','4°','5°'];
+const DADO_PRIZE_DEFAULTS = [500,350,250,150,100];
+function dadoRebuildPrizeInputs(){
+  const n = +$('dadoWinnersCount').value;
+  $('dadoPrizeInputs').innerHTML = DADO_MEDALS.slice(0,n).map((m,k)=>`
+    <div class="tmbPrizeRow"><span class="medal">${m}</span>
+      <input type="number" id="dadoPz${k}" value="${DADO_PRIZE_DEFAULTS[k]}" min="0" style="width:110px; text-align:center"></div>`).join('');
+}
+function dadoRenderRanking(el, rows, notches, live){
+  el.innerHTML = rows.map((r,i)=>{
+    const medal = i<3 ? ['🥇','🥈','🥉'][i] : (i+1)+'°';
+    const status = r.finished ? '🏁 arrivato' : ((r.rollsLeft!=null && r.rollsLeft<=0) ? 'tiri finiti' : `tacca ${r.pos}/${notches}`);
+    const ptsLabel = (!live && r.pts!=null) ? `<span class="pts" style="color:${r.pts>0?'var(--lime)':'var(--muted)'}">${r.pts>0?'+':''}${r.pts}</span>` : '';
+    return `<div class="leadRow"><span class="pos" style="color:${r.color}">${r.shape}</span> ${esc(r.name)}
+      <span class="byline" style="margin:0 8px">${status}</span> ${ptsLabel}</div>`;
+  }).join('') || (live ? '<div class="byline">In attesa dei giocatori...</div>' : '<div class="byline">Nessuno ha giocato...</div>');
+}
+let DADO = {};
+function dadoManualEnd(){
+  if (!DADO || DADO.ended) return;
+  DADO.ended = true;
+  dadoFinish();
+}
+function openDado(){
+  if (!isGameEnabled('dado')) return alert('⚠️ Questo minigioco non è compreso nella licenza attiva. Contatta Alberto per sbloccarlo.');
+  if (!G) return alert('Avvia prima una partita!');
+  cancelLiveQuestion(); closeModal();
+  G.ref.update({ status:'dado', dado:{ phase:'idle' } });
+  DADO = {};
+  dadoRebuildPrizeInputs();
+  $('dadoSetup').style.display='block'; $('dadoLive').style.display='none';
+  pjSend({type:'dadoState'});
+  showScreen('scrDado');
+}
+function dadoStart(){
+  const notches = +$('dadoNotches').value;
+  const maxRolls = +$('dadoMaxRolls').value;
+  const winnersCount = +$('dadoWinnersCount').value;
+  const prizes = DADO_MEDALS.slice(0,winnersCount).map((_,k)=> Math.max(0,+$('dadoPz'+k).value||0));
+  const startAt = serverNow()+400;
+  G.ref.child('players').once('value').then(ps=>{
+    const players = ps.val()||{};
+    const arr = Object.entries(players).map(([id,p])=>({id,name:p.name||'?'}));
+    const racers = puntoAssign(arr);
+    const racersObj = {};
+    racers.forEach(r=> racersObj[r.id] = { name:r.name, color:r.color, shape:r.shape, pos:0, rollsLeft:maxRolls, finished:false });
+    DADO = { notches, maxRolls, winnersCount, prizes, startAt, ended:false };
+    G.ref.update({ status:'dado', dado:{ phase:'play', notches, maxRolls, winnersCount, prizes, startAt, racers:racersObj, results:null } });
+    $('dadoSetup').style.display='none'; $('dadoLive').style.display='block';
+    $('dadoMsg').textContent = `🎲 SI TIRA! CHI ARRIVA TRA I PRIMI ${winnersCount} VINCE...`;
+    $('dadoBtnAgain').style.display='none'; $('dadoBtnEnd').style.display='';
+    const initRows = racers.map(r=>({id:r.id,name:r.name,color:r.color,shape:r.shape,pos:0,rollsLeft:maxRolls,finished:false}));
+    dadoRenderBoard($('dadoBoardHost'), initRows, notches);
+    dadoRenderRanking($('dadoRanking'), initRows, notches, true);
+    pjSend({type:'dadoStart', notches, racers: initRows});
+    G.ref.child('dado/racers').on('value', s=>{
+      const racersLive = s.val()||{};
+      const rows = Object.entries(racersLive).map(([pid,r])=>({id:pid,name:r.name,color:r.color,shape:r.shape,pos:r.pos||0,rollsLeft:r.rollsLeft!=null?r.rollsLeft:maxRolls,finished:!!r.finished})).sort((a,b)=>b.pos-a.pos);
+      dadoRenderBoard($('dadoBoardHost'), rows, notches);
+      dadoRenderRanking($('dadoRanking'), rows, notches, true);
+      pjSend({type:'dadoUpdate', rows});
+      const finishers = rows.filter(r=>r.finished).length;
+      const everyoneDone = rows.length>0 && rows.every(r=> r.finished || r.rollsLeft<=0);
+      if (!DADO.ended && rows.length>0 && (finishers>=winnersCount || everyoneDone)){ DADO.ended = true; dadoFinish(); }
+    });
+  });
+}
+function dadoFinish(){
+  G.ref.child('dado/racers').off();
+  setTimeout(()=>{
+    G.ref.child('dado/racers').once('value').then(s=>{
+      const racersLive = s.val()||{};
+      const rows = Object.entries(racersLive).map(([pid,r])=>({pid,name:r.name,color:r.color,shape:r.shape,pos:r.pos||0,
+        rollsUsed:DADO.maxRolls-(r.rollsLeft!=null?r.rollsLeft:DADO.maxRolls), finished:!!r.finished}));
+      if (!rows.length){
+        G.ref.update({ 'dado/phase':'result', 'dado/results':{ ranking:[], notches:DADO.notches, at:Date.now() } });
+        $('dadoMsg').textContent='NESSUNO HA GIOCATO!'; $('dadoBtnAgain').style.display=''; $('dadoBtnEnd').style.display='none';
+        pjSend({type:'dadoEnd', ranking:[]});
+        return;
+      }
+      // prima chi è più avanti; tra chi ha tagliato il traguardo, chi ce l'ha fatta con meno tiri usati vince
+      const sorted = rows.slice().sort((a,b)=>{
+        if (b.pos !== a.pos) return b.pos-a.pos;
+        if (a.finished && b.finished) return a.rollsUsed-b.rollsUsed;
+        return 0;
+      });
+      G.ref.child('players').once('value').then(ps=>{
+        const players = ps.val()||{};
+        const updates = {};
+        sorted.forEach((r,i)=>{
+          const pts = i<DADO.prizes.length ? DADO.prizes[i] : 0;
+          r.pts = pts;
+          if (pts!==0 && players[r.pid]) updates['players/'+r.pid+'/score'] = Math.max(0,(players[r.pid].score||0)+pts);
+        });
+        G.ref.update({ ...updates, 'dado/phase':'result', 'dado/results':{ ranking:sorted, notches:DADO.notches, at:Date.now() } });
+        dadoRenderRanking($('dadoRanking'), sorted, DADO.notches, false);
+        $('dadoMsg').textContent = `🏆 ${sorted[0].name} È IL PRIMO A DESTINAZIONE!`;
+        $('dadoBtnAgain').style.display=''; $('dadoBtnEnd').style.display='none';
+        pjSend({type:'dadoEnd', ranking:sorted});
+        confetti();
+      });
+    });
+  }, 500);
+}
+
+/* ================================================================
    XOX — regia
 ================================================================ */
 let XOX = {};
@@ -13242,6 +13588,7 @@ const GIOCHI_CATALOGO = [
   {k:'merc', l:'📣 Mercatista per un Giorno'},
   {k:'morra', l:'✊✋✌️ Morra Cinese'},
   {k:'punto', l:'🏁 Il Punto della Situazione'},
+  {k:'dado', l:'🎲 Il Dado del Destino'},
   {k:'xox', l:'❌⭕ XOX'}
   // 👉 QUANDO AGGIUNGI UN NUOVO MINIGIOCO: aggiungi qui una riga {k:'chiave', l:'Emoji Nome'},
   // poi apri il quiz come host e clicca una volta su "GIOCHI": il pannello admin lo vedrà da solo.
@@ -13299,6 +13646,7 @@ function modalGames(){
     gk('merc', `<button class="btn" style="grid-column:1/-1; background:linear-gradient(180deg,#ff5d7a,#8a0f2e); color:#fff; box-shadow:0 7px 0 #5a0018,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,93,122,.4)" onclick="openMerc()">📣 Mercatista per un Giorno</button>`),
     gk('morra', `<button class="btn" style="grid-column:1/-1; background:linear-gradient(180deg,#7a5cff,#2e0f8a); color:#fff; box-shadow:0 7px 0 #180a5c,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(122,92,255,.4)" onclick="openMorra()">✊✋✌️ Morra Cinese</button>`),
     gk('punto', `<button class="btn" style="grid-column:1/-1; background:linear-gradient(180deg,#3de0ff,#0b6f8a); color:#00272e; box-shadow:0 7px 0 #003a44,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(61,224,255,.4)" onclick="openPunto()">🏁 Il Punto della Situazione</button>`),
+    gk('dado', `<button class="btn" style="grid-column:1/-1; background:linear-gradient(180deg,#ffe93d,#8a6f0b); color:#2e2400; box-shadow:0 7px 0 #4a3a00,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,233,61,.4)" onclick="openDado()">🎲 Il Dado del Destino</button>`),
     gk('xox', `<button class="btn" style="grid-column:1/-1; background:linear-gradient(180deg,#5ec8ff,#0b6fb8); color:#fff; box-shadow:0 7px 0 #063a5c,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(94,200,255,.4)" onclick="openXox()">❌⭕ XOX</button>`)
   ].filter(Boolean).join('');
 
@@ -13788,6 +14136,7 @@ function backToQuiz(title){
   G.ref.child('mercatista/peaks').off();
   G.ref.child('morra/tallies').off();
   G.ref.child('punto/racers').off();
+  G.ref.child('dado/racers').off();
   G.ref.child('xox/results').off();
   clearInterval(($('hrsTrackHost')||{})._raceInt); clearInterval(($('hrsTrackHost')||{})._cdInt);
   clearInterval((TF||{}).timerInt);
@@ -13808,7 +14157,7 @@ function backToQuiz(title){
   clearInterval((MERC||{}).timerInt);
   clearInterval((MORRA||{}).timerInt);
   clearInterval((XOX||{}).timerInt);
-  G.ref.update({ status:'pausa', mini:null, dice:null, simon:null, voto:null, timer:null, tombola:null, cards:null, swiss:null, hilo:null, wheels:null, puzzle:null, wordsearch:null, anagram:null, seed:null, grad:null, taptap:null, ruota:null, memo:null, memocoppie:null, horses:null, tfiscale:null, toc:null, cenerentola:null, pacchi:null, roulette:null, pagliuzza:null, supertris:null, rdc:null, mastermind:null, bomba:null, shapes:null, finddiff:null, maggioranza:null, goldenticket:null, casino:null, tamburini:null, mercatista:null, morra:null, punto:null, xox:null });
+  G.ref.update({ status:'pausa', mini:null, dice:null, simon:null, voto:null, timer:null, tombola:null, cards:null, swiss:null, hilo:null, wheels:null, puzzle:null, wordsearch:null, anagram:null, seed:null, grad:null, taptap:null, ruota:null, memo:null, memocoppie:null, horses:null, tfiscale:null, toc:null, cenerentola:null, pacchi:null, roulette:null, pagliuzza:null, supertris:null, rdc:null, mastermind:null, bomba:null, shapes:null, finddiff:null, maggioranza:null, goldenticket:null, casino:null, tamburini:null, mercatista:null, morra:null, punto:null, dado:null, xox:null });
   G.ref.child('players').once('value', ps=>{
     const players = ps.val()||{};
     $('hrTitle').textContent = title || 'SI TORNA AL QUIZ!';
@@ -14172,6 +14521,27 @@ function pjRouteInner(m){
     else if (m.type==='puntoEnd') {
       puntoRenderRanking($('pjPuntoRanking'), m.ranking||[], window._pjPuntoNotches, false);
       $('pjPuntoMsg').textContent = (m.ranking&&m.ranking.length) ? `🏆 ${m.ranking[0].name} TAGLIA IL TRAGUARDO PER PRIMO!` : 'NESSUNO HA GIOCATO!';
+      if (m.ranking && m.ranking.length) confetti();
+    }
+    else if (m.type==='dadoState') {
+      showScreen('scrPjDado');
+      $('dadoBoardPj')._key=null; $('dadoBoardPj').querySelector('.dadoGrid').innerHTML='';
+      $('dadoBoardPj').querySelector('.dadoDotsLayer').innerHTML=''; $('pjDadoRanking').innerHTML='';
+    }
+    else if (m.type==='dadoStart') {
+      showScreen('scrPjDado');
+      $('pjDadoMsg').textContent = '🎲 TIRATE IL DADO DAL TELEFONO!';
+      dadoRenderBoard($('dadoBoardPj'), m.racers||[], m.notches);
+      dadoRenderRanking($('pjDadoRanking'), m.racers||[], m.notches, true);
+      window._pjDadoNotches = m.notches;
+    }
+    else if (m.type==='dadoUpdate') {
+      dadoRenderBoard($('dadoBoardPj'), m.rows||[], window._pjDadoNotches);
+      dadoRenderRanking($('pjDadoRanking'), m.rows||[], window._pjDadoNotches, true);
+    }
+    else if (m.type==='dadoEnd') {
+      dadoRenderRanking($('pjDadoRanking'), m.ranking||[], window._pjDadoNotches, false);
+      $('pjDadoMsg').textContent = (m.ranking&&m.ranking.length) ? `🏆 ${m.ranking[0].name} È IL PRIMO A DESTINAZIONE!` : 'NESSUNO HA GIOCATO!';
       if (m.ranking && m.ranking.length) confetti();
     }
     else if (m.type==='xoxActive') {
