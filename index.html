@@ -1333,7 +1333,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v12.65</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v12.66</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -3305,7 +3305,7 @@ body.suspense-on #pfRank{ display:none !important; }
     <div class="puntoOp" id="puntoOpTxt">–</div>
     <div class="puntoAnsRow">
       <input type="text" inputmode="numeric" id="puntoAns" placeholder="?" autocomplete="off">
-      <button class="btn mg" onclick="puntoSend()">INVIA</button>
+      <button class="btn mg" id="puntoSendBtn" onclick="puntoSend()">INVIA</button>
     </div>
     <div class="puntoProgress" id="puntoProgress">Tacca 0</div>
   </div>
@@ -4211,7 +4211,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1265; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1266; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -7727,18 +7727,20 @@ function showPlayerPunto(g){
       document.documentElement.style.setProperty('--mycolor', myRacer.color);
       $('puntoMeDot').textContent = myRacer.shape; $('puntoMeDot').style.color = myRacer.color;
       $('puntoMeBox').style.display='block'; $('puntoAns').style.display=''; $('puntoAns').disabled=false;
+      $('puntoSendBtn').style.display='';
       $('puntoFbMsg').style.display='none'; $('puntoFbPts').style.display='none';
       puntoNewProblem();
     }
     const myPos = myRacer.pos||0;
     if (myPos>=m.notches && !P.puntoFinished){
       P.puntoFinished = true;
-      $('puntoOpTxt').textContent='🏁'; $('puntoAns').style.display='none';
+      $('puntoOpTxt').textContent='🏁'; $('puntoAns').style.display='none'; $('puntoSendBtn').style.display='none';
       $('puntoProgress').textContent = '🏁 Hai tagliato il traguardo! Aspetta gli altri...';
     } else if (!P.puntoFinished){
       $('puntoProgress').textContent = `Tacca ${myPos} / ${m.notches}`;
     }
   } else if (m.phase==='result'){
+    P.puntoStartAt = null; // così, quando riparte una nuova gara, il controllo sopra la riconosce di sicuro come "diversa"
     const rv = m.results||{};
     const rk = rv.ranking||[];
     const idx = rk.findIndex(r=>r.pid===P.id);
@@ -7751,6 +7753,15 @@ function showPlayerPunto(g){
     else if (mine.pts>0){ msg.className='feedback mtb fb-ok'; msg.style.color=''; msg.textContent=(idx+1)+'° POSTO!'; pts.textContent='+'+mine.pts+' PUNTI'; if(navigator.vibrate) navigator.vibrate([60,40,60]); }
     else if (mine.pts<0){ msg.className='feedback mtb fb-no'; msg.style.color=''; msg.textContent='SEI RIMASTO INDIETRO...'; pts.textContent=mine.pts+' PUNTI'; if(navigator.vibrate) navigator.vibrate(150); }
     else { msg.className='feedback mtb'; msg.style.color='var(--muted)'; msg.textContent=(idx+1)+'° POSTO'; pts.textContent='Nessun punto'; }
+  } else {
+    // fase intermedia (es. 'idle', tra la fine di una gara e l'avvio della successiva): mai lasciare
+    // il telefono fermo a mostrare lo stato della gara precedente, altrimenti sembra bloccato
+    P.puntoStartAt = null;
+    $('puntoMeBox').style.display='none';
+    const msg=$('puntoFbMsg'), pts=$('puntoFbPts');
+    msg.style.display='block'; pts.style.display='none';
+    msg.className='feedback mtb'; msg.style.color='var(--muted)';
+    msg.textContent='⏳ La regia sta preparando la prossima gara...';
   }
 }
 function puntoNewProblem(){
@@ -7803,6 +7814,7 @@ function showPlayerDado(g){
     }
     dadoRenderMyBoard(g);
   } else if (m.phase==='result'){
+    P.dadoStartAt = null;
     const rv = m.results||{};
     const rk = rv.ranking||[];
     const idx = rk.findIndex(r=>r.pid===P.id);
@@ -7814,6 +7826,14 @@ function showPlayerDado(g){
     else if (idx===0){ msg.className='feedback mtb fb-ok'; msg.style.color=''; msg.textContent='🥇 SEI IL PRIMO A DESTINAZIONE!'; pts.textContent='+'+mine.pts+' PUNTI'; if(navigator.vibrate) navigator.vibrate([80,50,120]); }
     else if (mine.pts>0){ msg.className='feedback mtb fb-ok'; msg.style.color=''; msg.textContent=(idx+1)+'° POSTO!'; pts.textContent='+'+mine.pts+' PUNTI'; if(navigator.vibrate) navigator.vibrate([60,40,60]); }
     else { msg.className='feedback mtb'; msg.style.color='var(--muted)'; msg.textContent=(idx+1)+'° POSTO'; pts.textContent='Nessun punto'; }
+  } else {
+    // fase intermedia tra una gara e l'altra: mai lasciare il telefono fermo sullo stato precedente
+    P.dadoStartAt = null;
+    $('dadoBtnRoll').style.display='none';
+    const msg=$('dadoFbMsg'), pts=$('dadoFbPts');
+    msg.style.display='block'; pts.style.display='none';
+    msg.className='feedback mtb'; msg.style.color='var(--muted)';
+    msg.textContent='⏳ La regia sta preparando la prossima gara...';
   }
 }
 function dadoRenderMyBoard(g){
