@@ -1362,7 +1362,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v12.67</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v12.68</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -3406,13 +3406,17 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="panel mt" style="max-width:520px" id="astaSetup">
     <div class="label">Titolo dell'asta (si vede sul proiettore)</div>
     <input type="text" id="astaTitle" value="ASTA DI BENEFICENZA" maxlength="60">
+    <div id="astaPresetRow"></div>
     <div class="label mt">Nome dell'oggetto/soggetto messo all'asta</div>
     <input type="text" id="astaItemName" placeholder="Es. Bottiglia di vino pregiato" maxlength="60">
     <div class="label mt">Foto (facoltativa)</div>
     <input type="file" id="astaPhotoInput" accept="image/*" onchange="astaPhotoChanged()">
     <div id="astaPhotoPreviewWrap" style="display:none; margin-top:10px; text-align:center">
       <img id="astaPhotoPreview" style="max-width:160px; border-radius:10px; box-shadow:0 0 0 2px #d4a63a">
-      <div class="mt"><button class="btn ghost" onclick="astaClearPhoto()">✕ Rimuovi foto</button></div>
+      <div class="mt row" style="justify-content:center">
+        <button class="btn ghost" onclick="astaClearPhoto()">✕ Rimuovi foto</button>
+        <button class="btn ghost" onclick="astaSavePresetPrompt()">💾 Salva come oggetto pronto</button>
+      </div>
     </div>
     <div class="row mt">
       <div class="grow"><div class="label">Base d'asta (punti)</div><input type="number" id="astaStartBid" value="100" min="0" style="width:100%; text-align:center"></div>
@@ -3479,6 +3483,11 @@ body.suspense-on #pfRank{ display:none !important; }
     <div class="astaBidder none" id="astaBidderMe">Nessuna offerta ancora...</div>
   </div>
   <button class="btn mg mt" id="astaBtnBid" onclick="astaBid()" style="width:min(88vw,320px)">🔨 RILANCIA A <span id="astaBtnBidAmount">0</span></button>
+  <div class="byline mt" style="opacity:.7">oppure fai un'offerta più alta</div>
+  <div class="row mt" style="width:min(88vw,320px)">
+    <input type="number" id="astaCustomBid" placeholder="Es. 500" min="0" style="flex:1; text-align:center">
+    <button class="btn cy" id="astaBtnBidCustom" onclick="astaBidCustom()">RILANCIA</button>
+  </div>
   <div class="byline mt" id="astaMyStatus"></div>
   <div class="feedback mtb" id="astaFbMsg" style="display:none"></div>
   <div class="feedback mtb" id="astaFbPts" style="display:none"></div>
@@ -4325,7 +4334,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1267; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1268; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -8021,6 +8030,7 @@ function showPlayerAsta(g){
     if (a.phase==='sold'){
       const won = a.currentBidderId===P.id;
       $('astaBtnBid').style.display='none';
+      $('astaCustomBid').parentElement.style.display='none';
       $('astaMyStatus').textContent='';
       const msg=$('astaFbMsg'), pts=$('astaFbPts');
       msg.style.display='block'; pts.style.display='block';
@@ -8031,16 +8041,21 @@ function showPlayerAsta(g){
       const nextBid = a.currentBid==null ? a.startBid : a.currentBid+a.increment;
       $('astaBtnBidAmount').textContent = nextBid;
       $('astaBtnBid').style.display='';
+      $('astaCustomBid').parentElement.style.display='flex';
+      $('astaCustomBid').min = nextBid;
+      $('astaCustomBid').placeholder = 'Almeno '+nextBid;
       $('astaFbMsg').style.display='none'; $('astaFbPts').style.display='none';
       const iAmWinning = a.currentBidderId===P.id;
       const canAfford = myScore >= nextBid;
       $('astaBtnBid').disabled = iAmWinning || !canAfford;
+      $('astaBtnBidCustom').disabled = iAmWinning;
       if (iAmWinning) $('astaMyStatus').innerHTML = '🔨 <b style="color:var(--lime)">SEI IN TESTA!</b>';
       else if (!canAfford) $('astaMyStatus').innerHTML = '<span style="color:var(--red)">Non hai punti a sufficienza per rilanciare</span>';
       else $('astaMyStatus').textContent = '';
     }
   } else {
     $('astaBtnBid').style.display='none';
+    $('astaCustomBid').parentElement.style.display='none';
     $('astaMyStatus').textContent = '⏳ La regia sta preparando il prossimo oggetto...';
     $('astaFbMsg').style.display='none'; $('astaFbPts').style.display='none';
   }
@@ -8055,6 +8070,23 @@ function astaBid(){
     const myScore = ((g.players||{})[P.id]||{}).score||0;
     if (myScore < nextBid) return; // controllo di sicurezza: il pulsante dovrebbe già essere disabilitato in questo caso
     P.ref.child('asta').update({ currentBid: nextBid, currentBidderId: P.id, currentBidderName: P.name, hammerStage: 0 });
+    if (navigator.vibrate) navigator.vibrate(40);
+  });
+}
+function astaBidCustom(){
+  const v = Math.floor(+$('astaCustomBid').value||0);
+  if (!v) return;
+  P.ref.once('value').then(s=>{
+    const g = s.val()||{};
+    const a = g.asta||{};
+    if (a.phase!=='live') return;
+    if (a.currentBidderId===P.id) return;
+    const minBid = a.currentBid==null ? a.startBid : a.currentBid+a.increment;
+    if (v < minBid) return alert(`L'offerta minima adesso è ${minBid} punti!`);
+    const myScore = ((g.players||{})[P.id]||{}).score||0;
+    if (v > myScore) return alert('Non hai così tanti punti!');
+    P.ref.child('asta').update({ currentBid: v, currentBidderId: P.id, currentBidderName: P.name, hammerStage: 0 });
+    $('astaCustomBid').value='';
     if (navigator.vibrate) navigator.vibrate(40);
   });
 }
@@ -13300,6 +13332,54 @@ function astaClearPhoto(){
   $('astaPhotoInput').value='';
   $('astaPhotoPreviewWrap').style.display='none';
 }
+/* ---- oggetti già pronti (nome + foto), salvati in locale — stesso schema di "Trova le Differenze" ---- */
+function astaSavedList(){
+  try{ return JSON.parse(localStorage.getItem('capone_asta_saved')||'[]'); }catch(e){ return []; }
+}
+function astaRenderPresetRow(){
+  const list = astaSavedList();
+  $('astaPresetRow').innerHTML = list.length ? `
+    <div class="label mt">Oggetti già pronti</div>
+    <div class="row">
+      <select id="astaPresetSel" class="grow">
+        <option value="">— scegli un oggetto già pronto —</option>
+        ${list.map(s=>`<option value="${esc(s.name)}">${esc(s.name)}</option>`).join('')}
+      </select>
+      <button class="btn small cy" onclick="astaLoadPreset($('astaPresetSel').value)">▶ Usa</button>
+      <button class="btn small ghost" onclick="astaDeletePreset($('astaPresetSel').value)" title="Elimina questo oggetto">🗑</button>
+    </div>` : '';
+}
+function astaLoadPreset(name){
+  if (!name) return;
+  const s = astaSavedList().find(x=>x.name===name);
+  if (!s) return;
+  $('astaItemName').value = s.name;
+  if (s.photo){
+    ASTA.photo = s.photo;
+    $('astaPhotoPreview').src = s.photo;
+    $('astaPhotoPreviewWrap').style.display='block';
+  } else astaClearPhoto();
+}
+function astaDeletePreset(name){
+  if (!name) return;
+  if (!confirm(`Eliminare l'oggetto "${name}" dall'elenco dei pronti?`)) return;
+  const list = astaSavedList().filter(x=>x.name!==name);
+  try{ localStorage.setItem('capone_asta_saved', JSON.stringify(list)); }catch(e){}
+  astaRenderPresetRow();
+}
+function astaSavePresetPrompt(){
+  const name = $('astaItemName').value.trim();
+  if (!name) return alert("Scrivi prima il nome dell'oggetto!");
+  const list = astaSavedList();
+  const i = list.findIndex(s=>s.name===name);
+  const entry = { name, photo: ASTA.photo||null };
+  if (i>=0) list[i] = entry; else list.push(entry);
+  try{
+    localStorage.setItem('capone_asta_saved', JSON.stringify(list));
+    astaRenderPresetRow();
+    alert(`✔ "${name}" salvato tra gli oggetti pronti! La prossima volta lo richiami dal menu, senza ricaricare nulla.`);
+  }catch(e){ alert('⚠️ Memoria piena: prova a eliminare qualche oggetto più vecchio, o usa foto più piccole.'); }
+}
 function openAsta(){
   if (!isGameEnabled('asta')) return alert('⚠️ Questo minigioco non è compreso nella licenza attiva. Contatta Alberto per sbloccarlo.');
   if (!G) return alert('Avvia prima una partita!');
@@ -13309,6 +13389,7 @@ function openAsta(){
   ASTA = { photo:null };
   $('astaItemName').value=''; astaClearPhoto();
   $('astaSetup').style.display='block'; $('astaLive').style.display='none';
+  astaRenderPresetRow();
   pjSend({type:'astaState'});
   showScreen('scrAsta');
 }
@@ -13372,6 +13453,7 @@ function astaNextItem(){
   G.ref.child('asta').off();
   $('astaItemName').value=''; astaClearPhoto();
   $('astaSetup').style.display='block'; $('astaLive').style.display='none';
+  astaRenderPresetRow();
   G.ref.update({ status:'asta', asta:{ phase:'idle' } });
   pjSend({type:'astaState'});
 }
