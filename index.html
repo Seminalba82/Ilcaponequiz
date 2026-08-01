@@ -769,6 +769,35 @@ body.barOn.barCollapsed .screen.active{padding-bottom:70px;}
 @keyframes dadoRoll{0%{transform:rotate(0deg) scale(1);} 50%{transform:rotate(15deg) scale(1.06);} 100%{transform:rotate(-10deg) scale(.97);}}
 .dadoRollsLeft{text-align:center; font-family:'Bungee'; font-size:14px; color:var(--muted); margin-top:6px;}
 .dadoRollsLeft b{color:var(--gold);}
+/* ===== ASTA — cornice dorata da casa d'aste ===== */
+.astaCard{position:relative; width:100%; max-width:520px; margin:14px auto; padding:26px 22px; border-radius:22px;
+  background:linear-gradient(165deg,#241a08,#0e0a04 70%);
+  box-shadow:inset 0 2px 4px rgba(255,215,120,.15), inset 0 -8px 16px rgba(0,0,0,.6),
+    0 0 0 2px #d4a63a, 0 0 24px rgba(212,166,58,.35), 0 14px 30px rgba(0,0,0,.5);}
+.astaTitle{font-family:'Bungee'; font-size:clamp(14px,3vw,20px); letter-spacing:2px; text-align:center;
+  color:#ffd76a; text-shadow:0 0 12px rgba(255,215,106,.5); text-transform:uppercase; opacity:.85;}
+.astaPhotoWrap{width:min(70vw,260px); height:min(70vw,260px); margin:14px auto; border-radius:16px; overflow:hidden;
+  background:#1a1408; box-shadow:0 0 0 3px #d4a63a, 0 0 26px rgba(212,166,58,.55), inset 0 0 20px rgba(0,0,0,.5);
+  display:flex; align-items:center; justify-content:center;}
+.astaPhotoWrap img{width:100%; height:100%; object-fit:cover;}
+.astaPhotoWrap .ph{font-size:64px; opacity:.35;}
+.astaItemName{font-family:'Bungee'; font-size:clamp(22px,5.5vw,34px); text-align:center; color:#fff;
+  text-shadow:0 0 16px rgba(255,215,106,.4); margin-top:6px;}
+.astaBidLabel{text-align:center; font-size:12px; letter-spacing:2px; color:#c9a45c; text-transform:uppercase; margin-top:16px;}
+.astaBidAmount{font-family:'Bungee'; font-size:clamp(38px,10vw,58px); text-align:center; color:#ffd76a;
+  text-shadow:0 0 22px rgba(255,215,106,.6); line-height:1.1;}
+.astaBidder{text-align:center; font-family:'Bungee'; font-size:clamp(16px,4vw,22px); color:#fff; margin-top:2px;}
+.astaBidder.none{color:var(--muted); font-family:inherit; font-size:14px;}
+.astaHammer{font-size:clamp(50px,14vw,90px); text-align:center; margin:8px 0;
+  filter:drop-shadow(0 0 14px rgba(255,215,106,.5)); animation:astaHammerHit .35s ease-out;}
+@keyframes astaHammerHit{0%{transform:rotate(-35deg) translateY(-14px);} 60%{transform:rotate(6deg);} 100%{transform:rotate(0deg);}}
+.astaCountTxt{font-family:'Bungee'; font-size:clamp(40px,12vw,70px); text-align:center; color:#ffd76a;
+  text-shadow:0 0 26px rgba(255,215,106,.7); animation:astaPop .3s cubic-bezier(.34,1.56,.64,1);}
+@keyframes astaPop{0%{transform:scale(.5);} 60%{transform:scale(1.15);} 100%{transform:scale(1);}}
+.astaSoldBanner{font-family:'Bungee'; font-size:clamp(20px,5vw,30px); text-align:center; color:#ffd76a;
+  text-shadow:0 0 22px rgba(255,215,106,.7); margin-top:10px;}
+.astaCard.sold{box-shadow:inset 0 2px 4px rgba(255,215,120,.15), inset 0 -8px 16px rgba(0,0,0,.6),
+    0 0 0 3px #ffd76a, 0 0 40px rgba(255,215,106,.7), 0 14px 30px rgba(0,0,0,.5);}
 .tmbPrizeRow{display:flex; align-items:center; gap:10px; margin-top:6px;}
 .tmbPrizeRow .medal{width:40px; font-size:20px; text-align:center;}
 .tmbPrizeRow.loss .medal{color:#ff5d5d;}
@@ -1333,7 +1362,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v12.66</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v12.67</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -3371,6 +3400,90 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="feedback mtb" id="dadoFbPts" style="display:none"></div>
 </div>
 
+<!-- ==================== HOST: ASTA ==================== -->
+<div class="screen" id="scrAsta">
+  <div class="brand"><div class="t1" style="font-size:clamp(18px,3.4vw,32px)">🔨 ASTA</div></div>
+  <div class="panel mt" style="max-width:520px" id="astaSetup">
+    <div class="label">Titolo dell'asta (si vede sul proiettore)</div>
+    <input type="text" id="astaTitle" value="ASTA DI BENEFICENZA" maxlength="60">
+    <div class="label mt">Nome dell'oggetto/soggetto messo all'asta</div>
+    <input type="text" id="astaItemName" placeholder="Es. Bottiglia di vino pregiato" maxlength="60">
+    <div class="label mt">Foto (facoltativa)</div>
+    <input type="file" id="astaPhotoInput" accept="image/*" onchange="astaPhotoChanged()">
+    <div id="astaPhotoPreviewWrap" style="display:none; margin-top:10px; text-align:center">
+      <img id="astaPhotoPreview" style="max-width:160px; border-radius:10px; box-shadow:0 0 0 2px #d4a63a">
+      <div class="mt"><button class="btn ghost" onclick="astaClearPhoto()">✕ Rimuovi foto</button></div>
+    </div>
+    <div class="row mt">
+      <div class="grow"><div class="label">Base d'asta (punti)</div><input type="number" id="astaStartBid" value="100" min="0" style="width:100%; text-align:center"></div>
+      <div class="grow"><div class="label">Rilancio minimo</div><input type="number" id="astaIncrement" value="20" min="1" style="width:100%; text-align:center"></div>
+    </div>
+    <div class="label mt">Come si chiude l'asta</div>
+    <select id="astaEndMode">
+      <option value="hammer" selected>Col martello del banditore (e uno, e due, e tre!)</option>
+      <option value="manual">La regia decide quando fermarla</option>
+    </select>
+    <div class="byline mt" style="opacity:.75">🔨 I giocatori rilanciano usando i propri punti del quiz — chi vince l'asta li spende davvero, li perde dal proprio punteggio.</div>
+    <button class="btn mg mt" style="width:100%" onclick="astaStart()">🔨 APRI L'ASTA!</button>
+  </div>
+  <div id="astaLive" style="display:none; width:100%" class="center">
+    <div class="astaCard" id="astaCardHost">
+      <div class="astaTitle" id="astaTitleHost"></div>
+      <div class="astaPhotoWrap" id="astaPhotoWrapHost"><div class="ph">🔨</div></div>
+      <div class="astaItemName" id="astaItemNameHost"></div>
+      <div class="astaBidLabel">Offerta attuale</div>
+      <div class="astaBidAmount" id="astaBidAmountHost">0</div>
+      <div class="astaBidder none" id="astaBidderHost">Nessuna offerta ancora...</div>
+      <div class="astaCountTxt" id="astaCountHost" style="display:none"></div>
+      <div class="astaSoldBanner" id="astaSoldHost" style="display:none"></div>
+    </div>
+    <div class="row mt" id="astaHostControlsManual" style="display:none">
+      <button class="btn mg" style="width:100%" onclick="astaCloseManual()">🔨 AGGIUDICA ORA!</button>
+    </div>
+    <div class="row mt" id="astaHostControlsHammer" style="display:none">
+      <button class="btn mg" style="width:100%" id="astaBtnHammer" onclick="astaHammerStrike()">🔨 E UNO!</button>
+    </div>
+    <div class="row mt">
+      <button class="btn cy" onclick="astaNextItem()" id="astaBtnNext" style="display:none; width:100%">➡️ Prossimo oggetto all'asta</button>
+    </div>
+  </div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+</div>
+
+<!-- ==================== PROIETTORE: ASTA ==================== -->
+<div class="screen" id="scrPjAsta">
+  <div class="astaCard" id="astaCardPj" style="max-width:640px">
+    <div class="astaTitle" id="astaTitlePj"></div>
+    <div class="astaPhotoWrap" id="astaPhotoWrapPj" style="width:min(46vw,340px); height:min(46vw,340px)"><div class="ph">🔨</div></div>
+    <div class="astaItemName" id="astaItemNamePj"></div>
+    <div class="astaBidLabel">Offerta attuale</div>
+    <div class="astaBidAmount" id="astaBidAmountPj">0</div>
+    <div class="astaBidder none" id="astaBidderPj">Nessuna offerta ancora...</div>
+    <div class="astaCountTxt" id="astaCountPj" style="display:none"></div>
+    <div class="astaSoldBanner" id="astaSoldPj" style="display:none"></div>
+  </div>
+</div>
+
+<!-- ==================== PLAYER: ASTA ==================== -->
+<div class="screen" id="scrPlayAsta" style="align-items:center; justify-content:center">
+  <div class="row" style="width:100%; justify-content:space-between">
+    <div class="pill" id="astapName" style="color:var(--gold)"></div>
+    <div class="pill" id="astapScore"></div>
+  </div>
+  <div class="astaCard" id="astaCardMe" style="max-width:360px">
+    <div class="astaTitle" id="astaTitleMe"></div>
+    <div class="astaPhotoWrap" id="astaPhotoWrapMe"><div class="ph">🔨</div></div>
+    <div class="astaItemName" id="astaItemNameMe"></div>
+    <div class="astaBidLabel">Offerta attuale</div>
+    <div class="astaBidAmount" id="astaBidAmountMe">0</div>
+    <div class="astaBidder none" id="astaBidderMe">Nessuna offerta ancora...</div>
+  </div>
+  <button class="btn mg mt" id="astaBtnBid" onclick="astaBid()" style="width:min(88vw,320px)">🔨 RILANCIA A <span id="astaBtnBidAmount">0</span></button>
+  <div class="byline mt" id="astaMyStatus"></div>
+  <div class="feedback mtb" id="astaFbMsg" style="display:none"></div>
+  <div class="feedback mtb" id="astaFbPts" style="display:none"></div>
+</div>
+
 <!-- ==================== HOST: ROULETTE ==================== -->
 <div class="screen" id="scrCasino">
   <div class="brand"><div class="t1" style="font-size:clamp(20px,3.6vw,36px)">🎰 ROULETTE</div></div>
@@ -4148,7 +4261,7 @@ body.suspense-on #pfRank{ display:none !important; }
 /* ================================================================
    📋 ELENCO MINIGIOCHI — aggiornare questa lista ogni volta che se ne
    aggiunge uno nuovo (serve ad Alberto per la documentazione delle licenze).
-   Ultimo aggiornamento: v12.65 — 41 minigiochi totali.
+   Ultimo aggiornamento: v12.67 — 42 minigiochi totali.
    ================================================================
    1.  🥃 Bussolotti
    2.  🎲 Pari o Dispari
@@ -4191,6 +4304,7 @@ body.suspense-on #pfRank{ display:none !important; }
    39. ✊✋✌️ Morra Cinese
    40. 🏁 Il Punto della Situazione
    41. 🎲 Il Dado del Destino
+   42. 🔨 Asta
 ================================================================ */
 
 /* ================================================================
@@ -4211,7 +4325,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1266; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1267; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -5766,6 +5880,7 @@ function listenGame(){
     else if (g.status==='morra') showPlayerMorra(g);
     else if (g.status==='punto') showPlayerPunto(g);
     else if (g.status==='dado') showPlayerDado(g);
+    else if (g.status==='asta') showPlayerAsta(g);
     else if (g.status==='xox') showPlayerXox(g);
     else if (g.status==='timer') {
       const t = g.timer||{};
@@ -7891,6 +8006,57 @@ function dadoAnimateMove(roll){
       $('dadoBtnRoll').disabled = false;
     }
   }, 200);
+}
+/* ================================================================
+   ASTA — telefono
+================================================================ */
+function showPlayerAsta(g){
+  const a = g.asta||{};
+  $('astapName').textContent = P.name;
+  const myScore = ((g.players||{})[P.id]||{}).score||0;
+  $('astapScore').textContent = myScore+' pt';
+  showScreen('scrPlayAsta');
+  if (a.phase==='live' || a.phase==='sold'){
+    astaRenderCard('Me', a);
+    if (a.phase==='sold'){
+      const won = a.currentBidderId===P.id;
+      $('astaBtnBid').style.display='none';
+      $('astaMyStatus').textContent='';
+      const msg=$('astaFbMsg'), pts=$('astaFbPts');
+      msg.style.display='block'; pts.style.display='block';
+      if (a.soldTo && won){ msg.className='feedback mtb fb-ok'; msg.style.color=''; msg.textContent='🏆 TE LO SEI AGGIUDICATO!'; pts.textContent='-'+a.soldAmount+' PUNTI'; if(navigator.vibrate) navigator.vibrate([80,50,120]); }
+      else if (a.soldTo){ msg.className='feedback mtb'; msg.style.color='var(--muted)'; msg.textContent="Se l'è aggiudicato "+a.soldTo; pts.textContent=''; }
+      else { msg.className='feedback mtb'; msg.style.color='var(--muted)'; msg.textContent='INVENDUTO'; pts.textContent=''; }
+    } else {
+      const nextBid = a.currentBid==null ? a.startBid : a.currentBid+a.increment;
+      $('astaBtnBidAmount').textContent = nextBid;
+      $('astaBtnBid').style.display='';
+      $('astaFbMsg').style.display='none'; $('astaFbPts').style.display='none';
+      const iAmWinning = a.currentBidderId===P.id;
+      const canAfford = myScore >= nextBid;
+      $('astaBtnBid').disabled = iAmWinning || !canAfford;
+      if (iAmWinning) $('astaMyStatus').innerHTML = '🔨 <b style="color:var(--lime)">SEI IN TESTA!</b>';
+      else if (!canAfford) $('astaMyStatus').innerHTML = '<span style="color:var(--red)">Non hai punti a sufficienza per rilanciare</span>';
+      else $('astaMyStatus').textContent = '';
+    }
+  } else {
+    $('astaBtnBid').style.display='none';
+    $('astaMyStatus').textContent = '⏳ La regia sta preparando il prossimo oggetto...';
+    $('astaFbMsg').style.display='none'; $('astaFbPts').style.display='none';
+  }
+}
+function astaBid(){
+  P.ref.once('value').then(s=>{
+    const g = s.val()||{};
+    const a = g.asta||{};
+    if (a.phase!=='live') return;
+    if (a.currentBidderId===P.id) return; // sei già in testa, non ha senso rilanciare contro te stesso
+    const nextBid = a.currentBid==null ? a.startBid : a.currentBid+a.increment;
+    const myScore = ((g.players||{})[P.id]||{}).score||0;
+    if (myScore < nextBid) return; // controllo di sicurezza: il pulsante dovrebbe già essere disabilitato in questo caso
+    P.ref.child('asta').update({ currentBid: nextBid, currentBidderId: P.id, currentBidderName: P.name, hammerStage: 0 });
+    if (navigator.vibrate) navigator.vibrate(40);
+  });
 }
 /* ================================================================
    XOX — motore condiviso (giocatore contro computer)
@@ -13085,6 +13251,132 @@ function dadoFinish(){
 }
 
 /* ================================================================
+   ASTA — condiviso (regia + proiettore + telefono) e regia
+   L'asta è integrata nel quiz: i giocatori rilanciano con i propri punti, e chi vince li perde
+   davvero dal punteggio (li spende). Il colpo di martello (e uno, e due, e tre) si azzera da solo
+   ogni volta che arriva una nuova offerta, esattamente come in una vera asta — l'azzeramento
+   avviene direttamente nella scrittura dell'offerta, quindi funziona sempre, indipendentemente
+   da chi/come arriva la nuova offerta.
+================================================================ */
+function astaRenderCard(suffix, a){
+  const titleEl = $('astaTitle'+suffix); if (titleEl) titleEl.textContent = a.title||'';
+  const nameEl = $('astaItemName'+suffix); if (nameEl) nameEl.textContent = a.itemName||'';
+  const wrap = $('astaPhotoWrap'+suffix);
+  if (wrap) wrap.innerHTML = a.itemPhoto ? `<img src="${a.itemPhoto}">` : `<div class="ph">🔨</div>`;
+  const amountEl = $('astaBidAmount'+suffix);
+  if (amountEl) amountEl.textContent = (a.currentBid!=null ? a.currentBid : (a.startBid||0));
+  const bidderEl = $('astaBidder'+suffix);
+  if (bidderEl){
+    if (a.currentBidderName){ bidderEl.className='astaBidder'; bidderEl.textContent = '🔨 '+a.currentBidderName; }
+    else { bidderEl.className='astaBidder none'; bidderEl.textContent = 'Nessuna offerta ancora... base: '+(a.startBid||0); }
+  }
+}
+function astaRenderHammer(suffix, a){
+  const el = $('astaCount'+suffix); if (!el) return;
+  if (a.phase==='live' && (a.hammerStage||0)>0){
+    el.style.display='block';
+    el.textContent = a.hammerStage===1 ? '🔨 E UNO!...' : (a.hammerStage===2 ? '🔨 E DUE!...' : '');
+  } else el.style.display='none';
+}
+function astaRenderSold(suffix, a){
+  const el = $('astaSold'+suffix); if (!el) return;
+  if (a.phase==='sold'){
+    el.style.display='block';
+    el.textContent = a.soldTo ? `🏆 AGGIUDICATO A ${a.soldTo} PER ${a.soldAmount} PUNTI!` : '😕 INVENDUTO — nessuna offerta ricevuta';
+  } else el.style.display='none';
+}
+let ASTA = { photo:null };
+function astaPhotoChanged(){
+  const f = $('astaPhotoInput').files[0];
+  if (!f) return;
+  compressImageFile(f, {maxDim:1000, maxBytes:400*1024}).then(r=>{
+    ASTA.photo = r.dataUrl;
+    $('astaPhotoPreview').src = r.dataUrl;
+    $('astaPhotoPreviewWrap').style.display='block';
+  }).catch(()=> alert("Non sono riuscito a caricare questa foto, riprova con un'altra."));
+}
+function astaClearPhoto(){
+  ASTA.photo = null;
+  $('astaPhotoInput').value='';
+  $('astaPhotoPreviewWrap').style.display='none';
+}
+function openAsta(){
+  if (!isGameEnabled('asta')) return alert('⚠️ Questo minigioco non è compreso nella licenza attiva. Contatta Alberto per sbloccarlo.');
+  if (!G) return alert('Avvia prima una partita!');
+  cancelLiveQuestion(); closeModal();
+  G.ref.child('asta').off();
+  G.ref.update({ status:'asta', asta:{ phase:'idle' } });
+  ASTA = { photo:null };
+  $('astaItemName').value=''; astaClearPhoto();
+  $('astaSetup').style.display='block'; $('astaLive').style.display='none';
+  pjSend({type:'astaState'});
+  showScreen('scrAsta');
+}
+function astaStart(){
+  const title = $('astaTitle').value.trim() || 'ASTA';
+  const itemName = $('astaItemName').value.trim();
+  if (!itemName) return alert("Scrivi il nome dell'oggetto messo all'asta!");
+  const startBid = Math.max(0, +$('astaStartBid').value||0);
+  const increment = Math.max(1, +$('astaIncrement').value||1);
+  const endMode = $('astaEndMode').value;
+  const a = { phase:'live', title, itemName, itemPhoto: ASTA.photo||null, startBid, increment, endMode,
+    currentBid:null, currentBidderId:null, currentBidderName:null, hammerStage:0, soldTo:null, soldAmount:null };
+  G.ref.child('asta').off();
+  G.ref.update({ status:'asta', asta:a });
+  $('astaSetup').style.display='none'; $('astaLive').style.display='block';
+  $('astaHostControlsManual').style.display = endMode==='manual' ? '' : 'none';
+  $('astaHostControlsHammer').style.display = endMode==='hammer' ? '' : 'none';
+  $('astaBtnHammer').textContent = '🔨 E UNO!';
+  $('astaBtnNext').style.display='none';
+  astaRenderCard('Host', a); astaRenderHammer('Host', a); astaRenderSold('Host', a);
+  pjSend({type:'astaUpdate', a});
+  G.ref.child('asta').on('value', s=>{
+    const av = s.val()||{}; if (!av.phase) return;
+    astaRenderCard('Host', av); astaRenderHammer('Host', av); astaRenderSold('Host', av);
+    if (av.endMode==='hammer') $('astaBtnHammer').textContent = (av.hammerStage||0)===0 ? '🔨 E UNO!' : ((av.hammerStage===1) ? '🔨 E DUE!' : '🔨 E TRE! (AGGIUDICATO)');
+    if (av.phase==='sold'){
+      $('astaHostControlsManual').style.display='none'; $('astaHostControlsHammer').style.display='none';
+      $('astaBtnNext').style.display='';
+    }
+    pjSend({type:'astaUpdate', a:av});
+  });
+}
+function astaHammerStrike(){
+  G.ref.child('asta').once('value').then(s=>{
+    const av = s.val()||{};
+    if (av.phase!=='live') return;
+    if (av.currentBid==null) return alert("Nessuno ha ancora fatto un'offerta: non si può aggiudicare nulla!");
+    const next = (av.hammerStage||0)+1;
+    if (next>=3) astaSell(av); else G.ref.child('asta/hammerStage').set(next);
+  });
+}
+function astaCloseManual(){
+  G.ref.child('asta').once('value').then(s=>{
+    const av = s.val()||{};
+    if (av.phase!=='live') return;
+    astaSell(av);
+  });
+}
+function astaSell(av){
+  const soldTo = av.currentBidderName||null, soldToId = av.currentBidderId||null, soldAmount = av.currentBid||0;
+  const updates = { 'asta/phase':'sold', 'asta/soldTo':soldTo, 'asta/soldAmount':soldAmount, 'asta/hammerStage':0 };
+  if (soldToId && soldAmount>0){
+    G.ref.child('players/'+soldToId+'/score').once('value').then(sc=>{
+      const cur = sc.val()||0;
+      G.ref.update({ ...updates, ['players/'+soldToId+'/score']: Math.max(0, cur-soldAmount) });
+      confetti();
+    });
+  } else { G.ref.update(updates); }
+}
+function astaNextItem(){
+  G.ref.child('asta').off();
+  $('astaItemName').value=''; astaClearPhoto();
+  $('astaSetup').style.display='block'; $('astaLive').style.display='none';
+  G.ref.update({ status:'asta', asta:{ phase:'idle' } });
+  pjSend({type:'astaState'});
+}
+
+/* ================================================================
    XOX — regia
 ================================================================ */
 let XOX = {};
@@ -13609,6 +13901,7 @@ const GIOCHI_CATALOGO = [
   {k:'morra', l:'✊✋✌️ Morra Cinese'},
   {k:'punto', l:'🏁 Il Punto della Situazione'},
   {k:'dado', l:'🎲 Il Dado del Destino'},
+  {k:'asta', l:'🔨 Asta'},
   {k:'xox', l:'❌⭕ XOX'}
   // 👉 QUANDO AGGIUNGI UN NUOVO MINIGIOCO: aggiungi qui una riga {k:'chiave', l:'Emoji Nome'},
   // poi apri il quiz come host e clicca una volta su "GIOCHI": il pannello admin lo vedrà da solo.
@@ -13667,6 +13960,7 @@ function modalGames(){
     gk('morra', `<button class="btn" style="grid-column:1/-1; background:linear-gradient(180deg,#7a5cff,#2e0f8a); color:#fff; box-shadow:0 7px 0 #180a5c,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(122,92,255,.4)" onclick="openMorra()">✊✋✌️ Morra Cinese</button>`),
     gk('punto', `<button class="btn" style="grid-column:1/-1; background:linear-gradient(180deg,#3de0ff,#0b6f8a); color:#00272e; box-shadow:0 7px 0 #003a44,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(61,224,255,.4)" onclick="openPunto()">🏁 Il Punto della Situazione</button>`),
     gk('dado', `<button class="btn" style="grid-column:1/-1; background:linear-gradient(180deg,#ffe93d,#8a6f0b); color:#2e2400; box-shadow:0 7px 0 #4a3a00,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,233,61,.4)" onclick="openDado()">🎲 Il Dado del Destino</button>`),
+    gk('asta', `<button class="btn" style="grid-column:1/-1; background:linear-gradient(180deg,#d4a63a,#5c3e0a); color:#fff; box-shadow:0 7px 0 #2e1f05,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(212,166,58,.45)" onclick="openAsta()">🔨 Asta</button>`),
     gk('xox', `<button class="btn" style="grid-column:1/-1; background:linear-gradient(180deg,#5ec8ff,#0b6fb8); color:#fff; box-shadow:0 7px 0 #063a5c,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(94,200,255,.4)" onclick="openXox()">❌⭕ XOX</button>`)
   ].filter(Boolean).join('');
 
@@ -14157,6 +14451,7 @@ function backToQuiz(title){
   G.ref.child('morra/tallies').off();
   G.ref.child('punto/racers').off();
   G.ref.child('dado/racers').off();
+  G.ref.child('asta').off();
   G.ref.child('xox/results').off();
   clearInterval(($('hrsTrackHost')||{})._raceInt); clearInterval(($('hrsTrackHost')||{})._cdInt);
   clearInterval((TF||{}).timerInt);
@@ -14177,7 +14472,7 @@ function backToQuiz(title){
   clearInterval((MERC||{}).timerInt);
   clearInterval((MORRA||{}).timerInt);
   clearInterval((XOX||{}).timerInt);
-  G.ref.update({ status:'pausa', mini:null, dice:null, simon:null, voto:null, timer:null, tombola:null, cards:null, swiss:null, hilo:null, wheels:null, puzzle:null, wordsearch:null, anagram:null, seed:null, grad:null, taptap:null, ruota:null, memo:null, memocoppie:null, horses:null, tfiscale:null, toc:null, cenerentola:null, pacchi:null, roulette:null, pagliuzza:null, supertris:null, rdc:null, mastermind:null, bomba:null, shapes:null, finddiff:null, maggioranza:null, goldenticket:null, casino:null, tamburini:null, mercatista:null, morra:null, punto:null, dado:null, xox:null });
+  G.ref.update({ status:'pausa', mini:null, dice:null, simon:null, voto:null, timer:null, tombola:null, cards:null, swiss:null, hilo:null, wheels:null, puzzle:null, wordsearch:null, anagram:null, seed:null, grad:null, taptap:null, ruota:null, memo:null, memocoppie:null, horses:null, tfiscale:null, toc:null, cenerentola:null, pacchi:null, roulette:null, pagliuzza:null, supertris:null, rdc:null, mastermind:null, bomba:null, shapes:null, finddiff:null, maggioranza:null, goldenticket:null, casino:null, tamburini:null, mercatista:null, morra:null, punto:null, dado:null, asta:null, xox:null });
   G.ref.child('players').once('value', ps=>{
     const players = ps.val()||{};
     $('hrTitle').textContent = title || 'SI TORNA AL QUIZ!';
@@ -14563,6 +14858,20 @@ function pjRouteInner(m){
       dadoRenderRanking($('pjDadoRanking'), m.ranking||[], window._pjDadoNotches, false);
       $('pjDadoMsg').textContent = (m.ranking&&m.ranking.length) ? `🏆 ${m.ranking[0].name} È IL PRIMO A DESTINAZIONE!` : 'NESSUNO HA GIOCATO!';
       if (m.ranking && m.ranking.length) confetti();
+    }
+    else if (m.type==='astaState') {
+      showScreen('scrPjAsta');
+      astaRenderCard('Pj', {title:'', itemName:'In preparazione...', currentBid:null, currentBidderName:null, startBid:0});
+      $('astaCountPj').style.display='none'; $('astaSoldPj').style.display='none';
+      $('astaCardPj').classList.remove('sold');
+    }
+    else if (m.type==='astaUpdate') {
+      showScreen('scrPjAsta');
+      astaRenderCard('Pj', m.a);
+      astaRenderHammer('Pj', m.a);
+      astaRenderSold('Pj', m.a);
+      $('astaCardPj').classList.toggle('sold', m.a.phase==='sold');
+      if (m.a.phase==='sold' && m.a.soldTo) confetti();
     }
     else if (m.type==='xoxActive') {
       showScreen('scrPjXox');
