@@ -715,6 +715,34 @@ body.barOn.barCollapsed .screen.active{padding-bottom:70px;}
 .morraTally span{display:flex; flex-direction:column; align-items:center; gap:2px;}
 .morraTally b{font-size:20px;}
 .morraResult{font-family:'Bungee'; font-size:clamp(18px,5vw,28px); text-align:center; margin-top:10px; min-height:1.4em;}
+/* ===== IL PUNTO DELLA SITUAZIONE — pista a tacche ===== */
+.puntoTrack{position:relative; width:100%; max-width:1100px; margin:14px auto 0; border-radius:16px; overflow:hidden;
+  background:linear-gradient(180deg,#1c1236,#120a26); box-shadow:inset 0 3px 8px rgba(0,0,0,.5), 0 0 0 2px rgba(157,77,255,.22);}
+.puntoLane{position:relative; height:44px; border-bottom:1px solid rgba(255,255,255,.07); display:flex; align-items:center;}
+.puntoLane:last-child{border-bottom:none;}
+.puntoLane.big{height:64px;}
+.puntoLaneName{position:absolute; left:8px; top:50%; transform:translateY(-50%); font-size:12px; font-weight:700;
+  color:#fff; text-shadow:0 1px 3px rgba(0,0,0,.8); z-index:3; max-width:90px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; pointer-events:none;}
+.puntoTicks{position:absolute; inset:0; display:flex;}
+.puntoTick{flex:1; border-right:1px dashed rgba(255,255,255,.10);}
+.puntoTick:last-child{border-right:none;}
+.puntoFinishBar{position:absolute; right:0; top:0; bottom:0; width:8px;
+  background:repeating-linear-gradient(45deg,#fff 0 5px,#111 5px 10px); box-shadow:-4px 0 10px rgba(255,255,255,.25);}
+.puntoDot{position:absolute; top:50%; width:30px; height:30px; margin-left:-15px; margin-top:-15px;
+  display:flex; align-items:center; justify-content:center; font-size:22px; z-index:2;
+  transition:left .45s cubic-bezier(.34,1.2,.4,1); filter:drop-shadow(0 3px 4px rgba(0,0,0,.6));}
+.puntoDot.hop{animation:puntoHop .45s ease-out;}
+@keyframes puntoHop{0%{transform:scale(1) translateY(0);} 40%{transform:scale(1.35) translateY(-14px);} 100%{transform:scale(1) translateY(0);}}
+.puntoDot.back{animation:puntoBack .4s ease-out;}
+@keyframes puntoBack{0%{transform:scale(1) rotate(0);} 40%{transform:scale(.7) rotate(-25deg);} 100%{transform:scale(1) rotate(0);}}
+.puntoMe{width:min(88vw,420px); margin:16px auto 0; border-radius:20px; padding:16px; text-align:center;
+  background:linear-gradient(160deg, var(--mycolor,#7a5cff)22, #140a26 70%); box-shadow:inset 0 0 0 2px var(--mycolor,#7a5cff), 0 0 26px var(--mycolor,#7a5cff)55;}
+.puntoMeDot{font-size:44px; filter:drop-shadow(0 4px 6px rgba(0,0,0,.5));}
+.puntoOp{font-family:'Bungee'; font-size:clamp(38px,11vw,58px); color:#fff; text-shadow:0 0 16px rgba(255,255,255,.35); margin:8px 0;}
+.puntoAnsRow{display:flex; gap:10px; justify-content:center; margin-top:8px;}
+#puntoAns{width:120px; text-align:center; font-family:'Bungee'; font-size:26px; padding:12px; border-radius:12px; border:none;
+  background:#0d0620; color:#fff; box-shadow:inset 0 0 0 2px rgba(255,255,255,.18);}
+.puntoProgress{font-size:13px; color:var(--muted); margin-top:8px;}
 .tmbPrizeRow{display:flex; align-items:center; gap:10px; margin-top:6px;}
 .tmbPrizeRow .medal{width:40px; font-size:20px; text-align:center;}
 .tmbPrizeRow.loss .medal{color:#ff5d5d;}
@@ -1279,7 +1307,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v12.62</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v12.63</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -3198,6 +3226,67 @@ body.suspense-on #pfRank{ display:none !important; }
   </div>
 </div>
 
+<!-- ==================== HOST: IL PUNTO DELLA SITUAZIONE ==================== -->
+<div class="screen" id="scrPunto">
+  <div class="brand"><div class="t1" style="font-size:clamp(18px,3.4vw,32px)">🏁 IL PUNTO DELLA SITUAZIONE</div></div>
+  <div class="panel mt" style="max-width:520px" id="puntoSetup">
+    <div class="label">Tacche del percorso</div>
+    <select id="puntoNotches">
+      <option value="10">10 tacche</option>
+      <option value="15" selected>15 tacche</option>
+      <option value="20">20 tacche</option>
+    </select>
+    <div class="row mt">
+      <div class="grow"><div class="label">Punti 1° arrivato</div><input type="number" id="puntoP1" value="500" min="0" style="width:100%; text-align:center"></div>
+      <div class="grow"><div class="label">Punti 2° arrivato</div><input type="number" id="puntoP2" value="300" min="0" style="width:100%; text-align:center"></div>
+    </div>
+    <div class="row mt">
+      <div class="grow"><div class="label">Punti 3° arrivato</div><input type="number" id="puntoP3" value="200" min="0" style="width:100%; text-align:center"></div>
+      <div class="grow"><div class="label">Penalità per l'ultimo</div><input type="number" id="puntoPLast" value="150" min="0" style="width:100%; text-align:center"></div>
+    </div>
+    <div class="byline mt" style="opacity:.75">🧮 Ogni giocatore risponde a calcoli (addizioni, sottrazioni, moltiplicazioni con numeri da 0 a 9) dal proprio telefono: risposta giusta avanza di una tacca, sbagliata torna indietro di una. Niente limite di tempo — la gara finisce quando arrivano i primi tre (o tutti, se sono meno di tre).</div>
+    <button class="btn mg mt" style="width:100%" onclick="puntoStart()">🏁 SI PARTE!</button>
+  </div>
+  <div id="puntoLive" style="display:none; width:100%" class="center">
+    <div class="miniMsg" id="puntoMsg"></div>
+    <div class="puntoTrack" id="puntoTrackHost"></div>
+    <div class="lead mt" id="puntoRanking" style="max-width:500px; width:100%"></div>
+    <div class="row mt">
+      <button class="btn ghost" id="puntoBtnEnd" onclick="puntoManualEnd()">🏁 Ferma qui la gara</button>
+      <button class="btn cy" id="puntoBtnAgain" onclick="openPunto()" style="display:none">🔁 Un'altra gara</button>
+    </div>
+  </div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+</div>
+
+<!-- ==================== PROIETTORE: IL PUNTO DELLA SITUAZIONE ==================== -->
+<div class="screen" id="scrPjPunto">
+  <div class="brand"><div class="t1" style="font-size:clamp(24px,3.6vw,42px)">🏁 IL PUNTO DELLA SITUAZIONE</div></div>
+  <div class="miniMsg" id="pjPuntoMsg">RISPONDETE DAL TELEFONO PER AVANZARE!</div>
+  <div class="puntoTrack" id="puntoTrackPj" style="max-width:1300px"></div>
+  <div class="lead mt" id="pjPuntoRanking" style="max-width:600px; width:100%"></div>
+</div>
+
+<!-- ==================== PLAYER: IL PUNTO DELLA SITUAZIONE ==================== -->
+<div class="screen" id="scrPlayPunto" style="align-items:center; justify-content:center">
+  <div class="row" style="width:100%; justify-content:space-between">
+    <div class="pill" id="puntopName" style="color:var(--gold)"></div>
+    <div class="pill" id="puntopScore"></div>
+  </div>
+  <div class="puntoMe" id="puntoMeBox">
+    <div class="puntoMeDot" id="puntoMeDot">●</div>
+    <div class="byline mt">Sei tu! Guardati sul videoproiettore</div>
+    <div class="puntoOp" id="puntoOpTxt">–</div>
+    <div class="puntoAnsRow">
+      <input type="text" inputmode="numeric" id="puntoAns" placeholder="?" autocomplete="off">
+      <button class="btn mg" onclick="puntoSend()">INVIA</button>
+    </div>
+    <div class="puntoProgress" id="puntoProgress">Tacca 0</div>
+  </div>
+  <div class="feedback mtb" id="puntoFbMsg" style="display:none"></div>
+  <div class="feedback mtb" id="puntoFbPts" style="display:none"></div>
+</div>
+
 <!-- ==================== HOST: ROULETTE ==================== -->
 <div class="screen" id="scrCasino">
   <div class="brand"><div class="t1" style="font-size:clamp(20px,3.6vw,36px)">🎰 ROULETTE</div></div>
@@ -3975,7 +4064,7 @@ body.suspense-on #pfRank{ display:none !important; }
 /* ================================================================
    📋 ELENCO MINIGIOCHI — aggiornare questa lista ogni volta che se ne
    aggiunge uno nuovo (serve ad Alberto per la documentazione delle licenze).
-   Ultimo aggiornamento: v12.62 — 39 minigiochi totali.
+   Ultimo aggiornamento: v12.63 — 40 minigiochi totali.
    ================================================================
    1.  🥃 Bussolotti
    2.  🎲 Pari o Dispari
@@ -4016,6 +4105,7 @@ body.suspense-on #pfRank{ display:none !important; }
    37. ❌⭕ XOX
    38. 📣 Mercatista per un Giorno
    39. ✊✋✌️ Morra Cinese
+   40. 🏁 Il Punto della Situazione
 ================================================================ */
 
 /* ================================================================
@@ -4036,7 +4126,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1262; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1263; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -5589,6 +5679,7 @@ function listenGame(){
     else if (g.status==='tamburini') showPlayerTamb(g);
     else if (g.status==='mercatista') showPlayerMerc(g);
     else if (g.status==='morra') showPlayerMorra(g);
+    else if (g.status==='punto') showPlayerPunto(g);
     else if (g.status==='xox') showPlayerXox(g);
     else if (g.status==='timer') {
       const t = g.timer||{};
@@ -7530,6 +7621,74 @@ function morraPlay(choice){
     }, 900);
   }, 650);
 }
+/* ================================================================
+   IL PUNTO DELLA SITUAZIONE — telefono
+   La posizione si tiene in locale (come I Tamburini) e si manda a Firebase solo in scrittura
+   diretta, mai leggendo-e-poi-scrivendo: così due risposte inviate molto ravvicinate non si
+   "mangiano" a vicenda. Ogni giocatore vede sempre il proprio colore/simbolo assegnato dalla
+   regia, per riconoscersi subito sul videoproiettore.
+================================================================ */
+function showPlayerPunto(g){
+  const m = g.punto||{};
+  $('puntopName').textContent = P.name;
+  $('puntopScore').textContent = (((g.players||{})[P.id]||{}).score||0)+' pt';
+  showScreen('scrPlayPunto');
+  if (m.phase==='play'){
+    const myRacer = (m.racers||{})[P.id];
+    if (!myRacer){ $('puntoMeBox').style.display='none'; return; } // non ero tra i giocatori all'avvio della gara
+    if (P.puntoSig !== 'play'){
+      P.puntoSig = 'play'; P.puntoFinished = false; P.puntoNotches = m.notches; P.puntoPos = myRacer.pos||0;
+      document.documentElement.style.setProperty('--mycolor', myRacer.color);
+      $('puntoMeDot').textContent = myRacer.shape; $('puntoMeDot').style.color = myRacer.color;
+      $('puntoMeBox').style.display='block'; $('puntoAns').style.display=''; $('puntoAns').disabled=false;
+      $('puntoFbMsg').style.display='none'; $('puntoFbPts').style.display='none';
+      puntoNewProblem();
+    }
+    const myPos = myRacer.pos||0;
+    if (myPos>=m.notches && !P.puntoFinished){
+      P.puntoFinished = true;
+      $('puntoOpTxt').textContent='🏁'; $('puntoAns').style.display='none';
+      $('puntoProgress').textContent = '🏁 Hai tagliato il traguardo! Aspetta gli altri...';
+    } else if (!P.puntoFinished){
+      $('puntoProgress').textContent = `Tacca ${myPos} / ${m.notches}`;
+    }
+  } else if (m.phase==='result'){
+    const rv = m.results||{};
+    const rk = rv.ranking||[];
+    const idx = rk.findIndex(r=>r.pid===P.id);
+    const mine = idx>=0 ? rk[idx] : null;
+    $('puntoMeBox').style.display='none';
+    const msg=$('puntoFbMsg'), pts=$('puntoFbPts');
+    msg.style.display='block'; pts.style.display='block';
+    if (!mine){ msg.className='feedback mtb'; msg.style.color='var(--muted)'; msg.textContent='NON HAI GIOCATO'; pts.textContent='+0'; }
+    else if (idx===0){ msg.className='feedback mtb fb-ok'; msg.style.color=''; msg.textContent='🥇 SEI ARRIVATO PRIMO!'; pts.textContent='+'+mine.pts+' PUNTI'; if(navigator.vibrate) navigator.vibrate([80,50,120]); }
+    else if (mine.pts>0){ msg.className='feedback mtb fb-ok'; msg.style.color=''; msg.textContent=(idx+1)+'° POSTO!'; pts.textContent='+'+mine.pts+' PUNTI'; if(navigator.vibrate) navigator.vibrate([60,40,60]); }
+    else if (mine.pts<0){ msg.className='feedback mtb fb-no'; msg.style.color=''; msg.textContent='SEI RIMASTO INDIETRO...'; pts.textContent=mine.pts+' PUNTI'; if(navigator.vibrate) navigator.vibrate(150); }
+    else { msg.className='feedback mtb'; msg.style.color='var(--muted)'; msg.textContent=(idx+1)+'° POSTO'; pts.textContent='Nessun punto'; }
+  }
+}
+function puntoNewProblem(){
+  const ops = ['+','-','×'];
+  const op = ops[Math.floor(Math.random()*3)];
+  let a = Math.floor(Math.random()*10), b = Math.floor(Math.random()*10);
+  if (op==='-' && a<b){ const t=a; a=b; b=t; } // niente risultati negativi, resta un calcolo veloce da fare a mente
+  P.puntoAnswer = op==='+' ? a+b : op==='-' ? a-b : a*b;
+  $('puntoOpTxt').textContent = `${a} ${op} ${b}`;
+  $('puntoAns').value=''; $('puntoAns').focus();
+}
+function puntoSend(){
+  if (P.puntoFinished || !P.puntoSig) return;
+  const v = $('puntoAns').value.trim();
+  if (v===''){ $('puntoAns').focus(); return; }
+  const ok = (+v === P.puntoAnswer);
+  P.puntoPos = ok ? Math.min(P.puntoNotches, P.puntoPos+1) : Math.max(0, P.puntoPos-1);
+  P.ref.child('punto/racers/'+P.id+'/pos').set(P.puntoPos);
+  if (navigator.vibrate) navigator.vibrate(ok?40:100);
+  if (P.puntoPos < P.puntoNotches) puntoNewProblem();
+}
+document.addEventListener('keydown', e=>{
+  if (e.key==='Enter' && document.activeElement && document.activeElement.id==='puntoAns') puntoSend();
+});
 /* ================================================================
    XOX — motore condiviso (giocatore contro computer)
 ================================================================ */
@@ -12428,6 +12587,137 @@ function morraFinish(){
 }
 
 /* ================================================================
+   IL PUNTO DELLA SITUAZIONE — pista condivisa (regia + proiettore) e regia
+   Ogni giocatore è un punto colorato che avanza o retrocede di una tacca rispondendo a calcoli.
+   Niente tempo: la gara finisce quando arrivano i primi 3 (o tutti, se sono meno di 3), oppure
+   quando la regia la ferma a mano. Il colore/simbolo di ognuno si assegna una volta sola all'avvio
+   e resta lo stesso per tutta la gara, salvato su Firebase così regia/proiettore/telefono vedono
+   sempre la stessa identità per ogni giocatore.
+================================================================ */
+const PUNTO_COLORS = ['#ff4d4d','#ff9d3d','#ffe93d','#a8ff3d','#3dff8f','#3de0ff','#3d7bff','#a83dff','#ff3dc4','#f2f2f2'];
+const PUNTO_SHAPES = ['●','▲','✖','■','★'];
+function puntoAssign(players){
+  return players.map((p,i)=>({ ...p, color: PUNTO_COLORS[i%10], shape: PUNTO_SHAPES[Math.floor(i/10)%5] }));
+}
+function puntoRenderTrack(el, racers, notches){
+  if (!el) return;
+  const key = racers.map(r=>r.id).join(',')+'|'+notches;
+  if (el._key !== key){
+    el._key = key;
+    el.innerHTML = racers.map((r,i)=>`<div class="puntoLane">
+      <div class="puntoTicks">${Array.from({length:notches}).map(()=>'<div class="puntoTick"></div>').join('')}</div>
+      <div class="puntoLaneName">${esc(r.name)}</div>
+      <div class="puntoDot" id="${el.id}_d${i}" style="left:0%; color:${r.color}">${r.shape}</div>
+      <div class="puntoFinishBar"></div>
+    </div>`).join('');
+  }
+  racers.forEach((r,i)=>{
+    const dot = document.getElementById(el.id+'_d'+i);
+    if (!dot) return;
+    const pct = notches>0 ? Math.min(100,(r.pos/notches)*100) : 0;
+    const prev = dot._pos;
+    dot.style.left = pct+'%';
+    if (prev!=null && r.pos>prev){ dot.classList.remove('back'); dot.classList.add('hop'); setTimeout(()=>dot.classList.remove('hop'),450); }
+    else if (prev!=null && r.pos<prev){ dot.classList.remove('hop'); dot.classList.add('back'); setTimeout(()=>dot.classList.remove('back'),400); }
+    dot._pos = r.pos;
+  });
+}
+function puntoRenderRanking(el, rows, notches, live){
+  el.innerHTML = rows.map((r,i)=>{
+    const medal = i<3 ? ['🥇','🥈','🥉'][i] : (i+1)+'°';
+    const arrived = r.pos>=notches;
+    const ptsLabel = (!live && r.pts!=null) ? `<span class="pts" style="color:${r.pts>0?'var(--lime)':(r.pts<0?'#ff5d5d':'var(--muted)')}">${r.pts>0?'+':''}${r.pts}</span>` : '';
+    return `<div class="leadRow"><span class="pos" style="color:${r.color}">${r.shape}</span> ${esc(r.name)}
+      <span class="byline" style="margin:0 8px">${arrived?'🏁 arrivato':'tacca '+r.pos+'/'+notches}</span> ${ptsLabel}</div>`;
+  }).join('') || (live ? '<div class="byline">In attesa dei giocatori...</div>' : '<div class="byline">Nessuno ha giocato...</div>');
+}
+let PUNTO = {};
+function puntoManualEnd(){
+  if (!PUNTO || PUNTO.ended) return;
+  PUNTO.ended = true;
+  puntoFinish();
+}
+function openPunto(){
+  if (!isGameEnabled('punto')) return alert('⚠️ Questo minigioco non è compreso nella licenza attiva. Contatta Alberto per sbloccarlo.');
+  if (!G) return alert('Avvia prima una partita!');
+  cancelLiveQuestion(); closeModal();
+  G.ref.update({ status:'punto', punto:{ phase:'idle' } });
+  PUNTO = {};
+  $('puntoSetup').style.display='block'; $('puntoLive').style.display='none';
+  pjSend({type:'puntoState'});
+  showScreen('scrPunto');
+}
+function puntoStart(){
+  const notches = +$('puntoNotches').value;
+  const p1 = Math.max(0,+$('puntoP1').value||0), p2 = Math.max(0,+$('puntoP2').value||0),
+        p3 = Math.max(0,+$('puntoP3').value||0), pLast = Math.max(0,+$('puntoPLast').value||0);
+  G.ref.child('players').once('value').then(ps=>{
+    const players = ps.val()||{};
+    const arr = Object.entries(players).map(([id,p])=>({id,name:p.name||'?'}));
+    const racers = puntoAssign(arr);
+    const racersObj = {};
+    racers.forEach(r=> racersObj[r.id] = { name:r.name, color:r.color, shape:r.shape, pos:0 });
+    PUNTO = { notches, p1, p2, p3, pLast, ended:false };
+    G.ref.update({ status:'punto', punto:{ phase:'play', notches, p1, p2, p3, pLast, racers:racersObj, results:null } });
+    $('puntoSetup').style.display='none'; $('puntoLive').style.display='block';
+    $('puntoMsg').textContent = '🧮 SI RISPONDE! CHI SBAGLIA TORNA INDIETRO...';
+    $('puntoBtnAgain').style.display='none'; $('puntoBtnEnd').style.display='';
+    const initRows = racers.map(r=>({id:r.id,name:r.name,color:r.color,shape:r.shape,pos:0}));
+    puntoRenderTrack($('puntoTrackHost'), initRows, notches);
+    puntoRenderRanking($('puntoRanking'), initRows, notches, true);
+    pjSend({type:'puntoStart', notches, racers: initRows});
+    G.ref.child('punto/racers').on('value', s=>{
+      const racersLive = s.val()||{};
+      const rows = Object.entries(racersLive).map(([pid,r])=>({id:pid,name:r.name,color:r.color,shape:r.shape,pos:r.pos||0})).sort((a,b)=>b.pos-a.pos);
+      puntoRenderTrack($('puntoTrackHost'), rows, notches);
+      puntoRenderRanking($('puntoRanking'), rows, notches, true);
+      pjSend({type:'puntoUpdate', rows});
+      const finishers = rows.filter(r=>r.pos>=notches).length;
+      const target = Math.min(3, rows.length);
+      if (!PUNTO.ended && rows.length>0 && finishers>=target){ PUNTO.ended = true; puntoFinish(); }
+    });
+  });
+}
+function puntoFinish(){
+  G.ref.child('punto/racers').off();
+  setTimeout(()=>{
+    G.ref.child('punto/racers').once('value').then(s=>{
+      const racersLive = s.val()||{};
+      const rows = Object.entries(racersLive).map(([pid,r])=>({pid,name:r.name,color:r.color,shape:r.shape,pos:r.pos||0}));
+      if (!rows.length){
+        G.ref.update({ 'punto/phase':'result', 'punto/results':{ ranking:[], notches:PUNTO.notches, at:Date.now() } });
+        $('puntoMsg').textContent='NESSUNO HA GIOCATO!'; $('puntoBtnAgain').style.display=''; $('puntoBtnEnd').style.display='none';
+        pjSend({type:'puntoEnd', ranking:[]});
+        return;
+      }
+      const sorted = rows.slice().sort((a,b)=>b.pos-a.pos);
+      const n = sorted.length;
+      G.ref.child('players').once('value').then(ps=>{
+        const players = ps.val()||{};
+        const updates = {};
+        sorted.forEach((r,i)=>{
+          let pts = 0;
+          if (i===0) pts = PUNTO.p1;
+          else if (i===1 && n>1) pts = PUNTO.p2;
+          else if (i===2 && n>2) pts = PUNTO.p3;
+          // penalità solo a chi resta ultimo E non è comunque arrivato al traguardo — se tutti arrivano,
+          // anche l'ultimo ce l'ha fatta, quindi non ha senso penalizzarlo
+          if (i===n-1 && n>1 && r.pos<PUNTO.notches) pts = -PUNTO.pLast;
+          r.pts = pts;
+          if (pts!==0 && players[r.pid]) updates['players/'+r.pid+'/score'] = Math.max(0,(players[r.pid].score||0)+pts);
+        });
+        G.ref.update({ ...updates, 'punto/phase':'result', 'punto/results':{ ranking:sorted, notches:PUNTO.notches, at:Date.now() } });
+        puntoRenderRanking($('puntoRanking'), sorted, PUNTO.notches, false);
+        $('puntoMsg').textContent = `🏆 ${sorted[0].name} TAGLIA IL TRAGUARDO PER PRIMO!`;
+        $('puntoBtnAgain').style.display=''; $('puntoBtnEnd').style.display='none';
+        pjSend({type:'puntoEnd', ranking:sorted});
+        confetti();
+      });
+    });
+  }, 400);
+}
+
+/* ================================================================
    XOX — regia
 ================================================================ */
 let XOX = {};
@@ -12950,6 +13240,7 @@ const GIOCHI_CATALOGO = [
   {k:'tamb', l:'🥁 I Tamburini'},
   {k:'merc', l:'📣 Mercatista per un Giorno'},
   {k:'morra', l:'✊✋✌️ Morra Cinese'},
+  {k:'punto', l:'🏁 Il Punto della Situazione'},
   {k:'xox', l:'❌⭕ XOX'}
   // 👉 QUANDO AGGIUNGI UN NUOVO MINIGIOCO: aggiungi qui una riga {k:'chiave', l:'Emoji Nome'},
   // poi apri il quiz come host e clicca una volta su "GIOCHI": il pannello admin lo vedrà da solo.
@@ -13006,6 +13297,7 @@ function modalGames(){
     gk('tamb', `<button class="btn" style="grid-column:1/-1; background:linear-gradient(180deg,#e8b45a,#8a4a12); color:#3a2000; box-shadow:0 7px 0 #4a2400,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(232,180,90,.4)" onclick="openTamb()">🥁 I Tamburini</button>`),
     gk('merc', `<button class="btn" style="grid-column:1/-1; background:linear-gradient(180deg,#ff5d7a,#8a0f2e); color:#fff; box-shadow:0 7px 0 #5a0018,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,93,122,.4)" onclick="openMerc()">📣 Mercatista per un Giorno</button>`),
     gk('morra', `<button class="btn" style="grid-column:1/-1; background:linear-gradient(180deg,#7a5cff,#2e0f8a); color:#fff; box-shadow:0 7px 0 #180a5c,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(122,92,255,.4)" onclick="openMorra()">✊✋✌️ Morra Cinese</button>`),
+    gk('punto', `<button class="btn" style="grid-column:1/-1; background:linear-gradient(180deg,#3de0ff,#0b6f8a); color:#00272e; box-shadow:0 7px 0 #003a44,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(61,224,255,.4)" onclick="openPunto()">🏁 Il Punto della Situazione</button>`),
     gk('xox', `<button class="btn" style="grid-column:1/-1; background:linear-gradient(180deg,#5ec8ff,#0b6fb8); color:#fff; box-shadow:0 7px 0 #063a5c,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(94,200,255,.4)" onclick="openXox()">❌⭕ XOX</button>`)
   ].filter(Boolean).join('');
 
@@ -13494,6 +13786,7 @@ function backToQuiz(title){
   G.ref.child('tamburini/counts').off();
   G.ref.child('mercatista/peaks').off();
   G.ref.child('morra/tallies').off();
+  G.ref.child('punto/racers').off();
   G.ref.child('xox/results').off();
   clearInterval(($('hrsTrackHost')||{})._raceInt); clearInterval(($('hrsTrackHost')||{})._cdInt);
   clearInterval((TF||{}).timerInt);
@@ -13514,7 +13807,7 @@ function backToQuiz(title){
   clearInterval((MERC||{}).timerInt);
   clearInterval((MORRA||{}).timerInt);
   clearInterval((XOX||{}).timerInt);
-  G.ref.update({ status:'pausa', mini:null, dice:null, simon:null, voto:null, timer:null, tombola:null, cards:null, swiss:null, hilo:null, wheels:null, puzzle:null, wordsearch:null, anagram:null, seed:null, grad:null, taptap:null, ruota:null, memo:null, memocoppie:null, horses:null, tfiscale:null, toc:null, cenerentola:null, pacchi:null, roulette:null, pagliuzza:null, supertris:null, rdc:null, mastermind:null, bomba:null, shapes:null, finddiff:null, maggioranza:null, goldenticket:null, casino:null, tamburini:null, mercatista:null, morra:null, xox:null });
+  G.ref.update({ status:'pausa', mini:null, dice:null, simon:null, voto:null, timer:null, tombola:null, cards:null, swiss:null, hilo:null, wheels:null, puzzle:null, wordsearch:null, anagram:null, seed:null, grad:null, taptap:null, ruota:null, memo:null, memocoppie:null, horses:null, tfiscale:null, toc:null, cenerentola:null, pacchi:null, roulette:null, pagliuzza:null, supertris:null, rdc:null, mastermind:null, bomba:null, shapes:null, finddiff:null, maggioranza:null, goldenticket:null, casino:null, tamburini:null, mercatista:null, morra:null, punto:null, xox:null });
   G.ref.child('players').once('value', ps=>{
     const players = ps.val()||{};
     $('hrTitle').textContent = title || 'SI TORNA AL QUIZ!';
@@ -13858,6 +14151,26 @@ function pjRouteInner(m){
     else if (m.type==='morraEnd') {
       clearInterval(window._pjMorraInt); $('pjMorraTimerBar').style.width='0%';
       morraRenderRanking($('pjMorraRanking'), m.ranking||[], false);
+      if (m.ranking && m.ranking.length) confetti();
+    }
+    else if (m.type==='puntoState') {
+      showScreen('scrPjPunto');
+      $('puntoTrackPj').innerHTML=''; $('puntoTrackPj')._key=null; $('pjPuntoRanking').innerHTML='';
+    }
+    else if (m.type==='puntoStart') {
+      showScreen('scrPjPunto');
+      $('pjPuntoMsg').textContent = '🧮 RISPONDETE DAL TELEFONO PER AVANZARE!';
+      puntoRenderTrack($('puntoTrackPj'), m.racers||[], m.notches);
+      puntoRenderRanking($('pjPuntoRanking'), m.racers||[], m.notches, true);
+      window._pjPuntoNotches = m.notches;
+    }
+    else if (m.type==='puntoUpdate') {
+      puntoRenderTrack($('puntoTrackPj'), m.rows||[], window._pjPuntoNotches);
+      puntoRenderRanking($('pjPuntoRanking'), m.rows||[], window._pjPuntoNotches, true);
+    }
+    else if (m.type==='puntoEnd') {
+      puntoRenderRanking($('pjPuntoRanking'), m.ranking||[], window._pjPuntoNotches, false);
+      $('pjPuntoMsg').textContent = (m.ranking&&m.ranking.length) ? `🏆 ${m.ranking[0].name} TAGLIA IL TRAGUARDO PER PRIMO!` : 'NESSUNO HA GIOCATO!';
       if (m.ranking && m.ranking.length) confetti();
     }
     else if (m.type==='xoxActive') {
