@@ -688,6 +688,33 @@ body.barOn.barCollapsed .screen.active{padding-bottom:70px;}
 .mercPeakBig{font-size:13px; letter-spacing:1px; color:var(--muted); text-transform:uppercase;}
 .mercWarnZone{position:absolute; left:9px; right:9px; top:12px; height:14%; border-radius:10px 10px 0 0;
   background:repeating-linear-gradient(135deg, rgba(255,59,59,.16) 0 8px, transparent 8px 16px); pointer-events:none;}
+/* ===== MORRA CINESE — mani animate 3D ===== */
+.morraArena{display:flex; align-items:center; justify-content:center; gap:clamp(18px,8vw,60px); margin:14px auto; width:100%;}
+.morraSide{display:flex; flex-direction:column; align-items:center; gap:6px;}
+.morraLabel{font-family:'Bungee'; font-size:12px; letter-spacing:1px; color:var(--muted);}
+.morraHandWrap{width:clamp(84px,22vw,140px); height:clamp(84px,22vw,140px); display:flex; align-items:center; justify-content:center;
+  border-radius:50%; background:radial-gradient(circle at 35% 30%, rgba(255,255,255,.10), rgba(0,0,0,0) 60%), linear-gradient(160deg,#2c2248,#140a26);
+  box-shadow:inset 0 3px 6px rgba(255,255,255,.10), inset 0 -6px 12px rgba(0,0,0,.6), 0 8px 18px rgba(0,0,0,.5), 0 0 0 2px rgba(157,77,255,.25);}
+.morraHand{font-size:clamp(46px,13vw,84px); filter:drop-shadow(0 6px 10px rgba(0,0,0,.5)); transition:transform .09s ease-in-out;}
+.morraHand.shake{animation:morraShake .35s ease-in-out infinite;}
+@keyframes morraShake{0%,100%{transform:translateY(0) rotate(0deg) scale(1);} 30%{transform:translateY(-10%) rotate(-8deg) scale(1.04);} 60%{transform:translateY(2%) rotate(6deg) scale(.98);}}
+.morraHand.reveal{animation:morraPop .38s cubic-bezier(.34,1.56,.64,1);}
+@keyframes morraPop{0%{transform:scale(.4) rotate(-20deg);} 60%{transform:scale(1.18) rotate(6deg);} 100%{transform:scale(1) rotate(0deg);}}
+.morraHandWrap.win{box-shadow:inset 0 3px 6px rgba(255,255,255,.15), inset 0 -6px 12px rgba(0,0,0,.5), 0 0 22px 6px rgba(182,255,46,.65), 0 0 0 2px var(--lime);}
+.morraHandWrap.lose{box-shadow:inset 0 3px 6px rgba(255,255,255,.15), inset 0 -6px 12px rgba(0,0,0,.5), 0 0 22px 6px rgba(255,61,61,.6), 0 0 0 2px var(--red);}
+.morraHandWrap.tie{box-shadow:inset 0 3px 6px rgba(255,255,255,.15), inset 0 -6px 12px rgba(0,0,0,.5), 0 0 22px 6px rgba(255,201,60,.6), 0 0 0 2px var(--gold);}
+.morraVs{font-family:'Bungee'; font-size:clamp(16px,4vw,26px); color:var(--muted); opacity:.7;}
+.morraChoices{display:flex; gap:12px; justify-content:center; width:100%; max-width:420px; margin-top:14px;}
+.morraChBtn{flex:1; aspect-ratio:1; border-radius:18px; border:none; cursor:pointer; font-size:clamp(30px,9vw,42px);
+  background:linear-gradient(160deg,#3a2c5c,#1c1236); color:#fff;
+  box-shadow:0 5px 0 #0d0820, 0 8px 16px rgba(0,0,0,.45), inset 0 2px 3px rgba(255,255,255,.12);
+  transition:transform .08s, box-shadow .08s;}
+.morraChBtn:active{transform:translateY(4px); box-shadow:0 1px 0 #0d0820, 0 3px 8px rgba(0,0,0,.4), inset 0 2px 3px rgba(255,255,255,.12);}
+.morraChBtn:disabled{opacity:.35; cursor:default;}
+.morraTally{display:flex; gap:18px; justify-content:center; margin-top:12px; font-family:'Bungee'; font-size:13px;}
+.morraTally span{display:flex; flex-direction:column; align-items:center; gap:2px;}
+.morraTally b{font-size:20px;}
+.morraResult{font-family:'Bungee'; font-size:clamp(18px,5vw,28px); text-align:center; margin-top:10px; min-height:1.4em;}
 .tmbPrizeRow{display:flex; align-items:center; gap:10px; margin-top:6px;}
 .tmbPrizeRow .medal{width:40px; font-size:20px; text-align:center;}
 .tmbPrizeRow.loss .medal{color:#ff5d5d;}
@@ -1252,7 +1279,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v12.61</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v12.62</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -3105,6 +3132,72 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="feedback mtb" id="mrcFbPts" style="display:none"></div>
 </div>
 
+<!-- ==================== HOST: MORRA CINESE ==================== -->
+<div class="screen" id="scrMorra">
+  <div class="brand"><div class="t1" style="font-size:clamp(20px,3.6vw,36px)">✊✋✌️ MORRA CINESE</div></div>
+  <div class="panel mt" style="max-width:480px" id="morraSetup">
+    <div class="row mt">
+      <div class="grow"><div class="label">Punti guadagnati per ogni vittoria</div><input type="number" id="morraWin" value="30" min="0" style="width:100%; text-align:center"></div>
+      <div class="grow"><div class="label">Punti persi per ogni sconfitta</div><input type="number" id="morraLoss" value="20" min="0" style="width:100%; text-align:center"></div>
+    </div>
+    <div class="label mt">Tempo a disposizione (partite ripetibili senza limite)</div>
+    <select id="morraSecs">
+      <option value="20">20 secondi</option>
+      <option value="30" selected>30 secondi</option>
+      <option value="40">40 secondi</option>
+      <option value="60">1 minuto</option>
+    </select>
+    <div class="byline mt" style="opacity:.75">🤜 Ogni giocatore sfida il computer dal proprio telefono: sasso, carta o forbici. Può giocare quante manche vuole finché il tempo non scade — ogni vittoria fa guadagnare punti, ogni sconfitta ne fa perdere.</div>
+    <button class="btn mg mt" style="width:100%" onclick="morraStart()">✊ SI COMINCIA!</button>
+  </div>
+  <div id="morraLive" style="display:none; width:100%" class="center">
+    <div class="miniMsg" id="morraMsg"></div>
+    <div class="timerWrap mt" style="max-width:420px"><div class="timerBar" id="morraTimerBar"></div></div>
+    <div class="lead mt" id="morraRanking" style="max-width:500px; width:100%"></div>
+    <button class="btn cy mt" id="morraBtnAgain" onclick="openMorra()" style="display:none">🔁 Un'altra manche</button>
+  </div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+</div>
+
+<!-- ==================== PROIETTORE: MORRA CINESE ==================== -->
+<div class="screen" id="scrPjMorra">
+  <div class="brand"><div class="t1" style="font-size:clamp(26px,4vw,48px)">✊✋✌️ MORRA CINESE</div></div>
+  <div class="miniMsg">SFIDATE IL COMPUTER DAL TELEFONO!</div>
+  <div class="timerWrap mt" style="max-width:460px"><div class="timerBar" id="pjMorraTimerBar"></div></div>
+  <div class="lead mt" id="pjMorraRanking" style="max-width:600px; width:100%"></div>
+</div>
+
+<!-- ==================== PLAYER: MORRA CINESE ==================== -->
+<div class="screen" id="scrPlayMorra" style="align-items:center; justify-content:center">
+  <div class="row" style="width:100%; justify-content:space-between">
+    <div class="pill" id="morrapName" style="color:var(--gold)"></div>
+    <div class="pill" id="morrapScore"></div>
+  </div>
+  <div class="timerWrap mt" style="max-width:300px"><div class="timerBar" id="morrapTimerBar"></div></div>
+  <div class="morraArena">
+    <div class="morraSide">
+      <div class="morraLabel">TU</div>
+      <div class="morraHandWrap" id="morraHandPWrap"><div class="morraHand" id="morraHandP">✊</div></div>
+    </div>
+    <div class="morraVs">VS</div>
+    <div class="morraSide">
+      <div class="morraLabel">COMPUTER</div>
+      <div class="morraHandWrap" id="morraHandCWrap"><div class="morraHand" id="morraHandC">✊</div></div>
+    </div>
+  </div>
+  <div class="morraResult" id="morraResultTxt">Scegli la tua mossa!</div>
+  <div class="morraChoices">
+    <button class="morraChBtn" id="morraBtnRock" onclick="morraPlay('rock')">✊</button>
+    <button class="morraChBtn" id="morraBtnPaper" onclick="morraPlay('paper')">✋</button>
+    <button class="morraChBtn" id="morraBtnScissors" onclick="morraPlay('scissors')">✌️</button>
+  </div>
+  <div class="morraTally">
+    <span style="color:var(--lime)">VINTE<b id="morrapWins">0</b></span>
+    <span style="color:var(--red)">PERSE<b id="morrapLosses">0</b></span>
+    <span style="color:var(--muted)">PARI<b id="morrapTies">0</b></span>
+  </div>
+</div>
+
 <!-- ==================== HOST: ROULETTE ==================== -->
 <div class="screen" id="scrCasino">
   <div class="brand"><div class="t1" style="font-size:clamp(20px,3.6vw,36px)">🎰 ROULETTE</div></div>
@@ -3882,7 +3975,7 @@ body.suspense-on #pfRank{ display:none !important; }
 /* ================================================================
    📋 ELENCO MINIGIOCHI — aggiornare questa lista ogni volta che se ne
    aggiunge uno nuovo (serve ad Alberto per la documentazione delle licenze).
-   Ultimo aggiornamento: v12.61 — 38 minigiochi totali.
+   Ultimo aggiornamento: v12.62 — 39 minigiochi totali.
    ================================================================
    1.  🥃 Bussolotti
    2.  🎲 Pari o Dispari
@@ -3922,6 +4015,7 @@ body.suspense-on #pfRank{ display:none !important; }
    36. 📊 Classifica di Gradimento
    37. ❌⭕ XOX
    38. 📣 Mercatista per un Giorno
+   39. ✊✋✌️ Morra Cinese
 ================================================================ */
 
 /* ================================================================
@@ -3942,7 +4036,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1261; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1262; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -5494,6 +5588,7 @@ function listenGame(){
     else if (g.status==='casino') showPlayerCasino(g);
     else if (g.status==='tamburini') showPlayerTamb(g);
     else if (g.status==='mercatista') showPlayerMerc(g);
+    else if (g.status==='morra') showPlayerMorra(g);
     else if (g.status==='xox') showPlayerXox(g);
     else if (g.status==='timer') {
       const t = g.timer||{};
@@ -7354,6 +7449,86 @@ function showPlayerMerc(g){
     else if (mine.pts<0){ msg.className='feedback mtb fb-no'; msg.style.color=''; msg.textContent=(idx+1)+'° POSTO...'; pts.textContent=mine.pts+' PUNTI · picco '+mine.peak+'%'; if(navigator.vibrate) navigator.vibrate(150); }
     else { msg.className='feedback mtb'; msg.style.color='var(--muted)'; msg.textContent=(idx+1)+'° POSTO'; pts.textContent='picco '+mine.peak+'% · nessun punto'; }
   }
+}
+/* ================================================================
+   MORRA CINESE — telefono (mani animate, partite ripetibili)
+   Ogni manche si gioca in locale contro un computer che sceglie a caso: si sceglie, il pugno si
+   agita per l'attesa, poi si apre mostrando la mossa scelta insieme a quella del computer. Il
+   conteggio di vinte/perse/pari viene mandato in regia via via che si gioca (come I Tamburini),
+   in modo che chi conduce veda una classifica dal vivo di chi sta guadagnando più punti.
+================================================================ */
+const MORRA_EMOJI = {rock:'✊', paper:'✋', scissors:'✌️'};
+const MORRA_BEATS = {rock:'scissors', paper:'rock', scissors:'paper'}; // chiave batte valore
+function showPlayerMorra(g){
+  const m = g.morra||{};
+  $('morrapName').textContent = P.name;
+  $('morrapScore').textContent = (((g.players||{})[P.id]||{}).score||0)+' pt';
+  showScreen('scrPlayMorra');
+  if (m.phase==='play'){
+    if (P.morraStartAt !== m.startAt){
+      P.morraStartAt = m.startAt; P.morraEndAt = m.endAt; P.morraSecs = m.secs;
+      P.morraWins=0; P.morraLosses=0; P.morraTies=0; P.morraSynced=null; P.morraBusy=false; P.morraOver=false;
+      $('morrapWins').textContent='0'; $('morrapLosses').textContent='0'; $('morrapTies').textContent='0';
+      $('morraResultTxt').textContent = 'Scegli la tua mossa!';
+      $('morraHandP').textContent='✊'; $('morraHandC').textContent='✊';
+      $('morraHandP').className='morraHand'; $('morraHandC').className='morraHand';
+      $('morraHandPWrap').className='morraHandWrap'; $('morraHandCWrap').className='morraHandWrap';
+      ['morraBtnRock','morraBtnPaper','morraBtnScissors'].forEach(id=>$(id).disabled=false);
+      clearInterval(P.morraInt);
+      P.morraInt = setInterval(()=>{
+        const left = Math.max(0, (m.endAt||0) - serverNow());
+        $('morrapTimerBar').style.width = (left/((m.secs||30)*1000)*100)+'%';
+        if (left<=0){
+          clearInterval(P.morraInt);
+          P.morraOver = true;
+          ['morraBtnRock','morraBtnPaper','morraBtnScissors'].forEach(id=>$(id).disabled=true);
+          if (!P.morraBusy){ $('morraResultTxt').textContent = '⏱ TEMPO SCADUTO!'; }
+          morraSync(true);
+        }
+      }, 100);
+    }
+  }
+}
+function morraSync(force){
+  if (!P.morraStartAt) return;
+  const key = P.morraWins+':'+P.morraLosses+':'+P.morraTies;
+  if (!force && key===P.morraSynced) return;
+  P.morraSynced = key;
+  P.ref.child('morra/tallies/'+P.id).set({ wins:P.morraWins, losses:P.morraLosses, ties:P.morraTies });
+}
+function morraPlay(choice){
+  if (P.morraBusy || P.morraOver || !P.morraStartAt) return;
+  P.morraBusy = true;
+  ['morraBtnRock','morraBtnPaper','morraBtnScissors'].forEach(id=>$(id).disabled=true);
+  const handP = $('morraHandP'), handC = $('morraHandC');
+  const wrapP = $('morraHandPWrap'), wrapC = $('morraHandCWrap');
+  wrapP.className='morraHandWrap'; wrapC.className='morraHandWrap';
+  handP.textContent='✊'; handC.textContent='✊';
+  handP.className='morraHand shake'; handC.className='morraHand shake';
+  $('morraResultTxt').textContent = 'Sasso... Carta... Forbici...';
+  setTimeout(()=>{
+    if (P.morraOver){ P.morraBusy=false; return; } // il tempo è scaduto mentre il pugno si agitava: questa manche non conta
+    const choices = ['rock','paper','scissors'];
+    const comp = choices[Math.floor(Math.random()*3)];
+    handP.className='morraHand reveal'; handC.className='morraHand reveal';
+    handP.textContent = MORRA_EMOJI[choice]; handC.textContent = MORRA_EMOJI[comp];
+    let outcome;
+    if (choice===comp) outcome='tie';
+    else if (MORRA_BEATS[choice]===comp) outcome='win';
+    else outcome='lose';
+    if (outcome==='win'){ P.morraWins++; wrapP.classList.add('win'); wrapC.classList.add('lose'); $('morraResultTxt').textContent='🎉 HAI VINTO!'; if(navigator.vibrate) navigator.vibrate([60,40,60]); }
+    else if (outcome==='lose'){ P.morraLosses++; wrapP.classList.add('lose'); wrapC.classList.add('win'); $('morraResultTxt').textContent='😬 HA VINTO IL COMPUTER...'; if(navigator.vibrate) navigator.vibrate(120); }
+    else { P.morraTies++; wrapP.classList.add('tie'); wrapC.classList.add('tie'); $('morraResultTxt').textContent='🤝 PAREGGIO!'; }
+    $('morrapWins').textContent=P.morraWins; $('morrapLosses').textContent=P.morraLosses; $('morrapTies').textContent=P.morraTies;
+    morraSync(false);
+    setTimeout(()=>{
+      P.morraBusy = false;
+      if (!P.morraOver){
+        ['morraBtnRock','morraBtnPaper','morraBtnScissors'].forEach(id=>$(id).disabled=false);
+        $('morraResultTxt').textContent = 'Scegli la prossima mossa!';
+      }
+    }, 900);
+  }, 650);
 }
 /* ================================================================
    XOX — motore condiviso (giocatore contro computer)
@@ -12169,6 +12344,90 @@ function mercFinish(){
 }
 
 /* ================================================================
+   MORRA CINESE — regia
+   A differenza di Mercatista, qui i punti non dipendono dalla classifica finale ma da quanto
+   ognuno gioca per conto proprio: ogni vittoria vale sempre lo stesso punteggio fisso, ogni
+   sconfitta ne toglie sempre lo stesso, indipendentemente da come vanno gli altri giocatori.
+   I telefoni mandano il proprio conteggio (vinte/perse/pari) via via che giocano — come I Tamburini —
+   così in regia si vede una classifica live di chi sta guadagnando più punti.
+================================================================ */
+let MORRA = {};
+function morraRenderRanking(el, rows, live){
+  el.innerHTML = rows.map((r,i)=>{
+    const medal = i<3 ? ['🥇','🥈','🥉'][i] : (i+1)+'°';
+    const ptsColor = r.pts>0 ? 'var(--lime)' : (r.pts<0 ? '#ff5d5d' : 'var(--muted)');
+    return `<div class="leadRow"><span class="pos">${medal}</span> ${esc(r.name)}
+      <span class="byline" style="margin:0 8px">✅${r.wins} ❌${r.losses} 🤝${r.ties}</span>
+      <span class="pts" style="color:${ptsColor}">${r.pts>0?'+':''}${r.pts}</span></div>`;
+  }).join('') || (live ? '<div class="byline">Stanno sfidando il computer...</div>' : '<div class="byline">Nessuno ha giocato...</div>');
+}
+function openMorra(){
+  if (!isGameEnabled('morra')) return alert('⚠️ Questo minigioco non è compreso nella licenza attiva. Contatta Alberto per sbloccarlo.');
+  if (!G) return alert('Avvia prima una partita!');
+  cancelLiveQuestion(); closeModal(); clearInterval((MORRA||{}).timerInt);
+  G.ref.update({ status:'morra', morra:{ phase:'idle' } });
+  MORRA = {};
+  $('morraSetup').style.display='block'; $('morraLive').style.display='none';
+  pjSend({type:'morraState'});
+  showScreen('scrMorra');
+}
+function morraStart(){
+  const pointsWin = Math.max(0,+$('morraWin').value||0);
+  const pointsLoss = Math.max(0,+$('morraLoss').value||0);
+  const secs = +$('morraSecs').value;
+  const startAt = serverNow()+800, endAt = startAt + secs*1000;
+  MORRA = { pointsWin, pointsLoss, secs, startAt, endAt };
+  G.ref.update({ status:'morra', morra:{ phase:'play', secs, pointsWin, pointsLoss, startAt, endAt, tallies:null, results:null } });
+  G.ref.child('morra/tallies').remove();
+  $('morraSetup').style.display='none'; $('morraLive').style.display='block';
+  $('morraMsg').textContent = '✊✋✌️ SI GIOCA! CHI VINCE PIÙ MANCHE FA PIÙ PUNTI...';
+  $('morraBtnAgain').style.display='none';
+  morraRenderRanking($('morraRanking'), [], true);
+  pjSend({type:'morraStart', secs, startAt, endAt});
+  G.ref.child('morra/tallies').on('value', s=>{
+    const tallies = s.val()||{};
+    G.ref.child('players').once('value', ps=>{
+      const players = ps.val()||{};
+      const rows = Object.entries(tallies).map(([pid,t])=>({pid, name:(players[pid]||{}).name||'?',
+        wins:t.wins||0, losses:t.losses||0, ties:t.ties||0, pts:(t.wins||0)*pointsWin-(t.losses||0)*pointsLoss}))
+        .sort((a,b)=>b.pts-a.pts);
+      morraRenderRanking($('morraRanking'), rows, true);
+      pjSend({type:'morraRank', rows: rows.slice(0,8)});
+    });
+  });
+  clearInterval(MORRA.timerInt);
+  MORRA.timerInt = setInterval(()=>{
+    const left = Math.max(0, endAt - serverNow());
+    $('morraTimerBar').style.width = (left/(secs*1000)*100)+'%';
+    if (left<=0) { clearInterval(MORRA.timerInt); morraFinish(); }
+  }, 100);
+}
+function morraFinish(){
+  G.ref.child('morra/tallies').off();
+  setTimeout(()=>{
+    G.ref.child('morra/tallies').once('value').then(s=>{
+      const tallies = s.val()||{};
+      G.ref.child('players').once('value').then(ps=>{
+        const players = ps.val()||{};
+        const updates = {};
+        const ranking = Object.entries(tallies).map(([pid,t])=>{
+          const wins=t.wins||0, losses=t.losses||0, ties=t.ties||0;
+          const pts = wins*MORRA.pointsWin - losses*MORRA.pointsLoss;
+          if (pts!==0 && players[pid]) updates['players/'+pid+'/score'] = Math.max(0,(players[pid].score||0) + pts);
+          return { pid, name:(players[pid]||{}).name||'?', wins, losses, ties, pts };
+        }).sort((a,b)=>b.pts-a.pts);
+        G.ref.update({ ...updates, 'morra/phase':'result', 'morra/results':{ ranking, at:Date.now() } });
+        morraRenderRanking($('morraRanking'), ranking, false);
+        $('morraMsg').textContent = ranking.length ? `🏆 ${ranking[0].name} È IL CAMPIONE DI MORRA CINESE!` : 'NESSUNO HA GIOCATO!';
+        $('morraBtnAgain').style.display='';
+        pjSend({type:'morraEnd', ranking});
+        if (ranking.length) confetti();
+      });
+    });
+  }, 600);
+}
+
+/* ================================================================
    XOX — regia
 ================================================================ */
 let XOX = {};
@@ -12690,6 +12949,7 @@ const GIOCHI_CATALOGO = [
   {k:'casino', l:'🎰 Roulette (Casinò)'},
   {k:'tamb', l:'🥁 I Tamburini'},
   {k:'merc', l:'📣 Mercatista per un Giorno'},
+  {k:'morra', l:'✊✋✌️ Morra Cinese'},
   {k:'xox', l:'❌⭕ XOX'}
   // 👉 QUANDO AGGIUNGI UN NUOVO MINIGIOCO: aggiungi qui una riga {k:'chiave', l:'Emoji Nome'},
   // poi apri il quiz come host e clicca una volta su "GIOCHI": il pannello admin lo vedrà da solo.
@@ -12745,6 +13005,7 @@ function modalGames(){
     gk('casino', `<button class="btn" style="grid-column:1/-1; background:linear-gradient(180deg,#a3111c,#1a1108); color:#fff; box-shadow:0 7px 0 #3a0508,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(163,17,28,.4)" onclick="openCasino()">🎰 Roulette</button>`),
     gk('tamb', `<button class="btn" style="grid-column:1/-1; background:linear-gradient(180deg,#e8b45a,#8a4a12); color:#3a2000; box-shadow:0 7px 0 #4a2400,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(232,180,90,.4)" onclick="openTamb()">🥁 I Tamburini</button>`),
     gk('merc', `<button class="btn" style="grid-column:1/-1; background:linear-gradient(180deg,#ff5d7a,#8a0f2e); color:#fff; box-shadow:0 7px 0 #5a0018,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,93,122,.4)" onclick="openMerc()">📣 Mercatista per un Giorno</button>`),
+    gk('morra', `<button class="btn" style="grid-column:1/-1; background:linear-gradient(180deg,#7a5cff,#2e0f8a); color:#fff; box-shadow:0 7px 0 #180a5c,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(122,92,255,.4)" onclick="openMorra()">✊✋✌️ Morra Cinese</button>`),
     gk('xox', `<button class="btn" style="grid-column:1/-1; background:linear-gradient(180deg,#5ec8ff,#0b6fb8); color:#fff; box-shadow:0 7px 0 #063a5c,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(94,200,255,.4)" onclick="openXox()">❌⭕ XOX</button>`)
   ].filter(Boolean).join('');
 
@@ -13232,6 +13493,7 @@ function backToQuiz(title){
   G.ref.child('casino/bets').off();
   G.ref.child('tamburini/counts').off();
   G.ref.child('mercatista/peaks').off();
+  G.ref.child('morra/tallies').off();
   G.ref.child('xox/results').off();
   clearInterval(($('hrsTrackHost')||{})._raceInt); clearInterval(($('hrsTrackHost')||{})._cdInt);
   clearInterval((TF||{}).timerInt);
@@ -13250,8 +13512,9 @@ function backToQuiz(title){
   clearInterval((RW||{}).timerInt);
   clearInterval((TAMB||{}).timerInt);
   clearInterval((MERC||{}).timerInt);
+  clearInterval((MORRA||{}).timerInt);
   clearInterval((XOX||{}).timerInt);
-  G.ref.update({ status:'pausa', mini:null, dice:null, simon:null, voto:null, timer:null, tombola:null, cards:null, swiss:null, hilo:null, wheels:null, puzzle:null, wordsearch:null, anagram:null, seed:null, grad:null, taptap:null, ruota:null, memo:null, memocoppie:null, horses:null, tfiscale:null, toc:null, cenerentola:null, pacchi:null, roulette:null, pagliuzza:null, supertris:null, rdc:null, mastermind:null, bomba:null, shapes:null, finddiff:null, maggioranza:null, goldenticket:null, casino:null, tamburini:null, mercatista:null, xox:null });
+  G.ref.update({ status:'pausa', mini:null, dice:null, simon:null, voto:null, timer:null, tombola:null, cards:null, swiss:null, hilo:null, wheels:null, puzzle:null, wordsearch:null, anagram:null, seed:null, grad:null, taptap:null, ruota:null, memo:null, memocoppie:null, horses:null, tfiscale:null, toc:null, cenerentola:null, pacchi:null, roulette:null, pagliuzza:null, supertris:null, rdc:null, mastermind:null, bomba:null, shapes:null, finddiff:null, maggioranza:null, goldenticket:null, casino:null, tamburini:null, mercatista:null, morra:null, xox:null });
   G.ref.child('players').once('value', ps=>{
     const players = ps.val()||{};
     $('hrTitle').textContent = title || 'SI TORNA AL QUIZ!';
@@ -13573,6 +13836,28 @@ function pjRouteInner(m){
       clearInterval(window._pjMercInt); $('pjMercTimerBar').style.width='0%'; $('pjMercSub').textContent='';
       mercRenderRanking($('pjMercRanking'), m.ranking||[], m.prizes||[], m.losses||[], false);
       $('pjMercMsg').textContent = (m.ranking&&m.ranking.length) ? `🏆 ${m.ranking[0].name} È IL MERCATISTA DEL GIORNO CON IL ${m.ranking[0].peak}%!` : 'NESSUNO HA GRIDATO!';
+      if (m.ranking && m.ranking.length) confetti();
+    }
+    else if (m.type==='morraState') {
+      showScreen('scrPjMorra');
+      $('pjMorraRanking').innerHTML=''; $('pjMorraTimerBar').style.width='100%';
+    }
+    else if (m.type==='morraStart') {
+      showScreen('scrPjMorra');
+      $('pjMorraRanking').innerHTML='';
+      clearInterval(window._pjMorraInt);
+      window._pjMorraInt = setInterval(()=>{
+        const left = Math.max(0, m.endAt - serverNow());
+        $('pjMorraTimerBar').style.width = (left/(m.secs*1000)*100)+'%';
+        if (left<=0) clearInterval(window._pjMorraInt);
+      },100);
+    }
+    else if (m.type==='morraRank') {
+      morraRenderRanking($('pjMorraRanking'), m.rows||[], true);
+    }
+    else if (m.type==='morraEnd') {
+      clearInterval(window._pjMorraInt); $('pjMorraTimerBar').style.width='0%';
+      morraRenderRanking($('pjMorraRanking'), m.ranking||[], false);
       if (m.ranking && m.ranking.length) confetti();
     }
     else if (m.type==='xoxActive') {
