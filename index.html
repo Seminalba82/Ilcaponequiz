@@ -1234,7 +1234,7 @@ body.barOn.barCollapsed .screen.active{padding-bottom:70px;}
 .bigWheelBox::before{content:"▼"; position:absolute; top:0; left:50%; transform:translateX(-50%); z-index:5;
   font-size:30px; color:var(--gold); text-shadow:0 0 14px rgba(255,201,60,.9), 0 3px 0 #7a4b00;}
 .bigWheelBox .wheel{border-width:8px;}
-.bigWheelBox .wlbl{font-size:clamp(10px,2.4vw,15px); width:145px; text-align:left; line-height:1.05;}
+.bigWheelBox .wlbl{font-size:clamp(10px,2.4vw,15px); width:150px; text-align:left; line-height:1.05;}
 .bigWheelBox .wheelHub{width:18%; font-size:clamp(18px,3.4vw,32px);}
 .rwSegRow{display:flex; gap:8px; align-items:center; margin-top:8px;}
 .rwSegRow input[type=text]{flex:1;}
@@ -9475,7 +9475,12 @@ function buildBigWheel(box, segs){
     let txt = s2.label + (s2.points ? ' +'+s2.points : '');
     if (txt.length>16) txt = txt.slice(0,15)+'…';
     l.textContent = txt;
-    l.style.transform = `rotate(${i*seg+seg/2}deg) translateY(calc(-1 * min(15vw, 190px))) rotate(90deg)`;
+    const theta = i*seg + seg/2;              // angolo del centro-spicchio, 0° = ore 12, orario
+    const rad = theta * Math.PI/180;
+    const outerR = 46;                        // % del raggio ruota: vicino al bordo, dentro il profilo dorato
+    l.style.left = (50 + outerR*Math.sin(rad)) + '%';
+    l.style.top  = (50 - outerR*Math.cos(rad)) + '%';
+    l.style.transform = `rotate(${theta+90}deg)`;   // testo allineato al raggio, cresce verso il centro
     l.style.transformOrigin = '0 0';
     w.appendChild(l);
   });
