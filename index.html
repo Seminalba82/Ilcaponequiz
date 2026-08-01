@@ -1307,7 +1307,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v12.63</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v12.64</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -4126,7 +4126,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1263; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1264; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -7636,8 +7636,8 @@ function showPlayerPunto(g){
   if (m.phase==='play'){
     const myRacer = (m.racers||{})[P.id];
     if (!myRacer){ $('puntoMeBox').style.display='none'; return; } // non ero tra i giocatori all'avvio della gara
-    if (P.puntoSig !== 'play'){
-      P.puntoSig = 'play'; P.puntoFinished = false; P.puntoNotches = m.notches; P.puntoPos = myRacer.pos||0;
+    if (P.puntoStartAt !== m.startAt){
+      P.puntoStartAt = m.startAt; P.puntoFinished = false; P.puntoNotches = m.notches; P.puntoPos = myRacer.pos||0;
       document.documentElement.style.setProperty('--mycolor', myRacer.color);
       $('puntoMeDot').textContent = myRacer.shape; $('puntoMeDot').style.color = myRacer.color;
       $('puntoMeBox').style.display='block'; $('puntoAns').style.display=''; $('puntoAns').disabled=false;
@@ -7677,7 +7677,7 @@ function puntoNewProblem(){
   $('puntoAns').value=''; $('puntoAns').focus();
 }
 function puntoSend(){
-  if (P.puntoFinished || !P.puntoSig) return;
+  if (P.puntoFinished || P.puntoStartAt==null) return;
   const v = $('puntoAns').value.trim();
   if (v===''){ $('puntoAns').focus(); return; }
   const ok = (+v === P.puntoAnswer);
@@ -12657,8 +12657,9 @@ function puntoStart(){
     const racers = puntoAssign(arr);
     const racersObj = {};
     racers.forEach(r=> racersObj[r.id] = { name:r.name, color:r.color, shape:r.shape, pos:0 });
+    const startAt = serverNow()+400;
     PUNTO = { notches, p1, p2, p3, pLast, ended:false };
-    G.ref.update({ status:'punto', punto:{ phase:'play', notches, p1, p2, p3, pLast, racers:racersObj, results:null } });
+    G.ref.update({ status:'punto', punto:{ phase:'play', notches, p1, p2, p3, pLast, startAt, racers:racersObj, results:null } });
     $('puntoSetup').style.display='none'; $('puntoLive').style.display='block';
     $('puntoMsg').textContent = '🧮 SI RISPONDE! CHI SBAGLIA TORNA INDIETRO...';
     $('puntoBtnAgain').style.display='none'; $('puntoBtnEnd').style.display='';
