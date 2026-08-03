@@ -75,6 +75,40 @@ body.proj .screen{max-width:none;}
 .btn:disabled{opacity:.4; pointer-events:none;}
 .gameBtn{width:100%; display:flex; align-items:center; justify-content:center; text-align:center;
   min-height:60px; font-size:15px; padding:14px 18px; line-height:1.15; box-sizing:border-box;}
+/* ===== L'IDRAULICO — griglia, tubi 3D, tavolozza ===== */
+.idrBoard{position:relative; width:min(92vw,480px); aspect-ratio:1; margin:14px auto; padding:8px;
+  background:#0d0620; border-radius:16px; box-sizing:border-box;
+  box-shadow:inset 0 3px 8px rgba(0,0,0,.6), 0 0 0 2px rgba(157,77,255,.25);}
+.idrBoard.big{width:min(70vh,560px);}
+.idrGrid{position:relative; width:100%; height:100%; display:grid; gap:3px;}
+.idrCell{position:relative; background:rgba(255,255,255,.03); border-radius:6px;}
+.idrCell.path{background:rgba(255,255,255,.05); box-shadow:inset 0 0 0 2px rgba(255,255,255,.08);}
+.idrCell.startCell{background:rgba(182,255,46,.14);}
+.idrCell.endCell{background:rgba(255,201,60,.14);}
+.idrMark{position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  font-size:clamp(14px,3.5vw,22px); pointer-events:none; z-index:2;}
+.idrPipeWrap{position:absolute; inset:3px; border-radius:8px; transition:box-shadow .3s; z-index:3;
+  box-shadow:0 0 0 3px #ff3b3b, 0 0 14px rgba(255,59,59,.6);}
+.idrPipeWrap.ok{box-shadow:0 0 0 3px #b6ff2e, 0 0 18px rgba(182,255,46,.75);}
+.idrPipe{position:relative; width:100%; height:100%;}
+.idrArm{position:absolute; background:linear-gradient(135deg,#c8d4de,#6b7885 55%,#38424c);
+  box-shadow:inset 0 2px 3px rgba(255,255,255,.5), inset 0 -2px 4px rgba(0,0,0,.4);}
+.armU{left:36%; top:-4%; width:28%; height:58%; border-radius:6px 6px 0 0;}
+.armD{left:36%; bottom:-4%; width:28%; height:58%; border-radius:0 0 6px 6px;}
+.armL{top:36%; left:-4%; width:58%; height:28%; border-radius:6px 0 0 6px;}
+.armR{top:36%; right:-4%; width:58%; height:28%; border-radius:0 6px 6px 0;}
+.idrJoint{position:absolute; left:30%; top:30%; width:40%; height:40%; border-radius:10px;
+  background:radial-gradient(circle at 35% 30%, #d8e2ea, #6b7885 60%, #38424c);
+  box-shadow:inset 0 2px 3px rgba(255,255,255,.5), inset 0 -2px 4px rgba(0,0,0,.4);}
+.idrPalette{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; max-width:480px; margin:14px auto 0;}
+.idrPiece{width:56px; height:56px; border-radius:10px; cursor:pointer; position:relative;
+  background:linear-gradient(160deg,#241a3c,#150a28); box-shadow:0 4px 0 #0a0518, 0 6px 10px rgba(0,0,0,.5),
+    0 0 0 2px rgba(157,77,255,.3); transition:transform .08s, box-shadow .08s;}
+.idrPiece:active{transform:translateY(3px); box-shadow:0 1px 0 #0a0518, 0 3px 6px rgba(0,0,0,.5), 0 0 0 2px rgba(157,77,255,.3);}
+.idrPiece.wrong{animation:idrShake .35s ease-in-out;}
+@keyframes idrShake{0%,100%{transform:translateX(0);} 25%{transform:translateX(-6px);} 75%{transform:translateX(6px);}}
+.idrTimerLabel{font-family:'Bungee'; text-align:center; font-size:13px; color:var(--muted); margin-top:10px;}
+.idrTimerLabel b{color:var(--gold);}
 
 /* ===== PANNELLI ===== */
 .panel{
@@ -1364,7 +1398,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v12.69</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v12.70</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -3496,6 +3530,66 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="feedback mtb" id="astaFbPts" style="display:none"></div>
 </div>
 
+<!-- ==================== HOST: L'IDRAULICO ==================== -->
+<div class="screen" id="scrIdr">
+  <div class="brand"><div class="t1" style="font-size:clamp(18px,3.4vw,32px)">🔧 L'IDRAULICO</div></div>
+  <div class="panel mt" style="max-width:480px" id="idrSetup">
+    <div class="label">Tempo per completare il circuito</div>
+    <select id="idrSecs">
+      <option value="30">30 secondi</option>
+      <option value="40">40 secondi</option>
+      <option value="50" selected>50 secondi</option>
+      <option value="60">60 secondi</option>
+      <option value="70">70 secondi</option>
+      <option value="80">80 secondi</option>
+      <option value="90">90 secondi</option>
+      <option value="100">100 secondi</option>
+      <option value="110">110 secondi</option>
+      <option value="120">120 secondi</option>
+    </select>
+    <div class="row mt">
+      <div class="grow"><div class="label">Punti a chi completa il circuito</div><input type="number" id="idrPtsWin" value="150" min="0" style="width:100%; text-align:center"></div>
+      <div class="grow"><div class="label">Punti persi se il tempo scade</div><input type="number" id="idrPtsLose" value="50" min="0" style="width:100%; text-align:center"></div>
+    </div>
+    <div class="byline mt" style="opacity:.75">🔧 Ogni giocatore lavora sul proprio telefono: tra i tubi disponibili deve scegliere, nell'ordine giusto, quelli che completano davvero il circuito prima che scada il tempo. Il circuito cambia ogni volta, sempre risolvibile.</div>
+    <button class="btn mg mt" style="width:100%" onclick="idrStart()">🔧 PREPARA IL CIRCUITO!</button>
+  </div>
+  <div id="idrLive" style="display:none; width:100%" class="center">
+    <div class="miniMsg" id="idrMsg"></div>
+    <div class="timerWrap mt" style="max-width:420px"><div class="timerBar" id="idrTimerBar"></div></div>
+    <div class="idrBoard" id="idrBoardHost"><div class="idrGrid" id="idrGridHost"></div></div>
+    <div class="lead mt" id="idrRanking" style="max-width:460px; width:100%"></div>
+    <div class="row mt">
+      <button class="btn ghost" id="idrBtnEnd" onclick="idrManualEnd()">🏁 Ferma qui</button>
+      <button class="btn cy" id="idrBtnAgain" onclick="openIdr()" style="display:none">🔁 Un altro circuito</button>
+    </div>
+  </div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+</div>
+
+<!-- ==================== PROIETTORE: L'IDRAULICO ==================== -->
+<div class="screen" id="scrPjIdr">
+  <div class="brand"><div class="t1" style="font-size:clamp(24px,3.6vw,42px)">🔧 L'IDRAULICO</div></div>
+  <div class="miniMsg" id="pjIdrMsg">SISTEMATE IL CIRCUITO DAL TELEFONO!</div>
+  <div class="timerWrap mt" style="max-width:460px"><div class="timerBar" id="pjIdrTimerBar"></div></div>
+  <div class="idrBoard big" id="idrBoardPj"><div class="idrGrid" id="idrGridPj"></div></div>
+  <div class="lead mt" id="pjIdrRanking" style="max-width:600px; width:100%"></div>
+</div>
+
+<!-- ==================== PLAYER: L'IDRAULICO ==================== -->
+<div class="screen" id="scrPlayIdr" style="align-items:center; justify-content:center">
+  <div class="row" style="width:100%; justify-content:space-between">
+    <div class="pill" id="idrpName" style="color:var(--gold)"></div>
+    <div class="pill" id="idrpScore"></div>
+  </div>
+  <div class="timerWrap mt" style="max-width:300px"><div class="timerBar" id="idrpTimerBar"></div></div>
+  <div class="idrBoard" id="idrBoardMe"><div class="idrGrid" id="idrGridMe"></div></div>
+  <div class="idrTimerLabel" id="idrProgress">0 / 0 tubi posizionati</div>
+  <div class="idrPalette" id="idrPalette"></div>
+  <div class="feedback mtb" id="idrFbMsg" style="display:none"></div>
+  <div class="feedback mtb" id="idrFbPts" style="display:none"></div>
+</div>
+
 <!-- ==================== HOST: ROULETTE ==================== -->
 <div class="screen" id="scrCasino">
   <div class="brand"><div class="t1" style="font-size:clamp(20px,3.6vw,36px)">🎰 ROULETTE</div></div>
@@ -4273,7 +4367,7 @@ body.suspense-on #pfRank{ display:none !important; }
 /* ================================================================
    📋 ELENCO MINIGIOCHI — aggiornare questa lista ogni volta che se ne
    aggiunge uno nuovo (serve ad Alberto per la documentazione delle licenze).
-   Ultimo aggiornamento: v12.67 — 42 minigiochi totali.
+   Ultimo aggiornamento: v12.70 — 43 minigiochi totali.
    ================================================================
    1.  🥃 Bussolotti
    2.  🎲 Pari o Dispari
@@ -4317,6 +4411,7 @@ body.suspense-on #pfRank{ display:none !important; }
    40. 🏁 Il Punto della Situazione
    41. 🎲 Il Dado del Destino
    42. 🔨 Asta
+   43. 🔧 L'Idraulico
 ================================================================ */
 
 /* ================================================================
@@ -4337,7 +4432,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1269; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1270; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -5893,6 +5988,7 @@ function listenGame(){
     else if (g.status==='punto') showPlayerPunto(g);
     else if (g.status==='dado') showPlayerDado(g);
     else if (g.status==='asta') showPlayerAsta(g);
+    else if (g.status==='idraulico') showPlayerIdr(g);
     else if (g.status==='xox') showPlayerXox(g);
     else if (g.status==='timer') {
       const t = g.timer||{};
@@ -8092,6 +8188,85 @@ function astaBidCustom(){
     $('astaCustomBid').value='';
     if (navigator.vibrate) navigator.vibrate(40);
   });
+}
+/* ================================================================
+   L'IDRAULICO — telefono
+================================================================ */
+function showPlayerIdr(g){
+  const m = g.idraulico||{};
+  $('idrpName').textContent = P.name;
+  $('idrpScore').textContent = (((g.players||{})[P.id]||{}).score||0)+' pt';
+  showScreen('scrPlayIdr');
+  if (m.phase==='play'){
+    if (P.idrStartAt !== m.startAt){
+      P.idrStartAt = m.startAt; P.idrPath = m.path; P.idrShapes = m.shapes;
+      P.idrPlaced = 0; P.idrSolved = false;
+      P.idrPalette = (m.palette||[]).map(p=>({...p})); P.idrPaletteUsed = new Set();
+      $('idrFbMsg').style.display='none'; $('idrFbPts').style.display='none';
+      idrRenderGrid($('idrGridMe'), m.path, m.shapes, 0, false);
+      idrRenderPalette();
+      $('idrProgress').textContent = `0 / ${m.shapes.length} tubi posizionati`;
+      clearInterval(P.idrInt);
+      P.idrInt = setInterval(()=>{
+        const left = Math.max(0, (m.endAt||0) - serverNow());
+        $('idrpTimerBar').style.width = (left/((m.secs||50)*1000)*100)+'%';
+        if (left<=0){ clearInterval(P.idrInt); if (!P.idrSolved) idrLockPalette(); }
+      }, 100);
+    }
+  } else if (m.phase==='result'){
+    clearInterval(P.idrInt); P.idrStartAt = null;
+    const rv = m.results||{};
+    const rk = rv.ranking||[];
+    const idx = rk.findIndex(r=>r.pid===P.id);
+    const mine = idx>=0 ? rk[idx] : null;
+    const msg=$('idrFbMsg'), pts=$('idrFbPts');
+    msg.style.display='block'; pts.style.display='block';
+    if (!mine){ msg.className='feedback mtb'; msg.style.color='var(--muted)'; msg.textContent='NON HAI GIOCATO'; pts.textContent='+0'; }
+    else if (mine.solved){ msg.className='feedback mtb fb-ok'; msg.style.color=''; msg.textContent='🔧 CIRCUITO COMPLETATO!'; pts.textContent='+'+mine.pts+' PUNTI'; if(navigator.vibrate) navigator.vibrate([80,50,120]); }
+    else { msg.className='feedback mtb fb-no'; msg.style.color=''; msg.textContent='⏱ TEMPO SCADUTO...'; pts.textContent=mine.pts+' PUNTI'; if(navigator.vibrate) navigator.vibrate(150); }
+  } else {
+    // fase intermedia tra un circuito e l'altro: mai lasciare il telefono fermo sullo stato precedente
+    clearInterval(P.idrInt); P.idrStartAt = null;
+    $('idrPalette').innerHTML='';
+    const msg=$('idrFbMsg'), pts=$('idrFbPts');
+    msg.style.display='block'; pts.style.display='none';
+    msg.className='feedback mtb'; msg.style.color='var(--muted)';
+    msg.textContent = '⏳ La regia sta preparando il prossimo circuito...';
+  }
+}
+function idrRenderPalette(){
+  $('idrPalette').innerHTML = P.idrPalette.map(p=>
+    P.idrPaletteUsed.has(p.id) ? '' : `<div class="idrPiece" id="idrpc_${p.id}" onclick="idrTapPiece('${p.id}')">${idrRenderPipe(p.shape)}</div>`
+  ).join('');
+}
+function idrLockPalette(){
+  document.querySelectorAll('#idrPalette .idrPiece').forEach(el=> el.style.pointerEvents='none');
+}
+function idrTapPiece(pieceId){
+  if (P.idrSolved || !P.idrStartAt) return;
+  const piece = P.idrPalette.find(p=>p.id===pieceId);
+  if (!piece || P.idrPaletteUsed.has(pieceId)) return;
+  const neededShape = P.idrShapes[P.idrPlaced];
+  if (piece.shape !== neededShape){
+    const el = $('idrpc_'+pieceId);
+    if (el){ el.classList.remove('wrong'); void el.offsetWidth; el.classList.add('wrong'); }
+    if (navigator.vibrate) navigator.vibrate(80);
+    return;
+  }
+  P.idrPaletteUsed.add(pieceId);
+  P.idrPlaced++;
+  if (navigator.vibrate) navigator.vibrate(30);
+  const solved = P.idrPlaced >= P.idrShapes.length;
+  idrRenderGrid($('idrGridMe'), P.idrPath, P.idrShapes, P.idrPlaced, solved);
+  idrRenderPalette();
+  $('idrProgress').textContent = solved ? '🎉 CIRCUITO COMPLETATO!' : `${P.idrPlaced} / ${P.idrShapes.length} tubi posizionati`;
+  P.ref.child('idraulico/progress/'+P.id).update({ placedCount:P.idrPlaced, solved:false });
+  if (solved){
+    P.idrSolved = true;
+    idrLockPalette();
+    P.ref.child('idraulico/progress/'+P.id).update({ solved:true, finishedAt: serverNow() });
+    if (navigator.vibrate) navigator.vibrate([60,40,60,40,120]);
+  }
 }
 /* ================================================================
    XOX — motore condiviso (giocatore contro computer)
@@ -13462,6 +13637,190 @@ function astaNextItem(){
 }
 
 /* ================================================================
+   L'IDRAULICO — condiviso (regia + proiettore + telefono) e regia
+   Il percorso si genera con un cammino casuale a ritroso (backtracking): ad ogni passo alterna
+   sempre asse orizzontale/verticale (servono solo curve, mai tratti dritti), non ripassa mai
+   sulla stessa cella, e se si blocca torna indietro e riprova un'altra strada — così il circuito
+   generato è SEMPRE risolvibile, mai un vicolo cieco. La forma di ogni tubo (uno dei 4 gomiti
+   possibili) si ricava dai due lati della cella toccati dal percorso in entrata e in uscita.
+================================================================ */
+const IDR_COLS = 5, IDR_ROWS = 5;
+function idrShuffle(arr){ for (let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; } return arr; }
+function idrTryPath(){
+  const start = {x:0, y:IDR_ROWS-1}, end = {x:IDR_COLS-1, y:0};
+  const visited = new Set([start.x+','+start.y]);
+  const cells = [start];
+  let cur = start, lastAxis = 'H'; // l'ingresso nella cella di partenza è orizzontale (il tubo entra da sinistra, in basso)
+  const dirs = { U:{dx:0,dy:-1}, D:{dx:0,dy:1}, L:{dx:-1,dy:0}, R:{dx:1,dy:0} };
+  const axisOf = d => (d==='U'||d==='D') ? 'V' : 'H';
+  function step(depth){
+    if (cur.x===end.x && cur.y===end.y) return lastAxis==='H'; // valido solo se si entra nell'arrivo in orizzontale (per poter uscire in verticale, verso l'alto)
+    if (depth > IDR_COLS*IDR_ROWS) return false;
+    const candidates = idrShuffle(Object.keys(dirs).filter(d=> axisOf(d)!==lastAxis));
+    for (const d of candidates){
+      const nx = cur.x+dirs[d].dx, ny = cur.y+dirs[d].dy;
+      if (nx<0||nx>=IDR_COLS||ny<0||ny>=IDR_ROWS) continue;
+      const key = nx+','+ny;
+      if (visited.has(key)) continue;
+      visited.add(key); cells.push({x:nx,y:ny});
+      const prevCur=cur, prevAxis=lastAxis;
+      cur={x:nx,y:ny}; lastAxis=axisOf(d);
+      if (step(depth+1)) return true;
+      visited.delete(key); cells.pop(); cur=prevCur; lastAxis=prevAxis; // torno indietro e riprovo un'altra direzione
+    }
+    return false;
+  }
+  return step(0) ? cells.slice() : null;
+}
+function idrGeneratePath(){
+  for (let attempt=0; attempt<50; attempt++){ const p = idrTryPath(); if (p) return p; }
+  return null; // non dovrebbe mai succedere con una griglia 5x5
+}
+function idrEdgesToShape(e1, e2){
+  const key = [e1,e2].sort().join('');
+  return { 'LU':'TL', 'RU':'TR', 'DL':'BL', 'DR':'BR' }[key] || null;
+}
+function idrDeriveShapes(cells){
+  const dirBetween = (a,b) => b.x>a.x?'R' : b.x<a.x?'L' : b.y>a.y?'D' : 'U';
+  const opp = {U:'D', D:'U', L:'R', R:'L'};
+  return cells.map((c,i)=>{
+    const inDir = i===0 ? 'R' : dirBetween(cells[i-1], c);
+    const outDir = i===cells.length-1 ? 'U' : dirBetween(c, cells[i+1]);
+    return idrEdgesToShape(opp[inDir], outDir);
+  });
+}
+function idrBuildPalette(shapes){
+  const bag = shapes.slice();
+  const types = ['TL','TR','BL','BR'];
+  const decoyCount = Math.max(3, Math.round(shapes.length*0.5));
+  for (let i=0;i<decoyCount;i++) bag.push(types[Math.floor(Math.random()*4)]);
+  idrShuffle(bag);
+  return bag.map((shape,i)=>({ id:'pc'+i, shape }));
+}
+function idrRenderPipe(shape){
+  const arms = { TL:['armU','armL'], TR:['armU','armR'], BL:['armD','armL'], BR:['armD','armR'] }[shape] || ['armU','armR'];
+  return `<div class="idrPipe"><div class="idrArm ${arms[0]}"></div><div class="idrArm ${arms[1]}"></div><div class="idrJoint"></div></div>`;
+}
+function idrRenderGrid(el, path, shapes, placedCount, solved){
+  if (!el) return;
+  const key = 'p:'+path.map(c=>c.x+'-'+c.y).join(',');
+  if (el._key !== key){
+    el._key = key;
+    el.style.gridTemplateColumns = `repeat(${IDR_COLS}, 1fr)`;
+    el.style.gridTemplateRows = `repeat(${IDR_ROWS}, 1fr)`;
+    const pathIdx = {}; path.forEach((c,i)=> pathIdx[c.x+','+c.y]=i);
+    let html = '';
+    for (let y=0;y<IDR_ROWS;y++) for (let x=0;x<IDR_COLS;x++){
+      const idx = pathIdx[x+','+y];
+      const onPath = idx!=null;
+      const isStart = idx===0, isEnd = onPath && idx===path.length-1;
+      html += `<div class="idrCell ${onPath?'path':''} ${isStart?'startCell':''} ${isEnd?'endCell':''}" style="grid-column:${x+1}; grid-row:${y+1}" data-idx="${onPath?idx:''}">
+        ${isStart?'<div class="idrMark">🚰</div>':''}${isEnd?'<div class="idrMark">🪣</div>':''}</div>`;
+    }
+    el.innerHTML = html;
+  }
+  el.querySelectorAll('.idrCell[data-idx]').forEach(cellEl=>{
+    if (cellEl.dataset.idx==='') return;
+    const idx = +cellEl.dataset.idx;
+    let wrap = cellEl.querySelector('.idrPipeWrap');
+    if (idx < placedCount){
+      if (!wrap){
+        cellEl.insertAdjacentHTML('beforeend', `<div class="idrPipeWrap">${idrRenderPipe(shapes[idx])}</div>`);
+        wrap = cellEl.querySelector('.idrPipeWrap');
+      }
+      wrap.classList.toggle('ok', !!solved);
+    } else if (wrap) wrap.remove();
+  });
+}
+function idrRenderRanking(el, rows, live){
+  el.innerHTML = rows.map((r,i)=>{
+    const medal = i<3 ? ['🥇','🥈','🥉'][i] : (i+1)+'°';
+    const status = r.solved ? '✅ completato' : (live ? 'in corso...' : '⏱ tempo scaduto');
+    const ptsLabel = (!live && r.pts!=null) ? `<span class="pts" style="color:${r.pts>0?'var(--lime)':'#ff5d5d'}">${r.pts>0?'+':''}${r.pts}</span>` : '';
+    return `<div class="leadRow"><span class="pos">${medal}</span> ${esc(r.name)} <span class="byline" style="margin:0 8px">${status}</span> ${ptsLabel}</div>`;
+  }).join('') || (live ? '<div class="byline">In attesa dei giocatori...</div>' : '<div class="byline">Nessuno ha giocato...</div>');
+}
+let IDR = {};
+function idrManualEnd(){
+  if (!IDR || IDR.ended) return;
+  IDR.ended = true;
+  idrFinish();
+}
+function openIdr(){
+  if (!isGameEnabled('idr')) return alert('⚠️ Questo minigioco non è compreso nella licenza attiva. Contatta Alberto per sbloccarlo.');
+  if (!G) return alert('Avvia prima una partita!');
+  cancelLiveQuestion(); closeModal();
+  G.ref.child('idraulico/progress').off();
+  G.ref.update({ status:'idraulico', idraulico:{ phase:'idle' } });
+  IDR = {};
+  $('idrSetup').style.display='block'; $('idrLive').style.display='none';
+  pjSend({type:'idrState'});
+  showScreen('scrIdr');
+}
+function idrStart(){
+  const secs = +$('idrSecs').value;
+  const pointsWin = Math.max(0,+$('idrPtsWin').value||0);
+  const pointsLose = Math.max(0,+$('idrPtsLose').value||0);
+  const path = idrGeneratePath();
+  if (!path){ alert('Non sono riuscito a generare un circuito valido: riprova!'); return; }
+  const shapes = idrDeriveShapes(path);
+  const palette = idrBuildPalette(shapes);
+  const startAt = serverNow()+400, endAt = startAt + secs*1000;
+  IDR = { secs, pointsWin, pointsLose, path, shapes, ended:false };
+  G.ref.child('idraulico/progress').off();
+  G.ref.update({ status:'idraulico', idraulico:{ phase:'play', secs, path, shapes, palette, startAt, endAt, pointsWin, pointsLose, progress:null, results:null } });
+  $('idrSetup').style.display='none'; $('idrLive').style.display='block';
+  $('idrMsg').textContent = '🔧 SI PARTE! CHI COMPLETA IL CIRCUITO GUADAGNA I PUNTI...';
+  $('idrBtnAgain').style.display='none'; $('idrBtnEnd').style.display='';
+  idrRenderGrid($('idrGridHost'), path, shapes, 0, false);
+  idrRenderRanking($('idrRanking'), [], true);
+  pjSend({type:'idrStart', path, shapes, secs, startAt, endAt});
+  clearInterval(IDR.timerInt);
+  IDR.timerInt = setInterval(()=>{
+    const left = Math.max(0, endAt - serverNow());
+    $('idrTimerBar').style.width = (left/(secs*1000)*100)+'%';
+    if (left<=0){ clearInterval(IDR.timerInt); if (!IDR.ended){ IDR.ended=true; idrFinish(); } }
+  }, 100);
+  G.ref.child('idraulico/progress').on('value', s=>{
+    const prog = s.val()||{};
+    G.ref.child('players').once('value').then(ps=>{
+      const players = ps.val()||{};
+      const rows = Object.entries(prog).map(([pid,p])=>({pid, name:(players[pid]||{}).name||'?', solved:!!p.solved, placedCount:p.placedCount||0}));
+      idrRenderRanking($('idrRanking'), rows, true);
+      pjSend({type:'idrRank', rows});
+      const total = rows.length, solvedCount = rows.filter(r=>r.solved).length;
+      if (!IDR.ended && total>0 && solvedCount>=total){ IDR.ended=true; idrFinish(); }
+    });
+  });
+}
+function idrFinish(){
+  clearInterval(IDR.timerInt);
+  G.ref.child('idraulico/progress').off();
+  setTimeout(()=>{
+    G.ref.child('idraulico/progress').once('value').then(s=>{
+      const prog = s.val()||{};
+      G.ref.child('players').once('value').then(ps=>{
+        const players = ps.val()||{};
+        const rows = Object.entries(prog).map(([pid,p])=>({pid, name:(players[pid]||{}).name||'?', solved:!!p.solved, finishedAt: p.finishedAt!=null?p.finishedAt:Infinity}));
+        rows.sort((a,b)=>{ if (a.solved!==b.solved) return a.solved?-1:1; return a.finishedAt-b.finishedAt; });
+        const updates = {};
+        rows.forEach(r=>{
+          const pts = r.solved ? IDR.pointsWin : -IDR.pointsLose;
+          r.pts = pts;
+          if (pts!==0 && players[r.pid]) updates['players/'+r.pid+'/score'] = Math.max(0,(players[r.pid].score||0)+pts);
+        });
+        G.ref.update({ ...updates, 'idraulico/phase':'result', 'idraulico/results':{ ranking:rows, at:Date.now() } });
+        idrRenderRanking($('idrRanking'), rows, false);
+        $('idrMsg').textContent = rows.some(r=>r.solved) ? '🏆 CIRCUITO COMPLETATO!' : "NESSUNO CE L'HA FATTA IN TEMPO!";
+        $('idrBtnAgain').style.display=''; $('idrBtnEnd').style.display='none';
+        pjSend({type:'idrEnd', ranking:rows});
+        if (rows.some(r=>r.solved)) confetti();
+      });
+    });
+  }, 500);
+}
+
+/* ================================================================
    XOX — regia
 ================================================================ */
 let XOX = {};
@@ -13987,6 +14346,7 @@ const GIOCHI_CATALOGO = [
   {k:'punto', l:'🏁 Il Punto della Situazione'},
   {k:'dado', l:'🎲 Il Dado del Destino'},
   {k:'asta', l:'🔨 Asta'},
+  {k:'idr', l:"🔧 L'Idraulico"},
   {k:'xox', l:'❌⭕ XOX'}
   // 👉 QUANDO AGGIUNGI UN NUOVO MINIGIOCO: aggiungi qui una riga {k:'chiave', l:'Emoji Nome'},
   // poi apri il quiz come host e clicca una volta su "GIOCHI": il pannello admin lo vedrà da solo.
@@ -14024,6 +14384,7 @@ function modalGamesSkill(){
     gk('finddiff', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#4a2fb8,#9d4dff); color:#fff; box-shadow:0 7px 0 #2a1866,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(157,77,255,.4)" onclick="openFindDiff()">🔍 Trova le Differenze</button>`),
     gk('tamb', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#e8b45a,#8a4a12); color:#3a2000; box-shadow:0 7px 0 #4a2400,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(232,180,90,.4)" onclick="openTamb()">🥁 I Tamburini</button>`),
     gk('punto', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#3de0ff,#0b6f8a); color:#00272e; box-shadow:0 7px 0 #003a44,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(61,224,255,.4)" onclick="openPunto()">🏁 Il Punto della Situazione</button>`),
+    gk('idr', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#7a8a9a,#3a4550); color:#fff; box-shadow:0 7px 0 #1a2028,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(122,138,154,.4)" onclick="openIdr()">🔧 L'Idraulico</button>`),
     gk('xox', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#5ec8ff,#0b6fb8); color:#fff; box-shadow:0 7px 0 #063a5c,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(94,200,255,.4)" onclick="openXox()">❌⭕ XOX</button>`)
   ].filter(Boolean).join('');
   const msgVuoto = btns ? '' : '<div class="byline" style="letter-spacing:1px">Nessun gioco di abilità abilitato per questa licenza.</div>';
@@ -14538,6 +14899,7 @@ function backToQuiz(title){
   G.ref.child('punto/racers').off();
   G.ref.child('dado/racers').off();
   G.ref.child('asta').off();
+  G.ref.child('idraulico/progress').off();
   G.ref.child('xox/results').off();
   clearInterval(($('hrsTrackHost')||{})._raceInt); clearInterval(($('hrsTrackHost')||{})._cdInt);
   clearInterval((TF||{}).timerInt);
@@ -14557,8 +14919,9 @@ function backToQuiz(title){
   clearInterval((TAMB||{}).timerInt);
   clearInterval((MERC||{}).timerInt);
   clearInterval((MORRA||{}).timerInt);
+  clearInterval((IDR||{}).timerInt);
   clearInterval((XOX||{}).timerInt);
-  G.ref.update({ status:'pausa', mini:null, dice:null, simon:null, voto:null, timer:null, tombola:null, cards:null, swiss:null, hilo:null, wheels:null, puzzle:null, wordsearch:null, anagram:null, seed:null, grad:null, taptap:null, ruota:null, memo:null, memocoppie:null, horses:null, tfiscale:null, toc:null, cenerentola:null, pacchi:null, roulette:null, pagliuzza:null, supertris:null, rdc:null, mastermind:null, bomba:null, shapes:null, finddiff:null, maggioranza:null, goldenticket:null, casino:null, tamburini:null, mercatista:null, morra:null, punto:null, dado:null, asta:null, xox:null });
+  G.ref.update({ status:'pausa', mini:null, dice:null, simon:null, voto:null, timer:null, tombola:null, cards:null, swiss:null, hilo:null, wheels:null, puzzle:null, wordsearch:null, anagram:null, seed:null, grad:null, taptap:null, ruota:null, memo:null, memocoppie:null, horses:null, tfiscale:null, toc:null, cenerentola:null, pacchi:null, roulette:null, pagliuzza:null, supertris:null, rdc:null, mastermind:null, bomba:null, shapes:null, finddiff:null, maggioranza:null, goldenticket:null, casino:null, tamburini:null, mercatista:null, morra:null, punto:null, dado:null, asta:null, idraulico:null, xox:null });
   G.ref.child('players').once('value', ps=>{
     const players = ps.val()||{};
     $('hrTitle').textContent = title || 'SI TORNA AL QUIZ!';
@@ -14958,6 +15321,31 @@ function pjRouteInner(m){
       astaRenderSold('Pj', m.a);
       $('astaCardPj').classList.toggle('sold', m.a.phase==='sold');
       if (m.a.phase==='sold' && m.a.soldTo) confetti();
+    }
+    else if (m.type==='idrState') {
+      showScreen('scrPjIdr');
+      $('idrGridPj').innerHTML=''; $('idrGridPj')._key=null; $('pjIdrRanking').innerHTML='';
+    }
+    else if (m.type==='idrStart') {
+      showScreen('scrPjIdr');
+      $('pjIdrMsg').textContent = '🔧 SISTEMATE IL CIRCUITO DAL TELEFONO!';
+      idrRenderGrid($('idrGridPj'), m.path, m.shapes, 0, false);
+      window._pjIdrEndAt = m.endAt; window._pjIdrSecs = m.secs;
+      clearInterval(window._pjIdrInt);
+      window._pjIdrInt = setInterval(()=>{
+        const left = Math.max(0, window._pjIdrEndAt - serverNow());
+        $('pjIdrTimerBar').style.width = (left/(window._pjIdrSecs*1000)*100)+'%';
+        if (left<=0) clearInterval(window._pjIdrInt);
+      },100);
+    }
+    else if (m.type==='idrRank') {
+      idrRenderRanking($('pjIdrRanking'), m.rows||[], true);
+    }
+    else if (m.type==='idrEnd') {
+      clearInterval(window._pjIdrInt); $('pjIdrTimerBar').style.width='0%';
+      idrRenderRanking($('pjIdrRanking'), m.ranking||[], false);
+      $('pjIdrMsg').textContent = (m.ranking||[]).some(r=>r.solved) ? '🏆 CIRCUITO COMPLETATO!' : "NESSUNO CE L'HA FATTA!";
+      if ((m.ranking||[]).some(r=>r.solved)) confetti();
     }
     else if (m.type==='xoxActive') {
       showScreen('scrPjXox');
