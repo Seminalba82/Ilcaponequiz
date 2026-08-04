@@ -1398,7 +1398,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v12.70</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v12.71</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -4432,7 +4432,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1270; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1271; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -7358,6 +7358,17 @@ function majPlayerTap(i){
 /* ================================================================
    IL BIGLIETTO D'ORO — telefono (vero grattamento col dito, via canvas)
 ================================================================ */
+function gtFitFontSize(ctx, text, maxWidth, startSize, minSize, fontSpec){
+  // riduce la dimensione del font finché il testo non entra nella larghezza disponibile,
+  // senza mai scendere sotto una soglia minima leggibile
+  let size = startSize;
+  ctx.font = fontSpec(size);
+  while (size > minSize && ctx.measureText(text).width > maxWidth){
+    size -= 1;
+    ctx.font = fontSpec(size);
+  }
+  return size;
+}
 function gtDrawFoil(canvas, subtitle){
   const ctx = canvas.getContext('2d');
   const w = canvas.width, h = canvas.height;
@@ -7367,11 +7378,19 @@ function gtDrawFoil(canvas, subtitle){
   // qualche brillantino decorativo, per farla sembrare una vera patina metallica da grattare
   ctx.fillStyle = 'rgba(255,255,255,.35)';
   for (let i=0;i<40;i++){ const x=Math.random()*w, y=Math.random()*h, r=1+Math.random()*2; ctx.beginPath(); ctx.arc(x,y,r,0,7); ctx.fill(); }
-  ctx.font = `bold ${Math.round(h*0.16)}px Bungee, sans-serif`;
-  ctx.fillStyle = 'rgba(122,74,0,.55)'; ctx.textAlign='center'; ctx.textBaseline='middle';
-  ctx.fillText('IL CAPONE QUIZ', w/2, h*0.4);
-  ctx.font = `bold ${Math.round(h*0.11)}px Outfit, sans-serif`;
-  ctx.fillText(subtitle || '🎫 GRATTA QUI 🎫', w/2, h*0.65);
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  const maxW = w*0.9; // un po' di margine ai lati, il testo non deve mai toccare i bordi del biglietto
+  const titleTxt = 'IL CAPONE QUIZ';
+  const titleFont = s => `bold ${s}px Bungee, sans-serif`;
+  const titleSize = gtFitFontSize(ctx, titleTxt, maxW, Math.round(h*0.16), 10, titleFont);
+  ctx.font = titleFont(titleSize);
+  ctx.fillStyle = 'rgba(122,74,0,.55)';
+  ctx.fillText(titleTxt, w/2, h*0.4);
+  const subTxt = subtitle || '🎫 GRATTA QUI 🎫';
+  const subFont = s => `bold ${s}px Outfit, sans-serif`;
+  const subSize = gtFitFontSize(ctx, subTxt, maxW, Math.round(h*0.11), 9, subFont);
+  ctx.font = subFont(subSize);
+  ctx.fillText(subTxt, w/2, h*0.65);
 }
 function gtSetupScratch(canvas, onDone){
   const ctx = canvas.getContext('2d');
