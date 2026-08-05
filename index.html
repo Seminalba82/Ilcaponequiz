@@ -1398,7 +1398,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v12.71</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v12.73</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -1466,6 +1466,7 @@ body.suspense-on #pfRank{ display:none !important; }
           <option value="open">Risposta aperta (si scrive)</option>
           <option value="wordsearch">🔤 Trova la Parola (griglia)</option>
           <option value="anagram">🔤➰ Anagramma</option>
+          <option value="image">🖼️ Solo Immagine (nessuna domanda)</option>
         </select>
       </div>
       <div class="grow">
@@ -1529,6 +1530,7 @@ body.suspense-on #pfRank{ display:none !important; }
       <div class="label" style="text-transform:none; letter-spacing:0">🔤 Il "Testo della domanda" scritto in alto funge da indizio (es. "Malvivente in giacca e cappello") — è quello che vedranno i giocatori. La parola verrà scritta MAIUSCOLA, senza spazi né accenti, nascosta in orizzontale/verticale/diagonale. Punti a chi la trova più veloce; "chi non risponde perde" si applica a chi non la trova in tempo.</div>
     </div>
 
+    <div id="qeScoringBox">
     <div class="row mt">
       <div class="grow">
         <div class="label">Punti in palio</div>
@@ -1550,6 +1552,8 @@ body.suspense-on #pfRank{ display:none !important; }
         <input type="number" id="qePenNone" value="0" min="0" style="text-align:center" oninput="qePenTouched('none')"></div>
     </div>
     <div class="label" style="text-transform:none; letter-spacing:0">💡 Le due penalità sono agganciate in percentuale ai punti: se aumenti i punti, si aggiornano da sole mantenendo la stessa proporzione.</div>
+    </div>
+    <div class="label" id="qeImageNote" style="display:none; text-transform:none; letter-spacing:0">🖼️ Una schermata "solo immagine" non ha punti né tempo: serve a mostrare una foto di riferimento (es. un indizio visto prima) su cui poi costruire una domanda successiva. Carica la foto qui sotto in "Allegato", scrivi un'eventuale didascalia nel "Testo della domanda" (facoltativo), e quando conduci premi semplicemente "Prossima domanda" quando sei pronto ad andare avanti.</div>
 
     <div class="row mtb">
       <button class="btn ghost" onclick="showScreen('scrEditor')">✕ Annulla</button>
@@ -1692,6 +1696,14 @@ body.suspense-on #pfRank{ display:none !important; }
     <button class="btn cy mt" style="width:100%" onclick="sendOpenAnswer()">📨 INVIA</button>
   </div>
   <div class="feedback mtb" id="pqSent" style="display:none; color:var(--cyan)">INVIATA! 🚀</div>
+</div>
+
+<!-- ==================== PLAYER: SOLO IMMAGINE (nessuna domanda) ==================== -->
+<div class="screen" id="scrPlayImgOnly" style="align-items:center; justify-content:center">
+  <div class="pill" id="pioProgress"></div>
+  <img id="pioPhoto" class="hostMedia mt" style="max-height:60vh; max-width:92vw; display:none">
+  <div class="byline mtb" id="pioCaption" style="font-size:16px; text-align:center"></div>
+  <div class="byline mt" style="opacity:.7">👀 Guarda il proiettore, si prosegue a breve...</div>
 </div>
 
 <!-- ==================== PLAYER: FEEDBACK ==================== -->
@@ -4344,6 +4356,15 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="ansGrid mtb" id="pjOpts" style="max-width:1200px"></div>
 </div>
 
+<!-- ==================== PROIETTORE: SOLO IMMAGINE (nessuna domanda) ==================== -->
+<div class="screen" id="scrPjImgOnly">
+  <div class="row" style="width:100%; justify-content:center">
+    <div class="pill" id="pjioProgress" style="font-size:18px"></div>
+  </div>
+  <img id="pjioPhoto" class="hostMedia mt" style="max-height:74vh; max-width:92vw; display:none">
+  <div class="byline mtb" id="pjioCaption" style="font-size:20px"></div>
+</div>
+
 <!-- ==================== PROIETTORE: RISPOSTA + CLASSIFICA ==================== -->
 <div class="screen" id="scrPjReveal">
   <div class="brand"><div class="t1" style="font-size:clamp(26px,4vw,48px)" id="pjRevealTitle">RISPOSTA GIUSTA</div></div>
@@ -4432,7 +4453,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1271; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1273; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -4889,18 +4910,19 @@ function editQuiz(i){ curQuiz = JSON.parse(JSON.stringify(quizzes[i])); curQuiz.
 function delQuiz(i){ if(confirm('Eliminare "'+quizzes[i].title+'"?')){ quizzes.splice(i,1); persist(); loadQuizList(); } }
 function persist(){ try{ localStorage.setItem(LSKEY, JSON.stringify(quizzes)); }catch(e){ alert('⚠️ Memoria piena: i file audio/foto occupano troppo spazio. Usa file più piccoli o esporta il quiz in JSON.'); } }
 
-const QE_TYPE_LABEL = { mult:'Multipla', open:'Aperta', wordsearch:'🔤 Trova parola', anagram:'🔤➰ Anagramma' };
+const QE_TYPE_LABEL = { mult:'Multipla', open:'Aperta', wordsearch:'🔤 Trova parola', anagram:'🔤➰ Anagramma', image:'🖼️ Solo Immagine' };
 function renderEdQuestions(){
   const box = $('edQList'); box.innerHTML=''; $('edCount').textContent = curQuiz.questions.length;
   curQuiz.questions.forEach((q,i)=>{
     const d = document.createElement('div'); d.className='qCard';
     d.draggable = true; d.tabIndex = 0; d.dataset.i = i;
-    const tagClass = q.type==='mult' ? 'mult' : (q.type==='wordsearch'||q.type==='anagram' ? 'media' : 'open');
+    const tagClass = q.type==='mult' ? 'mult' : (q.type==='wordsearch'||q.type==='anagram' ? 'media' : (q.type==='image' ? 'media' : 'open'));
     const tags = `<span class="tag ${tagClass}">${QE_TYPE_LABEL[q.type]||q.type}</span>` +
       (q.media && q.media.kind!=='none' ? ` <span class="tag media">${q.media.kind==='photo'?'📷':'🎵'}</span>` : '');
+    const metaLine = q.type==='image' ? 'nessun punteggio · avanzamento manuale' : `${q.points} pt · ${q.timer}s`;
     d.innerHTML = `<div class="idx">☰ ${i+1}</div>
-      <div class="grow"><b>${esc(q.text).slice(0,60)||'(senza testo)'}</b><br>${tags}
-        <small style="color:var(--muted)"> ${q.points} pt · ${q.timer}s</small></div>
+      <div class="grow"><b>${esc(q.text).slice(0,60)||(q.type==='image'?'(immagine di riferimento)':'(senza testo)')}</b><br>${tags}
+        <small style="color:var(--muted)"> ${metaLine}</small></div>
       <button class="btn small cy" onclick="openQEditor(${i})">✎</button>
       <button class="btn small ghost" onclick="moveQTop(${i})" title="Porta in cima">⏫</button>
       <button class="btn small ghost" onclick="moveQ(${i},-1)">▲</button>
@@ -4995,6 +5017,11 @@ function qeTypeChanged(){
   $('qeWsBox').style.display = t==='wordsearch' ? 'block' : 'none';
   $('qeAnaBox').style.display = t==='anagram' ? 'block' : 'none';
   $('qeHintBox').style.display = (t==='open' || t==='anagram') ? 'block' : 'none';
+  $('qeScoringBox').style.display = t==='image' ? 'none' : 'block';
+  $('qeImageNote').style.display = t==='image' ? 'block' : 'none';
+  // una schermata "solo immagine" ha sempre bisogno di una foto: la preseleziono per comodità,
+  // così l'area di caricamento compare subito senza un passaggio in più
+  if (t==='image' && $('qeMedia').value==='none'){ $('qeMedia').value='photo'; qeMediaChanged(); }
   // solo per una domanda NUOVA (mai salvata): il tempo si adegua da solo al tipo scelto
   if (curQIdx === -1 && QE_DEFAULT_TIMER[t]) $('qeTimer').value = QE_DEFAULT_TIMER[t];
 }
@@ -5110,9 +5137,9 @@ function renderMediaPreview(compressInfo){
 /* Legge e valida i campi dell'editor: torna l'oggetto domanda pronto, o null se manca qualcosa (con avviso già mostrato) */
 function qeBuildQuestion(){
   if (qeMediaLoading) { alert('⏳ Aspetta che la foto/audio finisca di caricare prima di salvare!'); return null; }
-  const text = $('qeText').value.trim();
-  if (!text) { alert('Scrivi il testo della domanda!'); return null; }
   const type = $('qeType').value;
+  const text = $('qeText').value.trim();
+  if (!text && type!=='image') { alert('Scrivi il testo della domanda!'); return null; }
   const n = +$('qeNumOpts').value;
   const opts = Array.from({length:n},(_,k)=>($('qeOpt'+k)||{value:''}).value.trim());
   const corrects = [...document.querySelectorAll('#qeOpts input[type=checkbox]')].map((c,k)=>c.checked?k:null).filter(x=>x!==null);
@@ -5120,12 +5147,14 @@ function qeBuildQuestion(){
     opts, corrects, correct: corrects[0]||0,
     accepted: $('qeAccepted').value.trim(),
     hint: Math.max(0,+$('qeHint').value||0),
-    penWrong: Math.max(0,+$('qePenWrong').value||0),
-    penNone: Math.max(0,+$('qePenNone').value||0),
-    points:getPoints('qePoints','qePointsMan'), timer:+$('qeTimer').value };
+    penWrong: type==='image' ? 0 : Math.max(0,+$('qePenWrong').value||0),
+    penNone: type==='image' ? 0 : Math.max(0,+$('qePenNone').value||0),
+    points: type==='image' ? 0 : getPoints('qePoints','qePointsMan'),
+    timer: type==='image' ? 0 : +$('qeTimer').value };
   // rete di sicurezza: se per qualunque motivo il tipo dice foto/audio ma mancano i dati veri,
   // non salvo un riferimento "rotto" che non mostrerà mai nulla — ripiego su "nessun media"
   if (q.media && q.media.kind!=='none' && !q.media.data) q.media = {kind:'none'};
+  if (type==='image' && (!q.media || q.media.kind!=='photo' || !q.media.data)) { alert('Carica una foto: una schermata "solo immagine" senza foto non avrebbe senso!'); return null; }
   if (type==='mult' && opts.filter(o=>o).length<2) { alert('Servono almeno 2 opzioni compilate!'); return null; }
   if (type==='mult' && !corrects.length) { alert('Spunta almeno una risposta giusta!'); return null; }
   if (type==='mult' && corrects.some(k=>!opts[k])) { alert('Una risposta spuntata come giusta è vuota!'); return null; }
@@ -5502,6 +5531,7 @@ function nextQuestion(){
   if (qrOverlayOn) toggleQrOverlay();
   if (q.type==='wordsearch') { playWsQuestion(q); return; }
   if (q.type==='anagram') { playAnagramQuestion(q); return; }
+  if (q.type==='image') { playImageQuestion(q); return; }
   // scrive su DB solo ciò che serve ai telefoni (niente media, niente testo domanda)
   const corrects = (q.corrects && q.corrects.length) ? q.corrects : [q.correct||0];
   const multi = q.type==='mult' && corrects.length > 1;
@@ -5554,6 +5584,27 @@ function nextQuestion(){
     $('hqTimerNum').textContent = Math.ceil(left/1000);
     if (left<=0) closeQuestion();
   }, 100);
+  showScreen('scrHostQ');
+}
+/* Schermata "solo immagine": nessuna domanda, nessun punteggio, nessun timer — avanzamento manuale.
+   Riusa la stessa schermata regia delle domande normali (stessi elementi), semplicemente svuotando
+   tutto ciò che riguarda punteggio/timer/risposte, che qui non hanno senso. */
+function playImageQuestion(q){
+  G.played.add(G.qi); G.closed = true; clearInterval(G.timerInt);
+  const au = $('hqAudio'); if (au) au.pause();
+  sendLeadOverlay({on:false}); sendPjMsg(false); sendPjPhoto(false);
+  if (qrOverlayOn) toggleQrOverlay();
+  const photo = (q.media && q.media.kind==='photo' && q.media.data) ? q.media.data : null;
+  G.ref.update({ status:'imgonly', imgonly:{ i:G.qi, total:G.quiz.questions.length, caption:q.text||'', photo, startAt:serverNow() }, reveal:null });
+  G.ref.child('currentMedia').remove(); // qui la foto viaggia dentro "imgonly" stesso, non serve questo canale separato
+  $('hqProgress').textContent = `IMMAGINE ${G.qi+1} / ${G.quiz.questions.length}`;
+  $('hqPoints').textContent = '';
+  $('hqAnswered').textContent = '';
+  $('hqText').textContent = q.text || '';
+  $('hqTimerBar').style.width = '100%'; $('hqTimerNum').textContent='';
+  const mbox = $('hqMedia'); mbox.innerHTML = photo ? `<img src="${photo}" class="hostMedia">` : '';
+  $('hqOpts').innerHTML = `<div class="byline" style="grid-column:1/-1">🖼️ SOLO IMMAGINE — nessuna domanda, nessun punteggio. Premi "▶ Prossima domanda" quando sei pronto ad andare avanti.</div>`;
+  pjSend({type:'imgonly', i:G.qi, total:G.quiz.questions.length, caption:q.text||'', photo});
   showScreen('scrHostQ');
 }
 function hostSkip(){ closeQuestion(); }
@@ -5947,6 +5998,7 @@ function listenGame(){
     }
     if (g.status==='lobby') { showScreen('scrWait'); $('waitMsg').textContent='SEI DENTRO, '+P.name.toUpperCase()+'! 🎩'; $('waitSub').textContent='Guarda lo schermo... si parte tra poco'; }
     else if (g.status==='question') showPlayerQ(g.current);
+    else if (g.status==='imgonly') showPlayerImgOnly(g);
     else if (g.status==='reveal') showPlayerFb(g);
     else if (g.status==='mini') showPlayerMini(g);
     else if (g.status==='dice') showPlayerDice(g);
@@ -6030,6 +6082,14 @@ function pqRenderMedia(imgId, audioId){
     }
     else { aud.style.display='none'; if (aud.src) { aud.pause(); aud.removeAttribute('src'); aud.load(); } }
   }
+}
+function showPlayerImgOnly(g){
+  const m = g.imgonly||{};
+  showScreen('scrPlayImgOnly');
+  $('pioProgress').textContent = `${(m.i||0)+1} / ${m.total||1}`;
+  $('pioCaption').textContent = m.caption||'';
+  const img = $('pioPhoto');
+  if (m.photo){ img.src = m.photo; img.style.display='block'; } else { img.style.display='none'; img.src=''; }
 }
 function showPlayerQ(cur){
   if (P.curI === cur.i && $('scrPlayQ').classList.contains('active')) return; // già mostrata
@@ -7397,6 +7457,16 @@ function gtSetupScratch(canvas, onDone){
   const rect = canvas.getBoundingClientRect();
   canvas.width = rect.width; canvas.height = rect.height;
   gtDrawFoil(canvas);
+  // tolgo gli ascoltatori della manche precedente, se ce ne sono: altrimenti si accumulano ad ogni
+  // nuovo biglietto, e un solo tocco viene "processato" una volta per ogni manche già giocata,
+  // consumando il gratta-e-vinci molto più in fretta del dovuto (a volte quasi subito)
+  if (canvas._gtListeners){
+    const L = canvas._gtListeners;
+    canvas.removeEventListener('pointerdown', L.pointerdown);
+    canvas.removeEventListener('pointermove', L.pointermove);
+    canvas.removeEventListener('touchstart', L.touchstart);
+    canvas.removeEventListener('touchmove', L.touchmove);
+  }
   const GRID = 12; // divido la patina in una griglia invisibile, per stimare quanto è stata grattata senza dover rileggere i pixel ogni volta (costoso)
   const touched = new Set();
   let done = false;
@@ -7423,8 +7493,11 @@ function gtSetupScratch(canvas, onDone){
     const pt = ev.touches ? ev.touches[0] : ev;
     scratchAt(pt.clientX, pt.clientY);
   };
-  canvas.addEventListener('pointerdown', e=>{ canvas.setPointerCapture(e.pointerId); onMove(e); });
-  canvas.addEventListener('pointermove', e=>{ if (e.buttons>0 || e.pointerType==='touch') onMove(e); });
+  const onPointerDown = e=>{ canvas.setPointerCapture(e.pointerId); onMove(e); };
+  const onPointerMove = e=>{ if (e.buttons>0 || e.pointerType==='touch') onMove(e); };
+  canvas._gtListeners = { pointerdown:onPointerDown, pointermove:onPointerMove, touchstart:onMove, touchmove:onMove };
+  canvas.addEventListener('pointerdown', onPointerDown);
+  canvas.addEventListener('pointermove', onPointerMove);
   canvas.addEventListener('touchstart', onMove, {passive:true});
   canvas.addEventListener('touchmove', onMove, {passive:true});
 }
@@ -15071,6 +15144,13 @@ function pjRouteInner(m){
         if (left<=0) clearInterval(pjTimerInt);
       },100);
       showScreen('scrPjQ');
+    }
+    else if (m.type==='imgonly') {
+      $('pjioProgress').textContent = `${m.i+1} / ${m.total}`;
+      $('pjioCaption').textContent = m.caption||'';
+      const img = $('pjioPhoto');
+      if (m.photo){ img.src = m.photo; img.style.display='block'; } else { img.style.display='none'; img.src=''; }
+      showScreen('scrPjImgOnly');
     }
     else if (m.type==='wheelsState') {
       showScreen('scrPjWheels');
