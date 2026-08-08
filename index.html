@@ -75,6 +75,12 @@ body.proj .screen{max-width:none;}
 .btn:disabled{opacity:.4; pointer-events:none;}
 .gameBtn{width:100%; display:flex; align-items:center; justify-content:center; text-align:center;
   min-height:60px; font-size:15px; padding:14px 18px; line-height:1.15; box-sizing:border-box;}
+/* ===== SUGGERIMENTI AL PASSAGGIO (data-tip) — stesso motore già collaudato su Fantacalcio ===== */
+.tip-bubble{position:fixed; z-index:500; background:var(--panel); color:#fff; padding:9px 13px; border-radius:10px;
+  font-family:'Poppins',sans-serif; font-size:12.5px; font-weight:600; line-height:1.35; max-width:230px; text-align:center;
+  box-shadow:0 8px 20px rgba(0,0,0,.5), 0 0 0 1px rgba(157,77,255,.4); pointer-events:none; opacity:0;
+  transform:translate(-50%,-100%) translateY(6px); transition:opacity .12s, transform .12s; left:0; top:0;}
+.tip-bubble.show{opacity:1; transform:translate(-50%,-100%) translateY(-6px);}
 /* ===== L'IDRAULICO — griglia, tubi 3D, tavolozza ===== */
 .idrBoard{position:relative; width:min(92vw,480px); aspect-ratio:1; margin:14px auto; padding:8px;
   background:#0d0620; border-radius:16px; box-sizing:border-box;
@@ -1404,7 +1410,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v12.74</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v12.75</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -1417,11 +1423,11 @@ body.suspense-on #pfRank{ display:none !important; }
     </div>
   </div>
   <div class="row mtb" style="justify-content:center">
-    <button class="btn mg" onclick="newQuiz()">✚ Crea nuovo quiz</button>
-    <button class="btn cy" onclick="importQuiz()">⬆ Importa quiz</button>
-    <button class="btn lm" onclick="modalCampionato()">🏆 Campionato serate</button>
-    <button class="btn" onclick="modalMerge()">🔀 Fondi quiz</button>
-    <button class="btn ghost" onclick="backupAllQuizzes()">💾 Backup di tutti i quiz</button>
+    <button class="btn mg" onclick="newQuiz()" data-tip="Crea un quiz nuovo da zero, con la sua scaletta di domande">✚ Crea nuovo quiz</button>
+    <button class="btn cy" onclick="importQuiz()" data-tip="Carica un quiz da un file salvato in precedenza (esportato da qui o ricevuto da qualcun altro)">⬆ Importa quiz</button>
+    <button class="btn lm" onclick="modalCampionato()" data-tip="Tieni il conto di più serate insieme, con una classifica generale che si somma di volta in volta">🏆 Campionato serate</button>
+    <button class="btn" onclick="modalMerge()" data-tip="Unisce due dei tuoi quiz salvati in uno solo">🔀 Fondi quiz</button>
+    <button class="btn ghost" onclick="backupAllQuizzes()" data-tip="Scarica un file con tutti i tuoi quiz salvati, per non perderli mai">💾 Backup di tutti i quiz</button>
   </div>
   <div class="byline" style="text-transform:none; max-width:520px; text-align:center">I tuoi quiz sono salvati solo su questo dispositivo/browser. Scarica ogni tanto un backup completo, così non li perdi mai — anche se cancelli i dati di navigazione.</div>
   <div class="panel mtb" style="max-width:640px">
@@ -1728,27 +1734,27 @@ body.suspense-on #pfRank{ display:none !important; }
 
 <!-- ==================== BARRA COMANDI HOST ==================== -->
 <div id="hostBar">
-  <button id="hbToggle" onclick="toggleHostBar()">🎛 REGIA ▾</button>
+  <button id="hbToggle" onclick="toggleHostBar()" data-tip="Apre o chiude questa barra di comandi">🎛 REGIA ▾</button>
   <div class="hbwrap">
-  <button class="hb" id="hbSuspense" onclick="toggleSuspense()">🤫 Modalità Suspense</button>
-  <button class="hb" id="hbHighlander" onclick="toggleHighlander()">💀 Modalità Highlander</button>
-  <button class="hb" onclick="modalPoints()">± Punti</button>
-  <button class="hb" id="hbLead" onclick="toggleLeadOverlay('lead')">🏆 Classifica → 📺</button>
-  <button class="hb" id="hbFast" onclick="toggleLeadOverlay('fast')">⚡ Più veloci → 📺</button>
-  <button class="hb" id="hbMsg" onclick="modalPjMsg()">💬 Messaggio → 📺</button>
-  <button class="hb" id="hbWa" onclick="modalWaGroup()">📱 Gruppo WhatsApp</button>
-  <button class="hb" onclick="modalPlayers()">👥 Gestisci giocatori</button>
-  <button class="hb" id="hbPhoto" onclick="modalPjPhoto()">📷 Pubblica Foto</button>
-  <button class="hb" onclick="modalQuestions()">📋 Scelta domanda</button>
-  <button class="hb" onclick="modalGamesSkill()" style="border-color:var(--cyan); color:var(--cyan)">🧠 ABILITÀ</button>
-  <button class="hb" onclick="modalGamesLuck()" style="border-color:var(--gold); color:var(--gold)">🍀 FORTUNA</button>
-  <button class="hb" onclick="modalModules()" style="border-color:#d4a63a; color:#d4a63a">🧩 MODULI</button>
-  <button class="hb" onclick="openProjector()">📺 Apri proiettore</button>
-  <button class="hb" id="hbPreview" onclick="togglePreview()">👁 Anteprima proiettore</button>
-  <button class="hb" id="hbQr" onclick="toggleQrOverlay()">📱 QR sul proiettore</button>
-  <button class="hb" onclick="modalEntryLink()">🔗 Link ingresso</button>
-  <button class="hb" onclick="openInterimPodium()">🏆 Podio</button>
-  <button class="hb" onclick="btnEndQuiz()">🏁 Termina quiz</button>
+  <button class="hb" id="hbSuspense" onclick="toggleSuspense()" data-tip="Nasconde la classifica ai giocatori durante il gioco, per tenerli col fiato sospeso fino alla fine">🤫 Modalità Suspense</button>
+  <button class="hb" id="hbHighlander" onclick="toggleHighlander()" data-tip="Chi sbaglia una domanda viene eliminato: resta in gioco solo chi risponde giusto">💀 Modalità Highlander</button>
+  <button class="hb" onclick="modalPoints()" data-tip="Assegna o togli punti a mano a uno o più giocatori">± Punti</button>
+  <button class="hb" id="hbLead" onclick="toggleLeadOverlay('lead')" data-tip="Mostra o nasconde la classifica generale a schermo intero sul videoproiettore">🏆 Classifica → 📺</button>
+  <button class="hb" id="hbFast" onclick="toggleLeadOverlay('fast')" data-tip="Mostra o nasconde sul proiettore chi ha risposto più veloce all'ultima domanda">⚡ Più veloci → 📺</button>
+  <button class="hb" id="hbMsg" onclick="modalPjMsg()" data-tip="Manda un messaggio di testo a comparsa sul videoproiettore">💬 Messaggio → 📺</button>
+  <button class="hb" id="hbWa" onclick="modalWaGroup()" data-tip="Mostra QR e link per far entrare i giocatori nel gruppo WhatsApp della serata">📱 Gruppo WhatsApp</button>
+  <button class="hb" onclick="modalPlayers()" data-tip="Vedi l'elenco dei giocatori collegati: puoi rinominarli o rimuoverli">👥 Gestisci giocatori</button>
+  <button class="hb" id="hbPhoto" onclick="modalPjPhoto()" data-tip="Manda una foto a comparsa sul videoproiettore">📷 Pubblica Foto</button>
+  <button class="hb" onclick="modalQuestions()" data-tip="Salta direttamente a una domanda specifica della scaletta, saltando le altre">📋 Scelta domanda</button>
+  <button class="hb" onclick="modalGamesSkill()" style="border-color:var(--cyan); color:var(--cyan)" data-tip="Apre l'elenco dei minigiochi di abilità (puzzle, memoria, calcolo...)">🧠 ABILITÀ</button>
+  <button class="hb" onclick="modalGamesLuck()" style="border-color:var(--gold); color:var(--gold)" data-tip="Apre l'elenco dei minigiochi di fortuna (ruote, carte, estrazioni...)">🍀 FORTUNA</button>
+  <button class="hb" onclick="modalModules()" style="border-color:#d4a63a; color:#d4a63a" data-tip="Apre gli strumenti extra: Votometro, Timer, Classifica di Gradimento, Asta">🧩 MODULI</button>
+  <button class="hb" onclick="openProjector()" data-tip="Apre la finestra dedicata da collegare al videoproiettore">📺 Apri proiettore</button>
+  <button class="hb" id="hbPreview" onclick="togglePreview()" data-tip="Mostra qui in regia, in piccolo, esattamente cosa sta vedendo il proiettore in questo momento">👁 Anteprima proiettore</button>
+  <button class="hb" id="hbQr" onclick="toggleQrOverlay()" data-tip="Mostra o nasconde sul proiettore il codice QR per entrare a giocare">📱 QR sul proiettore</button>
+  <button class="hb" onclick="modalEntryLink()" data-tip="Mostra il link e il codice partita da dare ai giocatori per entrare">🔗 Link ingresso</button>
+  <button class="hb" onclick="openInterimPodium()" data-tip="Mostra un podio intermedio con i primi classificati fin qui, senza terminare la partita">🏆 Podio</button>
+  <button class="hb" onclick="btnEndQuiz()" data-tip="Chiude subito la partita e mostra il podio finale">🏁 Termina quiz</button>
   </div>
 </div>
 
@@ -4465,7 +4471,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1274; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1275; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -4557,6 +4563,58 @@ function pjWatchActiveScreen(){
 }
 window.addEventListener('resize', ()=>{ if (document.body.classList.contains('proj')) pjFitScreen(); });
 function esc(s){ return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+/* ===== SUGGERIMENTI AL PASSAGGIO (data-tip) — motore unico, stesso di Fantacalcio, invariato =====
+   Funziona da solo per QUALSIASI elemento con data-tip="...", presente in pagina o generato dopo
+   da altre funzioni: non serve richiamare nulla elemento per elemento. */
+(function(){
+  const tip = document.createElement('div');
+  tip.className = 'tip-bubble';
+  document.addEventListener('DOMContentLoaded', ()=> document.body.appendChild(tip));
+  if (document.body) document.body.appendChild(tip);
+  let showTimer=null, longPressTimer=null, startX=0, startY=0, moved=false, suppressClick=false;
+
+  function place(x,y){
+    const w = window.innerWidth;
+    tip.style.left = Math.min(Math.max(x, 80), w-80) + 'px';
+    tip.style.top = Math.max(y-14, 40) + 'px';
+  }
+  function show(text,x,y){ tip.textContent = text; place(x,y); requestAnimationFrame(()=> tip.classList.add('show')); }
+  function hide(){ tip.classList.remove('show'); }
+
+  document.addEventListener('mouseover', e=>{
+    const el = e.target.closest('[data-tip]');
+    if (!el) return;
+    clearTimeout(showTimer);
+    showTimer = setTimeout(()=> show(el.dataset.tip, e.clientX, e.clientY), 200);
+  });
+  document.addEventListener('mousemove', e=>{
+    if (!tip.classList.contains('show')) return;
+    if (e.target.closest('[data-tip]')) place(e.clientX, e.clientY);
+  });
+  document.addEventListener('mouseout', e=>{
+    if (e.target.closest('[data-tip]')){ clearTimeout(showTimer); hide(); }
+  });
+
+  document.addEventListener('touchstart', e=>{
+    const el = e.target.closest('[data-tip]');
+    if (!el) return;
+    moved = false;
+    const t = e.touches[0]; startX=t.clientX; startY=t.clientY;
+    clearTimeout(longPressTimer);
+    longPressTimer = setTimeout(()=>{
+      if (!moved){ show(el.dataset.tip, startX, startY); suppressClick = true; if (navigator.vibrate) navigator.vibrate(12); }
+    }, 420);
+  }, {passive:true});
+  document.addEventListener('touchmove', e=>{
+    if (!longPressTimer) return;
+    const t = e.touches[0];
+    if (Math.abs(t.clientX-startX)>10 || Math.abs(t.clientY-startY)>10){ moved=true; clearTimeout(longPressTimer); hide(); }
+  }, {passive:true});
+  document.addEventListener('touchend', ()=>{ clearTimeout(longPressTimer); if (suppressClick) hide(); });
+  document.addEventListener('click', e=>{
+    if (suppressClick){ e.preventDefault(); e.stopPropagation(); suppressClick = false; }
+  }, true);
+})();
 function norm(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim(); }
 function randCode(){ const A='ABCDEFGHJKLMNPQRSTUVWXYZ'; let c=''; for(let i=0;i<4;i++) c+=A[Math.floor(Math.random()*A.length)]; return c; }
 const SYMS = ['♠','♦','🎩','★','🎲'];
@@ -4878,11 +4936,11 @@ function loadQuizList(){
     const d = document.createElement('div'); d.className='qCard';
     d.innerHTML = `<div class="idx">🎩</div>
       <div class="grow"><b>${esc(q.title)}</b><br><small style="color:var(--muted)">${q.questions.length} domande · ${fmtLastUsed(q.lastUsed)}</small></div>
-      <button class="btn small ghost" onclick="moveQuiz(${i},-1)" ${i===0?'disabled':''} title="Sposta su">▲</button>
-      <button class="btn small ghost" onclick="moveQuiz(${i},1)" ${i===quizzes.length-1?'disabled':''} title="Sposta giù">▼</button>
-      <button class="btn small cy" onclick="editQuiz(${i})">✎</button>
-      <button class="btn small mg" onclick="playQuiz(${i})">▶</button>
-      <button class="btn small ghost" onclick="delQuiz(${i})">🗑</button>`;
+      <button class="btn small ghost" onclick="moveQuiz(${i},-1)" ${i===0?'disabled':''} data-tip="Sposta questo quiz più in alto nell'elenco">▲</button>
+      <button class="btn small ghost" onclick="moveQuiz(${i},1)" ${i===quizzes.length-1?'disabled':''} data-tip="Sposta questo quiz più in basso nell'elenco">▼</button>
+      <button class="btn small cy" onclick="editQuiz(${i})" data-tip="Apri questo quiz nell'editor per modificarlo">✎</button>
+      <button class="btn small mg" onclick="playQuiz(${i})" data-tip="Avvia una partita con questo quiz: genera il codice e apre la regia">▶</button>
+      <button class="btn small ghost" onclick="delQuiz(${i})" data-tip="Elimina questo quiz per sempre">🗑</button>`;
     box.appendChild(d);
   });
 }
