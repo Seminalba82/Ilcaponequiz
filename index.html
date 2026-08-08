@@ -150,8 +150,8 @@ option{background:var(--bg2);}
 .ansBtn.dim{filter:grayscale(.8) brightness(.4); pointer-events:none;}
 .ansBtn.win{animation:winPulse 1s infinite alternate;}
 @keyframes winPulse{from{filter:brightness(1)}to{filter:brightness(1.35); transform:scale(1.03)}}
-.ansBtn.photo{padding:0; overflow:hidden; position:relative; min-height:130px;}
-.ansBtn.photo img{width:100%; height:100%; object-fit:cover; position:absolute; inset:0;}
+.ansBtn.photo{padding:6px; overflow:hidden; position:relative; min-height:130px; background:rgba(0,0,0,.35);}
+.ansBtn.photo img{width:100%; height:100%; object-fit:contain; position:absolute; inset:6px; width:calc(100% - 12px); height:calc(100% - 12px);}
 .ansBtn.photo .sym{position:absolute; top:6px; left:6px; background:rgba(0,0,0,.6); border-radius:8px; padding:2px 9px; font-size:16px; z-index:2; filter:none;}
 .qeOptPhotoRow{display:flex; align-items:center; gap:10px; flex:1;}
 .qeOptPhotoThumb{width:52px; height:52px; border-radius:10px; object-fit:cover; background:#0d0620; box-shadow:inset 0 0 0 1px rgba(255,255,255,.18); flex-shrink:0;}
@@ -1410,7 +1410,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v12.75</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v12.77</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -1446,14 +1446,14 @@ body.suspense-on #pfRank{ display:none !important; }
     <div class="label mt">Domande (<span id="edCount">0</span>) — quante ne vuoi, nessun limite</div>
     <div id="edQList"></div>
     <div class="row mtb">
-      <button class="btn lm grow" onclick="openQEditor(-1)">✚ Aggiungi domanda</button>
+      <button class="btn lm grow" onclick="openQEditor(-1)" data-tip="Aggiungi una nuova domanda in fondo alla scaletta">✚ Aggiungi domanda</button>
     </div>
     <div class="row mt">
-      <button class="btn ghost" onclick="showScreen('scrHome'); loadQuizList()">← Indietro</button>
+      <button class="btn ghost" onclick="showScreen('scrHome'); loadQuizList()" data-tip="Torna alla home senza avviare la partita">← Indietro</button>
       <div class="grow"></div>
-      <button class="btn ghost" onclick="exportQuiz()">⬇ Esporta</button>
-      <button class="btn cy" onclick="saveQuiz()">💾 Salva</button>
-      <button class="btn mg" onclick="saveQuiz(true)">▶ AVVIA QUIZ</button>
+      <button class="btn ghost" onclick="exportQuiz()" data-tip="Scarica questo quiz come file, per farne un backup o darlo a qualcun altro">⬇ Esporta</button>
+      <button class="btn cy" onclick="saveQuiz()" data-tip="Salva le modifiche su questo dispositivo, senza avviare la partita">💾 Salva</button>
+      <button class="btn mg" onclick="saveQuiz(true)" data-tip="Salva e avvia subito la partita: genera il codice e apre la regia">▶ AVVIA QUIZ</button>
     </div>
   </div>
 </div>
@@ -1462,18 +1462,18 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrQEdit">
   <div class="panel" style="max-width:720px">
     <div class="row" style="justify-content:center; align-items:center; gap:14px">
-      <button class="btn small ghost" id="qeBtnPrev" onclick="qeGoto(-1)" title="Domanda precedente (freccia sinistra)">◀</button>
+      <button class="btn small ghost" id="qeBtnPrev" onclick="qeGoto(-1)" data-tip="Vai alla domanda precedente (o freccia sinistra da tastiera)">◀</button>
       <div class="brand center" style="margin:0"><div class="t1" style="font-size:26px" id="qeTitle">DOMANDA</div>
         <div class="byline" id="qePosLabel" style="margin-top:2px"></div></div>
-      <button class="btn small ghost" id="qeBtnNext" onclick="qeGoto(1)" title="Domanda successiva (freccia destra)">▶</button>
+      <button class="btn small ghost" id="qeBtnNext" onclick="qeGoto(1)" data-tip="Vai alla domanda successiva (o freccia destra da tastiera)">▶</button>
     </div>
     <div class="label">Testo della domanda (visibile solo sullo schermo del presentatore)</div>
-    <textarea id="qeText" rows="2" placeholder="Es. Chi canta 'My Way'?"></textarea>
+    <textarea id="qeText" rows="2" placeholder="Es. Chi canta 'My Way'?" data-tip="Il testo che leggerai o vedrai comparire — sul proiettore e sui telefoni dei giocatori"></textarea>
 
     <div class="row mt">
       <div class="grow">
         <div class="label">Tipo di risposta</div>
-        <select id="qeType" onchange="qeTypeChanged()">
+        <select id="qeType" onchange="qeTypeChanged()" data-tip="Come risponderanno i giocatori: scelta multipla, risposta scritta, o uno dei minigiochi speciali (trova la parola, anagramma, solo immagine)">
           <option value="mult">Risposta multipla (4 opzioni)</option>
           <option value="open">Risposta aperta (si scrive)</option>
           <option value="wordsearch">🔤 Trova la Parola (griglia)</option>
@@ -1483,7 +1483,7 @@ body.suspense-on #pfRank{ display:none !important; }
       </div>
       <div class="grow">
         <div class="label">Allegato</div>
-        <select id="qeMedia" onchange="qeMediaChanged()">
+        <select id="qeMedia" onchange="qeMediaChanged()" data-tip="Aggiungi una foto o un pezzo di musica da mostrare/far sentire insieme alla domanda">
           <option value="none">Nessuno</option>
           <option value="photo">📷 Foto</option>
           <option value="audio">🎵 Musica / audio</option>
@@ -1493,7 +1493,7 @@ body.suspense-on #pfRank{ display:none !important; }
 
     <div id="qeMediaBox" style="display:none">
       <div class="label">File allegato <span style="color:var(--gold)">(consigliato max 2 MB — per la musica usa spezzoni MP3 corti)</span></div>
-      <input type="file" id="qeFile" accept="image/*,audio/*">
+      <input type="file" id="qeFile" accept="image/*,audio/*" data-tip="Scegli il file dal tuo dispositivo — viene compresso automaticamente per restare leggero">
       <div id="qeMediaPreview" class="mt center"></div>
     </div>
 
@@ -1592,8 +1592,8 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="label center mt">Giocatori collegati: <span id="lobbyCount" class="pill">0</span></div>
   <div class="playersLobby" id="lobbyPlayers"></div>
   <div class="row mtb" style="justify-content:center">
-    <button class="btn ghost" onclick="abortGame()">✕ Annulla</button>
-    <button class="btn mg" id="btnStart" onclick="startQuiz()">▶ SI PARTE!</button>
+    <button class="btn ghost" onclick="abortGame()" data-tip="Annulla e torna alla home, senza avviare la partita">✕ Annulla</button>
+    <button class="btn mg" id="btnStart" onclick="startQuiz()" data-tip="Inizia la prima domanda: da qui in poi i giocatori collegati sono quelli in partita">▶ SI PARTE!</button>
   </div>
 </div>
 
@@ -1609,7 +1609,7 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="bigQ" id="hqText"></div>
   <div class="center" id="hqMedia"></div>
   <div class="ansGrid mtb" id="hqOpts" style="max-width:860px"></div>
-  <div class="row mtb"><button class="btn small ghost" onclick="hostSkip()">⏭ Chiudi subito la domanda</button></div>
+  <div class="row mtb" id="hqSkipRow"><button class="btn small ghost" onclick="hostSkip()" data-tip="Chiude subito la domanda per tutti, anche se il tempo non è ancora scaduto — utile se hanno già risposto tutti">⏭ Chiudi subito la domanda</button></div>
 </div>
 
 <!-- ==================== HOST: RISULTATO DOMANDA ==================== -->
@@ -1623,7 +1623,7 @@ body.suspense-on #pfRank{ display:none !important; }
   </div>
   <div class="lead mtb"><div class="label center">CLASSIFICA</div><div id="hrLead"></div></div>
   <div class="row mtb">
-    <button class="btn mg" id="btnNext" onclick="nextQuestion()">▶ Prossima domanda</button>
+    <button class="btn mg" id="btnNext" onclick="nextQuestion()" data-tip="Passa alla domanda successiva della scaletta">▶ Prossima domanda</button>
   </div>
 </div>
 
@@ -1633,15 +1633,15 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="podio" id="podium"></div>
   <div class="lead mtb"><div id="podLead"></div></div>
   <div class="row mtb">
-    <button class="btn lm" id="btnSaveCamp" onclick="saveCampionato()">💾 Salva nel campionato serate</button>
-    <button class="btn cy" onclick="location.href=location.pathname">🏠 Torna alla home</button>
+    <button class="btn lm" id="btnSaveCamp" onclick="saveCampionato()" data-tip="Aggiungi il risultato di stasera al campionato serate, sommandolo alle altre">💾 Salva nel campionato serate</button>
+    <button class="btn cy" onclick="location.href=location.pathname" data-tip="Chiude la partita e torna alla home">🏠 Torna alla home</button>
   </div>
   <div class="row mtb">
-    <button class="btn ghost" id="btnPodResume" style="display:none" onclick="backToQuiz()">↩ Torna al quiz (riprendi da dove eri)</button>
+    <button class="btn ghost" id="btnPodResume" style="display:none" onclick="backToQuiz()" data-tip="Torna alla partita in corso, riprendendo esattamente da dove eri">↩ Torna al quiz (riprendi da dove eri)</button>
   </div>
 </div>
 <div id="podRevealBar">
-  <button class="btn mg" id="btnPodReveal" onclick="podiumRevealNext()" style="font-size:20px; padding:16px 30px;">🥉 Rivela il 3° posto</button>
+  <button class="btn mg" id="btnPodReveal" onclick="podiumRevealNext()" style="font-size:20px; padding:16px 30px;" data-tip="Rivela il prossimo posto del podio, uno alla volta, per tenere la suspense">🥉 Rivela il 3° posto</button>
 </div>
 
 <!-- ==================== PLAYER: JOIN ==================== -->
@@ -1768,7 +1768,7 @@ body.suspense-on #pfRank{ display:none !important; }
 </div>
 
 <!-- ==================== ANTEPRIMA PROIETTORE ==================== -->
-<div id="projPreview"><div class="pvHandle" id="pvHandle" title="Trascina per spostare"></div><div class="pvLabel">✥ ANTEPRIMA PROIETTORE</div><iframe id="pvFrame"></iframe></div>
+<div id="projPreview"><div class="pvHandle" id="pvHandle" data-tip="Trascina per riordinare"></div><div class="pvLabel">✥ ANTEPRIMA PROIETTORE</div><iframe id="pvFrame"></iframe></div>
 
 <!-- ==================== HOST: MINIGIOCO BUSSOLOTTI ==================== -->
 <div class="screen" id="scrMini">
@@ -1777,21 +1777,21 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="miniMsg" id="miniMsg">Scegli i punti e premi NASCONDI E MESCOLA</div>
   <div class="voteCounts" id="miniCounts" style="display:none"></div>
   <div class="row mt" style="justify-content:center; align-items:flex-end">
-    <div><div class="label">Punti in palio</div><select id="miniPoints" style="width:140px"></select></div>
+    <div><div class="label">Punti in palio</div><select id="miniPoints" style="width:140px" data-tip="Quanti punti vince chi indovina sotto quale bussolotto si trova la pallina"></select></div>
     <div><div class="label">O scrivili</div><input type="number" id="miniPointsMan" class="ptsManual" placeholder="—" min="10" step="10"></div>
-      <div class="grow"><div class="label">Se sbaglia perde</div><input type="number" id="miniPen" value="0" min="0" style="text-align:center"></div>
-    <div><div class="label">Velocità</div><select id="miniSpeed" style="width:150px">
+      <div class="grow"><div class="label">Se sbaglia perde</div><input type="number" id="miniPen" value="0" min="0" style="text-align:center" data-tip="Punti tolti a chi indovina il bussolotto sbagliato"></div>
+    <div><div class="label">Velocità</div><select id="miniSpeed" style="width:150px" data-tip="Quanto velocemente si mescolano i bussolotti prima di fermarsi">
       <option value="560">Lenta</option>
       <option value="420" selected>Normale</option>
       <option value="300">Veloce</option>
       <option value="200">⚡ Fulmine</option>
       <option value="120">🚀 Turbo</option>
     </select></div>
-    <button class="btn mg" id="miniBtnGo" onclick="miniShuffle()">🎲 NASCONDI E MESCOLA</button>
-    <button class="btn lm" id="miniBtnReveal" onclick="miniReveal()" style="display:none">👁 RIVELA</button>
+    <button class="btn mg" id="miniBtnGo" onclick="miniShuffle()" data-tip="Nasconde la pallina e mescola i bussolotti">🎲 NASCONDI E MESCOLA</button>
+    <button class="btn lm" id="miniBtnReveal" onclick="miniReveal()" style="display:none" data-tip="Svela sotto quale bussolotto si trova davvero la pallina">👁 RIVELA</button>
     <button class="btn cy" id="miniBtnAgain" onclick="miniAgain()" style="display:none">🔁 Un'altra manche</button>
   </div>
-  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
 
 <!-- ==================== HOST: RUOTE DELLA FORTUNA ==================== -->
@@ -1805,7 +1805,7 @@ body.suspense-on #pfRank{ display:none !important; }
     <button class="btn mg" id="wheelsBtnGo" onclick="wheelsSpin()">🎡 FALLE GIRARE!</button>
     <button class="btn cy" id="wheelsBtnAgain" onclick="wheelsSpin()" style="display:none">🔁 Un altro giro</button>
   </div>
-  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
 
 <!-- ==================== PROIETTORE: RUOTE ==================== -->
@@ -1851,11 +1851,11 @@ body.suspense-on #pfRank{ display:none !important; }
     <div class="miniMsg" id="hiloMsg"></div>
     <div class="voteCounts" id="hiloCounts"></div>
     <div class="row mt" style="justify-content:center">
-      <button class="btn mg" id="hiloBtnBet" onclick="hiloBet()">⬆⬇ APRI SCOMMESSE — CARTA 2</button>
+      <button class="btn mg" id="hiloBtnBet" onclick="hiloBet()" data-tip="Apre le scommesse per la prossima carta: i giocatori hanno il tempo del timer per scegliere alta o bassa">⬆⬇ APRI SCOMMESSE — CARTA 2</button>
       <button class="btn cy" id="hiloBtnAgain" onclick="openHiLo()" style="display:none">🔁 Un'altra mano</button>
     </div>
   </div>
-  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
 
 <!-- ==================== PROIETTORE: ALTA/BASSA ==================== -->
@@ -1894,7 +1894,7 @@ body.suspense-on #pfRank{ display:none !important; }
     <div class="label">Titolo mostrato su schermo e telefoni</div>
     <input type="text" id="ruotaTitleIn" placeholder="Es. ESTRAZIONE PANETTONI 🎄" maxlength="60">
     <div class="row mt">
-      <label style="display:flex; align-items:center; gap:8px; cursor:pointer">
+      <label style="display:flex; align-items:center; gap:8px; cursor:pointer" data-tip="Invece di una singola estrazione, incroci due ruote: prima si estrae CHI vince, poi COSA vince">
         <input type="checkbox" id="ruotaDouble" onchange="ruotaDoubleToggled()" style="width:20px; height:20px; accent-color:var(--gold)">
         <span style="font-weight:700; font-size:14px">🎡🎡 Due ruote incrociate: una per CHI vince, una per COSA vince</span>
       </label>
@@ -1902,44 +1902,44 @@ body.suspense-on #pfRank{ display:none !important; }
 
     <div id="ruotaSingleBox">
       <div class="label mt">Chi/cosa mettiamo sulla ruota?</div>
-      <select id="ruotaSource" onchange="ruotaSourceChanged()">
+      <select id="ruotaSource" onchange="ruotaSourceChanged()" data-tip="Da dove prendere gli spicchi: i giocatori già in partita, nomi scritti a mano, o premi (senza mai dare punti)">
         <option value="players">🎮 Solo i giocatori già iscritti al quiz</option>
         <option value="manual">✍️ Solo cose scritte a mano (persone, animali, oggetti...)</option>
         <option value="prizes">🎁 Solo premi (mai punti in classifica)</option>
       </select>
       <div class="label mt">Spicchi della ruota — modificabili liberamente, con punti facoltativi</div>
       <div id="ruotaSegList"></div>
-      <button class="btn small cy mt" type="button" onclick="ruotaAddSeg()">➕ Aggiungi spicchio</button>
+      <button class="btn small cy mt" type="button" onclick="ruotaAddSeg()" data-tip="Aggiungi un altro spicchio alla ruota">➕ Aggiungi spicchio</button>
     </div>
 
     <div id="ruotaDoubleBox" style="display:none">
       <div class="label mt" style="color:var(--gold)">🎡 RUOTA 1 — CHI VINCE</div>
-      <select id="ruotaSourceA" onchange="ruotaSourceChanged('A')">
+      <select id="ruotaSourceA" onchange="ruotaSourceChanged('A')" data-tip="Da dove prendere gli spicchi di questa ruota">
         <option value="players">🎮 Solo i giocatori già iscritti al quiz</option>
         <option value="manual">✍️ Solo cose scritte a mano (persone, animali...)</option>
         <option value="prizes">🎁 Solo premi</option>
       </select>
       <div id="ruotaSegListA"></div>
-      <button class="btn small cy mt" type="button" onclick="ruotaAddSeg('A')">➕ Aggiungi spicchio</button>
+      <button class="btn small cy mt" type="button" onclick="ruotaAddSeg('A')" data-tip="Aggiungi un altro spicchio a questa ruota">➕ Aggiungi spicchio</button>
 
       <div class="label mt" style="color:var(--cyan)">🎁 RUOTA 2 — COSA VINCE</div>
-      <select id="ruotaSourceB" onchange="ruotaSourceChanged('B')">
+      <select id="ruotaSourceB" onchange="ruotaSourceChanged('B')" data-tip="Da dove prendere gli spicchi di questa ruota">
         <option value="players">🎮 Solo i giocatori già iscritti al quiz</option>
         <option value="manual" selected>✍️ Solo cose scritte a mano (persone, animali...)</option>
         <option value="prizes">🎁 Solo premi</option>
       </select>
       <div id="ruotaSegListB"></div>
-      <button class="btn small cy mt" type="button" onclick="ruotaAddSeg('B')">➕ Aggiungi spicchio</button>
+      <button class="btn small cy mt" type="button" onclick="ruotaAddSeg('B')" data-tip="Aggiungi un altro spicchio a questa ruota">➕ Aggiungi spicchio</button>
       <div class="label mt" style="text-transform:none; letter-spacing:0">🎡🎡 Le due ruote girano insieme: si combina chi vince (ruota 1) con cosa vince (ruota 2). I punti eventuali di ciascuna ruota vanno a chi quella ruota indica, se corrisponde a un giocatore.</div>
     </div>
 
     <div class="row mt">
-      <label style="display:flex; align-items:center; gap:8px; cursor:pointer">
+      <label style="display:flex; align-items:center; gap:8px; cursor:pointer" data-tip="Se attivo, chi ha già vinto una volta non compare più tra gli spicchi nei giri successivi">
         <input type="checkbox" id="ruotaRemoveWin" checked style="width:20px; height:20px; accent-color:var(--lime)">
         <span style="font-weight:700; font-size:14px">Togli dalla ruota chi ha già vinto</span>
       </label>
     </div>
-    <button class="btn mg mt" style="width:100%" onclick="ruotaBuild()">🎡 PREPARA LA RUOTA</button>
+    <button class="btn mg mt" style="width:100%" onclick="ruotaBuild()" data-tip="Costruisce la ruota con gli spicchi scelti, pronta per girare">🎡 PREPARA LA RUOTA</button>
   </div>
   <div id="ruotaLive" style="display:none; width:100%" class="center">
     <div class="gradTitle" id="ruotaTitleHost"></div>
@@ -1949,7 +1949,7 @@ body.suspense-on #pfRank{ display:none !important; }
     </div>
     <div class="rwWinner" id="ruotaWinnerHost"></div>
     <div class="row mt" style="justify-content:center">
-      <button class="btn mg" id="ruotaBtnSpin" onclick="ruotaSpin()">🎡 GIRA LA RUOTA!</button>
+      <button class="btn mg" id="ruotaBtnSpin" onclick="ruotaSpin()" data-tip="Fa girare la ruota e estrae uno spicchio">🎡 GIRA LA RUOTA!</button>
     </div>
     <div class="label mt center" id="ruotaHistLabel" style="display:none">STORICO ESTRAZIONI</div>
     <div class="lead mt" id="ruotaHistHost" style="max-width:460px; width:100%"></div>
@@ -1957,7 +1957,7 @@ body.suspense-on #pfRank{ display:none !important; }
       <button class="btn cy" id="ruotaBtnAgain" onclick="openRuota()" style="display:none">🔁 Prepara un'altra ruota</button>
     </div>
   </div>
-  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
 
 <!-- ==================== PROIETTORE: LA RUOTA GIRA PER TUTTI ==================== -->
@@ -2000,7 +2000,7 @@ body.suspense-on #pfRank{ display:none !important; }
       <button class="btn cy" id="tapBtnAgain" onclick="openTapTap()" style="display:none">🔁 Un'altra sfida</button>
     </div>
   </div>
-  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
 
 <!-- ==================== PROIETTORE: TAP TAP ==================== -->
@@ -2035,7 +2035,7 @@ body.suspense-on #pfRank{ display:none !important; }
     <input type="text" id="gradTitleIn" placeholder="Es. Il costume più assurdo della serata" maxlength="60">
     <div class="label mt">Chi/cosa mettiamo al voto (almeno 2)</div>
     <div id="gradOptsList"></div>
-    <button class="btn small cy mt" type="button" onclick="gradAddOpt()">➕ Aggiungi opzione</button>
+    <button class="btn small cy mt" type="button" onclick="gradAddOpt()" data-tip="Aggiungi un'altra opzione da mettere al voto">➕ Aggiungi opzione</button>
     <div class="row mt" style="align-items:flex-end">
       <div class="grow"><div class="label">Punti a chi vota il più votato</div><select id="gradPoints"></select></div>
       <div><div class="label">O scrivili</div><input type="number" id="gradPointsMan" class="ptsManual" placeholder="—" min="1"></div>
@@ -2053,7 +2053,7 @@ body.suspense-on #pfRank{ display:none !important; }
       <button class="btn cy" id="gradBtnAgain" onclick="openGrad()" style="display:none">🔁 Un'altra classifica</button>
     </div>
   </div>
-  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
 
 <!-- ==================== PROIETTORE: CLASSIFICA DI GRADIMENTO ==================== -->
@@ -2111,7 +2111,7 @@ body.suspense-on #pfRank{ display:none !important; }
       <button class="btn cy" id="seedBtnAgain" onclick="openSeed()" style="display:none">🔁 Un'altra mano</button>
     </div>
   </div>
-  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
 
 <!-- ==================== PROIETTORE: IL SEME VINCENTE ==================== -->
@@ -2166,7 +2166,7 @@ body.suspense-on #pfRank{ display:none !important; }
       <button class="btn cy" id="swissBtnAgain" onclick="openSwiss()" style="display:none">🔁 Un'altra manche</button>
     </div>
   </div>
-  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
 
 <!-- ==================== PROIETTORE: PRECISIONE SVIZZERA ==================== -->
@@ -2212,11 +2212,11 @@ body.suspense-on #pfRank{ display:none !important; }
     <div class="miniMsg" id="cardsMsg"></div>
     <div class="voteCounts" id="cardsCounts"></div>
     <div class="row mt" style="justify-content:center">
-      <button class="btn mg" id="cardsBtnBet" onclick="cardsBet()">🔴⚫ APRI SCOMMESSE — CARTA 1</button>
+      <button class="btn mg" id="cardsBtnBet" onclick="cardsBet()" data-tip="Apre le scommesse per la prossima carta: rossa o nera?">🔴⚫ APRI SCOMMESSE — CARTA 1</button>
       <button class="btn cy" id="cardsBtnAgain" onclick="openCards()" style="display:none">🔁 Un'altra mano</button>
     </div>
   </div>
-  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
 
 <!-- ==================== PROIETTORE: CARTE ==================== -->
@@ -2254,13 +2254,13 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="panel mt" style="max-width:620px" id="tomSetup">
     <div class="label">Premi (punti quiz + eventuale premio extra: birre, gadget...)</div>
     <div id="tomPrizeInputs"></div>
-    <button class="btn mg mt" style="width:100%" onclick="tombolaStart()">🎱 GENERA LE CARTELLE E VIA!</button>
+    <button class="btn mg mt" style="width:100%" onclick="tombolaStart()" data-tip="Genera una cartella unica per ogni giocatore già collegato in questo momento — chi entra dopo non riceve la cartella per questa partita">🎱 GENERA LE CARTELLE E VIA!</button>
     <div class="label mt" style="text-transform:none; letter-spacing:0">Ogni squadra collegata riceve una cartella unica sul telefono. Chi entra dopo l'avvio non ha la cartella per questa partita.</div>
   </div>
   <div id="tomLive" style="display:none; width:100%">
     <div class="tomBig" id="tomLastNum">—</div>
     <div class="row" style="justify-content:center">
-      <button class="btn mg" id="tomBtnDraw" onclick="tombolaDraw()">🎱 ESTRAI NUMERO</button>
+      <button class="btn mg" id="tomBtnDraw" onclick="tombolaDraw()" data-tip="Estrae il prossimo numero della tombola">🎱 ESTRAI NUMERO</button>
     </div>
     <div class="tomDrawn" id="tomDrawnHost"></div>
     <div class="tomLayout mt">
@@ -2268,7 +2268,7 @@ body.suspense-on #pfRank{ display:none !important; }
       <div class="tomPrizes" id="tomPrizesHost"></div>
     </div>
   </div>
-  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
 
 <!-- ==================== PROIETTORE: TOMBOLA ==================== -->
@@ -2314,14 +2314,14 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="brand"><div class="t1" style="font-size:clamp(20px,3.6vw,36px)">🧩 PUZZLE</div></div>
   <div class="panel mt" style="max-width:520px" id="puzSetup">
     <div class="label">Galleria foto puzzle — caricane quante vuoi, restano pronte anche per le prossime serate</div>
-    <input type="file" id="puzFile" accept="image/*" multiple>
+    <input type="file" id="puzFile" accept="image/*" multiple data-tip="Carica una o più foto per i puzzle — restano salvate anche per le prossime serate">
     <div id="puzUploadStatus" class="byline mt" style="display:none; text-transform:none"></div>
     <div class="pgGrid mt" id="puzGallery"></div>
     <div class="label mt">Foto selezionata per questo puzzle:</div>
     <img id="puzPreview" style="display:none; max-height:180px; border-radius:10px; margin-top:8px">
     <div class="row mt">
       <div class="grow"><div class="label">Difficoltà</div>
-        <select id="puzDiff"><option value="3">😊 Facile — 9 pezzi (3×3)</option><option value="5">🔥 Difficile — 25 pezzi (5×5)</option></select>
+        <select id="puzDiff" data-tip="Quanti pezzi avrà il puzzle da ricomporre"><option value="3">😊 Facile — 9 pezzi (3×3)</option><option value="5">🔥 Difficile — 25 pezzi (5×5)</option></select>
       </div>
     </div>
     <div class="row mt">
@@ -2342,7 +2342,7 @@ body.suspense-on #pfRank{ display:none !important; }
       <button class="btn cy" id="puzBtnAgain" onclick="openPuzzle()" style="display:none">🔁 Un altro puzzle</button>
     </div>
   </div>
-  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
 
 <!-- ==================== PROIETTORE: PUZZLE ==================== -->
@@ -2374,16 +2374,16 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="brand"><div class="t1" style="font-size:clamp(20px,3.6vw,36px)">🔤➰ ANAGRAMMA</div></div>
   <div class="panel mt" style="max-width:560px" id="anaSetup">
     <div class="label">La parola giusta</div>
-    <input type="text" id="anaWord" placeholder="Es. GANGSTER" maxlength="24" oninput="anaAutoScramble()">
+    <input type="text" id="anaWord" placeholder="Es. GANGSTER" maxlength="24" oninput="anaAutoScramble()" data-tip="La parola da indovinare — l'anagramma sotto si genera da solo mentre scrivi">
     <div class="label mt">Frase indizio</div>
     <input type="text" id="anaClue" placeholder="Es. Malvivente in giacca e cappello" maxlength="80">
     <div class="row mt" style="align-items:flex-end">
       <div class="grow"><div class="label">Anagramma (rimescolato — puoi modificarlo a mano)</div>
         <input type="text" id="anaScramble" placeholder="Si genera da solo..." maxlength="30" style="text-transform:uppercase"></div>
-      <button class="btn small cy" onclick="anaAutoScramble(true)">🔀 Rigenera</button>
+      <button class="btn small cy" onclick="anaAutoScramble(true)" data-tip="Rimescola di nuovo le lettere in un ordine diverso">🔀 Rigenera</button>
     </div>
     <div class="row mt">
-      <div class="grow"><div class="label">Lettere di aiuto</div><input type="number" id="anaHint" value="0" min="0" max="20" style="text-align:center"></div>
+      <div class="grow"><div class="label">Lettere di aiuto</div><input type="number" id="anaHint" value="0" min="0" max="20" style="text-align:center" data-tip="Quante lettere mostrare già al posto giusto, come aiuto"></div>
       <div class="grow"><div class="label">Chi sbaglia perde</div><input type="number" id="anaPenWrong" value="0" min="0" style="text-align:center"></div>
       <div class="grow"><div class="label">Chi non risponde perde</div><input type="number" id="anaPenNone" value="0" min="0" style="text-align:center"></div>
     </div>
@@ -2409,7 +2409,7 @@ body.suspense-on #pfRank{ display:none !important; }
       <button class="btn mg" id="anaBtnNext" style="display:none" onclick="anagramNextClick()">🔁 Un altro anagramma</button>
     </div>
   </div>
-  <div class="row mt" id="anaBtnBackRow"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+  <div class="row mt" id="anaBtnBackRow"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
 
 <!-- ==================== PROIETTORE: ANAGRAMMA ==================== -->
@@ -2456,7 +2456,7 @@ body.suspense-on #pfRank{ display:none !important; }
     <input type="text" id="wsClue" placeholder="Es. Malvivente in giacca e cappello" maxlength="80">
     <div class="row mt">
       <div class="grow"><div class="label">Dimensione griglia</div>
-        <select id="wsSize"><option value="8">8×8</option><option value="10" selected>10×10</option><option value="12">12×12</option></select>
+        <select id="wsSize" data-tip="Quanto è grande la griglia dove nascondere la parola — più è grande, più è difficile trovarla"><option value="8">8×8</option><option value="10" selected>10×10</option><option value="12">12×12</option></select>
       </div>
       <div class="grow"><div class="label">Tempo per trovarla</div><select id="wsTime"></select></div>
     </div>
@@ -2478,7 +2478,7 @@ body.suspense-on #pfRank{ display:none !important; }
       <button class="btn cy" id="wsBtnAgain" onclick="wsAgainClick()" style="display:none">🔁 Un'altra parola</button>
     </div>
   </div>
-  <div class="row mt" id="wsBtnBackRow"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+  <div class="row mt" id="wsBtnBackRow"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
 
 <!-- ==================== PROIETTORE: TROVA LA PAROLA ==================== -->
@@ -2539,7 +2539,7 @@ body.suspense-on #pfRank{ display:none !important; }
       <button class="btn cy" id="memoBtnAgain" onclick="openMemo()" style="display:none">🔁 Un'altra sfida</button>
     </div>
   </div>
-  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
 
 <!-- ==================== PROIETTORE: MEMO ==================== -->
@@ -2596,7 +2596,7 @@ body.suspense-on #pfRank{ display:none !important; }
       <button class="btn cy" id="tocBtnAgain" onclick="openToc()" style="display:none">🔁 Un altro lancio</button>
     </div>
   </div>
-  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
 
 <!-- ==================== PROIETTORE: TESTA O CROCE ==================== -->
@@ -2653,7 +2653,7 @@ body.suspense-on #pfRank{ display:none !important; }
       <button class="btn cy" id="cnrBtnAgain" onclick="openCenerentola()" style="display:none">🔁 Un'altra manche</button>
     </div>
   </div>
-  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
 
 <!-- ==================== PROIETTORE: CENERENTOLA ==================== -->
@@ -2681,7 +2681,7 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="panel mt" style="max-width:480px" id="pacSetup">
     <div class="label">I 9 punteggi nascosti nei pacchi (uno per pacco, verranno mescolati a caso)</div>
     <div class="pacValueGrid" id="pacValueInputs"></div>
-    <button class="btn ghost mt" style="width:100%" onclick="pacRandomFill()">🎲 Valori casuali suggeriti</button>
+    <button class="btn ghost mt" style="width:100%" onclick="pacRandomFill()" data-tip="Riempie da solo i 9 valori con punteggi casuali equilibrati, se non hai voglia di sceglierli a mano">🎲 Valori casuali suggeriti</button>
     <button class="btn mg mt" style="width:100%" onclick="pacStart()">📦 APRI LE SCELTE! (15s)</button>
   </div>
   <div id="pacLive" style="display:none; width:100%" class="center">
@@ -2693,7 +2693,7 @@ body.suspense-on #pfRank{ display:none !important; }
       <button class="btn cy" id="pacBtnAgain" onclick="openPacchi()" style="display:none">🔁 Un'altra manche</button>
     </div>
   </div>
-  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
 
 <!-- ==================== PROIETTORE: IL GIOCO DEI PACCHI ==================== -->
@@ -2736,7 +2736,7 @@ body.suspense-on #pfRank{ display:none !important; }
       <button class="btn cy" id="rouBtnAgain" onclick="openRoulette()" style="display:none">🔁 Un'altra manche</button>
     </div>
   </div>
-  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
 
 <!-- ==================== PROIETTORE: ROULETTE RUSSA ==================== -->
@@ -2797,7 +2797,7 @@ body.suspense-on #pfRank{ display:none !important; }
       <button class="btn cy" id="pagBtnAgain" onclick="openPagliuzza()" style="display:none">🔁 Un'altra manche</button>
     </div>
   </div>
-  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
 
 <!-- ==================== PROIETTORE: LA PAGLIUZZA ==================== -->
@@ -2846,7 +2846,7 @@ body.suspense-on #pfRank{ display:none !important; }
       <button class="btn cy" id="stBtnAgain" onclick="openSupertris()" style="display:none">🔁 Un'altra mano</button>
     </div>
   </div>
-  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
 
 <!-- ==================== PROIETTORE: SUPERTRIS ==================== -->
@@ -2897,7 +2897,7 @@ body.suspense-on #pfRank{ display:none !important; }
       <button class="btn cy" id="rdcBtnAgain" onclick="openRdc()" style="display:none">🔁 Un altro indovinello</button>
     </div>
   </div>
-  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
 
 <!-- ==================== PROIETTORE: LA RESA DEI CONTI ==================== -->
@@ -2930,10 +2930,10 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="panel mt" style="max-width:420px" id="mmSetup">
     <div class="label">Componi la sequenza segreta (4 colori, nell'ordine esatto)</div>
     <div class="mmBoard" style="max-width:100%">
-      <div class="mmSlotsRow" id="mmSetupSlots"></div>
+      <div class="mmSlotsRow" id="mmSetupSlots" data-tip="Tocca i colori qui sotto per riempire le caselle, una alla volta, nell'ordine che vuoi"></div>
     </div>
     <div class="mmPalette" id="mmSetupPalette"></div>
-    <button class="btn ghost mmClearBtn" onclick="mmSetupClear()">🗑 Cancella</button>
+    <button class="btn ghost mmClearBtn" onclick="mmSetupClear()" data-tip="Svuota tutte le caselle per ricominciare la sequenza">🗑 Cancella</button>
     <div class="row mt">
       <div class="grow"><div class="label">Punti</div><select id="mmPoints"></select></div>
       <div><div class="label">O scrivili</div><input type="number" id="mmPointsMan" class="ptsManual" placeholder="—" min="1"></div>
@@ -2960,7 +2960,7 @@ body.suspense-on #pfRank{ display:none !important; }
       <button class="btn cy" id="mmBtnAgain" onclick="openMastermind()" style="display:none">🔁 Un'altra sequenza</button>
     </div>
   </div>
-  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
 
 <!-- ==================== PROIETTORE: MASTERMIND ==================== -->
@@ -3024,7 +3024,7 @@ body.suspense-on #pfRank{ display:none !important; }
       <button class="btn cy" id="bombBtnAgain" onclick="openBomba()" style="display:none">🔁 Un'altra bomba</button>
     </div>
   </div>
-  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
 
 <!-- ==================== PROIETTORE: BOMBA A OROLOGERIA ==================== -->
@@ -3057,7 +3057,7 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="brand"><div class="t1" style="font-size:clamp(20px,3.6vw,36px)">👁 OCCHIO ALLE FORME</div></div>
   <div class="panel mt" style="max-width:460px" id="shapesSetup">
     <div class="label">Scegli la forma</div>
-    <div class="shapePreviewRow" id="shapePicker"></div>
+    <div class="shapePreviewRow" id="shapePicker" data-tip="Tocca per scegliere quale forma i giocatori dovranno inseguire con il dito"></div>
     <div class="row mt">
       <div class="grow"><div class="label">Premio massimo</div><select id="shapePoints"></select></div>
       <div><div class="label">O scrivilo</div><input type="number" id="shapePointsMan" class="ptsManual" placeholder="—" min="1"></div>
@@ -3093,7 +3093,7 @@ body.suspense-on #pfRank{ display:none !important; }
       <button class="btn cy" id="shapeBtnAgain" onclick="openShapes()" style="display:none">🔁 Un'altra forma</button>
     </div>
   </div>
-  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
 
 <!-- ==================== PROIETTORE: OCCHIO ALLE FORME ==================== -->
@@ -3144,7 +3144,7 @@ body.suspense-on #pfRank{ display:none !important; }
     <div class="lead mt" id="xoxResultsLive" style="max-width:500px; width:100%"></div>
     <button class="btn cy mt" id="xoxBtnAgain" onclick="openXox()" style="display:none">🔁 Un'altra manche</button>
   </div>
-  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
 
 <!-- ==================== PROIETTORE: XOX ==================== -->
@@ -3192,7 +3192,7 @@ body.suspense-on #pfRank{ display:none !important; }
     <div class="lead mt" id="tambRanking" style="max-width:500px; width:100%"></div>
     <button class="btn cy mt" id="tambBtnAgain" onclick="openTamb()" style="display:none">🔁 Un'altra manche</button>
   </div>
-  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
 
 <!-- ==================== PROIETTORE: I TAMBURINI ==================== -->
@@ -3244,7 +3244,7 @@ body.suspense-on #pfRank{ display:none !important; }
     <div class="lead mt" id="mercRanking" style="max-width:500px; width:100%"></div>
     <button class="btn cy mt" id="mercBtnAgain" onclick="openMerc()" style="display:none">🔁 Un'altra manche</button>
   </div>
-  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
 
 <!-- ==================== PROIETTORE: MERCATISTA PER UN GIORNO ==================== -->
@@ -3306,7 +3306,7 @@ body.suspense-on #pfRank{ display:none !important; }
     <div class="lead mt" id="morraRanking" style="max-width:500px; width:100%"></div>
     <button class="btn cy mt" id="morraBtnAgain" onclick="openMorra()" style="display:none">🔁 Un'altra manche</button>
   </div>
-  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
 
 <!-- ==================== PROIETTORE: MORRA CINESE ==================== -->
@@ -3374,11 +3374,11 @@ body.suspense-on #pfRank{ display:none !important; }
     <div class="puntoTrack" id="puntoTrackHost"></div>
     <div class="lead mt" id="puntoRanking" style="max-width:500px; width:100%"></div>
     <div class="row mt">
-      <button class="btn ghost" id="puntoBtnEnd" onclick="puntoManualEnd()">🏁 Ferma qui la gara</button>
+      <button class="btn ghost" id="puntoBtnEnd" onclick="puntoManualEnd()" data-tip="Ferma subito la gara e calcola i punti in base a chi è più avanti in questo momento">🏁 Ferma qui la gara</button>
       <button class="btn cy" id="puntoBtnAgain" onclick="openPunto()" style="display:none">🔁 Un'altra gara</button>
     </div>
   </div>
-  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
 
 <!-- ==================== PROIETTORE: IL PUNTO DELLA SITUAZIONE ==================== -->
@@ -3437,11 +3437,11 @@ body.suspense-on #pfRank{ display:none !important; }
     <div class="dadoBoard" id="dadoBoardHost"><div class="dadoGrid"></div><div class="dadoDotsLayer"></div></div>
     <div class="lead mt" id="dadoRanking" style="max-width:500px; width:100%"></div>
     <div class="row mt">
-      <button class="btn ghost" id="dadoBtnEnd" onclick="dadoManualEnd()">🏁 Ferma qui la gara</button>
+      <button class="btn ghost" id="dadoBtnEnd" onclick="dadoManualEnd()" data-tip="Ferma subito la gara e calcola i punti in base a chi è più avanti in questo momento">🏁 Ferma qui la gara</button>
       <button class="btn cy" id="dadoBtnAgain" onclick="openDado()" style="display:none">🔁 Un'altra gara</button>
     </div>
   </div>
-  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
 
 <!-- ==================== PROIETTORE: IL DADO DEL DESTINO ==================== -->
@@ -3481,21 +3481,21 @@ body.suspense-on #pfRank{ display:none !important; }
     <div id="astaPhotoPreviewWrap" style="display:none; margin-top:10px; text-align:center">
       <img id="astaPhotoPreview" style="max-width:160px; border-radius:10px; box-shadow:0 0 0 2px #d4a63a">
       <div class="mt row" style="justify-content:center">
-        <button class="btn ghost" onclick="astaClearPhoto()">✕ Rimuovi foto</button>
-        <button class="btn ghost" onclick="astaSavePresetPrompt()">💾 Salva come oggetto pronto</button>
+        <button class="btn ghost" onclick="astaClearPhoto()" data-tip="Rimuove la foto caricata, senza salvarla">✕ Rimuovi foto</button>
+        <button class="btn ghost" onclick="astaSavePresetPrompt()" data-tip="Salva nome e foto in un elenco di oggetti pronti, da richiamare in futuro senza ricaricare nulla">💾 Salva come oggetto pronto</button>
       </div>
     </div>
     <div class="row mt">
       <div class="grow"><div class="label">Base d'asta (punti)</div><input type="number" id="astaStartBid" value="100" min="0" style="width:100%; text-align:center"></div>
-      <div class="grow"><div class="label">Rilancio minimo</div><input type="number" id="astaIncrement" value="20" min="1" style="width:100%; text-align:center"></div>
+      <div class="grow"><div class="label">Rilancio minimo</div><input type="number" id="astaIncrement" value="20" min="1" style="width:100%; text-align:center" data-tip="Ogni rilancio rapido aumenta l'offerta di questa cifra — i giocatori possono comunque offrire anche di più a mano"></div>
     </div>
     <div class="label mt">Come si chiude l'asta</div>
-    <select id="astaEndMode">
+    <select id="astaEndMode" data-tip="Col martello: batti tu i tre colpi quando vuoi chiudere. Manuale: un solo pulsante per aggiudicare subito">
       <option value="hammer" selected>Col martello del banditore (e uno, e due, e tre!)</option>
       <option value="manual">La regia decide quando fermarla</option>
     </select>
     <div class="byline mt" style="opacity:.75">🔨 I giocatori rilanciano usando i propri punti del quiz — chi vince l'asta li spende davvero, li perde dal proprio punteggio.</div>
-    <button class="btn mg mt" style="width:100%" onclick="astaStart()">🔨 APRI L'ASTA!</button>
+    <button class="btn mg mt" style="width:100%" onclick="astaStart()" data-tip="Apre l'asta con questo oggetto: i giocatori possono iniziare a rilanciare">🔨 APRI L'ASTA!</button>
   </div>
   <div id="astaLive" style="display:none; width:100%" class="center">
     <div class="astaCard" id="astaCardHost">
@@ -3509,16 +3509,16 @@ body.suspense-on #pfRank{ display:none !important; }
       <div class="astaSoldBanner" id="astaSoldHost" style="display:none"></div>
     </div>
     <div class="row mt" id="astaHostControlsManual" style="display:none">
-      <button class="btn mg" style="width:100%" onclick="astaCloseManual()">🔨 AGGIUDICA ORA!</button>
+      <button class="btn mg" style="width:100%" onclick="astaCloseManual()" data-tip="Aggiudica subito l'oggetto a chi ha l'offerta più alta in questo momento">🔨 AGGIUDICA ORA!</button>
     </div>
     <div class="row mt" id="astaHostControlsHammer" style="display:none">
-      <button class="btn mg" style="width:100%" id="astaBtnHammer" onclick="astaHammerStrike()">🔨 E UNO!</button>
+      <button class="btn mg" style="width:100%" id="astaBtnHammer" onclick="astaHammerStrike()" data-tip="Batte un colpo di martello — al terzo colpo l'oggetto è aggiudicato. Una nuova offerta durante il conteggio lo azzera">🔨 E UNO!</button>
     </div>
     <div class="row mt">
-      <button class="btn cy" onclick="astaNextItem()" id="astaBtnNext" style="display:none; width:100%">➡️ Prossimo oggetto all'asta</button>
+      <button class="btn cy" onclick="astaNextItem()" id="astaBtnNext" style="display:none; width:100%" data-tip="Prepara un nuovo oggetto da mettere all'asta">➡️ Prossimo oggetto all'asta</button>
     </div>
   </div>
-  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
 
 <!-- ==================== PROIETTORE: ASTA ==================== -->
@@ -3552,8 +3552,8 @@ body.suspense-on #pfRank{ display:none !important; }
   <button class="btn mg mt" id="astaBtnBid" onclick="astaBid()" style="width:min(88vw,320px)">🔨 RILANCIA A <span id="astaBtnBidAmount">0</span></button>
   <div class="byline mt" style="opacity:.7">oppure fai un'offerta più alta</div>
   <div class="row mt" style="width:min(88vw,320px)">
-    <input type="number" id="astaCustomBid" placeholder="Es. 500" min="0" style="flex:1; text-align:center">
-    <button class="btn cy" id="astaBtnBidCustom" onclick="astaBidCustom()">RILANCIA</button>
+    <input type="number" id="astaCustomBid" placeholder="Es. 500" min="0" style="flex:1; text-align:center" data-tip="Scrivi qualunque cifra superiore al rilancio minimo, per un'offerta più aggressiva">
+    <button class="btn cy" id="astaBtnBidCustom" onclick="astaBidCustom()" data-tip="Invia l'offerta scritta a fianco">RILANCIA</button>
   </div>
   <div class="byline mt" id="astaMyStatus"></div>
   <div class="feedback mtb" id="astaFbMsg" style="display:none"></div>
@@ -3590,11 +3590,11 @@ body.suspense-on #pfRank{ display:none !important; }
     <div class="idrBoard" id="idrBoardHost"><div class="idrGrid" id="idrGridHost"></div></div>
     <div class="lead mt" id="idrRanking" style="max-width:460px; width:100%"></div>
     <div class="row mt">
-      <button class="btn ghost" id="idrBtnEnd" onclick="idrManualEnd()">🏁 Ferma qui</button>
+      <button class="btn ghost" id="idrBtnEnd" onclick="idrManualEnd()" data-tip="Ferma subito la sfida e calcola i punti in base a chi ha completato il circuito">🏁 Ferma qui</button>
       <button class="btn cy" id="idrBtnAgain" onclick="openIdr()" style="display:none">🔁 Un altro circuito</button>
     </div>
   </div>
-  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
 
 <!-- ==================== PROIETTORE: L'IDRAULICO ==================== -->
@@ -3625,7 +3625,7 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="brand"><div class="t1" style="font-size:clamp(20px,3.6vw,36px)">🎰 ROULETTE</div></div>
   <div class="panel mt" style="max-width:520px" id="rwSetup">
     <div class="label">Le 10 quote scommettibili (punti)</div>
-    <div class="row" style="flex-wrap:wrap; gap:8px" id="rwStakesInputs"></div>
+    <div class="row" style="flex-wrap:wrap; gap:8px" id="rwStakesInputs" data-tip="I punti che si vincono puntando su ciascuna delle 10 caselle — più è raro, più alta la vincita"></div>
     <div class="label mt">Tempo per scommettere</div>
     <select id="rwDuration">
       <option value="15">15 secondi</option>
@@ -3640,11 +3640,11 @@ body.suspense-on #pfRank{ display:none !important; }
     <div class="timerWrap mt" style="max-width:420px"><div class="timerBar" id="rwTimerBarHost"></div></div>
     <div class="rwStage" id="rwStageHost"></div>
     <div class="byline" id="rwCount"></div>
-    <button class="btn mg mt" id="rwBtnSpin" onclick="rwSpin()" style="display:none">🎡 GIRA LA RUOTA!</button>
+    <button class="btn mg mt" id="rwBtnSpin" onclick="rwSpin()" style="display:none" data-tip="Chiude le scommesse e fa girare la ruota">🎡 GIRA LA RUOTA!</button>
     <div class="lead mt" id="rwResultsLive" style="max-width:500px; width:100%"></div>
     <button class="btn cy mt" id="rwBtnAgain" onclick="openCasino()" style="display:none">🔁 Un'altra mano</button>
   </div>
-  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
 
 <!-- ==================== PROIETTORE: ROULETTE ==================== -->
@@ -3709,7 +3709,7 @@ body.suspense-on #pfRank{ display:none !important; }
     <div class="lead mt" id="gtResultsLive" style="max-width:500px; width:100%"></div>
     <button class="btn cy mt" id="gtBtnAgain" onclick="openGold()" style="display:none">🔁 Un'altra distribuzione</button>
   </div>
-  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
 
 <!-- ==================== PROIETTORE: IL BIGLIETTO D'ORO ==================== -->
@@ -3761,10 +3761,10 @@ body.suspense-on #pfRank{ display:none !important; }
     <div class="timerWrap mt" style="max-width:420px"><div class="timerBar" id="majTimerBarHost"></div></div>
     <div class="mvBarsRow" id="majBarsHost"></div>
     <div class="byline" id="majCount"></div>
-    <button class="btn mg mt" id="majBtnReveal" onclick="majReveal()" style="display:none">🔮 CHIUDI E RIVELA!</button>
+    <button class="btn mg mt" id="majBtnReveal" onclick="majReveal()" style="display:none" data-tip="Chiude le risposte e svela quale colore ha scelto la maggioranza">🔮 CHIUDI E RIVELA!</button>
     <button class="btn cy mt" id="majBtnAgain" onclick="openMaj()" style="display:none">🔁 Un'altra manche</button>
   </div>
-  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
 
 <!-- ==================== PROIETTORE: LA MAGGIORANZA VINCE ==================== -->
@@ -3800,12 +3800,12 @@ body.suspense-on #pfRank{ display:none !important; }
       <div id="fdSavedRow"></div>
       <div class="label mt">1. Carica le due foto</div>
       <div class="row mt">
-        <button class="btn cy grow" onclick="$('fdOrigFile').click()">📷 Foto originale</button>
+        <button class="btn cy grow" onclick="$('fdOrigFile').click()" data-tip="La foto pulita, senza errori">📷 Foto originale</button>
         <input type="file" id="fdOrigFile" accept="image/*" style="display:none">
       </div>
       <div id="fdOrigPreview" class="byline mt"></div>
       <div class="row mt">
-        <button class="btn cy grow" onclick="$('fdModFile').click()">📷 Foto con gli errori</button>
+        <button class="btn cy grow" onclick="$('fdModFile').click()" data-tip="La stessa foto ma con 5 differenze introdotte con un editor immagini">📷 Foto con gli errori</button>
         <input type="file" id="fdModFile" accept="image/*" style="display:none">
       </div>
       <div id="fdModPreview" class="byline mt"></div>
@@ -3815,8 +3815,8 @@ body.suspense-on #pfRank{ display:none !important; }
       <div class="fdProgress" id="fdMarkCount">0 / 5 segnati</div>
       <div class="fdImgWrap" id="fdAnnotateWrap"></div>
       <div class="row mt" style="justify-content:center">
-        <button class="btn ghost" onclick="fdUndoMark()">↩ Annulla ultimo punto</button>
-        <button class="btn ghost" onclick="fdRestartUpload()">🔁 Cambia foto</button>
+        <button class="btn ghost" onclick="fdUndoMark()" data-tip="Cancella l'ultimo punto segnato, per correggerlo">↩ Annulla ultimo punto</button>
+        <button class="btn ghost" onclick="fdRestartUpload()" data-tip="Ricomincia da capo con altre due foto">🔁 Cambia foto</button>
       </div>
     </div>
     <div id="fdStep3" style="display:none">
@@ -3835,7 +3835,7 @@ body.suspense-on #pfRank{ display:none !important; }
         <option value="45">45 secondi</option>
         <option value="60">60 secondi</option>
       </select>
-      <button class="btn ghost mt" style="width:100%" onclick="fdSaveSetPrompt()">💾 Salva questo set per riusarlo in futuro</button>
+      <button class="btn ghost mt" style="width:100%" onclick="fdSaveSetPrompt()" data-tip="Salva questa coppia di foto con le differenze già segnate, per usarla di nuovo in un'altra serata senza rifare il lavoro">💾 Salva questo set per riusarlo in futuro</button>
       <button class="btn mg mt" style="width:100%" onclick="fdStart()">🔍 AVVIA TROVA LE DIFFERENZE!</button>
     </div>
   </div>
@@ -3846,7 +3846,7 @@ body.suspense-on #pfRank{ display:none !important; }
       <button class="btn cy" id="fdBtnAgain" onclick="openFindDiff()" style="display:none">🔁 Un'altra foto</button>
     </div>
   </div>
-  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
 
 <!-- ==================== PROIETTORE: TROVA LE DIFFERENZE ==================== -->
@@ -3888,13 +3888,13 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="brand"><div class="t1" style="font-size:clamp(20px,3.6vw,36px)">💶 SEI TROPPO FISCALE!</div></div>
   <div class="panel mt" style="max-width:560px" id="tfSetup">
     <div class="label">Galleria foto prodotti — restano pronte per le prossime serate</div>
-    <input type="file" id="tfFile" accept="image/*" multiple>
+    <input type="file" id="tfFile" accept="image/*" multiple data-tip="Carica una o più foto di prodotti — restano salvate anche per le prossime serate">
     <div id="tfUploadStatus" class="byline mt" style="display:none; text-transform:none"></div>
     <div class="pgGrid mt" id="tfGallery"></div>
     <div class="label mt">Foto selezionata</div>
     <img id="tfPreview" class="tfPhoto" style="display:none; max-height:160px">
     <div class="label mt">Modalità di vincita</div>
-    <select id="tfMode" onchange="tfToggleMode()">
+    <select id="tfMode" onchange="tfToggleMode()" data-tip="Con il margine possono vincere in più, entro una certa distanza dal prezzo vero. Con 'più vicino' vince solo chi indovina meglio di tutti">
       <option value="margin" selected>Margine di errore (più giocatori possono vincere, punti in base a quanto ci si avvicina)</option>
       <option value="closest">Vince il più vicino (una sola squadra, chi si avvicina di più al prezzo giusto)</option>
     </select>
@@ -3931,13 +3931,13 @@ body.suspense-on #pfRank{ display:none !important; }
     <div class="miniMsg" id="tfMsg"></div>
     <div class="lead mt" id="tfGuesses" style="max-width:600px; width:100%"></div>
     <div class="row mt" style="justify-content:center">
-      <button class="btn mg" id="tfBtnClose" onclick="tfClose()">🏁 CHIUDI E SCOPRI IL PREZZO!</button>
+      <button class="btn mg" id="tfBtnClose" onclick="tfClose()" data-tip="Chiude le scommesse e svela il prezzo vero, assegnando i punti">🏁 CHIUDI E SCOPRI IL PREZZO!</button>
     </div>
     <div class="row mt" style="justify-content:center">
       <button class="btn cy" id="tfBtnAgain" onclick="openTFiscale()" style="display:none">🔁 Un altro prodotto</button>
     </div>
   </div>
-  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
 
 <!-- ==================== PROIETTORE: SEI TROPPO FISCALE! ==================== -->
@@ -3973,7 +3973,7 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="brand"><div class="t1" style="font-size:clamp(20px,3.6vw,36px)">🐎 PUBBLICHE OFFESE</div></div>
   <div class="panel mt" style="max-width:560px" id="hrsSetup">
     <div class="label">Quanti cavalli?</div>
-    <select id="hrsCount" onchange="hrsRenderNameInputs()">
+    <select id="hrsCount" onchange="hrsRenderNameInputs()" data-tip="Quanti cavalli corrono in questa gara">
       <option value="3">3 cavalli</option>
       <option value="4" selected>4 cavalli</option>
       <option value="5">5 cavalli</option>
@@ -4003,13 +4003,13 @@ body.suspense-on #pfRank{ display:none !important; }
     <div class="hrsTrack" id="hrsTrackHost"></div>
     <div class="lead mt" id="hrsBetCounts" style="max-width:600px; width:100%"></div>
     <div class="row mt" style="justify-content:center">
-      <button class="btn mg" id="hrsBtnGo" onclick="hrsGo()">🏁 CHIUDI SCOMMESSE E VIA!</button>
+      <button class="btn mg" id="hrsBtnGo" onclick="hrsGo()" data-tip="Chiude le scommesse e fa partire la corsa">🏁 CHIUDI SCOMMESSE E VIA!</button>
     </div>
     <div class="row mt" style="justify-content:center">
       <button class="btn cy" id="hrsBtnAgain" onclick="openHorses()" style="display:none">🔁 Un'altra corsa</button>
     </div>
   </div>
-  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
 
 <!-- ==================== PROIETTORE: PUBBLICHE OFFESE ==================== -->
@@ -4041,7 +4041,7 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="brand"><div class="t1" style="font-size:clamp(20px,3.6vw,36px)">🃏 MEMO LE COPPIE</div></div>
   <div class="panel mt" style="max-width:520px" id="mcSetup">
     <div class="label">Difficoltà</div>
-    <select id="mcDiff">
+    <select id="mcDiff" data-tip="Quante coppie di carte ci sono da trovare — più sono, più dura la partita">
       <option value="20">😊 Facile — 4×5, 10 coppie</option>
       <option value="36">🔥 Medio — 6×6, 18 coppie</option>
       <option value="48">💀 Difficile — 6×8, 24 coppie</option>
@@ -4064,7 +4064,7 @@ body.suspense-on #pfRank{ display:none !important; }
       <button class="btn cy" id="mcBtnAgain" onclick="openMemoCoppie()" style="display:none">🔁 Un'altra partita</button>
     </div>
   </div>
-  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
 
 <!-- ==================== PROIETTORE: MEMO LE COPPIE (solo titolo e conto alla rovescia) ==================== -->
@@ -4091,7 +4091,7 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="brand"><div class="t1" style="font-size:clamp(22px,4vw,38px)">⏱ TIMER</div></div>
   <div class="panel mt" style="max-width:560px" id="timerSetup">
     <div class="label">Titolo sopra il timer</div>
-    <input type="text" id="timerTitleIn" placeholder="Es. PAUSA BIRRETTA 🍺" maxlength="40">
+    <input type="text" id="timerTitleIn" placeholder="Es. PAUSA BIRRETTA 🍺" maxlength="40" data-tip="Un titolo facoltativo mostrato sopra il conto alla rovescia">
     <div class="row mt">
       <div class="grow"><div class="label">Minuti</div><input type="number" id="timerMin" value="5" min="0" max="99" style="text-align:center"></div>
       <div class="grow"><div class="label">Secondi</div><input type="number" id="timerSec" value="0" min="0" max="59" style="text-align:center"></div>
@@ -4105,10 +4105,10 @@ body.suspense-on #pfRank{ display:none !important; }
       <div class="bombWrap" id="timerBombHost">💣<span class="spark">✨</span></div>
     </div>
     <div class="row mt" style="justify-content:center">
-      <button class="btn small mg" onclick="timerBomb()">💣 Ultimi 10 secondi!</button>
+      <button class="btn small mg" onclick="timerBomb()" data-tip="Fa comparire una bomba con la miccia accesa negli ultimi 10 secondi, per un finale più teso">💣 Ultimi 10 secondi!</button>
     </div>
   </div>
-  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
 
 <!-- ==================== PROIETTORE: TIMER ==================== -->
@@ -4159,20 +4159,20 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="brand"><div class="t1" style="font-size:clamp(22px,4vw,38px)">🌡 VOTOMETRO</div></div>
   <div class="panel mt" style="max-width:620px" id="votoSetup">
     <div class="label">Chi riceve i voti?</div>
-    <select id="votoTarget"></select>
+    <select id="votoTarget" data-tip="Chi sta per esibirsi o presentarsi ai voti — scegli dall'elenco o scrivi un nome libero qui sotto"></select>
     <input type="text" id="votoTargetMan" class="mt" placeholder="...oppure scrivi qui il nome del concorrente" maxlength="24" style="display:none">
     <div class="label mt">Evento (facoltativo — es. Sfilata, Gara di canto, Corrida)</div>
     <input type="text" id="votoEvent" placeholder="Es. LA CORRIDA DEL CAPONE" maxlength="40">
     <div class="row mt">
       <div class="grow"><div class="label">Secondi per votare</div><select id="votoSecs"></select></div>
-      <div class="grow"><div class="label">Scala voti</div><select id="votoScale">
+      <div class="grow"><div class="label">Scala voti</div><select id="votoScale" data-tip="Il range di voti che i giocatori possono dare, dal minimo al massimo">
         <option value="1">Da 1 a 10</option>
         <option value="10">Da 10 a 100</option>
         <option value="100">Da 100 a 1000</option>
       </select></div>
     </div>
     <div class="label mt">Dove vanno i punti?</div>
-    <select id="votoDest">
+    <select id="votoDest" data-tip="Scegli se questi voti contano per una classifica a parte (premi speciali) o se diventano punti veri nel punteggio del quiz">
       <option value="esib">🏅 Classifica esibizioni — fuori dal quiz (premi speciali)</option>
       <option value="quiz">🎩 Classifica del quiz — i voti diventano punti squadra</option>
     </select>
@@ -4187,11 +4187,11 @@ body.suspense-on #pfRank{ display:none !important; }
     <div class="voteCounts mt" id="votoCounts"></div>
     <div class="miniMsg" id="votoMsg"></div>
     <div class="row mt" style="justify-content:center">
-      <button class="btn cy" id="votoBtnAgain" onclick="votoAgain()" style="display:none">🔁 Nuova votazione</button>
-      <button class="btn lm" id="votoBtnBoard" onclick="esibToProjector()" style="display:none">🏅 Esibizioni → 📺</button>
+      <button class="btn cy" id="votoBtnAgain" onclick="votoAgain()" style="display:none" data-tip="Apre una nuova votazione per il prossimo concorrente">🔁 Nuova votazione</button>
+      <button class="btn lm" id="votoBtnBoard" onclick="esibToProjector()" style="display:none" data-tip="Mostra sul proiettore la classifica di tutte le esibizioni votate finora">🏅 Esibizioni → 📺</button>
     </div>
   </div>
-  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
 
 <!-- ==================== PROIETTORE: VOTOMETRO ==================== -->
@@ -4228,14 +4228,14 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="seqDots" id="simonDots"></div>
   <div class="voteCounts" id="simonCounts" style="display:none"></div>
   <div class="row mt" style="justify-content:center; align-items:flex-end">
-    <div><div class="label">Lampeggi</div><select id="simonCount" style="width:110px"></select></div>
+    <div><div class="label">Lampeggi</div><select id="simonCount" style="width:110px" data-tip="Quanto è lunga la sequenza di colori da ripetere — più lunga, più difficile"></select></div>
     <div><div class="label">Punti</div><select id="simonPoints" style="width:140px"></select></div>
     <div><div class="label">O scrivili</div><input type="number" id="simonPointsMan" class="ptsManual" placeholder="—" min="10" step="10"></div>
       <div class="grow"><div class="label">Se sbaglia perde</div><input type="number" id="simonPen" value="0" min="0" style="text-align:center"></div>
-    <button class="btn mg" id="simonBtnGo" onclick="simonStart()">▶ AVVIA SEQUENZA</button>
+    <button class="btn mg" id="simonBtnGo" onclick="simonStart()" data-tip="Mostra la sequenza di colori da imparare a memoria">▶ AVVIA SEQUENZA</button>
     <button class="btn cy" id="simonBtnAgain" onclick="simonAgain()" style="display:none">🔁 Un'altra manche</button>
   </div>
-  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
 
 <!-- ==================== PROIETTORE: SIMON ==================== -->
@@ -4272,10 +4272,10 @@ body.suspense-on #pfRank{ display:none !important; }
     <div><div class="label">Punti in palio</div><select id="dicePoints" style="width:140px"></select></div>
     <div><div class="label">O scrivili</div><input type="number" id="dicePointsMan" class="ptsManual" placeholder="—" min="10" step="10"></div>
       <div class="grow"><div class="label">Se sbaglia perde</div><input type="number" id="dicePen" value="0" min="0" style="text-align:center"></div>
-    <button class="btn mg" id="diceBtnGo" onclick="diceRoll()">🎲 LANCIA I DADI</button>
+    <button class="btn mg" id="diceBtnGo" onclick="diceRoll()" data-tip="Chiude le scommesse e lancia i due dadi">🎲 LANCIA I DADI</button>
     <button class="btn cy" id="diceBtnAgain" onclick="diceAgain()" style="display:none">🔁 Un'altra manche</button>
   </div>
-  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()">↩ Torna al quiz</button></div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
 
 <!-- ==================== PROIETTORE: PARI O DISPARI ==================== -->
@@ -4471,7 +4471,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1275; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1277; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -4747,8 +4747,8 @@ function modalEntryLink(){
     <div class="label" style="text-transform:none; letter-spacing:0">Utile per chi non è fisicamente in sala e non può inquadrare il QR — condividilo su WhatsApp, Instagram, Facebook... porta alla stessa pagina di ingresso (nome + entra).</div>
     <input type="text" id="entryLinkBox" value="${G.url}" readonly onclick="this.select()" style="margin-top:10px">
     <div class="row mt">
-      <button class="btn cy grow" onclick="copyEntryLink(this)">📋 Copia link</button>
-      <button class="btn mg grow" onclick="shareEntryLinkWa()">📱 Condividi su WhatsApp</button>
+      <button class="btn cy grow" onclick="copyEntryLink(this)" data-tip="Copia il link negli appunti, pronto da incollare dove vuoi">📋 Copia link</button>
+      <button class="btn mg grow" onclick="shareEntryLinkWa()" data-tip="Apre WhatsApp con il link già pronto da mandare">📱 Condividi su WhatsApp</button>
     </div>`);
 }
 function copyEntryLink(btn){
@@ -4848,20 +4848,20 @@ function modalPoints(){
     if (ptsSortMode==='alpha') entries.sort((a,b)=> a[1].name.localeCompare(b[1].name, 'it'));
     else if (ptsSortMode==='score') entries.sort((a,b)=> (b[1].score||0)-(a[1].score||0));
     let html = `<div class="row">
-        <button class="btn small ${ptsSortMode==='alpha'?'lm':'ghost'}" onclick="ptsSortMode='alpha'; modalPoints();">🔤 A-Z</button>
-        <button class="btn small ${ptsSortMode==='score'?'lm':'ghost'}" onclick="ptsSortMode='score'; modalPoints();">🔽 Punteggio</button>
+        <button class="btn small ${ptsSortMode==='alpha'?'lm':'ghost'}" onclick="ptsSortMode='alpha'; modalPoints();" data-tip="Ordina l'elenco per nome">🔤 A-Z</button>
+        <button class="btn small ${ptsSortMode==='score'?'lm':'ghost'}" onclick="ptsSortMode='score'; modalPoints();" data-tip="Ordina l'elenco dal punteggio più alto">🔽 Punteggio</button>
       </div>
       <div class="label mt" style="text-transform:none; letter-spacing:0">Scrivi i punti nella casella di ogni squadra, poi tocca ➕ per aggiungerli o ➖ per toglierli. ✎ per rinominare. 📱 se qualcuno cambia telefono (batteria scarica ecc.) — genera un codice da fargli scrivere sul telefono nuovo, mantenendo nome e punti. 🗑 per eliminare chi si ritira dalla serata.</div>`;
     for (const [pid,p] of entries)
       html += `<div class="ptRow"><span class="grow">${esc(p.name)}</span><span class="sc" id="sc_${pid}">${p.score||0}</span>
-        <input type="number" class="ptsRowInput" id="ptsRow_${pid}" placeholder="pt" min="0" step="10" style="width:78px; text-align:center">
-        <button class="btn small lm" onclick="adjPointsRow('${pid}',1)">➕</button>
-        <button class="btn small mg" onclick="adjPointsRow('${pid}',-1)">➖</button>
-        <button class="btn small cy" onclick="renamePlayer('${pid}')" title="Rinomina">✎</button>
-        <button class="btn small" style="border-color:var(--cyan);color:var(--cyan)" onclick="transferPlayer('${pid}')" title="Cambio telefono">📱</button>
-        <button class="btn small ghost" onclick="deletePlayer('${pid}')" title="Elimina">🗑</button></div>`;
-    html += `<div class="row mt"><input type="text" id="newTeamName" class="grow" placeholder="Nome nuova squadra/concorrente" maxlength="24">
-      <button class="btn small lm" onclick="addManualTeam()">➕</button></div>
+        <input type="number" class="ptsRowInput" id="ptsRow_${pid}" placeholder="pt" min="0" step="10" style="width:78px; text-align:center" data-tip="Scrivi qui quanti punti aggiungere o togliere, poi premi ➕ o ➖">
+        <button class="btn small lm" onclick="adjPointsRow('${pid}',1)" data-tip="Aggiungi i punti scritti a fianco">➕</button>
+        <button class="btn small mg" onclick="adjPointsRow('${pid}',-1)" data-tip="Togli i punti scritti a fianco">➖</button>
+        <button class="btn small cy" onclick="renamePlayer('${pid}')" data-tip="Rinomina">✎</button>
+        <button class="btn small" style="border-color:var(--cyan);color:var(--cyan)" onclick="transferPlayer('${pid}')" data-tip="Usa questo se un giocatore ha cambiato telefono a metà partita, per fargli riprendere il suo posto">📱</button>
+        <button class="btn small ghost" onclick="deletePlayer('${pid}')" data-tip="Elimina">🗑</button></div>`;
+    html += `<div class="row mt"><input type="text" id="newTeamName" class="grow" placeholder="Nome nuova squadra/concorrente" maxlength="24" data-tip="Aggiungi un partecipante senza telefono (una squadra, un tavolo...): riceverà punti solo da te">
+      <button class="btn small lm" onclick="addManualTeam()" data-tip="Aggiungi questo nuovo partecipante alla partita">➕</button></div>
       <div class="label" style="text-transform:none;letter-spacing:0">Le squadre manuali partecipano senza smartphone: ricevono punti da te e dal Votometro.</div>`;
     openModal('± PUNTI E PARTECIPANTI', html);
   });
@@ -4993,15 +4993,15 @@ function renderEdQuestions(){
     const tags = `<span class="tag ${tagClass}">${QE_TYPE_LABEL[q.type]||q.type}</span>` +
       (q.media && q.media.kind!=='none' ? ` <span class="tag media">${q.media.kind==='photo'?'📷':'🎵'}</span>` : '');
     const metaLine = q.type==='image' ? 'nessun punteggio · avanzamento manuale' : `${q.points} pt · ${q.timer}s`;
-    d.innerHTML = `<div class="idx">☰ ${i+1}</div>
+    d.innerHTML = `<div class="idx" data-tip="Tieni premuto e trascina per riordinare le domande">☰ ${i+1}</div>
       <div class="grow"><b>${esc(q.text).slice(0,60)||(q.type==='image'?'(immagine di riferimento)':'(senza testo)')}</b><br>${tags}
         <small style="color:var(--muted)"> ${metaLine}</small></div>
-      <button class="btn small cy" onclick="openQEditor(${i})">✎</button>
-      <button class="btn small ghost" onclick="moveQTop(${i})" title="Porta in cima">⏫</button>
-      <button class="btn small ghost" onclick="moveQ(${i},-1)">▲</button>
-      <button class="btn small ghost" onclick="moveQ(${i},1)">▼</button>
-      <button class="btn small ghost" onclick="moveQBottom(${i})" title="Porta in fondo">⏬</button>
-      <button class="btn small ghost" onclick="delQ(${i})">🗑</button>`;
+      <button class="btn small cy" onclick="openQEditor(${i})" data-tip="Apri e modifica questa domanda">✎</button>
+      <button class="btn small ghost" onclick="moveQTop(${i})" data-tip="Porta questa domanda in cima a tutta la scaletta">⏫</button>
+      <button class="btn small ghost" onclick="moveQ(${i},-1)" data-tip="Sposta questa domanda di una posizione più su">▲</button>
+      <button class="btn small ghost" onclick="moveQ(${i},1)" data-tip="Sposta questa domanda di una posizione più giù">▼</button>
+      <button class="btn small ghost" onclick="moveQBottom(${i})" data-tip="Porta questa domanda in fondo a tutta la scaletta">⏬</button>
+      <button class="btn small ghost" onclick="delQ(${i})" data-tip="Elimina questa domanda dalla scaletta">🗑</button>`;
     // apertura rapida con Invio quando la riga è selezionata (tab/click)
     d.addEventListener('keydown', e=>{ if (e.key==='Enter'){ e.preventDefault(); openQEditor(i); } });
     // trascinamento col mouse per riordinare
@@ -5677,6 +5677,7 @@ function nextQuestion(){
   else G.ref.child('currentMedia').remove();
   G.ref.child('answers/'+G.qi).remove();
   // schermo host
+  $('hqSkipRow').style.display = ''; // per una domanda normale questo pulsante torna sempre visibile
   $('hqProgress').textContent = `DOMANDA ${G.qi+1} / ${G.quiz.questions.length}`;
   $('hqPoints').textContent = q.points + ' PUNTI';
   $('hqAnswered').textContent = '0 risposte';
@@ -5734,7 +5735,9 @@ function playImageQuestion(q){
   $('hqText').textContent = q.text || '';
   $('hqTimerBar').style.width = '100%'; $('hqTimerNum').textContent='';
   const mbox = $('hqMedia'); mbox.innerHTML = photo ? `<img src="${photo}" class="hostMedia">` : '';
-  $('hqOpts').innerHTML = `<div class="byline" style="grid-column:1/-1">🖼️ SOLO IMMAGINE — nessuna domanda, nessun punteggio. Premi "▶ Prossima domanda" quando sei pronto ad andare avanti.</div>`;
+  $('hqOpts').innerHTML = `<div class="byline" style="grid-column:1/-1">🖼️ SOLO IMMAGINE — nessuna domanda, nessun punteggio.</div>
+    <button class="btn mg" style="grid-column:1/-1" onclick="nextQuestion()">▶ Prossima domanda</button>`;
+  $('hqSkipRow').style.display = 'none'; // qui non ha senso: non c'è nessun timer da chiudere in anticipo
   pjSend({type:'imgonly', i:G.qi, total:G.quiz.questions.length, caption:q.text||'', photo});
   showScreen('scrHostQ');
 }
@@ -5763,7 +5766,7 @@ function modalQuestions(){
     return `<div class="ptRow"><b style="font-family:'Bungee';color:var(--gold);min-width:30px">${i+1}</b>
       <span class="grow">${esc(q.text).slice(0,48)}<br>${tag} ${stato}
         <small style="color:var(--muted)">${q.points} pt · ${q.timer}s</small></span>
-      <button class="btn small cy" onclick="gotoQuestion(${i})">▶ Vai</button></div>`;
+      <button class="btn small cy" onclick="gotoQuestion(${i})" data-tip="Salta direttamente a questa domanda, saltando quelle in mezzo">▶ Vai</button></div>`;
   }).join('');
   openModal('📋 SCELTA DOMANDA', rows);
 }
@@ -10865,8 +10868,8 @@ function renderPuzzleGallery(){
   const ids = Object.keys(puzzleGallery);
   box.innerHTML = ids.map(id => `
     <div class="pgThumb" data-id="${id}">
-      <img src="${puzzleGallery[id]}" onclick="selectPuzzlePhoto('${id}')" title="Tocca per usarla in questo puzzle">
-      <button class="pgDel" onclick="deletePuzzleGalleryPhoto('${id}')" title="Elimina dalla galleria">🗑</button>
+      <img src="${puzzleGallery[id]}" onclick="selectPuzzlePhoto('${id}')" data-tip="Tocca per usare questa immagine in questo puzzle">
+      <button class="pgDel" onclick="deletePuzzleGalleryPhoto('${id}')" data-tip="Elimina questa immagine dalla galleria salvata">🗑</button>
     </div>`).join('') || '<div class="byline" style="text-transform:none">Nessuna foto salvata ancora — caricane qualcuna qui sopra, resterà pronta anche la prossima volta.</div>';
 }
 function selectPuzzlePhoto(id){
@@ -11596,8 +11599,8 @@ function tfRenderGallery(){
   const ids = Object.keys(tfGallery);
   box.innerHTML = ids.map(id => `
     <div class="pgThumb" data-id="${id}">
-      <img src="${tfGallery[id]}" onclick="selectTfPhoto('${id}')" title="Tocca per usarla">
-      <button class="pgDel" onclick="deleteTfGalleryPhoto('${id}')" title="Elimina">🗑</button>
+      <img src="${tfGallery[id]}" onclick="selectTfPhoto('${id}')" data-tip="Tocca per usare questa foto">
+      <button class="pgDel" onclick="deleteTfGalleryPhoto('${id}')" data-tip="Elimina">🗑</button>
     </div>`).join('') || '<div class="byline" style="text-transform:none">Nessuna foto salvata ancora — caricane qualcuna qui sopra, resterà pronta anche la prossima volta.</div>';
 }
 function selectTfPhoto(id){
@@ -12685,7 +12688,7 @@ function openShapes(){
   }
   if (!window._shapeSel) window._shapeSel = 'circle';
   $('shapePicker').innerHTML = SHAPE_LIST.map(s=>
-    `<div class="sBtn${window._shapeSel===s.id?' sel':''}" data-id="${s.id}" onclick="shapePickerSelect('${s.id}')" title="${s.name}">${shapeTargetSvg(s.id).replace('stroke:none','')}</div>`).join('');
+    `<div class="sBtn${window._shapeSel===s.id?' sel':''}" data-id="${s.id}" onclick="shapePickerSelect('${s.id}')" data-tip="${s.name}">${shapeTargetSvg(s.id).replace('stroke:none','')}</div>`).join('');
   document.querySelectorAll('#shapePicker svg').forEach(svg=> svg.style.cssText='width:36px;height:36px;');
   document.querySelectorAll('#shapePicker svg *').forEach(el=> el.style.cssText='fill:none;stroke:var(--gold);stroke-width:5;');
   pjSend({type:'shapeState'});
@@ -12767,7 +12770,7 @@ function fdRenderSavedRow(){
         ${list.map(s=>`<option value="${esc(s.title)}">${esc(s.title)}</option>`).join('')}
       </select>
       <button class="btn small cy" onclick="fdLoadSet($('fdSavedSel').value)">▶ Usa</button>
-      <button class="btn small ghost" onclick="fdDeleteSet($('fdSavedSel').value)" title="Elimina questo set">🗑</button>
+      <button class="btn small ghost" onclick="fdDeleteSet($('fdSavedSel').value)" data-tip="Elimina questo set salvato">🗑</button>
     </div>` : '';
 }
 function fdLoadSet(title){
@@ -13776,7 +13779,7 @@ function astaRenderPresetRow(){
         ${list.map(s=>`<option value="${esc(s.name)}">${esc(s.name)}</option>`).join('')}
       </select>
       <button class="btn small cy" onclick="astaLoadPreset($('astaPresetSel').value)">▶ Usa</button>
-      <button class="btn small ghost" onclick="astaDeletePreset($('astaPresetSel').value)" title="Elimina questo oggetto">🗑</button>
+      <button class="btn small ghost" onclick="astaDeletePreset($('astaPresetSel').value)" data-tip="Elimina questo oggetto dall'elenco dei pronti">🗑</button>
     </div>` : '';
 }
 function astaLoadPreset(name){
@@ -14310,22 +14313,22 @@ function modalPjMsg(){
   const dropdownHtml = list.length ? `
     <div class="label mt">Messaggi già usati</div>
     <div class="row">
-      <select id="msgSavedSel" class="grow" onchange="msgPickSaved(this)">
+      <select id="msgSavedSel" class="grow" onchange="msgPickSaved(this)" data-tip="Richiama un messaggio già scritto in passato, senza doverlo riscrivere">
         <option value="">— scegli un messaggio già scritto —</option>
         ${list.map(t=>`<option value="${esc(t)}">${esc(t.slice(0,50))}</option>`).join('')}
       </select>
-      <button class="btn small ghost" onclick="msgDeleteText($('msgSavedSel').value)" title="Elimina questo messaggio">🗑</button>
+      <button class="btn small ghost" onclick="msgDeleteText($('msgSavedSel').value)" data-tip="Elimina questo messaggio salvato">🗑</button>
     </div>` : '';
   openModal('💬 MESSAGGIO SUL PROIETTORE E SUGLI SMARTPHONE', `
     ${dropdownHtml}
     <div class="label mt">Scrivi il messaggio (es. PRIMO ROUND, GRAZIE PER STASERA...)</div>
-    <input type="text" id="pjMsgIn" maxlength="60" value="${esc(msgOv.text||'')}" placeholder="Es. SECONDO ROUND!">
+    <input type="text" id="pjMsgIn" maxlength="60" value="${esc(msgOv.text||'')}" placeholder="Es. SECONDO ROUND!" data-tip="Il testo che comparirà a schermo intero sul proiettore e sui telefoni">
     <div class="byline mt" style="text-transform:none">Il messaggio compare anche sugli smartphone dei giocatori, insieme a un pulsante per contattarti su WhatsApp — utile per farti conoscere da chi gioca stasera in un altro locale.</div>
     <div class="label mt">Il tuo numero WhatsApp (per il pulsante di contatto — lo salvi una volta sola)</div>
-    <input type="text" id="msgContactIn" value="${esc(savedContact)}" placeholder="Es. 393331234567 (senza + o spazi)">
+    <input type="text" id="msgContactIn" value="${esc(savedContact)}" placeholder="Es. 393331234567 (senza + o spazi)" data-tip="Il numero che comparirà come pulsante di contatto insieme al messaggio — resta salvato per le prossime volte">
     <div class="row mt">
-      <button class="btn mg grow" onclick="sendPjMsg(true)">📺 MOSTRA</button>
-      <button class="btn ghost" onclick="sendPjMsg(false)">🚫 Nascondi</button>
+      <button class="btn mg grow" onclick="sendPjMsg(true)" data-tip="Mostra subito questo messaggio">📺 MOSTRA</button>
+      <button class="btn ghost" onclick="sendPjMsg(false)" data-tip="Nasconde il messaggio, se era visibile">🚫 Nascondi</button>
     </div>`);
   setTimeout(()=>{ const i=$('pjMsgIn'); if(i){ i.focus(); i.addEventListener('keydown',e=>{ if(e.key==='Enter') sendPjMsg(true); }); } }, 100);
 }
@@ -14381,8 +14384,8 @@ function modalPlayers(){
       <div class="byline" style="text-transform:none; letter-spacing:0">Ordinati per nome: se due voci molto simili ti sembrano la stessa squadra entrata due volte, elimina quella di troppo con il cestino. Il teschio 💀 indica un giocatore fuori per la Modalità Highlander — con l'altro pulsante lo reintegri in partita.</div>
       <div class="lead mt" id="playersMgmtList">${arr.length ? arr.map(p=>
         `<div class="leadRow" style="${p.eliminated?'opacity:.5':''}"><span style="flex:1">${p.eliminated?'💀 ':''}${esc(p.name)}</span> <span class="pts" style="margin-right:10px">${p.score||0} pt</span>
-         ${p.eliminated?`<button class="btn small cy" onclick="reinstatePlayer('${p.id}')" title="Reintegra in partita">↩</button>`:''}
-         <button class="btn small ghost" onclick="delPlayerConfirm('${p.id}','${esc(p.name).replace(/'/g,"\\'")}')" title="Rimuovi questo giocatore">🗑</button></div>`).join('')
+         ${p.eliminated?`<button class="btn small cy" onclick="reinstatePlayer('${p.id}')" data-tip="Reintegra questo giocatore, se era stato eliminato o rimosso">↩</button>`:''}
+         <button class="btn small ghost" onclick="delPlayerConfirm('${p.id}','${esc(p.name).replace(/'/g,"\\'")}')" data-tip="Rimuovi questo giocatore dalla partita">🗑</button></div>`).join('')
         : '<div class="byline">Nessun giocatore ancora collegato.</div>'}</div>`);
   });
 }
@@ -14402,22 +14405,22 @@ function modalWaGroup(){
   const dropdownHtml = list.length ? `
     <div class="label mt">Gruppi già salvati</div>
     <div class="row">
-      <select id="waSavedSel" class="grow" onchange="waPickSaved(this)">
+      <select id="waSavedSel" class="grow" onchange="waPickSaved(this)" data-tip="Richiama titolo e link di un gruppo già usato in un'altra serata">
         <option value="">— scegli un locale già salvato —</option>
         ${list.map(e=>`<option value="${esc(e.title)}" ${e.title===savedTitle?'selected':''}>${esc(e.title)}</option>`).join('')}
       </select>
-      <button class="btn small ghost" onclick="waDeleteEntry($('waSavedSel').value)" title="Elimina il locale selezionato">🗑</button>
+      <button class="btn small ghost" onclick="waDeleteEntry($('waSavedSel').value)" data-tip="Elimina il locale selezionato dall'elenco">🗑</button>
     </div>` : '';
   openModal('📱 GRUPPO WHATSAPP', `
     ${dropdownHtml}
     <div class="label mt">Titolo del gruppo (es. SQUADRE IL CAPONE NASELLI PUB)</div>
-    <input type="text" id="waTitleIn" maxlength="60" value="${esc(savedTitle)}" placeholder="Es. SQUADRE IL CAPONE NASELLI PUB">
+    <input type="text" id="waTitleIn" maxlength="60" value="${esc(savedTitle)}" placeholder="Es. SQUADRE IL CAPONE NASELLI PUB" data-tip="Il titolo che vedranno i giocatori sul pulsante — mai il link per intero">
     <div class="label mt">Link di invito WhatsApp</div>
-    <input type="text" id="waLinkIn" value="${esc(savedLink)}" placeholder="https://chat.whatsapp.com/...">
+    <input type="text" id="waLinkIn" value="${esc(savedLink)}" placeholder="https://chat.whatsapp.com/..." data-tip="Il link di invito vero e proprio, generato da WhatsApp — resta nascosto ai giocatori">
     <div class="byline mt" style="text-transform:none">Confermando, il gruppo resta salvato nell'elenco qui sopra: la prossima volta che suoni nello stesso locale lo richiami dal menu, senza riscrivere nulla. Ai giocatori non verrà mai mostrato il link per intero, solo un pulsante con il titolo che hai scelto.</div>
     <div class="row mt">
-      <button class="btn mg grow" onclick="sendWaGroup(true)">📱 MOSTRA AI GIOCATORI</button>
-      <button class="btn ghost" onclick="sendWaGroup(false)">🚫 Nascondi</button>
+      <button class="btn mg grow" onclick="sendWaGroup(true)" data-tip="Mostra subito il pulsante d'invito ai giocatori">📱 MOSTRA AI GIOCATORI</button>
+      <button class="btn ghost" onclick="sendWaGroup(false)" data-tip="Nasconde il pulsante, se era visibile">🚫 Nascondi</button>
     </div>`);
 }
 function sendWaGroup(on){
@@ -14473,21 +14476,21 @@ function renderPhotoModal(){
   const ids = Object.keys(photoGallery);
   const grid = ids.map(id => `
     <div class="pgThumb" data-id="${id}">
-      <img src="${photoGallery[id]}" onclick="publishSinglePhoto('${id}')" title="Tocca per pubblicarla da sola">
-      <button class="pgDel" onclick="deleteGalleryPhoto('${id}')" title="Elimina dalla galleria">🗑</button>
+      <img src="${photoGallery[id]}" onclick="publishSinglePhoto('${id}')" data-tip="Tocca per pubblicarla da sola sul proiettore">
+      <button class="pgDel" onclick="deleteGalleryPhoto('${id}')" data-tip="Elimina questa immagine dalla galleria salvata">🗑</button>
     </div>`).join('') || '<div class="byline" style="text-transform:none">Nessuna foto ancora caricata — aggiungine qualcuna qui sotto (anche più di una insieme, es. tutti gli sponsor).</div>';
 
   openModal('📷 PUBBLICA FOTO', `
     <div class="label" style="text-transform:none; letter-spacing:0">Carica quante foto vuoi — poi tocca una foto per pubblicarla da sola, oppure avvia la sequenza per farle scorrere tutte, sul proiettore e su ogni telefono.</div>
-    <input type="file" id="pjPhotoFile" accept="image/*" multiple class="mt">
+    <input type="file" id="pjPhotoFile" accept="image/*" multiple class="mt" data-tip="Scegli una o più foto dal dispositivo — vengono compresse automaticamente">
     <div id="pjPhotoUploadStatus" class="byline mt" style="display:none; text-transform:none"></div>
     <div class="pgGrid mt" id="pgGrid">${grid}</div>
     <div class="label mt">Sequenza (mostra tutte le foto della galleria a rotazione)</div>
     <div class="row mt">
-      <div class="grow"><div class="label">Cambio foto ogni</div><select id="pjSeqInterval"></select></div>
-      <button class="btn mg" id="pjSeqBtn" onclick="togglePhotoSequence()">${photoSeq.active?'⏹ FERMA SEQUENZA':'▶ AVVIA SEQUENZA'}</button>
+      <div class="grow"><div class="label">Cambio foto ogni</div><select id="pjSeqInterval" data-tip="Ogni quanti secondi passa alla foto successiva durante la sequenza"></select></div>
+      <button class="btn mg" id="pjSeqBtn" onclick="togglePhotoSequence()" data-tip="Avvia o ferma lo scorrimento automatico di tutte le foto della galleria">${photoSeq.active?'⏹ FERMA SEQUENZA':'▶ AVVIA SEQUENZA'}</button>
     </div>
-    <div class="row mt"><button class="btn ghost grow" onclick="sendPjPhoto(false)">🚫 Nascondi tutto</button></div>`);
+    <div class="row mt"><button class="btn ghost grow" onclick="sendPjPhoto(false)" data-tip="Nasconde qualunque foto o sequenza attiva">🚫 Nascondi tutto</button></div>`);
   const sel = $('pjSeqInterval');
   const opts = [1,2,3,4,5,7,10,15,20,30,45,60];
   const curSec = photoSeq.intervalMs/1000;
