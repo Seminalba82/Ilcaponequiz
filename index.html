@@ -120,6 +120,8 @@ body.proj .screen{max-width:none;}
 .idrCell.endCell{background:rgba(255,201,60,.14);}
 .idrMark{position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
   font-size:clamp(14px,3.5vw,22px); pointer-events:none; z-index:2;}
+.idrArrow{position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  font-size:clamp(22px,6vw,34px); pointer-events:none; z-index:2; filter:drop-shadow(0 0 6px rgba(182,255,46,.6));}
 .idrPipeWrap{position:absolute; inset:3px; border-radius:8px; transition:box-shadow .3s; z-index:3;
   box-shadow:0 0 0 3px #ff3b3b, 0 0 14px rgba(255,59,59,.6);}
 .idrPipeWrap.ok{box-shadow:0 0 0 3px #b6ff2e, 0 0 18px rgba(182,255,46,.75);}
@@ -1437,7 +1439,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v12.78</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v12.80</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -3608,7 +3610,7 @@ body.suspense-on #pfRank{ display:none !important; }
       <div class="grow"><div class="label">Punti a chi completa il circuito</div><input type="number" id="idrPtsWin" value="150" min="0" style="width:100%; text-align:center"></div>
       <div class="grow"><div class="label">Punti persi se il tempo scade</div><input type="number" id="idrPtsLose" value="50" min="0" style="width:100%; text-align:center"></div>
     </div>
-    <div class="byline mt" style="opacity:.75">🔧 Ogni giocatore lavora sul proprio telefono: tra i tubi disponibili deve scegliere, nell'ordine giusto, quelli che completano davvero il circuito prima che scada il tempo. Il circuito cambia ogni volta, sempre risolvibile.</div>
+    <div class="byline mt" style="opacity:.75">🔧 Ogni giocatore lavora sul proprio telefono: tra i tubi disponibili deve scegliere, nell'ordine giusto, quelli che completano il collegamento tra la freccia di entrata e quella di uscita, prima che scada il tempo. Il circuito cambia ogni volta, sempre risolvibile.</div>
     <button class="btn mg mt" style="width:100%" onclick="idrStart()">🔧 PREPARA IL CIRCUITO!</button>
   </div>
   <div id="idrLive" style="display:none; width:100%" class="center">
@@ -4577,7 +4579,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1278; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1280; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -4723,6 +4725,14 @@ function esc(s){ return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;',
 })();
 function norm(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim(); }
 function randCode(){ const A='ABCDEFGHJKLMNPQRSTUVWXYZ'; let c=''; for(let i=0;i<4;i++) c+=A[Math.floor(Math.random()*A.length)]; return c; }
+// riconosce uno smartphone (non un PC/portatile, e non necessariamente un tablet): serve a evitare
+// di aprire da sola la finestra del proiettore quando non ha senso farlo — dal telefono la regia
+// non si collega mai direttamente a un videoproiettore, quella finestra in più è solo di intralcio
+function isPhoneDevice(){
+  const ua = navigator.userAgent || '';
+  const uaIsPhone = /iPhone|Android.*Mobile|Windows Phone|BlackBerry|Opera Mini|IEMobile/i.test(ua);
+  return uaIsPhone || (window.innerWidth <= 820 && 'ontouchstart' in window);
+}
 const SYMS = ['♠','♦','🎩','★','🎲'];
 /* pattern caselle per risposte aperte: lunghezze parole + lettere di aiuto */
 function buildPattern(answer, hintN){
@@ -5652,7 +5662,7 @@ function actuallyPlayQuiz(i){
   suspenseMode = true; $('hbSuspense').classList.add('on');
   highlanderMode = false; $('hbHighlander').classList.remove('on');
   G.ref.set({ status:'lobby', title:quiz.title, created:Date.now(), ver:APP_V, suspense:true, highlander:false });
-  openProjector(); // apertura automatica, così trovi già tutto pronto: la disattivi tu chiudendo la finestra se non ti serve
+  if (!isPhoneDevice()) openProjector(); // apertura automatica, così su PC trovi già tutto pronto — sullo smartphone la salto: quella finestra in più non serve a chi gestisce la regia dal telefono. Resta comunque sempre disponibile a mano col pulsante "📺 Apri proiettore" in barra.
   // NIENTE PIÙ onDisconnect().remove(): se salta la corrente o cade la connessione, la partita
   // (punteggi, domanda a cui eravamo arrivati) resta salvata su Firebase finché non premi "Termina quiz".
   $('lobbyQuizName').textContent = quiz.title;
@@ -8562,12 +8572,13 @@ function showPlayerIdr(g){
   if (m.phase==='play'){
     if (P.idrStartAt !== m.startAt){
       P.idrStartAt = m.startAt; P.idrPath = m.path; P.idrShapes = m.shapes;
+      P.idrMiddleShapes = m.shapes.slice(1,-1); // partenza e arrivo restano liberi, non fanno parte dei pezzi da piazzare
       P.idrPlaced = 0; P.idrSolved = false;
       P.idrPalette = (m.palette||[]).map(p=>({...p})); P.idrPaletteUsed = new Set();
       $('idrFbMsg').style.display='none'; $('idrFbPts').style.display='none';
       idrRenderGrid($('idrGridMe'), m.path, m.shapes, 0, false);
       idrRenderPalette();
-      $('idrProgress').textContent = `0 / ${m.shapes.length} tubi posizionati`;
+      $('idrProgress').textContent = `0 / ${P.idrMiddleShapes.length} tubi posizionati`;
       clearInterval(P.idrInt);
       P.idrInt = setInterval(()=>{
         const left = Math.max(0, (m.endAt||0) - serverNow());
@@ -8608,7 +8619,7 @@ function idrTapPiece(pieceId){
   if (P.idrSolved || !P.idrStartAt) return;
   const piece = P.idrPalette.find(p=>p.id===pieceId);
   if (!piece || P.idrPaletteUsed.has(pieceId)) return;
-  const neededShape = P.idrShapes[P.idrPlaced];
+  const neededShape = P.idrMiddleShapes[P.idrPlaced];
   if (piece.shape !== neededShape){
     const el = $('idrpc_'+pieceId);
     if (el){ el.classList.remove('wrong'); void el.offsetWidth; el.classList.add('wrong'); }
@@ -8618,10 +8629,10 @@ function idrTapPiece(pieceId){
   P.idrPaletteUsed.add(pieceId);
   P.idrPlaced++;
   if (navigator.vibrate) navigator.vibrate(30);
-  const solved = P.idrPlaced >= P.idrShapes.length;
+  const solved = P.idrPlaced >= P.idrMiddleShapes.length;
   idrRenderGrid($('idrGridMe'), P.idrPath, P.idrShapes, P.idrPlaced, solved);
   idrRenderPalette();
-  $('idrProgress').textContent = solved ? '🎉 CIRCUITO COMPLETATO!' : `${P.idrPlaced} / ${P.idrShapes.length} tubi posizionati`;
+  $('idrProgress').textContent = solved ? '🎉 CIRCUITO COMPLETATO!' : `${P.idrPlaced} / ${P.idrMiddleShapes.length} tubi posizionati`;
   P.ref.child('idraulico/progress/'+P.id).update({ placedCount:P.idrPlaced, solved:false });
   if (solved){
     P.idrSolved = true;
@@ -14124,9 +14135,10 @@ function idrDeriveShapes(cells){
   });
 }
 function idrBuildPalette(shapes){
-  const bag = shapes.slice();
+  const middle = shapes.slice(1, -1); // partenza e arrivo restano liberi (segnati da una freccia): non servono pezzi lì
+  const bag = middle.slice();
   const types = ['TL','TR','BL','BR'];
-  const decoyCount = Math.max(3, Math.round(shapes.length*0.5));
+  const decoyCount = Math.max(3, Math.round(middle.length*0.5));
   for (let i=0;i<decoyCount;i++) bag.push(types[Math.floor(Math.random()*4)]);
   idrShuffle(bag);
   return bag.map((shape,i)=>({ id:'pc'+i, shape }));
@@ -14148,16 +14160,20 @@ function idrRenderGrid(el, path, shapes, placedCount, solved){
       const idx = pathIdx[x+','+y];
       const onPath = idx!=null;
       const isStart = idx===0, isEnd = onPath && idx===path.length-1;
-      html += `<div class="idrCell ${onPath?'path':''} ${isStart?'startCell':''} ${isEnd?'endCell':''}" style="grid-column:${x+1}; grid-row:${y+1}" data-idx="${onPath?idx:''}">
-        ${isStart?'<div class="idrMark">🚰</div>':''}${isEnd?'<div class="idrMark">🪣</div>':''}</div>`;
+      // partenza e arrivo restano SEMPRE liberi: una freccia basta a mostrare da dove entra ed esce
+      // il tubo, senza bisogno di piazzarci un pezzo — evita la confusione di dover "indovinare" il primo/ultimo
+      const arrowHtml = isStart ? '<div class="idrArrow">➡️</div>' : (isEnd ? '<div class="idrArrow">⬆️</div>' : '');
+      html += `<div class="idrCell ${onPath?'path':''} ${isStart?'startCell':''} ${isEnd?'endCell':''}" style="grid-column:${x+1}; grid-row:${y+1}" data-idx="${onPath?idx:''}">${arrowHtml}</div>`;
     }
     el.innerHTML = html;
   }
   el.querySelectorAll('.idrCell[data-idx]').forEach(cellEl=>{
     if (cellEl.dataset.idx==='') return;
     const idx = +cellEl.dataset.idx;
+    if (idx===0 || idx===path.length-1) return; // qui non va mai piazzato nulla
+    const midIdx = idx-1; // le caselle intermedie nel percorso partono dall'indice 1: qui le riconto da 0
     let wrap = cellEl.querySelector('.idrPipeWrap');
-    if (idx < placedCount){
+    if (midIdx < placedCount){
       if (!wrap){
         cellEl.insertAdjacentHTML('beforeend', `<div class="idrPipeWrap">${idrRenderPipe(shapes[idx])}</div>`);
         wrap = cellEl.querySelector('.idrPipeWrap');
