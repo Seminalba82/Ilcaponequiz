@@ -1439,7 +1439,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v12.85</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v12.86</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -4586,7 +4586,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1285; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1286; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -5674,6 +5674,9 @@ function actuallyPlayQuiz(i){
   const code = randCode();
   G = { code, quiz, qi:-1, played:new Set(), ref: db.ref('caponequiz/games/'+code) };
   G.dataSnapshotAtStart = captureLocalDataSnapshot();
+  // REGISTRO SERATA: si arricchisce da solo durante il gioco (giocatori, minigiochi, domande/risposte)
+  // e viene scritto in automatico a fine quiz, senza bisogno di alcun pulsante — vedi endQuiz() e reportSave().
+  G.report = { quizTitle: quiz.title, code, startedAt: Date.now(), questions: [], minigames: [], playersSeen: {} };
   try{ localStorage.setItem('capone_last_game', code); localStorage.setItem('capone_last_quiz_idx', i); }catch(e){}
   suspenseMode = true; $('hbSuspense').classList.add('on');
   highlanderMode = false; $('hbHighlander').classList.remove('on');
@@ -5692,11 +5695,25 @@ function actuallyPlayQuiz(i){
     const p = s.val()||{}; const arr = Object.values(p);
     $('lobbyCount').textContent = arr.length;
     $('lobbyPlayers').innerHTML = arr.map(x=>`<div class="pChip">${esc(x.name)}</div>`).join('');
+    // registro chi si è collegato almeno una volta (anche se poi si disconnette prima della fine),
+    // aggiornando via via il punteggio più recente conosciuto per il report finale
+    for (const [pid,pl] of Object.entries(p)) G.report.playersSeen[pid] = { name:pl.name, score:pl.score||0 };
     // IMPORTANTE: questo ascoltatore resta attivo per tutta la partita (aggiorna il conteggio giocatori
     // anche dopo la lobby), ma il messaggio "lobby" al proiettore va inviato SOLO mentre si è davvero
     // ancora nella lobby — altrimenti ogni cambio di punteggio durante un gioco (es. una vincita alla
     // Roulette) rispedirebbe il proiettore al QR, interrompendo qualunque animazione in corso.
     if (!G.leftLobby) pjSend({type:'lobby', title:quiz.title, code, url, names:arr.map(x=>x.name)});
+  });
+  // registro nel tempo quali minigiochi vengono aperti durante la serata (per il report finale):
+  // un unico ascoltatore centrale, così non serve toccare la singola funzione di ognuno dei 44 giochi
+  G.ref.child('status').off();
+  G.ref.child('status').on('value', s=>{
+    const st = s.val();
+    const entry = GIOCHI_CATALOGO.find(g=>g.k===st);
+    if (entry && G.report.lastMinigameStatus !== st){
+      G.report.minigames.push({ label: entry.l, at: Date.now() });
+    }
+    G.report.lastMinigameStatus = entry ? st : null; // così due aperture consecutive dello stesso gioco contano comunque due volte
   });
   $('hostBar').classList.add('on');
   document.body.classList.add('barOn');
@@ -5855,6 +5872,7 @@ function nextQuestion(){
    tutto ciò che riguarda punteggio/timer/risposte, che qui non hanno senso. */
 function playImageQuestion(q){
   G.played.add(G.qi); G.closed = true; clearInterval(G.timerInt);
+  if (G.report) G.report.questions.push({ i:G.qi+1, text:q.text, type:'image', points:0, timer:0, note:'Solo immagine: nessun punteggio previsto.' });
   const au = $('hqAudio'); if (au) au.pause();
   sendLeadOverlay({on:false}); sendPjMsg(false); sendPjPhoto(false);
   if (qrOverlayOn) toggleQrOverlay();
@@ -5968,6 +5986,16 @@ function closeQuestion(){
       Promise.all(scorePromises).then(()=>{
         G.ref.update({ status:'reveal', reveal:{ i:G.qi, correct: q.type==='mult'?corrects[0]:null, corrects: q.type==='mult'?corrects:null, correctText, results, stats, opts: q.type==='mult'?q.opts:null } });
         showReveal(q, correctText, players, pending, results, stats);
+        // registro questa domanda nel report finale: chi ha risposto cosa, giusto o sbagliato, e con che punti
+        if (G.report){
+          const nAnswered = Object.keys(ans).length, nPlayers = Object.keys(players).length;
+          const rows = Object.entries(results).map(([pid,r])=>({
+            name: (players[pid]||{}).name || '(rimosso)', ok: !!r.ok, pts: r.pts,
+            answer: r.none ? '(nessuna risposta)' : (q.type==='mult' ? '' : (r.a!=null?String(r.a):'')), timeMs: r.t
+          }));
+          G.report.questions.push({ i:G.qi+1, text:q.text, type:q.type, points:q.points, timer:q.timer,
+            correctText, nAnswered, nPlayers, rows });
+        }
         if (highlanderMode && eliminatedNow.length){
           const survivors = Object.keys(players).filter(pid => !players[pid].eliminated && !eliminatedNow.includes(pid));
           if (survivors.length === 1){
@@ -6091,6 +6119,80 @@ function openInterimPodium(){
     showScreen('scrPodium');
   });
 }
+/* ================================================================
+   REPORT SERATA — si genera e si salva da solo a fine quiz, senza alcun pulsante.
+   Pensato per essere riletto con calma dopo l'evento: chi ha giocato, quali minigiochi sono
+   stati fatti, come sono andate le domande, ed eventuali anomalie (bassa partecipazione,
+   domande su cui nessuno ha risposto giusto) — utile per capire il rendimento della serata.
+================================================================ */
+function reportBuildText(finalPlayers){
+  const R = G.report;
+  const durationMin = Math.max(1, Math.round((Date.now()-R.startedAt)/60000));
+  const dt = new Date();
+  const dateStr = dt.toLocaleDateString('it-IT', {day:'2-digit',month:'2-digit',year:'numeric'}) + ' ' + dt.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
+  const bar = '─'.repeat(30);
+  let out = '';
+  out += '═'.repeat(50)+'\n';
+  out += 'IL CAPONE QUIZ — REPORT SERATA\n';
+  out += '═'.repeat(50)+'\n';
+  out += `Quiz: ${R.quizTitle}\n`;
+  out += `Data: ${dateStr}\n`;
+  out += `Codice partita: ${R.code}\n`;
+  out += `Durata: circa ${durationMin} minut${durationMin===1?'o':'i'}\n\n`;
+
+  // include anche chi si fosse disconnesso prima della fine, non solo i presenti all'ultimo minuto
+  const allPids = new Set([...Object.keys(finalPlayers), ...Object.keys(R.playersSeen)]);
+  const arr = [...allPids].map(pid=>{
+    const fp = finalPlayers[pid];
+    if (fp) return { name:fp.name, score:fp.score||0, left:false };
+    const seen = R.playersSeen[pid];
+    return { name: seen ? seen.name : '(sconosciuto)', score: seen ? seen.score : 0, left:true };
+  }).sort((a,b)=>b.score-a.score);
+  out += `GIOCATORI (${arr.length})\n${bar}\n`;
+  arr.forEach((p,i)=>{ out += `${i+1}. ${p.name} — ${p.score} pt${p.left?' (disconnesso prima della fine)':''}\n`; });
+
+  out += `\nMINIGIOCHI SVOLTI (${R.minigames.length})\n${bar}\n`;
+  out += R.minigames.length ? R.minigames.map(m=>`- ${m.label} (${new Date(m.at).toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})})`).join('\n')+'\n' : '(nessuno)\n';
+
+  out += `\nDOMANDE (${R.questions.length})\n${bar}\n`;
+  R.questions.forEach(q=>{
+    out += `\nDomanda ${q.i}: "${q.text}"  [${q.type}, ${q.points} pt, ${q.timer}s]\n`;
+    if (q.note){ out += `  ${q.note}\n`; return; }
+    out += `  Risposta giusta: ${q.correctText}\n`;
+    out += `  Risposte ricevute: ${q.nAnswered}/${q.nPlayers}\n`;
+    q.rows.forEach(r=>{
+      const ansText = r.answer ? ` (risposta: "${r.answer}")` : '';
+      out += `  ${r.ok?'✔':'✘'} ${r.name}: ${r.pts>=0?'+':''}${r.pts} pt${ansText}\n`;
+    });
+  });
+
+  const anomalies = [];
+  R.questions.forEach(q=>{
+    if (q.note) return;
+    if (q.nPlayers>0 && q.nAnswered/q.nPlayers < 0.5) anomalies.push(`Domanda ${q.i}: solo ${q.nAnswered}/${q.nPlayers} hanno risposto (bassa partecipazione)`);
+    if (q.rows.length && q.rows.every(r=>!r.ok)) anomalies.push(`Domanda ${q.i}: nessuno ha risposto correttamente`);
+  });
+  out += `\nANOMALIE RILEVATE (${anomalies.length})\n${bar}\n`;
+  out += anomalies.length ? anomalies.map(a=>'- '+a).join('\n')+'\n' : '(nessuna)\n';
+  return out;
+}
+function reportSave(finalPlayers){
+  // il report è un extra pensato per Alberto: se qualcosa va storto qui, non deve MAI impedire
+  // la normale chiusura del quiz e la visualizzazione del podio finale
+  try{
+    const text = reportBuildText(finalPlayers);
+    const dt = new Date();
+    const pad = n=>String(n).padStart(2,'0');
+    const stamp = `${dt.getFullYear()}-${pad(dt.getMonth()+1)}-${pad(dt.getDate())}_${pad(dt.getHours())}${pad(dt.getMinutes())}`;
+    const safeTitle = (G.report.quizTitle||'quiz').replace(/[^a-zA-Z0-9 _-]/g,'').trim().replace(/\s+/g,'_').slice(0,40) || 'quiz';
+    const blob = new Blob([text], {type:'text/plain;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `CaponeQuiz_Report_${safeTitle}_${stamp}.txt`; a.style.display='none';
+    document.body.appendChild(a); a.click();
+    setTimeout(()=>{ document.body.removeChild(a); URL.revokeObjectURL(url); }, 1500);
+  }catch(e){ console.warn('Salvataggio report della serata non riuscito:', e); }
+}
 function endQuiz(){
   if (G && G.dataSnapshotAtStart && captureLocalDataSnapshot() !== G.dataSnapshotAtStart){
     if (confirm('📌 Durante questa serata sono cambiati alcuni dati salvati (gruppi WhatsApp, nomi cavalli, set o messaggi). Vuoi fare un backup adesso?')) backupAllQuizzes();
@@ -6098,6 +6200,7 @@ function endQuiz(){
   sendLeadOverlay({on:false}); // sempre incondizionato: leadOv.on (variabile locale) può restare disallineato da un ricaricamento della pagina di regia, lasciando la sovrapposizione accesa sui telefoni senza che l'host se ne accorga
   G.ref.child('players').once('value').then(ps=>{
     const players = ps.val()||{};
+    if (G.report) reportSave(players); // salvataggio automatico del report della serata, senza alcun pulsante
     const arr = Object.entries(players).map(([id,p])=>({id,...p})).sort((a,b)=>(b.score||0)-(a.score||0));
     G.ref.update({ status:'end', final: arr.slice(0,3).map(p=>({name:p.name, score:p.score||0})), podiumStage:0 });
     renderPodiumBuild($('podium'), $('podLead'), arr);
@@ -11363,6 +11466,7 @@ function anagramNextClick(){ if (G && G.anaInQuiz) nextQuestion(); else openAnag
 /* Anagramma giocato come domanda della scaletta quiz */
 function playAnagramQuestion(q){
   cancelLiveQuestion();
+  if (G.report) G.report.questions.push({ i:G.qi+1, text:q.text, type:'anagram', points:q.points, timer:q.timer, note:'Anagramma: dettaglio risposte non tracciato, si veda il minigioco stesso.' });
   G.anaInQuiz = true;
   runAnagram(q);
 }
@@ -11419,6 +11523,7 @@ function wsAgainClick(){ if (G && G.wsInQuiz) nextQuestion(); else openWordSearc
 /* Trova la Parola giocata come domanda della scaletta quiz */
 function playWsQuestion(q){
   cancelLiveQuestion();
+  if (G.report) G.report.questions.push({ i:G.qi+1, text:q.text, type:'wordsearch', points:q.points, timer:q.timer, note:'Trova la parola: dettaglio risposte non tracciato, si veda il minigioco stesso.' });
   const size = q.wsSize || 10;
   const placed = wsGenerate(q.wsWord||'', size);
   if (!placed){
