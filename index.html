@@ -1439,7 +1439,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v12.89</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v12.90</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -4581,7 +4581,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1289; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1290; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -6164,16 +6164,9 @@ function reportBuildText(finalPlayers){
   out += `Codice partita: ${R.code}\n`;
   out += `Durata: circa ${durationMin} minut${durationMin===1?'o':'i'}\n\n`;
 
-  // include anche chi si fosse disconnesso prima della fine, non solo i presenti all'ultimo minuto
-  const allPids = new Set([...Object.keys(finalPlayers), ...Object.keys(R.playersSeen)]);
-  const arr = [...allPids].map(pid=>{
-    const fp = finalPlayers[pid];
-    if (fp) return { name:fp.name, score:fp.score||0, left:false };
-    const seen = R.playersSeen[pid];
-    return { name: seen ? seen.name : '(sconosciuto)', score: seen ? seen.score : 0, left:true };
-  }).sort((a,b)=>b.score-a.score);
+  const arr = Object.entries(finalPlayers||{}).map(([pid,p])=>({name:p.name, score:p.score||0})).sort((a,b)=>b.score-a.score);
   out += `GIOCATORI (${arr.length})\n${bar}\n`;
-  arr.forEach((p,i)=>{ out += `${i+1}. ${p.name} — ${p.score} pt${p.left?' (disconnesso prima della fine)':''}\n`; });
+  arr.forEach((p,i)=>{ out += `${i+1}. ${p.name} — ${p.score} pt\n`; });
 
   out += `\nMINIGIOCHI SVOLTI (${R.minigames.length})\n${bar}\n`;
   out += R.minigames.length ? R.minigames.map(m=>`- ${m.label} (${new Date(m.at).toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})})`).join('\n')+'\n' : '(nessuno)\n';
@@ -6221,10 +6214,15 @@ function endQuiz(){
   if (G && G.dataSnapshotAtStart && captureLocalDataSnapshot() !== G.dataSnapshotAtStart){
     if (confirm('📌 Durante questa serata sono cambiati alcuni dati salvati (gruppi WhatsApp, nomi cavalli, set o messaggi). Vuoi fare un backup adesso?')) backupAllQuizzes();
   }
+  // salvataggio automatico del report, IMMEDIATO e SINCRONO (uso i dati dei giocatori già tracciati in
+  // tempo reale in G.report.playersSeen, non una nuova lettura da internet): il browser permette di
+  // scaricare un file senza chiedere conferma solo se lo scaricamento parte a ridosso del click
+  // dell'utente — se aspettassimo anche solo la risposta di una richiesta a Firebase, per quanto
+  // veloce, rischieremmo che passi troppo tempo e che il download venga bloccato in silenzio.
+  if (G && G.report) reportSave(G.report.playersSeen);
   sendLeadOverlay({on:false}); // sempre incondizionato: leadOv.on (variabile locale) può restare disallineato da un ricaricamento della pagina di regia, lasciando la sovrapposizione accesa sui telefoni senza che l'host se ne accorga
   G.ref.child('players').once('value').then(ps=>{
     const players = ps.val()||{};
-    if (G.report) reportSave(players); // salvataggio automatico del report della serata, senza alcun pulsante
     const arr = Object.entries(players).map(([id,p])=>({id,...p})).sort((a,b)=>(b.score||0)-(a.score||0));
     G.ref.update({ status:'end', final: arr.slice(0,3).map(p=>({name:p.name, score:p.score||0})), podiumStage:0 });
     renderPodiumBuild($('podium'), $('podLead'), arr);
