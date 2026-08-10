@@ -1439,7 +1439,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v12.86</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v12.87</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -1777,9 +1777,7 @@ body.suspense-on #pfRank{ display:none !important; }
   <button class="hb" onclick="modalGamesSkill()" style="border-color:var(--cyan); color:var(--cyan)" data-tip="Apre l'elenco dei minigiochi di abilità (puzzle, memoria, calcolo...)">🧠 ABILITÀ</button>
   <button class="hb" onclick="modalGamesLuck()" style="border-color:var(--gold); color:var(--gold)" data-tip="Apre l'elenco dei minigiochi di fortuna (ruote, carte, estrazioni...)">🍀 FORTUNA</button>
   <button class="hb" onclick="modalModules()" style="border-color:#d4a63a; color:#d4a63a" data-tip="Apre gli strumenti extra: Votometro, Timer, Classifica di Gradimento, Asta">🧩 MODULI</button>
-  <button class="hb" onclick="openProjector()" data-tip="Apre la finestra dedicata da collegare al videoproiettore">📺 Apri proiettore</button>
-  <button class="hb" id="hbPreview" onclick="togglePreview()" data-tip="Mostra qui in regia, in piccolo, esattamente cosa sta vedendo il proiettore in questo momento">👁 Anteprima proiettore</button>
-  <button class="hb" id="hbQr" onclick="toggleQrOverlay()" data-tip="Mostra o nasconde sul proiettore il codice QR per entrare a giocare">📱 QR sul proiettore</button>
+  <button class="hb" onclick="modalProjector()" data-tip="Apre finestra proiettore, QR e anteprima da un unico pannello">📺 Proiettore</button>
   <button class="hb" onclick="modalEntryLink()" data-tip="Mostra il link e il codice partita da dare ai giocatori per entrare">🔗 Link ingresso</button>
   <button class="hb" onclick="openInterimPodium()" data-tip="Mostra un podio intermedio con i primi classificati fin qui, senza terminare la partita">🏆 Podio</button>
   <button class="hb" onclick="btnEndQuiz()" data-tip="Chiude subito la partita e mostra il podio finale">🏁 Termina quiz</button>
@@ -4586,7 +4584,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1286; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1287; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -4812,6 +4810,16 @@ function pjSend(msg){
   }
 }
 function projUrl(){ return location.pathname+'?proj=1'+(G?'&g='+G.code:'')+'&v='+Date.now(); }
+/* Pannello unico che raccoglie le tre azioni relative al proiettore: apertura finestra, QR e anteprima.
+   I due interruttori (QR e anteprima) si ridisegnano da soli richiamando questa stessa funzione dopo
+   ogni tocco, così il pannello mostra sempre lo stato aggiornato senza bisogno di pulsanti dedicati in barra. */
+function modalProjector(){
+  const previewOn = $('projPreview').classList.contains('on');
+  openModal('📺 PROIETTORE', `
+    <button class="btn mg" style="width:100%" onclick="openProjector()" data-tip="Apre la finestra dedicata da collegare al videoproiettore">📺 Apri finestra proiettore</button>
+    <button class="btn ${qrOverlayOn?'lm':'ghost'} mt" style="width:100%" onclick="toggleQrOverlay(); modalProjector();" data-tip="Mostra o nasconde sul proiettore il codice QR per entrare a giocare">📱 QR sul proiettore ${qrOverlayOn?'— ATTIVO ✓':''}</button>
+    <button class="btn ${previewOn?'lm':'ghost'} mt" style="width:100%" onclick="togglePreview(); modalProjector();" data-tip="Mostra qui in regia, in piccolo, esattamente cosa sta vedendo il proiettore in questo momento">👁 Anteprima proiettore ${previewOn?'— ATTIVA ✓':''}</button>`);
+}
 function openProjector(){
   const full = location.origin + projUrl();
   const w = window.open(projUrl(), 'caponeProj', 'width=1280,height=740');
@@ -4866,7 +4874,6 @@ let qrOverlayOn = false;
 function toggleQrOverlay(){
   if (!G || !G.url) return;
   qrOverlayOn = !qrOverlayOn;
-  $('hbQr').classList.toggle('on', qrOverlayOn);
   if (bc) bc.postMessage({type:'qrOverlay', on:qrOverlayOn, url:G.url});
   G.ref.child('projQr').set({on:qrOverlayOn, url:G.url});
 }
@@ -4894,7 +4901,7 @@ function shareEntryLinkWa(){
 }
 function togglePreview(){
   const p = $('projPreview'), on = !p.classList.contains('on');
-  p.classList.toggle('on', on); $('hbPreview').classList.toggle('on', on);
+  p.classList.toggle('on', on);
   if (on) {
     $('pvFrame').src = location.origin + projUrl() + '&t=' + Date.now(); setTimeout(()=>{ if(lastPjMsg) pjSend(lastPjMsg); }, 800);
     restorePvPosition(); initPvDrag();
