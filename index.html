@@ -1439,7 +1439,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v12.88</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v12.89</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -4581,7 +4581,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1288; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1289; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -4731,6 +4731,11 @@ function esc(s){ return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;',
   document.addEventListener('touchend', ()=>{ clearTimeout(longPressTimer); if (suppressClick) hide(); });
   document.addEventListener('click', e=>{
     if (suppressClick){ e.preventDefault(); e.stopPropagation(); suppressClick = false; }
+    // un click (mouse o touch) significa che l'interazione è andata avanti — es. si è aperto un
+    // pannello sopra il pulsante — quindi il suggerimento del pulsante precedente va sempre nascosto,
+    // anche se il puntatore del mouse non si è mosso e quindi non è scattata nessuna uscita naturale
+    clearTimeout(showTimer);
+    hide();
   }, true);
 })();
 function norm(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim(); }
