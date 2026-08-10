@@ -1439,7 +1439,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v12.87</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v12.88</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -1768,18 +1768,15 @@ body.suspense-on #pfRank{ display:none !important; }
   <button class="hb" id="hbSuspense" onclick="toggleSuspense()" data-tip="Nasconde la classifica ai giocatori durante il gioco, per tenerli col fiato sospeso fino alla fine">🤫 Modalità Suspense</button>
   <button class="hb" id="hbHighlander" onclick="toggleHighlander()" data-tip="Chi sbaglia una domanda viene eliminato: resta in gioco solo chi risponde giusto">💀 Modalità Highlander</button>
   <button class="hb" onclick="modalPoints()" data-tip="Assegna punti, rinomina, gestisci chi ha cambiato telefono e chi è fuori per la Modalità Highlander">👥 Gestisci giocatori</button>
-  <button class="hb" id="hbLead" onclick="toggleLeadOverlay('lead')" data-tip="Mostra o nasconde la classifica generale a schermo intero sul videoproiettore">🏆 Classifica → 📺</button>
-  <button class="hb" id="hbFast" onclick="toggleLeadOverlay('fast')" data-tip="Mostra o nasconde sul proiettore chi ha risposto più veloce all'ultima domanda">⚡ Più veloci → 📺</button>
+  <button class="hb" onclick="modalClassifiche()" data-tip="Classifica generale, più veloci e podio intermedio da un unico pannello">🏆 Classifiche varie</button>
   <button class="hb" id="hbMsg" onclick="modalPjMsg()" data-tip="Manda un messaggio di testo a comparsa sul videoproiettore">💬 Messaggio → 📺</button>
   <button class="hb" id="hbWa" onclick="modalWaGroup()" data-tip="Mostra QR e link per far entrare i giocatori nel gruppo WhatsApp della serata">📱 Gruppo WhatsApp</button>
   <button class="hb" id="hbPhoto" onclick="modalPjPhoto()" data-tip="Manda una foto a comparsa sul videoproiettore">📷 Pubblica Foto</button>
   <button class="hb" onclick="modalQuestions()" data-tip="Salta direttamente a una domanda specifica della scaletta, saltando le altre">📋 Scelta domanda</button>
-  <button class="hb" onclick="modalGamesSkill()" style="border-color:var(--cyan); color:var(--cyan)" data-tip="Apre l'elenco dei minigiochi di abilità (puzzle, memoria, calcolo...)">🧠 ABILITÀ</button>
-  <button class="hb" onclick="modalGamesLuck()" style="border-color:var(--gold); color:var(--gold)" data-tip="Apre l'elenco dei minigiochi di fortuna (ruote, carte, estrazioni...)">🍀 FORTUNA</button>
+  <button class="hb" onclick="modalGiochi()" style="border-color:var(--cyan); color:var(--cyan)" data-tip="Apre i minigiochi di Abilità e di Fortuna da un unico pannello">🎮 Giochi</button>
   <button class="hb" onclick="modalModules()" style="border-color:#d4a63a; color:#d4a63a" data-tip="Apre gli strumenti extra: Votometro, Timer, Classifica di Gradimento, Asta">🧩 MODULI</button>
   <button class="hb" onclick="modalProjector()" data-tip="Apre finestra proiettore, QR e anteprima da un unico pannello">📺 Proiettore</button>
   <button class="hb" onclick="modalEntryLink()" data-tip="Mostra il link e il codice partita da dare ai giocatori per entrare">🔗 Link ingresso</button>
-  <button class="hb" onclick="openInterimPodium()" data-tip="Mostra un podio intermedio con i primi classificati fin qui, senza terminare la partita">🏆 Podio</button>
   <button class="hb" onclick="btnEndQuiz()" data-tip="Chiude subito la partita e mostra il podio finale">🏁 Termina quiz</button>
   </div>
 </div>
@@ -4584,7 +4581,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1287; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1288; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -4813,6 +4810,23 @@ function projUrl(){ return location.pathname+'?proj=1'+(G?'&g='+G.code:'')+'&v='
 /* Pannello unico che raccoglie le tre azioni relative al proiettore: apertura finestra, QR e anteprima.
    I due interruttori (QR e anteprima) si ridisegnano da soli richiamando questa stessa funzione dopo
    ogni tocco, così il pannello mostra sempre lo stato aggiornato senza bisogno di pulsanti dedicati in barra. */
+/* Pannello unico per le tre "classifiche varie": classifica generale e più veloci sul proiettore
+   (interruttori, si ridisegnano da soli dopo ogni tocco, stesso schema di modalProjector), più il
+   podio intermedio (un'azione: chiude questo pannello e lo mostra subito). */
+function modalClassifiche(){
+  const leadOn = leadOv.on && leadOv.kind==='lead', fastOn = leadOv.on && leadOv.kind==='fast';
+  openModal('🏆 CLASSIFICHE VARIE', `
+    <button class="btn ${leadOn?'lm':'ghost'}" style="width:100%" onclick="toggleLeadOverlay('lead'); modalClassifiche();" data-tip="Mostra o nasconde la classifica generale a schermo intero sul videoproiettore">🏆 Classifica generale → 📺 ${leadOn?'— ATTIVA ✓':''}</button>
+    <button class="btn ${fastOn?'lm':'ghost'} mt" style="width:100%" onclick="toggleLeadOverlay('fast'); modalClassifiche();" data-tip="Mostra o nasconde sul proiettore chi ha risposto più veloce all'ultima domanda">⚡ Più veloci → 📺 ${fastOn?'— ATTIVA ✓':''}</button>
+    <button class="btn mg mt" style="width:100%" onclick="closeModal(); openInterimPodium();" data-tip="Mostra un podio intermedio con i primi classificati fin qui, senza terminare la partita">🏆 Podio intermedio</button>`);
+}
+/* Pannello unico che raccoglie le due sessioni di minigiochi: da qui si sceglie ABILITÀ o FORTUNA,
+   che restano esattamente come prima (stesse liste, stessa licenza), solo un tocco più in profondità. */
+function modalGiochi(){
+  openModal('🎮 GIOCHI', `
+    <button class="btn ghost" style="width:100%; border-color:var(--cyan); color:var(--cyan)" onclick="modalGamesSkill()" data-tip="Apre l'elenco dei minigiochi di abilità (puzzle, memoria, calcolo...)">🧠 ABILITÀ</button>
+    <button class="btn ghost mt" style="width:100%; border-color:var(--gold); color:var(--gold)" onclick="modalGamesLuck()" data-tip="Apre l'elenco dei minigiochi di fortuna (ruote, carte, estrazioni...)">🍀 FORTUNA</button>`);
+}
 function modalProjector(){
   const previewOn = $('projPreview').classList.contains('on');
   openModal('📺 PROIETTORE', `
@@ -4865,8 +4879,6 @@ function toggleLeadOverlay(kind){
 }
 function sendLeadOverlay(v){
   leadOv = { on:!!v.on, kind:v.kind||null };
-  $('hbFast').classList.toggle('on', leadOv.on && leadOv.kind==='fast');
-  $('hbLead').classList.toggle('on', leadOv.on && leadOv.kind==='lead');
   if (bc) bc.postMessage({type:'leadOverlay', ...v});
   if (G && G.ref) G.ref.child('projLead').set(v);
 }
