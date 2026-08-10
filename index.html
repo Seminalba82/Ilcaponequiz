@@ -1439,7 +1439,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v12.80</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v12.83</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -2287,6 +2287,10 @@ body.suspense-on #pfRank{ display:none !important; }
     <div class="label mt" style="text-transform:none; letter-spacing:0">Ogni squadra collegata riceve una cartella unica sul telefono. Chi entra dopo l'avvio non ha la cartella per questa partita.</div>
   </div>
   <div id="tomLive" style="display:none; width:100%">
+    <div class="row" style="justify-content:center; gap:14px; flex-wrap:wrap">
+      <div class="pill" id="tomCardsCount" style="color:var(--cyan)">🎫 0 cartelle in gioco</div>
+      <div class="pill" id="tomDrawnCount" style="color:var(--lime)">🎱 0 palline estratte</div>
+    </div>
     <div class="tomBig" id="tomLastNum">—</div>
     <div class="row" style="justify-content:center">
       <button class="btn mg" id="tomBtnDraw" onclick="tombolaDraw()" data-tip="Estrae il prossimo numero della tombola">🎱 ESTRAI NUMERO</button>
@@ -2303,6 +2307,10 @@ body.suspense-on #pfRank{ display:none !important; }
 <!-- ==================== PROIETTORE: TOMBOLA ==================== -->
 <div class="screen" id="scrPjTombola">
   <div class="tomTitle" style="font-size:clamp(26px,4vw,52px)">TOMBOLA<small>BY ALBERTO SEMINERIO</small></div>
+  <div class="row" style="justify-content:center; gap:16px; flex-wrap:wrap">
+    <div class="pill" id="pjTomCardsCount" style="color:var(--cyan); font-size:clamp(13px,1.6vw,17px)">🎫 0 cartelle in gioco</div>
+    <div class="pill" id="pjTomDrawnCount" style="color:var(--lime); font-size:clamp(13px,1.6vw,17px)">🎱 0 palline estratte</div>
+  </div>
   <div class="tomLayout mt">
     <div class="tabellone" id="tomBoardPj"></div>
     <div class="tomPrizes" id="tomPrizesPj"></div>
@@ -4579,7 +4587,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1280; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1283; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -7735,6 +7743,12 @@ function gtDrawFoil(canvas, subtitle){
 function gtSetupScratch(canvas, onDone){
   const ctx = canvas.getContext('2d');
   const rect = canvas.getBoundingClientRect();
+  if (rect.width<10 || rect.height<10){
+    // la schermata non è ancora del tutto pronta (capita un attimo dopo un cambio schermo): riprovo
+    // a breve invece di disegnare su un canvas a dimensione zero, che risulterebbe invisibile per sempre
+    setTimeout(()=>gtSetupScratch(canvas, onDone), 120);
+    return;
+  }
   canvas.width = rect.width; canvas.height = rect.height;
   gtDrawFoil(canvas);
   // tolgo gli ascoltatori della manche precedente, se ce ne sono: altrimenti si accumulano ad ogni
@@ -7781,6 +7795,19 @@ function gtSetupScratch(canvas, onDone){
   canvas.addEventListener('touchstart', onMove, {passive:true});
   canvas.addEventListener('touchmove', onMove, {passive:true});
 }
+function gtCanvasLooksBlank(canvas){
+  // controlla se il canvas è visivamente vuoto leggendo dei pixel veri, non un semplice promemoria:
+  // un promemoria del tipo "l'ho già disegnato" resterebbe vero anche se il browser, in background
+  // durante un calo di connessione, avesse nel frattempo svuotato il disegno per risparmiare memoria.
+  // Campiono 5 punti sparsi (i 4 angoli + il centro) e considero il canvas vuoto solo se sono TUTTI
+  // trasparenti: così un grattamento vero (che copre un'area limitata) non viene scambiato per un bug.
+  if (!canvas.width || !canvas.height) return true;
+  try{
+    const ctx = canvas.getContext('2d');
+    const pts = [[4,4],[canvas.width-4,4],[4,canvas.height-4],[canvas.width-4,canvas.height-4],[canvas.width/2,canvas.height/2]];
+    return pts.every(([x,y])=> ctx.getImageData(Math.max(0,Math.floor(x)), Math.max(0,Math.floor(y)), 1, 1).data[3]===0);
+  }catch(e){ return false; } // se per qualunque motivo non riesco a leggerlo, non forzo un ridisegno che potrebbe non servire
+}
 function showPlayerGold(g){
   const m = g.goldenticket||{};
   $('gtpName').textContent = P.name;
@@ -7788,7 +7815,8 @@ function showPlayerGold(g){
   showScreen('scrPlayGold');
   if (m.phase==='active'){
     const sig = 'act:'+m.roundId;
-    if (P.gtSig !== sig){
+    const isNewRound = P.gtSig !== sig;
+    if (isNewRound){
       P.gtSig = sig; P.gtResolved = false;
       const mine = (m.assignments||{})[P.id] || { win:false };
       P.gtOutcome = mine;
@@ -7804,13 +7832,23 @@ function showPlayerGold(g){
         resEl.innerHTML = `<div class="big">RITENTA...</div><div class="sub">Ci vediamo al prossimo Capone Quiz! 🎩</div>`;
       }
       const canvas = $('gtpCanvas');
-      gtSetupScratch(canvas, gtFinishScratch);
+      canvas.style.display=''; canvas.style.opacity='1';
       clearInterval(P.gtInt);
       P.gtInt = setInterval(()=>{
         const left = Math.max(0, (m.endAt||0) - serverNow());
         $('gtpTimerBar').style.width = (left/(m.durationMs||1)*100)+'%';
         if (left<=0){ clearInterval(P.gtInt); if (!P.gtResolved) gtFinishScratch(); }
       }, 100);
+    }
+    // ridisegno il biglietto se è una manche nuova, OPPURE se questo canvas non risulta ancora essere
+    // stato disegnato per la manche in corso — capita ad esempio se il telefono, dopo essere rimasto
+    // un po' in background durante un calo di connessione, ha "svuotato" il disegno per risparmiare
+    // memoria: senza questo controllo il biglietto resterebbe vuoto per sempre, anche continuando a
+    // giocare normalmente, perché il codice penserebbe di averlo già disegnato
+    const canvas = $('gtpCanvas');
+    if ((isNewRound || gtCanvasLooksBlank(canvas)) && !P.gtResolved){
+      canvas._gtRoundSig = sig;
+      gtSetupScratch(canvas, gtFinishScratch);
     }
   }
 }
@@ -10934,10 +10972,13 @@ function tombolaStart(){
     G.ref.update({ status:'tombola', tombola:{ phase:'play', prizes, cards, drawn:null, won:null, lastWin:null } });
     $('tomSetup').style.display='none'; $('tomLive').style.display='block';
     $('tomLastNum').textContent='—'; $('tomBtnDraw').disabled=false;
+    const cardsCount = Object.keys(cards).length;
+    $('tomCardsCount').textContent = `🎫 ${cardsCount} cartell${cardsCount===1?'a':'e'} in gioco`;
+    $('tomDrawnCount').textContent = '🎱 0 palline estratte';
     renderTabellone($('tomBoardHost'), new Set(), null);
     renderTomPrizes($('tomPrizesHost'), prizes, {});
     renderTomDrawn($('tomDrawnHost'), []);
-    pjSend({type:'tombola', prizes, drawn:[], won:{}});
+    pjSend({type:'tombola', prizes, drawn:[], won:{}, cardsCount});
   });
 }
 function tombolaDraw(){
@@ -10976,10 +11017,11 @@ function tombolaDraw(){
     G.ref.update(updates);
     // schermo host
     $('tomLastNum').textContent = n;
+    $('tomDrawnCount').textContent = `🎱 ${TOM.drawn.length} pallin${TOM.drawn.length===1?'a estratta':'e estratte'}`;
     renderTabellone($('tomBoardHost'), drawnSet, n);
     renderTomPrizes($('tomPrizesHost'), TOM.prizes, TOM.won);
     renderTomDrawn($('tomDrawnHost'), TOM.drawn);
-    pjSend({type:'tombola', prizes:TOM.prizes, drawn:TOM.drawn, won:TOM.won, lastN:n});
+    pjSend({type:'tombola', prizes:TOM.prizes, drawn:TOM.drawn, won:TOM.won, lastN:n, cardsCount:Object.keys(TOM.cards).length});
     newWins.forEach((w,i)=> setTimeout(()=> pjSend({type:'tombolaWin', ...w}), 600 + i*4000));
     if (TOM.won.tombola || !TOM.remaining.length) $('tomBtnDraw').disabled = true;
     });
@@ -14968,6 +15010,7 @@ function modalGamesLuck(){
   openModal('🍀 GIOCHI DI FORTUNA', `<div style="display:flex; flex-direction:column; gap:10px">${btns}</div>${msgVuoto}`);
 }
 function modalModules(){
+  syncGiochiCatalogo();
   openModal('🧩 MODULI', `
     <div style="display:flex; flex-direction:column; gap:10px">
       <button class="btn gameBtn" onclick="openVoto()">🌡 Votometro</button>
@@ -16081,6 +16124,9 @@ function pjRouteInner(m){
       renderTabellone($('tomBoardPj'), new Set(m.drawn||[]), m.lastN||null);
       renderTomPrizes($('tomPrizesPj'), m.prizes||{}, m.won||{});
       renderTomDrawn($('tomDrawnPj'), m.drawn||[]);
+      const cc = m.cardsCount||0, dc = (m.drawn||[]).length;
+      $('pjTomCardsCount').textContent = `🎫 ${cc} cartell${cc===1?'a':'e'} in gioco`;
+      $('pjTomDrawnCount').textContent = `🎱 ${dc} pallin${dc===1?'a estratta':'e estratte'}`;
     }
     else if (m.type==='tombolaWin') {
       $('tomBannerLv').textContent = m.label + '!';
