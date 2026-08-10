@@ -1439,7 +1439,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v12.90</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v12.91</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -1454,7 +1454,7 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="row mtb" style="justify-content:center">
     <button class="btn mg" onclick="newQuiz()" data-tip="Crea un quiz nuovo da zero, con la sua scaletta di domande">✚ Crea nuovo quiz</button>
     <button class="btn cy" onclick="importQuiz()" data-tip="Carica un quiz da un file salvato in precedenza (esportato da qui o ricevuto da qualcun altro)">⬆ Importa quiz</button>
-    <button class="btn lm" onclick="modalCampionato()" data-tip="Tieni il conto di più serate insieme, con una classifica generale che si somma di volta in volta">🏆 Campionato serate</button>
+    <button class="btn lm" onclick="modalCampionato()" data-tip="Tieni più campionati distinti, uno per locale, ognuno con le sue squadre protette da PIN">🏆 Campionato serate</button>
     <button class="btn" onclick="modalMerge()" data-tip="Unisce due dei tuoi quiz salvati in uno solo">🔀 Fondi quiz</button>
     <button class="btn ghost" onclick="backupAllQuizzes()" data-tip="Scarica un file con tutti i tuoi quiz salvati, per non perderli mai">💾 Backup di tutti i quiz</button>
   </div>
@@ -1621,6 +1621,9 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="label center mt">Giocatori collegati: <span id="lobbyCount" class="pill">0</span></div>
   <div class="playersLobby" id="lobbyPlayers"></div>
   <div class="row mtb" style="justify-content:center">
+    <button class="btn ghost small" id="lobbyCampBtn" onclick="modalCampionato()" data-tip="Lega questa partita a un campionato: le squadre protette da PIN e i punti sommati nel tempo riguarderanno solo quel locale">🏆 Campionato: nessuno</button>
+  </div>
+  <div class="row mtb" style="justify-content:center">
     <button class="btn ghost" onclick="abortGame()" data-tip="Annulla e torna alla home, senza avviare la partita">✕ Annulla</button>
     <button class="btn mg" id="btnStart" onclick="startQuiz()" data-tip="Inizia la prima domanda: da qui in poi i giocatori collegati sono quelli in partita">▶ SI PARTE!</button>
   </div>
@@ -1693,6 +1696,19 @@ body.suspense-on #pfRank{ display:none !important; }
     <button class="btn lm mt" style="width:100%" onclick="reclaimPlayer()">🔓 RECUPERA IL MIO PROFILO</button>
     <div id="reclaimErr" class="warn mt" style="display:none"></div>
     <div class="byline mt" style="cursor:pointer; text-decoration:underline" onclick="toggleReclaim()">↩ Torna indietro</div>
+  </div>
+  <div class="panel mtb" style="max-width:420px; display:none" id="pinCheckPanel">
+    <div class="label" id="pinCheckLabel">Questo nome è protetto da PIN in questo campionato.</div>
+    <input type="text" id="pinCheckInput" maxlength="4" placeholder="PIN a 4 cifre" inputmode="numeric" style="text-align:center; letter-spacing:8px; font-family:'Bungee'">
+    <button class="btn lm mt" style="width:100%" onclick="confirmPinCheck()">🔓 CONFERMA PIN</button>
+    <div id="pinCheckErr" class="warn mt" style="display:none"></div>
+    <div class="byline mt" style="cursor:pointer; text-decoration:underline" onclick="cancelPinFlow()">↩ Usa un altro nome</div>
+  </div>
+  <div class="panel mtb" style="max-width:420px; display:none" id="pinRegisterPanel">
+    <div class="label" id="pinRegisterLabel">Vuoi proteggere questo nome nel campionato? Scegli un PIN a 4 cifre: nessun altro potrà usarlo alle prossime serate.</div>
+    <input type="text" id="pinRegisterInput" maxlength="4" placeholder="PIN a 4 cifre" inputmode="numeric" style="text-align:center; letter-spacing:8px; font-family:'Bungee'">
+    <button class="btn lm mt" style="width:100%" onclick="confirmPinRegister()">🔒 PROTEGGI ED ENTRA</button>
+    <button class="btn ghost mt" style="width:100%" onclick="skipPinRegister()">Entra senza proteggere il nome</button>
   </div>
 </div>
 
@@ -4581,7 +4597,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1290; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1291; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -5710,6 +5726,7 @@ function actuallyPlayQuiz(i){
   // (punteggi, domanda a cui eravamo arrivati) resta salvata su Firebase finché non premi "Termina quiz".
   $('lobbyQuizName').textContent = quiz.title;
   $('lobbyCode').textContent = code;
+  $('lobbyCampBtn').textContent = '🏆 Campionato: nessuno'; // ogni nuova partita parte senza campionato collegato, finché non lo si sceglie da qui
   const url = location.origin + location.pathname + '?g=' + code;
   G.url = url;
   $('qrBox').innerHTML=''; new QRCode($('qrBox'), { text:url, width:210, height:210, colorDark:'#0b0614' });
@@ -5782,6 +5799,10 @@ function resumeGame(){
     for (let k=0; k<=G.qi; k++) G.played.add(k);
     suspenseMode = !!data.suspense; $('hbSuspense').classList.toggle('on', suspenseMode);
     highlanderMode = !!data.highlander; $('hbHighlander').classList.toggle('on', highlanderMode);
+    G.campionato = data.campionato || null;
+    G.campionatoName = null; // il nome esatto lo si rivede aprendo "Campionato serate"; il collegamento (la chiave) resta comunque attivo
+    $('lobbyCampBtn').textContent = G.campionato ? '🏆 Campionato: (collegato)' : '🏆 Campionato: nessuno';
+    if (!G.report) G.report = { quizTitle: quiz.title, code, startedAt: Date.now(), questions: [], minigames: [], playersSeen: {} };
     const url = location.origin + location.pathname + '?g=' + code;
     G.url = url;
     $('lobbyQuizName').textContent = quiz.title; $('lobbyCode').textContent = code;
@@ -5791,6 +5812,14 @@ function resumeGame(){
       const p = s2.val()||{}; const arr = Object.values(p);
       $('lobbyCount').textContent = arr.length;
       $('lobbyPlayers').innerHTML = arr.map(x=>`<div class="pChip">${esc(x.name)}</div>`).join('');
+      for (const [pid,pl] of Object.entries(p)) G.report.playersSeen[pid] = { name:pl.name, score:pl.score||0 };
+    });
+    G.ref.child('status').off();
+    G.ref.child('status').on('value', s2=>{
+      const st = s2.val();
+      const entry = GIOCHI_CATALOGO.find(g=>g.k===st);
+      if (entry && G.report.lastMinigameStatus !== st) G.report.minigames.push({ label: entry.l, at: Date.now() });
+      G.report.lastMinigameStatus = entry ? st : null;
     });
     $('hostBar').classList.add('on'); document.body.classList.add('barOn');
     if (window.innerWidth < 700) { $('hostBar').classList.add('collapsed'); document.body.classList.add('barCollapsed'); $('hbToggle').textContent='🎛 REGIA ▴'; }
@@ -6259,26 +6288,96 @@ function joinGame(){
   const gref = db.ref('caponequiz/games/'+P.code);
   gref.child('status').once('value').then(s=>{
     if (!s.exists()) { $('joinErr').style.display='block'; $('joinErr').textContent='⚠️ Partita non trovata. Controlla il codice o riscansiona il QR.'; return; }
-    const pref = gref.child('players').push(); // genero subito la chiave, senza ancora scrivere nulla
-    const myId = pref.key;
-    const nameKey = norm(name);
-    // prenotazione ATOMICA del nome tramite transazione: al sicuro anche se due persone si iscrivono
-    // con lo stesso nome nello stesso istante (tipico proprio a inizio serata, tutti insieme sul QR)
-    gref.child('nameLock/'+nameKey).transaction(cur => cur ? cur : myId).then(res=>{
-      if (!res.committed || res.snapshot.val() !== myId){
-        $('joinErr').style.display='block';
-        $('joinErr').textContent='🎩 "'+name+'" è già in partita! Scegli un altro nome (es. '+name+'2), oppure usa "Ho cambiato telefono" qui sotto se sei tu.';
-        return;
-      }
-      $('joinErr').style.display='none';
-      P.ref = gref;
-      const tok = 'tok'+Date.now()+Math.random().toString(36).slice(2);
-      pref.set({ name, score:0, sessionTok:tok });
-      P.id = myId; P.name = name;
-      try{ localStorage.setItem('capone_sess_'+P.code, JSON.stringify({id:P.id, name, tok})); }catch(e){}
-      $('pqName').textContent = name;
-      listenGame();
+    // se questa partita è legata a un campionato, controllo prima se il nome scelto è già una squadra
+    // protetta da PIN (per impedire che qualcun altro rubi il nome), oppure se è nuovo per quel
+    // campionato, nel qual caso offro di proteggerlo subito con un PIN scelto sul momento
+    gref.child('campionato').once('value').then(cs=>{
+      const ck = cs.val();
+      if (!ck){ joinGameActual(gref, name, null); return; }
+      const tk = campKey(name);
+      db.ref('caponequiz/campionati/'+ck+'/teams/'+tk).once('value').then(ts=>{
+        const team = ts.val();
+        if (team && team.pin){
+          P.pendingJoin = { gref, name, ck };
+          $('joinPanel').style.display='none';
+          $('pinCheckLabel').textContent = `"${name}" è protetto da PIN in questo campionato. Inseriscilo per continuare:`;
+          $('pinCheckInput').value=''; $('pinCheckErr').style.display='none';
+          $('pinCheckPanel').style.display='block';
+        } else if (team && !team.pin){
+          // squadra già iscritta ma senza PIN (nome libero): entra senza altre domande
+          joinGameActual(gref, name, ck);
+        } else {
+          // nome nuovo per questo campionato: offro di proteggerlo subito
+          P.pendingJoin = { gref, name, ck };
+          $('joinPanel').style.display='none';
+          $('pinRegisterLabel').textContent = `Vuoi proteggere il nome "${name}" in questo campionato? Scegli un PIN a 4 cifre: nessun altro potrà usarlo alle prossime serate.`;
+          $('pinRegisterInput').value='';
+          $('pinRegisterPanel').style.display='block';
+        }
+      });
     });
+  });
+}
+function confirmPinCheck(){
+  const pin = ($('pinCheckInput').value||'').trim();
+  const pj = P.pendingJoin; if (!pj) return;
+  if (!pin) return;
+  db.ref('caponequiz/campionati/'+pj.ck+'/teams/'+campKey(pj.name)+'/pin').once('value').then(s=>{
+    if (s.val() === pin){
+      $('pinCheckPanel').style.display='none';
+      joinGameActual(pj.gref, pj.name, pj.ck);
+    } else {
+      $('pinCheckErr').style.display='block';
+      $('pinCheckErr').textContent = '❌ PIN sbagliato. Riprova, oppure usa un altro nome.';
+    }
+  });
+}
+function confirmPinRegister(){
+  const pin = ($('pinRegisterInput').value||'').trim();
+  const pj = P.pendingJoin; if (!pj) return;
+  if (!/^\d{4}$/.test(pin)) { alert('Il PIN deve essere di 4 cifre numeriche.'); return; }
+  const tk = campKey(pj.name);
+  db.ref('caponequiz/campionati/'+pj.ck+'/teams/'+tk).transaction(cur=>{
+    cur = cur || { name:pj.name, total:0, serate:0 };
+    cur.pin = pin;
+    return cur;
+  }).then(()=>{
+    $('pinRegisterPanel').style.display='none';
+    joinGameActual(pj.gref, pj.name, pj.ck);
+  });
+}
+function skipPinRegister(){
+  const pj = P.pendingJoin; if (!pj) return;
+  $('pinRegisterPanel').style.display='none';
+  joinGameActual(pj.gref, pj.name, pj.ck);
+}
+function cancelPinFlow(){
+  $('pinCheckPanel').style.display='none';
+  $('pinRegisterPanel').style.display='none';
+  $('joinPanel').style.display='block';
+  $('joinName').focus();
+}
+function joinGameActual(gref, name, ck){
+  const pref = gref.child('players').push(); // genero subito la chiave, senza ancora scrivere nulla
+  const myId = pref.key;
+  const nameKey = norm(name);
+  // prenotazione ATOMICA del nome tramite transazione: al sicuro anche se due persone si iscrivono
+  // con lo stesso nome nello stesso istante (tipico proprio a inizio serata, tutti insieme sul QR)
+  gref.child('nameLock/'+nameKey).transaction(cur => cur ? cur : myId).then(res=>{
+    if (!res.committed || res.snapshot.val() !== myId){
+      $('joinPanel').style.display='block';
+      $('joinErr').style.display='block';
+      $('joinErr').textContent='🎩 "'+name+'" è già in partita! Scegli un altro nome (es. '+name+'2), oppure usa "Ho cambiato telefono" qui sotto se sei tu.';
+      return;
+    }
+    $('joinErr').style.display='none';
+    P.ref = gref;
+    const tok = 'tok'+Date.now()+Math.random().toString(36).slice(2);
+    pref.set({ name, score:0, sessionTok:tok });
+    P.id = myId; P.name = name;
+    try{ localStorage.setItem('capone_sess_'+P.code, JSON.stringify({id:P.id, name, tok})); }catch(e){}
+    $('pqName').textContent = name;
+    listenGame();
   });
 }
 /* se la pagina si ricarica (Android lo fa spesso), il giocatore rientra con lo stesso posto e gli stessi punti.
@@ -15252,12 +15351,98 @@ function esibToProjector(){
 function votoAgain(){ openVoto(); }
 
 /* ================================================================
-   CAMPIONATO DELLE SERATE — punteggi che si sommano nel tempo
+   CAMPIONATO DELLE SERATE — organizzato in tanti campionati distinti (uno per locale/serata
+   ricorrente), ognuno con le proprie squadre protette da PIN. Così due locali diversi non si
+   mescolano mai, e nessuno può "rubare" il nome di una squadra già iscritta a un campionato:
+   il controllo PIN avviene al momento stesso in cui un giocatore entra in partita (vedi joinGame),
+   non solo quando si salvano i punti a fine serata.
 ================================================================ */
 function campKey(name){ return norm(name).replace(/\s+/g,'-').replace(/[.#$\[\]\/]/g,'') || 'squadra'; }
+// elenco dei campionati esistenti, come "cartelle": punto di ingresso sia da home sia dalla lobby
+function modalCampionato(){
+  if (!fbOK) return alert('Configura prima Firebase.');
+  db.ref('caponequiz/campionati').once('value').then(s=>{
+    const camps = Object.entries(s.val()||{}).map(([k,c])=>({k,...c})).sort((a,b)=>(a.name||'').localeCompare(b.name||'','it'));
+    let html = camps.length ? camps.map(c=>{
+      const nTeams = Object.keys(c.teams||{}).length;
+      return `<button class="btn lm gameBtn" style="width:100%; text-align:left" onclick="modalCampionatoDetail('${c.k}')">📁 ${esc(c.name)} <small style="opacity:.75">(${nTeams} squadr${nTeams===1?'a':'e'})</small></button>`;
+    }).join('') : '<div class="byline" style="letter-spacing:1px">Nessun campionato ancora creato.</div>';
+    html += `<div class="row mt"><input type="text" id="newCampName" class="grow" placeholder="Nome del locale/campionato" maxlength="30">
+      <button class="btn small lm" onclick="createCampionato()">➕ Crea</button></div>`;
+    openModal('🏆 CAMPIONATI DELLE SERATE', html);
+  });
+}
+function createCampionato(){
+  const name = ($('newCampName').value||'').trim();
+  if (!name) return alert('Scrivi il nome del locale/campionato.');
+  const k = campKey(name);
+  db.ref('caponequiz/campionati/'+k).transaction(cur => cur || { name, teams:{} }).then(()=> modalCampionatoDetail(k));
+}
+// dettaglio di UN campionato: squadre iscritte, stato PIN, azioni di gestione
+function modalCampionatoDetail(k){
+  db.ref('caponequiz/campionati/'+k).once('value').then(s=>{
+    const camp = s.val();
+    if (!camp) { modalCampionato(); return; }
+    const safeName = esc(camp.name).replace(/'/g,"\\'");
+    const teams = Object.entries(camp.teams||{}).map(([tk,t])=>({tk,...t})).sort((a,b)=>(b.total||0)-(a.total||0));
+    let html = `<div class="byline" style="text-transform:none; letter-spacing:0">🔒 = squadra protetta da PIN: solo chi lo conosce può continuare a usare quel nome nelle prossime serate di questo campionato. 🔓 = nome libero, nessun PIN impostato.</div>`;
+    html += teams.length ? teams.map(t=>
+      `<div class="leadRow"><span class="pos">${t.pin?'🔒':'🔓'}</span> <span class="grow">${esc(t.name)}<br><small style="color:var(--muted);font-weight:700">${t.serate||0} serate</small></span>
+       <span class="pts">${t.total||0}</span>
+       ${t.pin?`<button class="btn small ghost" onclick="campResetPin('${k}','${t.tk}','${esc(t.name).replace(/'/g,"\\'")}')" data-tip="Toglie il PIN a questa squadra, se l'ha dimenticato">🔓</button>`:''}
+       <button class="btn small ghost" onclick="campDelete('${k}','${t.tk}')" data-tip="Elimina questa squadra dal campionato">🗑</button></div>`).join('')
+      : '<div class="byline" style="letter-spacing:1px">Nessuna squadra ancora. Si aggiungono da sole quando i giocatori entrano in una partita legata a questo campionato.</div>';
+    if (G) html += `<button class="btn small mg mt" style="width:100%" onclick="useCampionatoForSession('${k}','${safeName}')" data-tip="Da questo momento la partita in corso farà punteggio per questo campionato, e i nomi già iscritti saranno protetti dal PIN">✅ Usa questo campionato per la partita in corso</button>`;
+    if (teams.length) html += `<button class="btn small cy mt" style="width:100%" onclick="campToProjector('${k}','${safeName}')" data-tip="Mostra la classifica di questo campionato sul videoproiettore">📺 Mostra sul proiettore</button>`;
+    html += `<button class="btn small ghost mt" style="width:100%" onclick="campDeleteWhole('${k}','${safeName}')" data-tip="Elimina questo intero campionato, comprese tutte le squadre iscritte">🗑 Elimina questo intero campionato</button>`;
+    html += `<div class="row mt"><button class="btn small ghost" onclick="modalCampionato()">↩ Torna all'elenco campionati</button></div>`;
+    openModal('📁 '+camp.name.toUpperCase(), html);
+  });
+}
+function campResetPin(k, tk, name){
+  if (!confirm(`Togliere il PIN a "${name}"? Chiunque potrà usare questo nome alla prossima serata, finché non ne viene impostato uno nuovo.`)) return;
+  db.ref('caponequiz/campionati/'+k+'/teams/'+tk+'/pin').remove().then(()=>modalCampionatoDetail(k));
+}
+function campDelete(k, tk){
+  if (!confirm('Eliminare questa squadra dal campionato?')) return;
+  db.ref('caponequiz/campionati/'+k+'/teams/'+tk).remove().then(()=>modalCampionatoDetail(k));
+}
+function campDeleteWhole(k, name){
+  if (!confirm(`Eliminare l'INTERO campionato "${name}", comprese tutte le squadre iscritte? Non si può annullare.`)) return;
+  db.ref('caponequiz/campionati/'+k).remove().then(modalCampionato);
+}
+// lega la partita in corso a questo campionato: da qui in poi i nomi già iscritti sono protetti da PIN
+function useCampionatoForSession(k, name){
+  if (!G) return;
+  G.campionato = k; G.campionatoName = name;
+  G.ref.child('campionato').set(k);
+  const btn = $('lobbyCampBtn'); if (btn) btn.textContent = '🏆 Campionato: '+name;
+  closeModal();
+}
+function campToProjector(k, name){
+  db.ref('caponequiz/campionati/'+k+'/teams').once('value').then(s=>{
+    const rows = Object.values(s.val()||{}).sort((a,b)=>(b.total||0)-(a.total||0)).slice(0,15)
+      .map((t,i)=>({pos:(i+1)+'°', name:t.name+' ('+(t.serate||0)+' serate)', val:(t.total||0)+''}));
+    sendLeadOverlay({on:true, kind:'camp', title:'🏆 '+name.toUpperCase(), rows});
+    closeModal();
+  });
+}
+// salvataggio a fine serata: se la partita era legata a un campionato, salva lì diretto;
+// altrimenti (partita "libera") chiede in quale campionato salvare, come funzionava prima
 function saveCampionato(){
   if (!G) return;
   if (G.campSaved) return alert('Punteggi già salvati per questa serata!');
+  if (G.campionato) { saveCampionatoInto(G.campionato); return; }
+  db.ref('caponequiz/campionati').once('value').then(s=>{
+    const camps = Object.entries(s.val()||{}).map(([k,c])=>({k,...c}));
+    if (!camps.length) return alert('Non hai ancora creato nessun campionato. Vai su "🏆 Campionato serate" dalla home per crearne uno.');
+    let html = '<div class="byline" style="text-transform:none; letter-spacing:0">Questa partita non era legata a un campionato specifico: scegli dove salvare i punti di stasera.</div>';
+    html += camps.map(c=>`<button class="btn lm gameBtn mt" style="width:100%" onclick="saveCampionatoInto('${c.k}')">📁 ${esc(c.name)}</button>`).join('');
+    openModal('SALVA IN QUALE CAMPIONATO?', html);
+  });
+}
+function saveCampionatoInto(k){
+  closeModal();
   G.ref.child('players').once('value').then(ps=>{
     const players = ps.val()||{};
     const names = Object.values(players).map(p=>p.name);
@@ -15265,8 +15450,10 @@ function saveCampionato(){
     let done = 0;
     for (const pid in players){
       const p = players[pid];
-      db.ref('caponequiz/campionato/'+campKey(p.name)).transaction(cur=>{
+      const tk = campKey(p.name);
+      db.ref('caponequiz/campionati/'+k+'/teams/'+tk).transaction(cur=>{
         cur = cur || { name:p.name, total:0, serate:0 };
+        cur.name = p.name; // aggiorna eventuali correzioni di maiuscole/minuscole, il PIN (se c'è) resta intatto
         cur.total = (cur.total||0) + (p.score||0);
         cur.serate = (cur.serate||0) + 1;
         cur.updated = Date.now();
@@ -15277,31 +15464,6 @@ function saveCampionato(){
         $('btnSaveCamp').disabled = true;
       }});
     }
-  });
-}
-function modalCampionato(){
-  if (!fbOK) return alert('Configura prima Firebase.');
-  db.ref('caponequiz/campionato').once('value').then(s=>{
-    const teams = Object.entries(s.val()||{}).map(([k,t])=>({k,...t})).sort((a,b)=>(b.total||0)-(a.total||0));
-    let html = teams.length ? teams.map((t,i)=>
-      `<div class="leadRow"><span class="pos">${i+1}°</span> <span class="grow">${esc(t.name)}<br><small style="color:var(--muted);font-weight:700">${t.serate||0} serate</small></span>
-       <span class="pts">${t.total||0}</span>
-       <button class="btn small ghost" onclick="campDelete('${t.k}')" style="margin-left:8px">🗑</button></div>`).join('')
-      : '<div class="byline" style="letter-spacing:1px">Nessuna squadra ancora. Salva i punteggi dal podio a fine serata!</div>';
-    if (G && teams.length) html += `<button class="btn small cy mt" style="width:100%" onclick="campToProjector()">📺 Mostra sul proiettore</button>`;
-    openModal('🏆 CAMPIONATO DELLE SERATE', html);
-  });
-}
-function campDelete(k){
-  if (!confirm('Eliminare questa squadra dal campionato?')) return;
-  db.ref('caponequiz/campionato/'+k).remove().then(modalCampionato);
-}
-function campToProjector(){
-  db.ref('caponequiz/campionato').once('value').then(s=>{
-    const rows = Object.values(s.val()||{}).sort((a,b)=>(b.total||0)-(a.total||0)).slice(0,15)
-      .map((t,i)=>({pos:(i+1)+'°', name:t.name+' ('+(t.serate||0)+' serate)', val:(t.total||0)+''}));
-    sendLeadOverlay({on:true, kind:'camp', title:'🏆 CAMPIONATO DELLE SERATE', rows});
-    closeModal();
   });
 }
 
