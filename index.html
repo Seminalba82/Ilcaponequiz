@@ -1439,7 +1439,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v12.83</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v12.84</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -4587,7 +4587,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1283; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1284; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -4697,17 +4697,25 @@ function esc(s){ return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;',
   function show(text,x,y){ tip.textContent = text; place(x,y); requestAnimationFrame(()=> tip.classList.add('show')); }
   function hide(){ tip.classList.remove('show'); }
 
-  document.addEventListener('mouseover', e=>{
+  // Uso i "pointer events" (non i vecchi mouseover/mouseout) perché permettono di sapere con certezza
+  // se il tocco viene da un vero mouse o da un dito: i browser mobili, dopo un tap, generano ANCHE un
+  // finto mouseover per compatibilità con i siti vecchi — senza questo controllo, ogni singolo tocco
+  // veniva scambiato per un passaggio del mouse e faceva comparire il suggerimento quasi subito,
+  // invece di aspettare la pressione prolungata pensata apposta per il touch.
+  document.addEventListener('pointerover', e=>{
+    if (e.pointerType !== 'mouse') return;
     const el = e.target.closest('[data-tip]');
     if (!el) return;
     clearTimeout(showTimer);
     showTimer = setTimeout(()=> show(el.dataset.tip, e.clientX, e.clientY), 200);
   });
-  document.addEventListener('mousemove', e=>{
+  document.addEventListener('pointermove', e=>{
+    if (e.pointerType !== 'mouse') return;
     if (!tip.classList.contains('show')) return;
     if (e.target.closest('[data-tip]')) place(e.clientX, e.clientY);
   });
-  document.addEventListener('mouseout', e=>{
+  document.addEventListener('pointerout', e=>{
+    if (e.pointerType !== 'mouse') return;
     if (e.target.closest('[data-tip]')){ clearTimeout(showTimer); hide(); }
   });
 
