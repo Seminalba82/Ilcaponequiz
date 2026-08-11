@@ -1486,7 +1486,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v12.92</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v12.94</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -2924,11 +2924,24 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrSupertris">
   <div class="brand"><div class="t1" style="font-size:clamp(20px,3.6vw,36px)">🎰 SUPERTRIS</div></div>
   <div class="panel mt" style="max-width:480px" id="stSetup">
-    <div class="label">I 3 premi (uno per ogni cartella vincente)</div>
-    <div class="row">
-      <div><div class="label">1° premio</div><select id="stPrize1"></select></div>
-      <div><div class="label">2° premio</div><select id="stPrize2"></select></div>
-      <div><div class="label">3° premio</div><select id="stPrize3"></select></div>
+    <div class="label">Modalità premi</div>
+    <select id="stMode" onchange="stModeChanged()">
+      <option value="points" selected>💰 Punti</option>
+      <option value="text">📜 Premi scritti da te</option>
+    </select>
+    <div id="stPointsBox">
+      <div class="label mt">I 3 premi in punti (uno per ogni cartella vincente)</div>
+      <div class="row">
+        <div><div class="label">1° premio</div><select id="stPrize1"></select></div>
+        <div><div class="label">2° premio</div><select id="stPrize2"></select></div>
+        <div><div class="label">3° premio</div><select id="stPrize3"></select></div>
+      </div>
+    </div>
+    <div id="stTextBox" style="display:none">
+      <div class="label mt">I 3 premi scritti (uno per ogni cartella vincente)</div>
+      <input type="text" id="stPrizeText1" placeholder="1° premio" maxlength="60">
+      <input type="text" id="stPrizeText2" placeholder="2° premio" maxlength="60" class="mt">
+      <input type="text" id="stPrizeText3" placeholder="3° premio" maxlength="60" class="mt">
     </div>
     <button class="btn mg mt" style="width:100%" onclick="stStart()">🎰 DISTRIBUISCI LE CARTELLE!</button>
   </div>
@@ -4723,7 +4736,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1292; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1294; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -5201,7 +5214,7 @@ function renamePlayer(pid){
 }
 function adjPointsRow(pid, sign){
   const v = Math.abs(+($('ptsRow_'+pid).value||0)); if(!v) return;
-  G.ref.child('players/'+pid+'/score').transaction(x=>Math.max(0,(x||0)+sign*v)).then(r=>{
+  G.ref.child('players/'+pid+'/score').transaction(x=>(x||0)+sign*v).then(r=>{
     const ns = r.snapshot.val();
     const el = $('sc_'+pid); if (el){ el.textContent = ns; el.style.color = sign>0?'var(--lime)':'var(--red)'; setTimeout(()=>el.style.color='',600); }
     // aggiorna classifica su schermo host / proiettore se in reveal
@@ -6197,7 +6210,7 @@ function closeQuestion(){
    tocca lo stesso punteggio nello stesso istante: non si "perdono" mai punti per una scrittura in corsa. */
 function applyScoreDelta(pid, delta){
   if (!pid || !delta) return Promise.resolve();
-  return G.ref.child('players/'+pid+'/score').transaction(cur => Math.max(0, (cur||0) + delta));
+  return G.ref.child('players/'+pid+'/score').transaction(cur => (cur||0) + delta);
 }
 function calcPts(q, tMs){
   const frac = Math.max(0, 1 - tMs/(q.timer*1000));
@@ -6222,7 +6235,7 @@ function showReveal(q, correctText, players, pending, results, stats){
     b.onclick = ()=>{
       const pts = calcPts(q, p.t); b.disabled = true; b.textContent = '+'+pts;
       const delta = pts + (q.penWrong||0); // punti + rimborso della penalità già applicata
-      G.ref.child('players/'+p.pid+'/score').transaction(v=>Math.max(0,(v||0)+delta));
+      G.ref.child('players/'+p.pid+'/score').transaction(v=>(v||0)+delta);
       G.ref.child('reveal/results/'+p.pid).update({ok:true, pts});
       if (G.lastResults && G.lastResults[p.pid]) { G.lastResults[p.pid].ok=true; G.lastResults[p.pid].pts=pts; }
       G.ref.child('players').once('value', ps=>{
@@ -7371,7 +7384,7 @@ function rouFire(){
   } else if (P.rouShots === P.rouMyBet){
     P.rouResolved = true;
     const winPts = (P.rouTiers||[])[P.rouMyBet-1]||0;
-    P.ref.child('players/'+P.id+'/score').transaction(x=> Math.max(0,(x||0)+winPts));
+    P.ref.child('players/'+P.id+'/score').transaction(x=> (x||0)+winPts);
     $('rouStatus').className='byline mt rouStatusWin';
     $('rouStatus').textContent = `🎉 SEI SOPRAVVISSUTO! HAI VINTO ${winPts} PUNTI!`;
     $('rouFireBtn').style.display='none';
@@ -7475,16 +7488,20 @@ function stScratch(i){
     const card = P.stCard;
     if (card.winLine){
       card.winLine.forEach(idx=>{ const c = $('stCell'+idx); if (c) c.classList.add('winline'); });
-      P.ref.child('players/'+P.id+'/score').transaction(x=> Math.max(0,(x||0)+card.prize));
+      if (card.mode==='points'){
+        P.ref.child('players/'+P.id+'/score').transaction(x=> (x||0)+card.prize);
+        $('stpStatus').textContent = `🎉 TRIS VINCENTE! HAI VINTO ${card.prize} PUNTI!`;
+      } else {
+        $('stpStatus').textContent = `🎉 TRIS VINCENTE! HAI VINTO: ${card.prize}`;
+      }
       $('stpStatus').className='stStatus win';
-      $('stpStatus').textContent = `🎉 TRIS VINCENTE! HAI VINTO ${card.prize} PUNTI!`;
       confetti();
       if (navigator.vibrate) navigator.vibrate([100,50,150]);
     } else {
       $('stpStatus').className='stStatus lose';
       $('stpStatus').textContent = 'NIENTE DA FARE QUESTA VOLTA...';
     }
-    P.ref.child('supertris/results/'+P.id).set(card.prize);
+    P.ref.child('supertris/results/'+P.id).set({ win: !!card.winLine, prize: card.prize, mode: card.mode });
   }
 }
 /* ================================================================
@@ -9099,7 +9116,7 @@ function patataTap(){
       if (m.touchPen>0){
         P.ref.child('players/'+P.id+'/score').once('value').then(sc=>{
           const cur = sc.val()||0;
-          P.ref.child('players/'+P.id+'/score').set(Math.max(0,cur-m.touchPen));
+          P.ref.child('players/'+P.id+'/score').set(cur-m.touchPen);
         });
       }
       const el = $('hpStage');
@@ -11796,7 +11813,7 @@ function showAnagramReveal(q, players, pending, results){
     b.onclick = ()=>{
       const pts = calcPts(q, p.t); b.disabled = true; b.textContent = '+'+pts;
       const delta = pts + (q.penWrong||0);
-      G.ref.child('players/'+p.pid+'/score').transaction(v=>Math.max(0,(v||0)+delta));
+      G.ref.child('players/'+p.pid+'/score').transaction(v=>(v||0)+delta);
       G.ref.child('anagram/reveal/results/'+p.pid).update({ok:true, pts});
       G.ref.child('players').once('value', ps=>{
         const arr = renderLead($('anaLead'), ps.val()||{});
@@ -12964,12 +12981,21 @@ function openSupertris(){
     const opts = k=>Array.from({length:20},(_,i)=>`<option value="${(i+1)*100}" ${i===k?'selected':''}>${(i+1)*100} punti</option>`).join('');
     $('stPrize1').innerHTML = opts(6); $('stPrize2').innerHTML = opts(4); $('stPrize3').innerHTML = opts(2);
   }
+  stModeChanged();
   pjSend({type:'stState'});
   showScreen('scrSupertris');
 }
+function stModeChanged(){
+  const mode = $('stMode').value;
+  $('stPointsBox').style.display = mode==='points' ? 'block' : 'none';
+  $('stTextBox').style.display = mode==='text' ? 'block' : 'none';
+}
 let ST = {};
 function stStart(){
-  const prizes = [+$('stPrize1').value, +$('stPrize2').value, +$('stPrize3').value];
+  const mode = $('stMode').value;
+  const prizes = mode==='points'
+    ? [+$('stPrize1').value, +$('stPrize2').value, +$('stPrize3').value]
+    : [1,2,3].map(n => (($('stPrizeText'+n).value||'').trim()) || (n+'° premio!'));
   G.ref.child('players').once('value').then(ps=>{
     const players = ps.val()||{};
     const pids = Object.keys(players);
@@ -12982,11 +13008,11 @@ function stStart(){
     const cards = {};
     winnerIds.forEach((pid, idx)=>{
       const {grid, winLine} = stGenerateWinningGrid();
-      cards[pid] = { grid, winLine, prize: prizes[idx] };
+      cards[pid] = { grid, winLine, mode, prize: prizes[idx] };
     });
     loserIds.forEach(pid=>{
       const {grid} = stGenerateLosingGrid();
-      cards[pid] = { grid, winLine:null, prize:0 };
+      cards[pid] = { grid, winLine:null, mode:null, prize:null };
     });
     const roundId = serverNow();
     G.ref.update({ status:'supertris', supertris:{ phase:'active', cards, roundId } });
@@ -12999,13 +13025,13 @@ function stStart(){
       const results = s.val()||{};
       const n = Object.keys(results).length;
       $('stCount').textContent = `${n} su ${pids.length} hanno finito di grattare`;
-      const winnersEntries = Object.entries(results).filter(([pid,pts])=>pts>0);
+      const winnersEntries = Object.entries(results).filter(([pid,r])=>r && r.win);
       G.ref.child('players').once('value').then(ps2=>{
         const pl = ps2.val()||{};
         $('stWinnersLive').innerHTML = winnersEntries.length
-          ? winnersEntries.map(([pid,pts])=> `<div class="leadRow"><span class="pos">🏆</span> ${esc((pl[pid]||{}).name||'?')} <span class="pts">+${pts}</span></div>`).join('')
+          ? winnersEntries.map(([pid,r])=> `<div class="leadRow"><span class="pos">🏆</span> ${esc((pl[pid]||{}).name||'?')} <span class="pts">${r.mode==='points' ? '+'+r.prize+' pt' : esc(String(r.prize))}</span></div>`).join('')
           : '<div class="byline">Nessuno ha ancora vinto (o finito di grattare)...</div>';
-        pjSend({type:'stResult', winners: winnersEntries.map(([pid,pts])=>({name:(pl[pid]||{}).name||'?', pts}))});
+        pjSend({type:'stResult', winners: winnersEntries.map(([pid,r])=>({name:(pl[pid]||{}).name||'?', prize:r.prize, mode:r.mode}))});
         if (n>=pids.length) $('stBtnAgain').style.display='';
       });
     });
@@ -13925,7 +13951,7 @@ function tambFinish(){
         if (i<5 && TAMB.prizes[i]>0) pts = TAMB.prizes[i];
         else if (fromEnd<5 && TAMB.losses[fromEnd]>0 && total>1) pts = -TAMB.losses[fromEnd]; // con un solo giocatore, niente penalità: non avrebbe senso
         r.pts = pts;
-        if (pts!==0 && players[r.pid]) updates['players/'+r.pid+'/score'] = Math.max(0,(players[r.pid].score||0) + pts);
+        if (pts!==0 && players[r.pid]) updates['players/'+r.pid+'/score'] = (players[r.pid].score||0) + pts;
       });
       G.ref.update({ ...updates, 'tamburini/phase':'result', 'tamburini/results':{ ranking, at:Date.now() } });
       tambRenderRanking($('tambRanking'), ranking, TAMB.prizes, TAMB.losses, false);
@@ -14017,7 +14043,7 @@ function mercFinish(){
           if (i<5 && MERC.prizes[i]>0) pts = MERC.prizes[i];
           else if (fromEnd<5 && MERC.losses[fromEnd]>0 && total>1) pts = -MERC.losses[fromEnd]; // con un solo giocatore, niente penalità: non avrebbe senso
           r.pts = pts;
-          if (pts!==0 && players[r.pid]) updates['players/'+r.pid+'/score'] = Math.max(0,(players[r.pid].score||0) + pts);
+          if (pts!==0 && players[r.pid]) updates['players/'+r.pid+'/score'] = (players[r.pid].score||0) + pts;
         });
         G.ref.update({ ...updates, 'mercatista/phase':'result', 'mercatista/results':{ ranking, at:Date.now() } });
         mercRenderRanking($('mercRanking'), ranking, MERC.prizes, MERC.losses, false);
@@ -14100,7 +14126,7 @@ function morraFinish(){
         const ranking = Object.entries(tallies).map(([pid,t])=>{
           const wins=t.wins||0, losses=t.losses||0, ties=t.ties||0;
           const pts = wins*MORRA.pointsWin - losses*MORRA.pointsLoss;
-          if (pts!==0 && players[pid]) updates['players/'+pid+'/score'] = Math.max(0,(players[pid].score||0) + pts);
+          if (pts!==0 && players[pid]) updates['players/'+pid+'/score'] = (players[pid].score||0) + pts;
           return { pid, name:(players[pid]||{}).name||'?', wins, losses, ties, pts };
         }).sort((a,b)=>b.pts-a.pts);
         G.ref.update({ ...updates, 'morra/phase':'result', 'morra/results':{ ranking, at:Date.now() } });
@@ -14233,7 +14259,7 @@ function puntoFinish(){
           // anche l'ultimo ce l'ha fatta, quindi non ha senso penalizzarlo
           if (i===n-1 && n>1 && r.pos<PUNTO.notches) pts = -PUNTO.pLast;
           r.pts = pts;
-          if (pts!==0 && players[r.pid]) updates['players/'+r.pid+'/score'] = Math.max(0,(players[r.pid].score||0)+pts);
+          if (pts!==0 && players[r.pid]) updates['players/'+r.pid+'/score'] = (players[r.pid].score||0)+pts;
         });
         G.ref.update({ ...updates, 'punto/phase':'result', 'punto/results':{ ranking:sorted, notches:PUNTO.notches, at:Date.now() } });
         puntoRenderRanking($('puntoRanking'), sorted, PUNTO.notches, false);
@@ -14396,7 +14422,7 @@ function dadoFinish(){
         sorted.forEach((r,i)=>{
           const pts = i<DADO.prizes.length ? DADO.prizes[i] : 0;
           r.pts = pts;
-          if (pts!==0 && players[r.pid]) updates['players/'+r.pid+'/score'] = Math.max(0,(players[r.pid].score||0)+pts);
+          if (pts!==0 && players[r.pid]) updates['players/'+r.pid+'/score'] = (players[r.pid].score||0)+pts;
         });
         G.ref.update({ ...updates, 'dado/phase':'result', 'dado/results':{ ranking:sorted, notches:DADO.notches, at:Date.now() } });
         dadoRenderRanking($('dadoRanking'), sorted, DADO.notches, false);
@@ -14571,7 +14597,7 @@ function astaSell(av){
   if (soldToId && soldAmount>0){
     G.ref.child('players/'+soldToId+'/score').once('value').then(sc=>{
       const cur = sc.val()||0;
-      G.ref.update({ ...updates, ['players/'+soldToId+'/score']: Math.max(0, cur-soldAmount) });
+      G.ref.update({ ...updates, ['players/'+soldToId+'/score']: cur-soldAmount });
       confetti();
     });
   } else { G.ref.update(updates); }
@@ -14761,7 +14787,7 @@ function idrFinish(){
         rows.forEach(r=>{
           const pts = r.solved ? IDR.pointsWin : -IDR.pointsLose;
           r.pts = pts;
-          if (pts!==0 && players[r.pid]) updates['players/'+r.pid+'/score'] = Math.max(0,(players[r.pid].score||0)+pts);
+          if (pts!==0 && players[r.pid]) updates['players/'+r.pid+'/score'] = (players[r.pid].score||0)+pts;
         });
         G.ref.update({ ...updates, 'idraulico/phase':'result', 'idraulico/results':{ ranking:rows, at:Date.now() } });
         idrRenderRanking($('idrRanking'), rows, false);
@@ -14863,7 +14889,7 @@ function patataExplode(){
     if (PATATA.mode==='points' && holderId && PATATA.explodePts>0){
       G.ref.child('players/'+holderId+'/score').once('value').then(sc=>{
         const cur = sc.val()||0;
-        G.ref.update({ ...updates, ['players/'+holderId+'/score']: Math.max(0,cur-PATATA.explodePts) }).then(finish);
+        G.ref.update({ ...updates, ['players/'+holderId+'/score']: cur-PATATA.explodePts }).then(finish);
       });
     } else {
       G.ref.update(updates).then(finish);
@@ -17168,7 +17194,7 @@ function pjRouteInner(m){
     else if (m.type==='stResult') {
       const winners = m.winners||[];
       $('pjStWinners').innerHTML = winners.length
-        ? winners.map(w=>`<div class="leadRow"><span class="pos">🏆</span> ${esc(w.name)} <span class="pts">+${w.pts}</span></div>`).join('')
+        ? winners.map(w=>`<div class="leadRow"><span class="pos">🏆</span> ${esc(w.name)} <span class="pts">${w.mode==='points' ? '+'+w.prize+' pt' : esc(String(w.prize))}</span></div>`).join('')
         : '';
     }
     else if (m.type==='rdcState') {
