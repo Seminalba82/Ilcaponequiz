@@ -1486,7 +1486,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v12.94</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v12.95</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -4736,7 +4736,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1294; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1295; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -6750,8 +6750,14 @@ function showPlayerQ_refreshOpts(){
   $('pqOpts').innerHTML = pqOptsHtml(P.curCur, P.lastOptPhotos.opts);
 }
 function showPlayerQ(cur){
-  if (P.curI === cur.i && $('scrPlayQ').classList.contains('active')) return; // già mostrata
-  if (P.curI === cur.i && P.answered) return;
+  // la firma include startAt (un orario fresco ad ogni lancio), non solo l'indice della domanda:
+  // così, se la regia ripropone la STESSA domanda con "Scelta domanda", il telefono la riconosce
+  // sempre come un lancio nuovo e si aggiorna da solo, invece di pensare "l'ho già mostrata" e
+  // restare fermo sulla vecchia schermata finché non si aggiorna la pagina a mano
+  const sig = cur.i + '@' + cur.startAt;
+  if (P.curSig === sig && $('scrPlayQ').classList.contains('active')) return; // già mostrata
+  if (P.curSig === sig && P.answered) return;
+  P.curSig = sig;
   P.curI = cur.i; P.activeRoundKey = cur.i; P.answered = false; P.t0 = Date.now(); P.dur = cur.timer*1000;
   P.curCur = cur;
   $('pqSent').style.display='none';
