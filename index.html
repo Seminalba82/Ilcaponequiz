@@ -155,8 +155,12 @@ body.proj .screen{max-width:none;}
 .csfLiveRank{width:100%; max-width:360px; margin:10px auto;}
 .csfLiveRow{display:flex; align-items:center; gap:10px; padding:6px 12px; font-family:'Bungee'; font-size:14px;
   background:rgba(182,255,46,.08); border:1px solid rgba(182,255,46,.3); border-radius:10px; margin-bottom:6px;}
-/* ===== L'IDRAULICO — griglia, tubi 3D, tavolozza ===== */
-.idrBoard{position:relative; width:min(92vw,480px); aspect-ratio:1; margin:14px auto; padding:8px;
+/* ===== ROULETTE RUSSA — proiettore: grilletto grande e statico, mai animato ===== */
+.rouTriggerWrap{margin:20px auto 0; text-align:center;}
+.rouTrigger{width:clamp(220px,32vw,420px); display:inline-block;
+  filter:drop-shadow(0 14px 26px rgba(0,0,0,.7)) drop-shadow(0 0 44px rgba(255,60,60,.4));}
+.rouBigMsg{font-family:'Bungee'; font-size:clamp(19px,3.2vw,34px); text-align:center; margin:22px auto 0; max-width:88%;
+  color:var(--gold); text-shadow:0 0 20px rgba(255,201,60,.5); line-height:1.4;}
   background:#0d0620; border-radius:16px; box-sizing:border-box;
   box-shadow:inset 0 3px 8px rgba(0,0,0,.6), 0 0 0 2px rgba(157,77,255,.25);}
 .idrBoard.big{width:min(70vh,560px);}
@@ -842,11 +846,16 @@ body.barOn.barCollapsed .screen.active{padding-bottom:70px;}
 /* ===== IL PUNTO DELLA SITUAZIONE — pista a tacche ===== */
 .puntoTrack{position:relative; width:100%; max-width:1100px; margin:14px auto 0; border-radius:16px; overflow:hidden;
   background:linear-gradient(180deg,#1c1236,#120a26); box-shadow:inset 0 3px 8px rgba(0,0,0,.5), 0 0 0 2px rgba(157,77,255,.22);}
-.puntoLane{position:relative; height:44px; border-bottom:1px solid rgba(255,255,255,.07); display:flex; align-items:center;}
+.puntoLane{position:relative; height:44px; border-bottom:1px solid rgba(255,255,255,.07); display:flex; align-items:center; transition:height .35s ease;}
 .puntoLane:last-child{border-bottom:none;}
-.puntoLane.big{height:64px;}
+/* i primi 4 per posizione, SOLO sul proiettore: corsia grande quanto tutto lo schermo in larghezza
+   (il contenitore è già a piena larghezza) e ben alta, per dare suspense a chi guarda da lontano */
+.puntoLane.big{height:min(16vh,120px); background:rgba(255,255,255,.045); box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);}
+.puntoLane.small{height:20px; border-bottom-color:rgba(255,255,255,.04);}
 .puntoLaneName{position:absolute; left:8px; top:50%; transform:translateY(-50%); font-size:12px; font-weight:700;
-  color:#fff; text-shadow:0 1px 3px rgba(0,0,0,.8); z-index:3; max-width:90px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; pointer-events:none;}
+  color:#fff; text-shadow:0 1px 3px rgba(0,0,0,.8); z-index:3; max-width:90px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; pointer-events:none; transition:font-size .35s ease, max-width .35s ease;}
+.puntoLane.big .puntoLaneName{font-size:clamp(16px,2.3vw,28px); max-width:38%; left:16px;}
+.puntoLane.small .puntoLaneName{font-size:9px; max-width:15%;}
 .puntoTicks{position:absolute; inset:0; display:flex;}
 .puntoTick{flex:1; border-right:1px dashed rgba(255,255,255,.10);}
 .puntoTick:last-child{border-right:none;}
@@ -854,7 +863,9 @@ body.barOn.barCollapsed .screen.active{padding-bottom:70px;}
   background:repeating-linear-gradient(45deg,#fff 0 5px,#111 5px 10px); box-shadow:-4px 0 10px rgba(255,255,255,.25);}
 .puntoDot{position:absolute; top:50%; width:30px; height:30px; margin-left:-15px; margin-top:-15px;
   display:flex; align-items:center; justify-content:center; font-size:22px; z-index:2;
-  transition:left .45s cubic-bezier(.34,1.2,.4,1); filter:drop-shadow(0 3px 4px rgba(0,0,0,.6));}
+  transition:left .45s cubic-bezier(.34,1.2,.4,1), width .35s ease, height .35s ease, font-size .35s ease, margin .35s ease; filter:drop-shadow(0 3px 4px rgba(0,0,0,.6));}
+.puntoLane.big .puntoDot{width:56px; height:56px; margin-left:-28px; margin-top:-28px; font-size:42px;}
+.puntoLane.small .puntoDot{width:14px; height:14px; margin-left:-7px; margin-top:-7px; font-size:11px;}
 .puntoDot.hop{animation:puntoHop .45s ease-out;}
 @keyframes puntoHop{0%{transform:scale(1) translateY(0);} 40%{transform:scale(1.35) translateY(-14px);} 100%{transform:scale(1) translateY(0);}}
 .puntoDot.back{animation:puntoBack .4s ease-out;}
@@ -977,7 +988,7 @@ body.barOn.barCollapsed .screen.active{padding-bottom:70px;}
 .pagIcon{position:absolute; left:50%; top:-24px; transform:translateX(-50%); font-size:20px; opacity:0; transition:opacity .4s .3s;}
 .pagStraw.revealed .pagIcon{opacity:1;}
 .pagFistWrap{position:relative; width:100%; display:flex; justify-content:center; z-index:1;}
-.pagFist{font-size:76px; filter:drop-shadow(0 10px 12px rgba(0,0,0,.65)); transform:scaleX(-1);}
+.pagFist{width:clamp(96px,17vw,160px); filter:drop-shadow(0 10px 14px rgba(0,0,0,.65));}
 .pagLabel{position:absolute; bottom:-8px; left:50%; transform:translateX(-50%); font-family:'Bungee'; font-size:11px; color:var(--gold);}
 .pagPickGrid{display:grid; grid-template-columns:repeat(5,1fr); gap:8px; width:100%; max-width:380px; margin-top:10px;}
 .pagPickBtn{padding:12px 4px; border-radius:12px; border:3px solid rgba(255,201,60,.35); background:rgba(0,0,0,.32);
@@ -1486,7 +1497,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v12.96</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.00</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -2837,6 +2848,30 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrPjRoulette">
   <div class="brand"><div class="t1" style="font-size:clamp(26px,4vw,48px)">🤠 ROULETTE RUSSA</div></div>
   <div class="miniMsg" id="pjRouMsg" style="font-size:clamp(18px,3vw,30px)">Tutto si gioca sugli smartphone dei partecipanti!</div>
+  <div class="rouTriggerWrap" id="rouTriggerWrap" style="display:none">
+    <svg class="rouTrigger" viewBox="0 0 400 210" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="rouMetal" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#9297a0"/><stop offset="45%" stop-color="#3a3c40"/><stop offset="100%" stop-color="#111214"/>
+        </linearGradient>
+        <linearGradient id="rouWood" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#7a4f28"/><stop offset="100%" stop-color="#3a2411"/>
+        </linearGradient>
+      </defs>
+      <rect x="228" y="90" width="152" height="24" rx="4" fill="url(#rouMetal)"/>
+      <rect x="374" y="84" width="8" height="14" fill="url(#rouMetal)"/>
+      <path d="M118 96 L232 89 L232 115 L166 121 L118 132 Z" fill="url(#rouMetal)"/>
+      <circle cx="188" cy="104" r="40" fill="url(#rouMetal)" stroke="#050506" stroke-width="2"/>
+      <circle cx="188" cy="104" r="11" fill="#0b0614"/>
+      <circle cx="188" cy="72" r="7" fill="#0b0614"/><circle cx="216" cy="88" r="7" fill="#0b0614"/>
+      <circle cx="216" cy="120" r="7" fill="#0b0614"/><circle cx="188" cy="136" r="7" fill="#0b0614"/>
+      <circle cx="160" cy="120" r="7" fill="#0b0614"/><circle cx="160" cy="88" r="7" fill="#0b0614"/>
+      <path d="M138 122 Q132 150 155 154 Q143 133 155 124 Z" fill="none" stroke="url(#rouMetal)" stroke-width="7"/>
+      <path d="M118 130 L96 200 L142 194 L152 134 Z" fill="url(#rouWood)"/>
+      <path d="M116 94 L96 78 L106 68 L128 86 Z" fill="url(#rouMetal)"/>
+    </svg>
+  </div>
+  <div class="rouBigMsg" id="rouBigMsg" style="display:none"></div>
 </div>
 
 <!-- ==================== PLAYER: ROULETTE RUSSA ==================== -->
@@ -2885,7 +2920,20 @@ body.suspense-on #pfRank{ display:none !important; }
     <div class="byline" id="pagCountLive"></div>
     <div class="pagScene">
       <div class="pagStrawsRow" id="pagStrawsHost"></div>
-      <div class="pagFistWrap"><div class="pagFist">✊</div></div>
+      <div class="pagFistWrap"><svg class="pagFist" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+      <defs><linearGradient id="pagSkinHost" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#e8b382"/><stop offset="100%" stop-color="#b8794a"/>
+      </linearGradient></defs>
+      <rect x="68" y="8" width="7" height="94" rx="3.5" fill="#e0b050" transform="rotate(-8 71 100)"/>
+      <rect x="88" y="2" width="7" height="100" rx="3.5" fill="#d4a017" transform="rotate(-2 91 100)"/>
+      <rect x="108" y="4" width="7" height="98" rx="3.5" fill="#e0b050" transform="rotate(3 111 100)"/>
+      <rect x="127" y="12" width="7" height="90" rx="3.5" fill="#c99418" transform="rotate(9 130 100)"/>
+      <ellipse cx="100" cy="162" rx="64" ry="76" fill="url(#pagSkinHost)"/>
+      <path d="M52 138 Q100 154 148 138" stroke="#8a5a34" stroke-width="4" fill="none" opacity=".5"/>
+      <path d="M49 165 Q100 182 151 165" stroke="#8a5a34" stroke-width="4" fill="none" opacity=".5"/>
+      <path d="M55 192 Q100 206 145 192" stroke="#8a5a34" stroke-width="4" fill="none" opacity=".5"/>
+      <ellipse cx="42" cy="152" rx="21" ry="35" fill="url(#pagSkinHost)" transform="rotate(-22 42 152)"/>
+    </svg></div>
     </div>
     <div class="row mt" style="justify-content:center">
       <button class="btn cy" id="pagBtnAgain" onclick="openPagliuzza()" style="display:none">🔁 Un'altra manche</button>
@@ -2901,7 +2949,20 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="miniMsg" id="pjPagMsg" style="font-size:clamp(18px,3vw,30px)"></div>
   <div class="pagScene" style="max-width:640px">
     <div class="pagStrawsRow" id="pagStrawsPj"></div>
-    <div class="pagFistWrap"><div class="pagFist">✊</div></div>
+    <div class="pagFistWrap"><svg class="pagFist" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+      <defs><linearGradient id="pagSkinPj" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#e8b382"/><stop offset="100%" stop-color="#b8794a"/>
+      </linearGradient></defs>
+      <rect x="68" y="8" width="7" height="94" rx="3.5" fill="#e0b050" transform="rotate(-8 71 100)"/>
+      <rect x="88" y="2" width="7" height="100" rx="3.5" fill="#d4a017" transform="rotate(-2 91 100)"/>
+      <rect x="108" y="4" width="7" height="98" rx="3.5" fill="#e0b050" transform="rotate(3 111 100)"/>
+      <rect x="127" y="12" width="7" height="90" rx="3.5" fill="#c99418" transform="rotate(9 130 100)"/>
+      <ellipse cx="100" cy="162" rx="64" ry="76" fill="url(#pagSkinPj)"/>
+      <path d="M52 138 Q100 154 148 138" stroke="#8a5a34" stroke-width="4" fill="none" opacity=".5"/>
+      <path d="M49 165 Q100 182 151 165" stroke="#8a5a34" stroke-width="4" fill="none" opacity=".5"/>
+      <path d="M55 192 Q100 206 145 192" stroke="#8a5a34" stroke-width="4" fill="none" opacity=".5"/>
+      <ellipse cx="42" cy="152" rx="21" ry="35" fill="url(#pagSkinPj)" transform="rotate(-22 42 152)"/>
+    </svg></div>
   </div>
 </div>
 
@@ -2915,7 +2976,20 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="byline mt" id="pagpStatus">🌾 SCEGLI UNA PAGLIUZZA!</div>
   <div class="pagScene">
     <div class="pagStrawsRow" id="pagStrawsPl"></div>
-    <div class="pagFistWrap"><div class="pagFist">✊</div></div>
+    <div class="pagFistWrap"><svg class="pagFist" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+      <defs><linearGradient id="pagSkinPl" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#e8b382"/><stop offset="100%" stop-color="#b8794a"/>
+      </linearGradient></defs>
+      <rect x="68" y="8" width="7" height="94" rx="3.5" fill="#e0b050" transform="rotate(-8 71 100)"/>
+      <rect x="88" y="2" width="7" height="100" rx="3.5" fill="#d4a017" transform="rotate(-2 91 100)"/>
+      <rect x="108" y="4" width="7" height="98" rx="3.5" fill="#e0b050" transform="rotate(3 111 100)"/>
+      <rect x="127" y="12" width="7" height="90" rx="3.5" fill="#c99418" transform="rotate(9 130 100)"/>
+      <ellipse cx="100" cy="162" rx="64" ry="76" fill="url(#pagSkinPl)"/>
+      <path d="M52 138 Q100 154 148 138" stroke="#8a5a34" stroke-width="4" fill="none" opacity=".5"/>
+      <path d="M49 165 Q100 182 151 165" stroke="#8a5a34" stroke-width="4" fill="none" opacity=".5"/>
+      <path d="M55 192 Q100 206 145 192" stroke="#8a5a34" stroke-width="4" fill="none" opacity=".5"/>
+      <ellipse cx="42" cy="152" rx="21" ry="35" fill="url(#pagSkinPl)" transform="rotate(-22 42 152)"/>
+    </svg></div>
   </div>
   <div class="pagPickGrid" id="pagPickGrid"></div>
 </div>
@@ -3492,7 +3566,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrPjPunto">
   <div class="brand"><div class="t1" style="font-size:clamp(24px,3.6vw,42px)">🏁 IL PUNTO DELLA SITUAZIONE</div></div>
   <div class="miniMsg" id="pjPuntoMsg">RISPONDETE DAL TELEFONO PER AVANZARE!</div>
-  <div class="puntoTrack" id="puntoTrackPj" style="max-width:1300px"></div>
+  <div class="puntoTrack" id="puntoTrackPj" style="max-width:min(96vw,1800px)"></div>
   <div class="lead mt" id="pjPuntoRanking" style="max-width:600px; width:100%"></div>
 </div>
 
@@ -3688,7 +3762,7 @@ body.suspense-on #pfRank{ display:none !important; }
       <div class="grow"><div class="label">Punti a chi completa il circuito</div><input type="number" id="idrPtsWin" value="150" min="0" style="width:100%; text-align:center"></div>
       <div class="grow"><div class="label">Punti persi se il tempo scade</div><input type="number" id="idrPtsLose" value="50" min="0" style="width:100%; text-align:center"></div>
     </div>
-    <div class="byline mt" style="opacity:.75">🔧 Ogni giocatore lavora sul proprio telefono: tra i tubi disponibili deve scegliere, nell'ordine giusto, quelli che completano il collegamento tra la freccia di entrata e quella di uscita, prima che scada il tempo. Il circuito cambia ogni volta, sempre risolvibile.</div>
+    <div class="byline mt" style="opacity:.75">🔧 Ogni giocatore lavora sul proprio telefono: tra i tubi disponibili deve scegliere, nell'ordine giusto, quelli che completano il collegamento tra la goccia d'acqua (entrata) e il rubinetto (uscita), prima che scada il tempo. Il circuito cambia ogni volta, sempre risolvibile.</div>
     <button class="btn mg mt" style="width:100%" onclick="idrStart()">🔧 PREPARA IL CIRCUITO!</button>
   </div>
   <div id="idrLive" style="display:none; width:100%" class="center">
@@ -4736,7 +4810,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1296; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1300; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -10389,13 +10463,18 @@ function buildWheel(box, order, name){
   const seg = 360/order.length;
   const grad = order.map((_,i)=>`${WHEEL_COLORS[i%WHEEL_COLORS.length]} ${i*seg}deg ${(i+1)*seg}deg`).join(',');
   box.innerHTML = `<div class="wheel" style="background:conic-gradient(${grad})">` +
-    order.map((v,i)=>`<span class="wlbl" style="transform:rotate(${i*seg+seg/2}deg) translate(-50%,-88%) translateY(-140%)"> </span>`).join('') +
+    order.map(()=>`<span class="wlbl"> </span>`).join('') +
     `</div><div class="wheelHub">🎩</div><div class="wheelName">${name}</div><div class="wheelVal"> </div>`;
-  // etichette: ruotate attorno al centro
+  // etichette: ruotate attorno al centro, a un raggio calcolato sulla dimensione VERA della ruota
+  // così com'è renderizzata in questo momento — non una stima basata sulla larghezza della finestra,
+  // che può sbagliare (e far sconfinare i numeri fuori dal cerchio) quando le tre ruote affiancate
+  // finiscono più strette del previsto
   const w = box.querySelector('.wheel');
+  const trueRadius = w.getBoundingClientRect().width / 2;
+  const labelRadius = trueRadius > 0 ? trueRadius * 0.58 : Math.min(window.innerWidth*0.11, 108);
   w.querySelectorAll('.wlbl').forEach((l,i)=>{
     l.textContent = order[i];
-    l.style.transform = `rotate(${i*seg+seg/2}deg) translateY(calc(-1 * min(11vw, 108px)))`;
+    l.style.transform = `rotate(${i*seg+seg/2}deg) translateY(${-labelRadius}px)`;
     l.style.transformOrigin = '0 0';
   });
   box._wheel = w; box._order = order;
@@ -10619,9 +10698,13 @@ function buildBigWheel(box, segs){
   // al proprio spicchio invece di sconfinare in quelli accanto
   const fontPx = n<=6 ? 16 : n<=10 ? 14 : n<=16 ? 12 : n<=24 ? 10.5 : n<=40 ? 9 : n<=70 ? 7.5 : 6.5;
   const maxChars = n<=6 ? 18 : n<=10 ? 15 : n<=16 ? 13 : n<=24 ? 11 : n<=40 ? 9 : n<=70 ? 8 : 7;
-  // con tante fette sottili sposto le scritte un po' più verso il bordo, invece di lasciarle tutte
-  // ammassate vicino al centro: c'è più spazio libero lì, e la lettura ne guadagna
-  const radiusVw = n<=16 ? 15 : n<=40 ? 16.5 : 18, radiusPx = n<=16 ? 190 : n<=40 ? 215 : 235;
+  // raggio VERO della ruota così com'è renderizzata in questo momento, non una stima sulla larghezza
+  // della finestra: con tante fette sottili sposto le scritte un po' più verso il bordo (dove c'è più
+  // spazio libero), ma sempre come frazione della dimensione reale, così restano dentro al cerchio
+  // qualunque sia la grandezza effettiva della ruota disegnata
+  const trueRadius = w.getBoundingClientRect().width / 2;
+  const frac = n<=16 ? 0.62 : n<=40 ? 0.68 : 0.74;
+  const labelRadius = trueRadius > 0 ? trueRadius * frac : (n<=16 ? 190 : n<=40 ? 215 : 235);
   segs.forEach((s2,i)=>{
     const l = document.createElement('span'); l.className='wlbl';
     let txt = s2.label + (s2.points ? ' +'+s2.points : '');
@@ -10632,7 +10715,7 @@ function buildBigWheel(box, segs){
     // di altri 90°: così le lettere si impilano in verticale seguendo il raggio (come i numeri su una
     // vera ruota della fortuna), invece di scorrere in orizzontale e sconfinare negli spicchi accanto —
     // indispensabile con tanti partecipanti, dove ogni fetta è strettissima
-    l.style.transform = `rotate(${i*seg+seg/2}deg) translateY(calc(-1 * min(${radiusVw}vw, ${radiusPx}px))) rotate(90deg)`;
+    l.style.transform = `rotate(${i*seg+seg/2}deg) translateY(${-labelRadius}px) rotate(90deg)`;
     l.style.transformOrigin = '0 0';
     w.appendChild(l);
   });
@@ -12816,6 +12899,7 @@ function rouStart(){
   G.ref.update({ status:'roulette', roulette:{ phase:'bet', tiers, endAt, durationMs, roundId } });
   $('rouSetup').style.display='none'; $('rouLive').style.display='block';
   $('rouCount').textContent=''; $('rouBtnAgain').style.display='none';
+  pjSend({type:'rouBet'});
   G.ref.child('roulette/bets').on('value', s=>{
     const n = Object.keys(s.val()||{}).length;
     $('rouCount').textContent = `Scommesse ricevute: ${n}`;
@@ -12830,6 +12914,7 @@ function rouStart(){
       G.ref.child('roulette/bets').off();
       G.ref.update({ 'roulette/phase':'active' });
       $('rouBtnAgain').style.display='';
+      pjSend({type:'rouShoot'});
     }
   }, 100);
 }
@@ -14172,21 +14257,30 @@ const PUNTO_SHAPES = ['●','▲','✖','■','★'];
 function puntoAssign(players){
   return players.map((p,i)=>({ ...p, color: PUNTO_COLORS[i%10], shape: PUNTO_SHAPES[Math.floor(i/10)%5] }));
 }
-function puntoRenderTrack(el, racers, notches){
+function puntoRenderTrack(el, racers, notches, bigTop){
   if (!el) return;
   const key = racers.map(r=>r.id).join(',')+'|'+notches;
   if (el._key !== key){
     el._key = key;
-    el.innerHTML = racers.map((r,i)=>`<div class="puntoLane">
+    el.innerHTML = racers.map((r,i)=>`<div class="puntoLane" id="${el.id}_l${i}">
       <div class="puntoTicks">${Array.from({length:notches}).map(()=>'<div class="puntoTick"></div>').join('')}</div>
       <div class="puntoLaneName">${esc(r.name)}</div>
       <div class="puntoDot" id="${el.id}_d${i}" style="left:0%; color:${r.color}">${r.shape}</div>
       <div class="puntoFinishBar"></div>
     </div>`).join('');
   }
+  // determino chi è attualmente nei primi 4 per posizione (solo sul proiettore, mai in regia): la loro
+  // corsia si ingrandisce per dare più suspense a chi guarda da lontano. Le corsie restano SEMPRE
+  // nello stesso ordine (non si riordinano scavalcandosi) — cambia solo quanto sono grandi, così la
+  // gara resta facile da seguire con lo sguardo anche mentre le posizioni cambiano.
+  const bigIds = bigTop ? new Set([...racers].sort((a,b)=>b.pos-a.pos).slice(0,4).map(r=>r.id)) : null;
   racers.forEach((r,i)=>{
     const dot = document.getElementById(el.id+'_d'+i);
     if (!dot) return;
+    if (bigTop){
+      const lane = document.getElementById(el.id+'_l'+i);
+      if (lane){ const big = bigIds.has(r.id); lane.classList.toggle('big', big); lane.classList.toggle('small', !big); }
+    }
     const pct = notches>0 ? Math.min(100,(r.pos/notches)*100) : 0;
     const prev = dot._pos;
     dot.style.left = pct+'%';
@@ -14684,7 +14778,7 @@ function idrDeriveShapes(cells){
   });
 }
 function idrBuildPalette(shapes){
-  const middle = shapes.slice(1, -1); // partenza e arrivo restano liberi (segnati da una freccia): non servono pezzi lì
+  const middle = shapes.slice(1, -1); // partenza e arrivo restano liberi (segnati da goccia/rubinetto): non servono pezzi lì
   const bag = middle.slice();
   const types = ['TL','TR','BL','BR'];
   const decoyCount = Math.max(3, Math.round(middle.length*0.5));
@@ -14709,9 +14803,9 @@ function idrRenderGrid(el, path, shapes, placedCount, solved){
       const idx = pathIdx[x+','+y];
       const onPath = idx!=null;
       const isStart = idx===0, isEnd = onPath && idx===path.length-1;
-      // partenza e arrivo restano SEMPRE liberi: una freccia basta a mostrare da dove entra ed esce
+      // partenza e arrivo restano SEMPRE liberi: una goccia d'acqua e un rubinetto bastano a mostrare da dove entra ed esce
       // il tubo, senza bisogno di piazzarci un pezzo — evita la confusione di dover "indovinare" il primo/ultimo
-      const arrowHtml = isStart ? '<div class="idrArrow">➡️</div>' : (isEnd ? '<div class="idrArrow">⬆️</div>' : '');
+      const arrowHtml = isStart ? '<div class="idrArrow">💧</div>' : (isEnd ? '<div class="idrArrow">🚰</div>' : '');
       html += `<div class="idrCell ${onPath?'path':''} ${isStart?'startCell':''} ${isEnd?'endCell':''}" style="grid-column:${x+1}; grid-row:${y+1}" data-idx="${onPath?idx:''}">${arrowHtml}</div>`;
     }
     el.innerHTML = html;
@@ -16563,12 +16657,12 @@ function pjRouteInner(m){
     else if (m.type==='puntoStart') {
       showScreen('scrPjPunto');
       $('pjPuntoMsg').textContent = '🧮 RISPONDETE DAL TELEFONO PER AVANZARE!';
-      puntoRenderTrack($('puntoTrackPj'), m.racers||[], m.notches);
+      puntoRenderTrack($('puntoTrackPj'), m.racers||[], m.notches, true);
       puntoRenderRanking($('pjPuntoRanking'), m.racers||[], m.notches, true);
       window._pjPuntoNotches = m.notches;
     }
     else if (m.type==='puntoUpdate') {
-      puntoRenderTrack($('puntoTrackPj'), m.rows||[], window._pjPuntoNotches);
+      puntoRenderTrack($('puntoTrackPj'), m.rows||[], window._pjPuntoNotches, true);
       puntoRenderRanking($('pjPuntoRanking'), m.rows||[], window._pjPuntoNotches, true);
     }
     else if (m.type==='puntoEnd') {
@@ -17170,6 +17264,20 @@ function pjRouteInner(m){
     }
     else if (m.type==='rouState') {
       showScreen('scrPjRoulette');
+      $('pjRouMsg').style.display='block';
+      $('pjRouMsg').textContent = 'Tutto si gioca sugli smartphone dei partecipanti!';
+      $('rouTriggerWrap').style.display='none';
+      $('rouBigMsg').style.display='none';
+    }
+    else if (m.type==='rouBet') {
+      showScreen('scrPjRoulette');
+      $('pjRouMsg').style.display='none';
+      $('rouTriggerWrap').style.display='block';
+      $('rouBigMsg').style.display='block';
+      $('rouBigMsg').textContent = 'QUANTI COLPI VOLETE RISCHIARE? PIÙ NE SCEGLIETE PIÙ PUNTI POTRETE VINCERE MA... A VOSTRO RISCHIO!!!';
+    }
+    else if (m.type==='rouShoot') {
+      $('rouBigMsg').textContent = 'ADESSO SPARATE E BUONA FORTUNA!';
     }
     else if (m.type==='pagState') {
       showScreen('scrPjPagliuzza');
