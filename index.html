@@ -1437,7 +1437,7 @@ body.barOn.barCollapsed .screen.active{padding-bottom:70px;}
   box-shadow:0 10px 0 rgba(0,0,0,.5), 0 0 30px rgba(255,201,60,.35), inset 0 0 24px rgba(0,0,0,.55);
   transition:none;}
 .wheel .wlbl{position:absolute; left:50%; top:50%; font-family:'Bungee'; font-size:clamp(10px,1.6vw,17px);
-  color:#fff; text-shadow:0 2px 0 rgba(0,0,0,.7); transform-origin:0 0;}
+  color:#fff; text-shadow:0 2px 0 rgba(0,0,0,.7); transform-origin:0 0; white-space:nowrap;}
 .wheel.spin{animation:wheelSpin .5s linear infinite;}
 @keyframes wheelSpin{to{transform:rotate(360deg);}}
 .wheelHub{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:22%; aspect-ratio:1; border-radius:50%; z-index:3;
@@ -1486,7 +1486,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v12.95</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v12.96</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -4736,7 +4736,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1295; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1296; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -10614,12 +10614,25 @@ function buildBigWheel(box, segs){
   const grad = segs.map((_,i)=>`${WHEEL_COLORS[i%WHEEL_COLORS.length]} ${i*seg}deg ${(i+1)*seg}deg`).join(',');
   box.innerHTML = `<div class="wheel" style="background:conic-gradient(${grad})"></div><div class="wheelHub">🎩</div>`;
   const w = box.querySelector('.wheel');
+  // più spicchi ci sono (fino anche a un centinaio, con tanti partecipanti), più ogni fetta è stretta:
+  // riduco di conseguenza carattere e lunghezza massima del testo, così il nome resta sempre dentro
+  // al proprio spicchio invece di sconfinare in quelli accanto
+  const fontPx = n<=6 ? 16 : n<=10 ? 14 : n<=16 ? 12 : n<=24 ? 10.5 : n<=40 ? 9 : n<=70 ? 7.5 : 6.5;
+  const maxChars = n<=6 ? 18 : n<=10 ? 15 : n<=16 ? 13 : n<=24 ? 11 : n<=40 ? 9 : n<=70 ? 8 : 7;
+  // con tante fette sottili sposto le scritte un po' più verso il bordo, invece di lasciarle tutte
+  // ammassate vicino al centro: c'è più spazio libero lì, e la lettura ne guadagna
+  const radiusVw = n<=16 ? 15 : n<=40 ? 16.5 : 18, radiusPx = n<=16 ? 190 : n<=40 ? 215 : 235;
   segs.forEach((s2,i)=>{
     const l = document.createElement('span'); l.className='wlbl';
     let txt = s2.label + (s2.points ? ' +'+s2.points : '');
-    if (txt.length>16) txt = txt.slice(0,15)+'…';
+    if (txt.length>maxChars) txt = txt.slice(0,maxChars-1)+'…';
     l.textContent = txt;
-    l.style.transform = `rotate(${i*seg+seg/2}deg) translateY(calc(-1 * min(15vw, 190px)))`;
+    l.style.fontSize = fontPx+'px';
+    // ruoto lo spicchio fino al suo angolo centrale, sposto lungo il raggio, poi ruoto ANCHE il testo
+    // di altri 90°: così le lettere si impilano in verticale seguendo il raggio (come i numeri su una
+    // vera ruota della fortuna), invece di scorrere in orizzontale e sconfinare negli spicchi accanto —
+    // indispensabile con tanti partecipanti, dove ogni fetta è strettissima
+    l.style.transform = `rotate(${i*seg+seg/2}deg) translateY(calc(-1 * min(${radiusVw}vw, ${radiusPx}px))) rotate(90deg)`;
     l.style.transformOrigin = '0 0';
     w.appendChild(l);
   });
