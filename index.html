@@ -323,6 +323,12 @@ audio{width:100%; margin-top:10px;}
 .confetti{position:fixed; top:-20px; font-size:22px; z-index:5; animation:fall linear forwards; pointer-events:none;}
 @keyframes fall{to{transform:translateY(110vh) rotate(720deg);}}
 /* ===== BARRA COMANDI HOST ===== */
+#promoBanner{display:none; position:fixed; left:0; right:0; bottom:0; z-index:9996;
+  background:linear-gradient(90deg,#1a0f2e,#2a1650); border-top:2px solid var(--gold);
+  padding:5px 10px; text-align:center; font-family:'Outfit'; font-weight:700; font-size:clamp(10px,2.5vw,13px);
+  color:#e8e0f5; box-shadow:0 -4px 14px rgba(0,0,0,.5); line-height:1.35;}
+#promoBanner b{color:var(--gold);}
+#promoBanner a{color:var(--cyan); text-decoration:underline; font-weight:800;}
 #hostBar{position:fixed; left:0; right:0; bottom:0; z-index:50; display:none; padding:0 10px 10px;
   background:linear-gradient(0deg, rgba(11,6,20,.97), rgba(11,6,20,.8), transparent);}
 #hostBar.on{display:block;}
@@ -726,7 +732,7 @@ body.barOn.barCollapsed .screen.active{padding-bottom:70px;}
 .rwCenter{position:absolute; inset:32%; border-radius:50%; background:radial-gradient(circle at 35% 30%, #ffe27a, #b8860b 60%, #5c3a12);
   box-shadow:0 6px 14px rgba(0,0,0,.6), inset 0 -4px 10px rgba(0,0,0,.4); display:flex; align-items:center; justify-content:center;
   font-family:'Bungee'; font-size:clamp(9px,2vw,13px); color:#3a2600; text-align:center; line-height:1.2; z-index:3;}
-#pjWatermark{display:none; position:fixed; bottom:14px; right:20px; z-index:9999; pointer-events:none;
+#pjWatermark{display:none; position:fixed; bottom:46px; right:20px; z-index:9999; pointer-events:none;
   font-family:'Outfit'; font-weight:700; font-size:15px; color:rgba(255,255,255,.45); letter-spacing:.5px;
   text-shadow:0 2px 4px rgba(0,0,0,.6);}
 #pjWatermark b{color:rgba(255,201,60,.6);}
@@ -1487,6 +1493,7 @@ body.suspense-on #pfRank{ display:none !important; }
 </head>
 <body>
 <div id="pjWatermark">🎩 IL CAPONE QUIZ · <b>Alberto Seminerio</b></div>
+<div id="promoBanner"></div>
 
 <!-- ============ LOGO SVG (riusabile) ============ -->
 <template id="tplLogo">
@@ -1497,7 +1504,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.00</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.01</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -4677,7 +4684,7 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="byline" style="font-size:16px">INQUADRA IL QR E SCEGLI IL TUO NOME DA GANGSTER</div>
 </div>
 
-<div id="pjDiag" style="display:none; position:fixed; left:8px; bottom:8px; z-index:90; font-family:'Outfit'; font-weight:900; font-size:12px; letter-spacing:1px; color:#b9a8d9; background:rgba(0,0,0,.65); border:1px solid rgba(157,77,255,.5); border-radius:10px; padding:6px 12px;"></div>
+<div id="pjDiag" style="display:none; position:fixed; left:8px; bottom:40px; z-index:90; font-family:'Outfit'; font-weight:900; font-size:12px; letter-spacing:1px; color:#b9a8d9; background:rgba(0,0,0,.65); border:1px solid rgba(157,77,255,.5); border-radius:10px; padding:6px 12px;"></div>
 
 <!-- ==================== PROIETTORE: ATTESA ==================== -->
 <div class="screen" id="scrPjWait">
@@ -4810,7 +4817,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1300; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1301; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -17519,14 +17526,27 @@ function pjRouteInner(m){
       podiumRevealRank($('pjPodium'), $('pjPodLead'), m.rank);
     }
 }
+/* Fascia fissa in fondo, sempre presente dall'inizio alla fine della sessione: promuove il noleggio
+   del quiz. Sui telefoni dei giocatori è un link cliccabile verso il sito; sul proiettore lo stesso
+   testo ma senza link (nessuno interagisce col proiettore); in regia non compare mai, è solo per chi
+   sta giocando/guardando, non per Alberto che lo sta già usando. */
+function setupPromoBanner(mode){
+  const b = $('promoBanner');
+  if (!b || mode==='host'){ if (b) b.style.display='none'; return; }
+  const dest = mode==='player'
+    ? '<a href="https://ilcaponequiz.win" target="_blank" rel="noopener">ilcaponequiz.win</a>'
+    : '<b>ilcaponequiz.win</b>';
+  b.innerHTML = `🎩 Noleggia anche solo per un giorno <b>IL CAPONE QUIZ 3.0</b> per le tue serate. Vai su ${dest}`;
+  b.style.display = 'block';
+}
 /* ================================================================
    AVVIO / ROUTER
 ================================================================ */
 const params = new URLSearchParams(location.search);
 const gp = params.get('g');
-if (params.get('proj')) initProjector();
-else if (gp) initPlayer(gp);
-else { $('fbWarn').style.display = fbOK?'none':'block'; loadQuizList(); showScreen('scrHome'); checkResumableGame(); }
+if (params.get('proj')) { initProjector(); setupPromoBanner('projector'); }
+else if (gp) { initPlayer(gp); setupPromoBanner('player'); }
+else { $('fbWarn').style.display = fbOK?'none':'block'; loadQuizList(); showScreen('scrHome'); checkResumableGame(); setupPromoBanner('host'); }
 </script>
 </body>
 </html>
