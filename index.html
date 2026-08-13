@@ -192,6 +192,22 @@ body.proj .screen{max-width:none;}
 .smStatusPill.bust{background:rgba(255,59,59,.15); color:var(--red);}
 .smStatusPill.betting{background:rgba(255,201,60,.15); color:var(--gold);}
 .smSetteBanner{font-family:'Bungee'; font-size:clamp(20px,4vw,36px); text-align:center; color:var(--lime); text-shadow:0 0 20px rgba(182,255,46,.7); margin-top:10px;}
+/* ===== MALEDETTA STACCIONATA — assi di legno che si dipingono di bianco con la voce ===== */
+.stacScene{display:flex; align-items:flex-end; justify-content:center; gap:14px; margin:16px auto; max-width:480px;}
+.stacFence{display:flex; align-items:flex-end; gap:3px; height:170px; flex:1; max-width:340px;
+  padding:0 6px 8px; background:linear-gradient(180deg,rgba(80,140,60,.12),rgba(80,140,60,.02) 40%);
+  border-bottom:6px solid #5c4023; border-radius:4px 4px 0 0;}
+.stacPlank{width:15px; border-radius:3px 3px 0 0; position:relative; flex-shrink:0; transition:background .3s, box-shadow .3s;
+  background:repeating-linear-gradient(90deg,#8a6339 0 2px,#7a5530 2px 4px), linear-gradient(180deg,#8a6339,#5c4023 65%,#3d2a16);
+  background-blend-mode:overlay; box-shadow:inset -2px 0 4px rgba(0,0,0,.4), inset 2px 0 3px rgba(255,255,255,.07), 0 3px 6px rgba(0,0,0,.35);}
+.stacPlank.tall{height:100%;} .stacPlank.short{height:70%;}
+.stacPlank::after{content:''; position:absolute; top:-6px; left:-2px; right:-2px; height:8px; border-radius:50% 50% 0 0;
+  background:inherit; box-shadow:inherit;}
+.stacPlank.painted{background:linear-gradient(180deg,#fffef9,#f0eee2 60%,#dcd8c8); background-blend-mode:normal;
+  box-shadow:inset -2px 0 4px rgba(0,0,0,.12), inset 2px 0 3px rgba(255,255,255,.6), 0 0 10px rgba(255,255,255,.45), 0 3px 6px rgba(0,0,0,.25);}
+.stacPaintCan{width:74px; flex-shrink:0; margin-bottom:2px;}
+.stacPct{font-family:'Bungee'; font-size:clamp(26px,5vw,40px); text-align:center; margin-top:10px; color:#fff; text-shadow:0 2px 6px rgba(0,0,0,.6);}
+.stacPeakLbl{font-family:'Bungee'; font-size:14px; text-align:center; color:var(--gold); margin-top:2px;}
 .idrBoard{position:relative; width:min(92vw,480px); aspect-ratio:1; margin:14px auto; padding:8px;
   background:#0d0620; border-radius:16px; box-sizing:border-box;
   box-shadow:inset 0 3px 8px rgba(0,0,0,.6), 0 0 0 2px rgba(157,77,255,.25);}
@@ -1536,7 +1552,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.02</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.03</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -3502,6 +3518,92 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="feedback mtb" id="mrcFbPts" style="display:none"></div>
 </div>
 
+<!-- ==================== HOST: MALEDETTA STACCIONATA ==================== -->
+<div class="screen" id="scrStaccionata">
+  <div class="brand"><div class="t1" style="font-size:clamp(18px,3.4vw,32px)">🪵 MALEDETTA STACCIONATA</div></div>
+  <div class="panel mt" style="max-width:560px" id="stacSetup">
+    <div class="label">Modalità premi per i primi 5</div>
+    <select id="stacMode" onchange="stacModeChanged()">
+      <option value="points" selected>💰 Punti</option>
+      <option value="text">📜 Premi scritti da te</option>
+    </select>
+    <div id="stacPointsInputs"></div>
+    <div id="stacTextInputs" style="display:none"></div>
+    <div class="label mt">Tempo per dipingere a suon di urla</div>
+    <select id="stacSecs">
+      <option value="8">8 secondi</option>
+      <option value="10" selected>10 secondi</option>
+      <option value="15">15 secondi</option>
+      <option value="20">20 secondi</option>
+    </select>
+    <div class="byline mt" style="opacity:.75">🪵 Ogni giocatore userà il microfono del proprio telefono: più grida, più la staccionata di legno si dipinge di bianco. I risultati arrivano tutti insieme, solo allo scadere del tempo — nessuno sa chi sta vincendo finché non finisce!</div>
+    <button class="btn mg mt" style="width:100%" onclick="stacStart()">🖌️ SI DIPINGE!</button>
+  </div>
+  <div id="stacLive" style="display:none; width:100%" class="center">
+    <div class="miniMsg" id="stacMsg"></div>
+    <div class="timerWrap mt" style="max-width:420px"><div class="timerBar" id="stacTimerBar"></div></div>
+    <div class="lead mt" id="stacRanking" style="max-width:500px; width:100%"></div>
+    <button class="btn cy mt" id="stacBtnAgain" onclick="openStaccionata()" style="display:none">🔁 Un'altra manche</button>
+  </div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
+</div>
+
+<!-- ==================== PROIETTORE: MALEDETTA STACCIONATA ==================== -->
+<div class="screen" id="scrPjStaccionata">
+  <div class="brand"><div class="t1" style="font-size:clamp(24px,3.6vw,42px)">🪵 MALEDETTA STACCIONATA</div></div>
+  <div class="miniMsg" id="pjStacMsg">DIPINGETE LA STACCIONATA CON LE URLA!</div>
+  <div class="timerWrap mt" style="max-width:460px"><div class="timerBar" id="pjStacTimerBar"></div></div>
+  <div class="stacScene">
+    <div class="stacFence" id="pjStacFence"></div>
+    <svg class="stacPaintCan" viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg">
+      <g transform="rotate(-18 20 120)">
+        <rect x="5" y="115" width="45" height="7" rx="3" fill="#7a5530"/>
+        <path d="M48 112 L68 108 L70 122 L48 122 Z" fill="#e8e6dc"/>
+        <path d="M50 114 L64 111" stroke="#fff" stroke-width="2" opacity=".6"/>
+      </g>
+      <path d="M25 55 L75 55 L68 125 L32 125 Z" fill="#8a8f96"/>
+      <ellipse cx="50" cy="55" rx="25" ry="7" fill="#aeb2b8"/>
+      <ellipse cx="50" cy="55" rx="20" ry="5" fill="#fffef9"/>
+      <path d="M28 50 Q50 20 72 50" stroke="#5a5e64" stroke-width="4" fill="none"/>
+      <path d="M60 60 Q64 75 58 80" stroke="#fffef9" stroke-width="5" fill="none" stroke-linecap="round" opacity=".85"/>
+    </svg>
+  </div>
+  <div class="byline mt" style="text-align:center; opacity:.9; font-size:clamp(13px,2vw,17px)">NON SI FINISCE MAI DI LAVORARE... MALEDETTA STACCIONATA!!!</div>
+  <div class="lead mt" id="pjStacRanking" style="max-width:600px; width:100%"></div>
+</div>
+
+<!-- ==================== PLAYER: MALEDETTA STACCIONATA ==================== -->
+<div class="screen" id="scrPlayStaccionata" style="align-items:center; justify-content:center">
+  <div class="row" style="width:100%; justify-content:space-between">
+    <div class="pill" id="stacpName" style="color:var(--gold)"></div>
+    <div class="pill" id="stacpScore"></div>
+  </div>
+  <div class="timerWrap mt" style="max-width:300px"><div class="timerBar" id="stacpTimerBar"></div></div>
+  <div class="tmbHint mt">🎤 GRIDA FORTISSIMO NEL MICROFONO! DIPINGI LA STACCIONATA!</div>
+  <div class="stacScene">
+    <div class="stacFence" id="stacpFence"></div>
+    <svg class="stacPaintCan" viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg">
+      <g transform="rotate(-18 20 120)">
+        <rect x="5" y="115" width="45" height="7" rx="3" fill="#7a5530"/>
+        <path d="M48 112 L68 108 L70 122 L48 122 Z" fill="#e8e6dc"/>
+        <path d="M50 114 L64 111" stroke="#fff" stroke-width="2" opacity=".6"/>
+      </g>
+      <path d="M25 55 L75 55 L68 125 L32 125 Z" fill="#8a8f96"/>
+      <ellipse cx="50" cy="55" rx="25" ry="7" fill="#aeb2b8"/>
+      <ellipse cx="50" cy="55" rx="20" ry="5" fill="#fffef9"/>
+      <path d="M28 50 Q50 20 72 50" stroke="#5a5e64" stroke-width="4" fill="none"/>
+      <path d="M60 60 Q64 75 58 80" stroke="#fffef9" stroke-width="5" fill="none" stroke-linecap="round" opacity=".85"/>
+    </svg>
+  </div>
+  <div class="stacPct" id="stacpPct">0%</div>
+  <div class="stacPeakLbl" id="stacpPeak">Record: 0%</div>
+  <div class="byline mt" id="stacNoMic" style="display:none; color:var(--red); text-align:center; max-width:300px">
+    ⚠️ Non riesco ad accedere al microfono. Controlla i permessi del browser e ricarica la pagina.
+  </div>
+  <div class="feedback mtb" id="stacFbMsg" style="display:none"></div>
+  <div class="feedback mtb" id="stacFbPts" style="display:none"></div>
+</div>
+
 <!-- ==================== HOST: MORRA CINESE ==================== -->
 <div class="screen" id="scrMorra">
   <div class="brand"><div class="t1" style="font-size:clamp(20px,3.6vw,36px)">✊✋✌️ MORRA CINESE</div></div>
@@ -4850,7 +4952,7 @@ body.suspense-on #pfRank{ display:none !important; }
 /* ================================================================
    📋 ELENCO MINIGIOCHI — aggiornare questa lista ogni volta che se ne
    aggiunge uno nuovo (serve ad Alberto per la documentazione delle licenze).
-   Ultimo aggiornamento: v13.02 — 46 minigiochi totali.
+   Ultimo aggiornamento: v13.03 — 47 minigiochi totali.
    ================================================================
    1.  🥃 Bussolotti
    2.  🎲 Pari o Dispari
@@ -4898,6 +5000,7 @@ body.suspense-on #pfRank{ display:none !important; }
    44. 💣 Patata Bollente
    45. 🔐 La Cassaforte
    46. 🎴 7 e 1/2
+   47. 🪵 Maledetta Staccionata
 ================================================================ */
 
 /* ================================================================
@@ -4918,7 +5021,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1302; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1303; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -6852,6 +6955,7 @@ function listenGame(){
     else if (g.status==='casino') showPlayerCasino(g);
     else if (g.status==='tamburini') showPlayerTamb(g);
     else if (g.status==='mercatista') showPlayerMerc(g);
+    else if (g.status==='staccionata') showPlayerStaccionata(g);
     else if (g.status==='morra') showPlayerMorra(g);
     else if (g.status==='punto') showPlayerPunto(g);
     else if (g.status==='dado') showPlayerDado(g);
@@ -8768,6 +8872,118 @@ function mercStopMic(){
   if (mercAudioCtx){ try{ mercAudioCtx.close(); }catch(e){} mercAudioCtx=null; }
   mercAnalyser = null;
 }
+/* ================================================================
+   MALEDETTA STACCIONATA — telefono (microfono + assi di legno che si dipingono di bianco)
+   Stessa identica taratura di Mercatista per un Giorno (mercPctFromAvg, MERC_REF_MAX, MERC_CURVE):
+   qui cambia solo la grafica — una staccionata di legno al posto della colonna equalizzatore — non
+   la difficoltà, che resta quella già collaudata e che ad Alberto piace così com'è.
+================================================================ */
+let stacAudioCtx=null, stacAnalyser=null, stacMicStream=null, stacMicRaf=null;
+const STAC_PLANKS = 18;
+function stacBuildFence(el){
+  el.innerHTML = '';
+  for (let i=0;i<STAC_PLANKS;i++){
+    const p = document.createElement('div');
+    p.className = 'stacPlank ' + (i%2===0?'tall':'short');
+    el.appendChild(p);
+  }
+}
+function stacUpdateFence(el, pct){
+  const litCount = Math.round((pct/100)*STAC_PLANKS);
+  const planks = el.querySelectorAll('.stacPlank');
+  for (let i=0;i<planks.length;i++) planks[i].classList.toggle('painted', i<litCount);
+}
+function stacPaintCanSVG(){
+  return `<svg class="stacPaintCan" viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg">
+    <g transform="rotate(-18 20 120)">
+      <rect x="5" y="115" width="45" height="7" rx="3" fill="#7a5530"/>
+      <path d="M48 112 L68 108 L70 122 L48 122 Z" fill="#e8e6dc"/>
+      <path d="M50 114 L64 111" stroke="#fff" stroke-width="2" opacity=".6"/>
+    </g>
+    <path d="M25 55 L75 55 L68 125 L32 125 Z" fill="#8a8f96"/>
+    <ellipse cx="50" cy="55" rx="25" ry="7" fill="#aeb2b8"/>
+    <ellipse cx="50" cy="55" rx="20" ry="5" fill="#fffef9"/>
+    <path d="M28 50 Q50 20 72 50" stroke="#5a5e64" stroke-width="4" fill="none"/>
+    <path d="M60 60 Q64 75 58 80" stroke="#fffef9" stroke-width="5" fill="none" stroke-linecap="round" opacity=".85"/>
+  </svg>`;
+}
+function stacStartMic(onPct){
+  if (stacMicStream){ return; }
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){ onPct(null); return; }
+  navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{
+    stacMicStream = stream;
+    stacAudioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    const source = stacAudioCtx.createMediaStreamSource(stream);
+    stacAnalyser = stacAudioCtx.createAnalyser();
+    stacAnalyser.fftSize = 512;
+    source.connect(stacAnalyser);
+    const data = new Uint8Array(stacAnalyser.frequencyBinCount);
+    let smoothed = 0;
+    const loop = ()=>{
+      if (!stacAnalyser) return;
+      stacAnalyser.getByteFrequencyData(data);
+      let sum=0; for (let i=0;i<data.length;i++) sum+=data[i];
+      const avg = sum/data.length;
+      smoothed = avg > smoothed ? avg : smoothed*0.86 + avg*0.14;
+      onPct(mercPctFromAvg(smoothed)); // stessa taratura di Mercatista, di proposito
+      stacMicRaf = requestAnimationFrame(loop);
+    };
+    loop();
+  }).catch(()=> onPct(null));
+}
+function stacStopMic(){
+  if (stacMicRaf) cancelAnimationFrame(stacMicRaf);
+  stacMicRaf = null;
+  if (stacMicStream){ stacMicStream.getTracks().forEach(t=>t.stop()); stacMicStream=null; }
+  if (stacAudioCtx){ try{ stacAudioCtx.close(); }catch(e){} stacAudioCtx=null; }
+  stacAnalyser = null;
+}
+function showPlayerStaccionata(g){
+  const m = g.staccionata||{};
+  $('stacpName').textContent = P.name;
+  $('stacpScore').textContent = (((g.players||{})[P.id]||{}).score||0)+' pt';
+  showScreen('scrPlayStaccionata');
+  if (m.phase==='play'){
+    if (P.stacStartAt !== m.startAt){
+      P.stacStartAt = m.startAt; P.stacEndAt = m.endAt; P.stacSecs = m.secs;
+      P.stacPeak = 0; P.stacSent = false;
+      stacBuildFence($('stacpFence'));
+      $('stacpPct').textContent='0%'; $('stacpPeak').textContent='Record: 0%';
+      $('stacNoMic').style.display='none';
+      $('stacFbMsg').style.display='none'; $('stacFbPts').style.display='none';
+      stacStartMic(pct=>{
+        if (pct==null){ $('stacNoMic').style.display='block'; return; }
+        stacUpdateFence($('stacpFence'), pct);
+        $('stacpPct').textContent = pct+'%';
+        if (pct > P.stacPeak){ P.stacPeak = pct; $('stacpPeak').textContent = 'Record: '+pct+'%'; }
+      });
+      clearInterval(P.stacInt);
+      P.stacInt = setInterval(()=>{
+        const left = Math.max(0, (m.endAt||0) - serverNow());
+        $('stacpTimerBar').style.width = (left/((m.secs||10)*1000)*100)+'%';
+        if (left<=0){
+          clearInterval(P.stacInt);
+          stacStopMic();
+          if (!P.stacSent){ P.stacSent = true; P.ref.child('staccionata/peaks/'+P.id).set(P.stacPeak); }
+        }
+      }, 100);
+    }
+  } else if (m.phase==='result'){
+    clearInterval(P.stacInt); stacStopMic();
+    $('stacpTimerBar').style.width='0%';
+    const rv = m.results||{};
+    const rk = rv.ranking||[];
+    const idx = rk.findIndex(r=>r.pid===P.id);
+    const mine = idx>=0 ? rk[idx] : null;
+    const msg = $('stacFbMsg'), pts = $('stacFbPts');
+    msg.style.display='block'; pts.style.display='block';
+    if (!mine){ msg.className='feedback mtb'; msg.style.color='var(--muted)'; msg.textContent='NON HAI GRIDATO'; pts.textContent=''; }
+    else if (idx===0){ msg.className='feedback mtb fb-ok'; msg.style.color=''; msg.textContent='🥇 STACCIONATA IMBIANCATA MEGLIO DI TUTTI!'; pts.textContent=(m.mode==='points'?'+'+mine.prize+' PUNTI':mine.prize)+' · picco '+mine.peak+'%'; if(navigator.vibrate) navigator.vibrate([80,50,120]); }
+    else if (mine.prize){ msg.className='feedback mtb fb-ok'; msg.style.color=''; msg.textContent=(idx+1)+'° POSTO!'; pts.textContent=(m.mode==='points'?'+'+mine.prize+' PUNTI':mine.prize)+' · picco '+mine.peak+'%'; if(navigator.vibrate) navigator.vibrate([60,40,60]); }
+    else { msg.className='feedback mtb'; msg.style.color='var(--muted)'; msg.textContent=(idx+1)+'° POSTO'; pts.textContent='picco '+mine.peak+'% · niente premio'; }
+  }
+}
+
 function showPlayerMerc(g){
   const m = g.mercatista||{};
   $('mrcpName').textContent = P.name;
@@ -14358,6 +14574,92 @@ function mercFinish(){
 }
 
 /* ================================================================
+   MALEDETTA STACCIONATA — regia
+   Stessa architettura di Mercatista per un Giorno (nessuna sincronizzazione live: ogni telefono
+   manda solo il proprio picco, e solo allo scadere del tempo), ma qui vincono solo i primi 5,
+   e la regia sceglie se il premio è in punti o scritto a mano.
+================================================================ */
+const STAC_MEDALS = ['🥇','🥈','🥉','4°','5°'];
+const STAC_PRIZE_DEFAULTS = [1000,700,500,300,200];
+let STAC = {};
+function stacRenderRanking(el, rows, mode, prizes, live){
+  el.innerHTML = rows.length ? rows.map((r,i)=>{
+    let ptsLabel = '';
+    if (!live) ptsLabel = r.prize ? `<span class="pts" style="color:var(--lime)">${mode==='points'?'+':''}${r.prize}</span>` : `<span class="pts">—</span>`;
+    const medal = i<3 ? STAC_MEDALS[i] : (i+1)+'°';
+    return `<div class="leadRow"><span class="pos">${medal}</span> ${esc(r.name)} <span class="byline" style="margin:0 8px">picco ${r.peak}%</span> ${ptsLabel}</div>`;
+  }).join('') : (live ? '<div class="byline">Stanno gridando... i risultati arrivano tutti insieme alla fine!</div>' : '<div class="byline">Nessuno ha gridato...</div>');
+}
+function stacModeChanged(){
+  const mode = $('stacMode').value;
+  $('stacPointsInputs').style.display = mode==='points' ? 'block' : 'none';
+  $('stacTextInputs').style.display = mode==='text' ? 'block' : 'none';
+}
+function openStaccionata(){
+  if (!isGameEnabled('staccionata')) return alert('⚠️ Questo minigioco non è compreso nella licenza attiva. Contatta Alberto per sbloccarlo.');
+  if (!G) return alert('Avvia prima una partita!');
+  cancelLiveQuestion(); closeModal(); clearInterval((STAC||{}).timerInt);
+  G.ref.update({ status:'staccionata', staccionata:{ phase:'idle' } });
+  STAC = {};
+  $('stacPointsInputs').innerHTML = STAC_MEDALS.map((m,k)=>`
+    <div class="tmbPrizeRow"><span class="medal">${m}</span>
+      <input type="number" id="stacPz${k}" value="${STAC_PRIZE_DEFAULTS[k]}" min="0" style="width:110px; text-align:center"></div>`).join('');
+  $('stacTextInputs').innerHTML = STAC_MEDALS.map((m,k)=>`
+    <div class="tmbPrizeRow"><span class="medal">${m}</span>
+      <input type="text" id="stacTx${k}" placeholder="Premio per il ${k+1}°" maxlength="60" style="flex:1"></div>`).join('');
+  stacModeChanged();
+  $('stacSetup').style.display='block'; $('stacLive').style.display='none';
+  pjSend({type:'stacState'});
+  showScreen('scrStaccionata');
+}
+function stacStart(){
+  const secs = +$('stacSecs').value;
+  const mode = $('stacMode').value;
+  const prizes = mode==='points'
+    ? STAC_MEDALS.map((_,k)=> Math.max(0,+$('stacPz'+k).value||0))
+    : STAC_MEDALS.map((_,k)=> ($('stacTx'+k).value||'').trim());
+  const startAt = serverNow()+800, endAt = startAt + secs*1000;
+  STAC = { mode, prizes, secs, startAt, endAt };
+  G.ref.update({ status:'staccionata', staccionata:{ phase:'play', secs, mode, prizes, startAt, endAt, peaks:null, results:null } });
+  G.ref.child('staccionata/peaks').remove();
+  $('stacSetup').style.display='none'; $('stacLive').style.display='block';
+  $('stacMsg').textContent = '🪵 SI DIPINGE! I RISULTATI ARRIVANO TUTTI INSIEME ALLA FINE...';
+  $('stacBtnAgain').style.display='none';
+  stacRenderRanking($('stacRanking'), [], mode, prizes, true);
+  pjSend({type:'stacStart', secs, startAt, endAt});
+  clearInterval(STAC.timerInt);
+  STAC.timerInt = setInterval(()=>{
+    const left = Math.max(0, endAt - serverNow());
+    $('stacTimerBar').style.width = (left/(secs*1000)*100)+'%';
+    if (left<=0){ clearInterval(STAC.timerInt); stacFinish(); }
+  }, 100);
+}
+function stacFinish(){
+  setTimeout(()=>{
+    G.ref.child('staccionata/peaks').once('value').then(s=>{
+      const peaks = s.val()||{};
+      G.ref.child('players').once('value').then(ps=>{
+        const players = ps.val()||{};
+        const ranking = Object.entries(peaks).map(([pid,peak])=>({pid, name:(players[pid]||{}).name||'?', peak}))
+          .sort((a,b)=>b.peak-a.peak);
+        const updates = {};
+        ranking.forEach((r,i)=>{
+          const prize = i<5 ? STAC.prizes[i] : (STAC.mode==='points'?0:'');
+          r.prize = prize;
+          if (STAC.mode==='points' && prize>0 && players[r.pid]) updates['players/'+r.pid+'/score'] = (players[r.pid].score||0) + prize;
+        });
+        G.ref.update({ ...updates, 'staccionata/phase':'result', 'staccionata/results':{ ranking, at:Date.now() } });
+        stacRenderRanking($('stacRanking'), ranking, STAC.mode, STAC.prizes, false);
+        $('stacMsg').textContent = ranking.length ? `🏆 ${ranking[0].name} HA IMBIANCATO LA STACCIONATA COL ${ranking[0].peak}%!` : 'NESSUNO HA GRIDATO!';
+        $('stacBtnAgain').style.display='';
+        pjSend({type:'stacEnd', ranking, mode:STAC.mode});
+        if (ranking.length) confetti();
+      });
+    });
+  }, 600);
+}
+
+/* ================================================================
    MORRA CINESE — regia
    A differenza di Mercatista, qui i punti non dipendono dalla classifica finale ma da quanto
    ognuno gioca per conto proprio: ogni vittoria vale sempre lo stesso punteggio fisso, ogni
@@ -16033,6 +16335,7 @@ const GIOCHI_CATALOGO = [
   {k:'patata', l:'💣 Patata Bollente'},
   {k:'cassaforte', l:'🔐 La Cassaforte'},
   {k:'settemezzo', l:'🎴 7 e 1/2'},
+  {k:'staccionata', l:'🪵 Maledetta Staccionata'},
   {k:'xox', l:'❌⭕ XOX'}
   // 👉 QUANDO AGGIUNGI UN NUOVO MINIGIOCO: aggiungi qui una riga {k:'chiave', l:'Emoji Nome'},
   // poi apri il quiz come host e clicca una volta su "GIOCHI": il pannello admin lo vedrà da solo.
@@ -16100,6 +16403,7 @@ function modalGamesLuck(){
     gk('gold', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#ffcf3d,#8a5a00); color:#3a2600; box-shadow:0 7px 0 #4a2f00,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,207,61,.4)" onclick="openGold()">🎫 Il Biglietto d'Oro</button>`),
     gk('casino', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#a3111c,#1a1108); color:#fff; box-shadow:0 7px 0 #3a0508,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(163,17,28,.4)" onclick="openCasino()">🎰 Roulette (Casinò)</button>`),
     gk('merc', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#ff5d7a,#8a0f2e); color:#fff; box-shadow:0 7px 0 #5a0018,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,93,122,.4)" onclick="openMerc()">📣 Mercatista per un Giorno</button>`),
+    gk('staccionata', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#8a6339,#5c4023); color:#fff; box-shadow:0 7px 0 #3d2a16,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(138,99,57,.4)" onclick="openStaccionata()">🪵 Maledetta Staccionata</button>`),
     gk('morra', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#7a5cff,#2e0f8a); color:#fff; box-shadow:0 7px 0 #180a5c,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(122,92,255,.4)" onclick="openMorra()">✊✋✌️ Morra Cinese</button>`),
     gk('dado', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#ffe93d,#8a6f0b); color:#2e2400; box-shadow:0 7px 0 #4a3a00,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,233,61,.4)" onclick="openDado()">🎲 Il Dado del Destino</button>`),
     gk('patata', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#ff5d3d,#8a1a0b); color:#fff; box-shadow:0 7px 0 #4a0a00,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,93,61,.4)" onclick="openPatata()">💣 Patata Bollente</button>`)
@@ -16648,6 +16952,7 @@ function backToQuiz(title){
   G.ref.child('casino/bets').off();
   G.ref.child('tamburini/counts').off();
   G.ref.child('mercatista/peaks').off();
+  G.ref.child('staccionata/peaks').off();
   G.ref.child('morra/tallies').off();
   G.ref.child('punto/racers').off();
   G.ref.child('dado/racers').off();
@@ -16674,12 +16979,13 @@ function backToQuiz(title){
   clearInterval((RW||{}).timerInt);
   clearInterval((TAMB||{}).timerInt);
   clearInterval((MERC||{}).timerInt);
+  clearInterval((STAC||{}).timerInt);
   clearInterval((MORRA||{}).timerInt);
   clearInterval((IDR||{}).timerInt);
   clearInterval((PATATA||{}).timerInt);
   clearInterval((CSF||{}).timerInt);
   clearInterval((XOX||{}).timerInt);
-  G.ref.update({ status:'pausa', mini:null, dice:null, simon:null, voto:null, timer:null, tombola:null, cards:null, swiss:null, hilo:null, wheels:null, puzzle:null, wordsearch:null, anagram:null, seed:null, grad:null, taptap:null, ruota:null, memo:null, memocoppie:null, horses:null, tfiscale:null, toc:null, cenerentola:null, pacchi:null, roulette:null, pagliuzza:null, supertris:null, rdc:null, mastermind:null, bomba:null, shapes:null, finddiff:null, maggioranza:null, goldenticket:null, casino:null, tamburini:null, mercatista:null, morra:null, punto:null, dado:null, asta:null, idraulico:null, patata:null, cassaforte:null, settemezzo:null, xox:null });
+  G.ref.update({ status:'pausa', mini:null, dice:null, simon:null, voto:null, timer:null, tombola:null, cards:null, swiss:null, hilo:null, wheels:null, puzzle:null, wordsearch:null, anagram:null, seed:null, grad:null, taptap:null, ruota:null, memo:null, memocoppie:null, horses:null, tfiscale:null, toc:null, cenerentola:null, pacchi:null, roulette:null, pagliuzza:null, supertris:null, rdc:null, mastermind:null, bomba:null, shapes:null, finddiff:null, maggioranza:null, goldenticket:null, casino:null, tamburini:null, mercatista:null, staccionata:null, morra:null, punto:null, dado:null, asta:null, idraulico:null, patata:null, cassaforte:null, settemezzo:null, xox:null });
   G.ref.child('players').once('value', ps=>{
     const players = ps.val()||{};
     $('hrTitle').textContent = title || 'SI TORNA AL QUIZ!';
@@ -17012,6 +17318,30 @@ function pjRouteInner(m){
       clearInterval(window._pjMercInt); $('pjMercTimerBar').style.width='0%'; $('pjMercSub').textContent='';
       mercRenderRanking($('pjMercRanking'), m.ranking||[], m.prizes||[], m.losses||[], false);
       $('pjMercMsg').textContent = (m.ranking&&m.ranking.length) ? `🏆 ${m.ranking[0].name} È IL MERCATISTA DEL GIORNO CON IL ${m.ranking[0].peak}%!` : 'NESSUNO HA GRIDATO!';
+      if (m.ranking && m.ranking.length) confetti();
+    }
+    else if (m.type==='stacState') {
+      showScreen('scrPjStaccionata');
+      $('pjStacMsg').textContent = 'DIPINGETE LA STACCIONATA CON LE URLA!';
+      stacBuildFence($('pjStacFence')); stacUpdateFence($('pjStacFence'), 0);
+      $('pjStacRanking').innerHTML=''; $('pjStacTimerBar').style.width='100%';
+    }
+    else if (m.type==='stacStart') {
+      showScreen('scrPjStaccionata');
+      $('pjStacMsg').textContent = '🖌️ SI DIPINGE! I RISULTATI ARRIVANO TUTTI INSIEME ALLA FINE...';
+      stacBuildFence($('pjStacFence')); stacUpdateFence($('pjStacFence'), 45); // un po' dipinta un po' no, per atmosfera: qui non c'è nessun dato live da mostrare
+      $('pjStacRanking').innerHTML='';
+      clearInterval(window._pjStacInt);
+      window._pjStacInt = setInterval(()=>{
+        const left = Math.max(0, m.endAt - serverNow());
+        $('pjStacTimerBar').style.width = (left/(m.secs*1000)*100)+'%';
+        if (left<=0) clearInterval(window._pjStacInt);
+      }, 100);
+    }
+    else if (m.type==='stacEnd') {
+      clearInterval(window._pjStacInt); $('pjStacTimerBar').style.width='0%';
+      stacRenderRanking($('pjStacRanking'), m.ranking||[], m.mode, null, false);
+      $('pjStacMsg').textContent = (m.ranking&&m.ranking.length) ? `🏆 ${m.ranking[0].name} HA IMBIANCATO LA STACCIONATA COL ${m.ranking[0].peak}%!` : 'NESSUNO HA GRIDATO!';
       if (m.ranking && m.ranking.length) confetti();
     }
     else if (m.type==='morraState') {
