@@ -161,6 +161,38 @@ body.proj .screen{max-width:none;}
   filter:drop-shadow(0 14px 26px rgba(0,0,0,.7)) drop-shadow(0 0 44px rgba(255,60,60,.4));}
 .rouBigMsg{font-family:'Bungee'; font-size:clamp(19px,3.2vw,34px); text-align:center; margin:22px auto 0; max-width:88%;
   color:var(--gold); text-shadow:0 0 20px rgba(255,201,60,.5); line-height:1.4;}
+/* ===== 7 E 1/2 — tavolo verde, carte disegnate, mano del banco ===== */
+.smTable{position:relative; width:100%; max-width:520px; margin:14px auto; border-radius:22px; padding:20px 14px;
+  background:radial-gradient(ellipse at center, #1a5c34 0%, #0d3a20 70%, #082614 100%);
+  border:10px solid #6b4423; box-shadow:inset 0 0 40px rgba(0,0,0,.55), 0 12px 26px rgba(0,0,0,.55);}
+.smHandRow{display:flex; justify-content:center; align-items:flex-end; gap:8px; flex-wrap:wrap; min-height:126px;}
+.smCard{width:74px; height:110px; border-radius:9px; position:relative; flex-shrink:0;
+  background:linear-gradient(155deg,#fffdf6,#f2ead2 60%,#e5d9b0); box-shadow:0 5px 12px rgba(0,0,0,.5), inset 0 0 0 2px rgba(0,0,0,.12);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; animation:smDeal .38s cubic-bezier(.2,1.4,.4,1);}
+@keyframes smDeal{0%{transform:translateY(-40px) scale(.7) rotate(-8deg); opacity:0;} 100%{transform:translateY(0) scale(1) rotate(0); opacity:1;}}
+.smCard .smRank{position:absolute; top:5px; left:7px; font-family:'Bungee'; font-size:14px;}
+.smCard .smRankB{position:absolute; bottom:5px; right:7px; font-family:'Bungee'; font-size:14px; transform:rotate(180deg);}
+.smCard .smSuitIcon{width:38px; height:38px;}
+.smCard.back{background:repeating-linear-gradient(45deg,#7a1414 0 8px,#5c0f0f 8px 16px); box-shadow:0 5px 12px rgba(0,0,0,.5), inset 0 0 0 3px #ffe9a8;}
+.smCard.back.style-siciliane{background:repeating-linear-gradient(45deg,#1a4d8f 0 8px,#123a6b 8px 16px);}
+.smCard.back.style-piacentine{background:repeating-linear-gradient(45deg,#5c1a7a 0 8px,#3f1256 8px 16px);}
+.smCard.small{width:50px; height:74px; border-radius:6px;}
+.smCard.small .smSuitIcon{width:24px; height:24px;}
+.smCard.small .smRank, .smCard.small .smRankB{font-size:10px;}
+.smTotal{font-family:'Bungee'; font-size:clamp(22px,4.4vw,32px); text-align:center; margin-top:14px; color:#fff; text-shadow:0 2px 6px rgba(0,0,0,.6);}
+.smTotal .num{color:var(--gold);}
+.smTotal.bust{color:var(--red);} .smTotal.bust .num{color:var(--red);}
+.smTotal.sette{color:var(--lime);} .smTotal.sette .num{color:var(--lime); text-shadow:0 0 16px rgba(182,255,46,.7);}
+.smBetRow{display:flex; align-items:center; justify-content:center; gap:10px; margin-top:14px;}
+.smBetChip{font-family:'Bungee'; font-size:15px; color:#fff; background:rgba(0,0,0,.35); border:2px solid var(--gold);
+  border-radius:20px; padding:6px 16px;}
+.smStatusPill{font-family:'Bungee'; font-size:12px; padding:4px 10px; border-radius:10px; display:inline-block;}
+.smStatusPill.playing{background:rgba(0,240,255,.15); color:var(--cyan);}
+.smStatusPill.sto{background:rgba(182,255,46,.15); color:var(--lime);}
+.smStatusPill.bust{background:rgba(255,59,59,.15); color:var(--red);}
+.smStatusPill.betting{background:rgba(255,201,60,.15); color:var(--gold);}
+.smSetteBanner{font-family:'Bungee'; font-size:clamp(20px,4vw,36px); text-align:center; color:var(--lime); text-shadow:0 0 20px rgba(182,255,46,.7); margin-top:10px;}
+.idrBoard{position:relative; width:min(92vw,480px); aspect-ratio:1; margin:14px auto; padding:8px;
   background:#0d0620; border-radius:16px; box-sizing:border-box;
   box-shadow:inset 0 3px 8px rgba(0,0,0,.6), 0 0 0 2px rgba(157,77,255,.25);}
 .idrBoard.big{width:min(70vh,560px);}
@@ -1504,7 +1536,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.01</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.02</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -3964,6 +3996,74 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="csfHistory" id="csfHistory"></div>
 </div>
 
+<!-- ==================== HOST: 7 E 1/2 ==================== -->
+<div class="screen" id="scrSetteMezzo">
+  <div class="brand"><div class="t1" style="font-size:clamp(18px,3.4vw,32px)">🎴 7 E 1/2</div></div>
+  <div class="panel mt" style="max-width:460px" id="smSetup">
+    <div class="label">Che mazzo usiamo?</div>
+    <select id="smDeckStyle">
+      <option value="napoletane" selected>🂡 Napoletane</option>
+      <option value="siciliane">🂡 Siciliane</option>
+      <option value="piacentine">🂡 Piacentine</option>
+    </select>
+    <div class="label mt">Puntata minima</div>
+    <input type="number" id="smMinBet" value="100" min="10" step="10" style="text-align:center">
+    <div class="label mt">Puntata massima</div>
+    <input type="number" id="smMaxBet" value="3000" min="10" step="10" style="text-align:center">
+    <div class="byline mt" style="opacity:.75">🎴 Ogni giocatore riceve una carta e punta quanto vuole nel range scelto. Da lì può chiamare per avvicinarsi a 7 e 1/2 o stare se si sente già forte — sballando (superando 7 e 1/2) perde subito la puntata. Quando tutti hanno finito tocca a te, il banco: la tua carta e le tue mosse si vedono in diretta su telefoni e proiettore. Chi ti batte vince il doppio della puntata, chi perde la cede a te.</div>
+    <button class="btn mg mt" style="width:100%" onclick="smStart()">🎴 DAI LE CARTE!</button>
+  </div>
+  <div id="smLive" style="display:none; width:100%" class="center">
+    <div class="miniMsg" id="smMsg"></div>
+    <div class="smTable"><div class="smHandRow" id="smDealerHandHost"></div><div class="smTotal" id="smDealerTotalHost"></div></div>
+    <div class="lead mt" id="smPlayersLive" style="max-width:460px; width:100%"></div>
+    <div class="row mt">
+      <button class="btn cy" id="smBtnToDealer" onclick="smStartDealerPhase()">🎩 TOCCA AL BANCO</button>
+      <button class="btn lm" id="smBtnDealerHit" onclick="smDealerHit()" style="display:none">🂠 IL BANCO CHIAMA</button>
+      <button class="btn cy" id="smBtnDealerStand" onclick="smDealerStand()" style="display:none">✋ IL BANCO STA</button>
+      <button class="btn mg" id="smBtnResolve" onclick="smResolve()" style="display:none">🏁 RISOLVI LA MANO</button>
+      <button class="btn ghost" id="smBtnAgain" onclick="openSetteMezzo()" style="display:none">🔁 Un'altra mano</button>
+    </div>
+  </div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
+</div>
+
+<!-- ==================== PROIETTORE: 7 E 1/2 ==================== -->
+<div class="screen" id="scrPjSetteMezzo">
+  <div class="brand"><div class="t1" style="font-size:clamp(24px,3.6vw,42px)">🎴 7 E 1/2</div></div>
+  <div class="miniMsg" id="pjSmMsg">SI GIOCA A 7 E 1/2!</div>
+  <div class="smTable"><div class="smHandRow" id="smDealerHandPj"></div><div class="smTotal" id="smDealerTotalPj"></div></div>
+  <div class="smSetteBanner" id="smSettePj" style="display:none"></div>
+  <div class="lead mt" id="smResultsPj" style="max-width:700px; width:100%"></div>
+</div>
+
+<!-- ==================== PLAYER: 7 E 1/2 ==================== -->
+<div class="screen" id="scrPlaySetteMezzo" style="align-items:center; justify-content:center">
+  <div class="row" style="width:100%; justify-content:space-between">
+    <div class="pill" id="smpName" style="color:var(--gold)"></div>
+    <div class="pill" id="smpScore"></div>
+  </div>
+  <div class="smTable">
+    <div class="smHandRow" id="smpHand"></div>
+    <div class="smTotal" id="smpTotal"></div>
+  </div>
+  <div id="smpBetBox" style="display:none; text-align:center; width:100%">
+    <div class="label center mt">Quanti punti punti?</div>
+    <input type="number" id="smpBetInput" style="text-align:center; max-width:200px">
+    <button class="btn mg mt" style="width:100%; max-width:300px" onclick="smConfirmBet()">✅ CONFERMA PUNTATA</button>
+  </div>
+  <div class="smStatusPill" id="smpStatus" style="display:none; margin-top:10px"></div>
+  <div class="row mt" id="smpActionBox" style="display:none">
+    <button class="btn lm" onclick="smPlayerHit()">🂠 CHIAMA</button>
+    <button class="btn cy" onclick="smPlayerStand()">✋ STO</button>
+  </div>
+  <div id="smpDealerBox" style="display:none; width:100%">
+    <div class="label center mt">Cosa fa il banco...</div>
+    <div class="smTable"><div class="smHandRow" id="smpDealerHand"></div><div class="smTotal" id="smpDealerTotal"></div></div>
+  </div>
+  <div class="feedback mtb" id="smpResultMsg" style="display:none"></div>
+</div>
+
 <!-- ==================== HOST: ROULETTE ==================== -->
 <div class="screen" id="scrCasino">
   <div class="brand"><div class="t1" style="font-size:clamp(20px,3.6vw,36px)">🎰 ROULETTE</div></div>
@@ -4750,7 +4850,7 @@ body.suspense-on #pfRank{ display:none !important; }
 /* ================================================================
    📋 ELENCO MINIGIOCHI — aggiornare questa lista ogni volta che se ne
    aggiunge uno nuovo (serve ad Alberto per la documentazione delle licenze).
-   Ultimo aggiornamento: v12.92 — 45 minigiochi totali.
+   Ultimo aggiornamento: v13.02 — 46 minigiochi totali.
    ================================================================
    1.  🥃 Bussolotti
    2.  🎲 Pari o Dispari
@@ -4797,6 +4897,7 @@ body.suspense-on #pfRank{ display:none !important; }
    43. 🔧 L'Idraulico
    44. 💣 Patata Bollente
    45. 🔐 La Cassaforte
+   46. 🎴 7 e 1/2
 ================================================================ */
 
 /* ================================================================
@@ -4817,7 +4918,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1301; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1302; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -6758,6 +6859,7 @@ function listenGame(){
     else if (g.status==='idraulico') showPlayerIdr(g);
     else if (g.status==='patata') showPlayerPatata(g);
     else if (g.status==='cassaforte') showPlayerCassaforte(g);
+    else if (g.status==='settemezzo') showPlayerSetteMezzo(g);
     else if (g.status==='xox') showPlayerXox(g);
     else if (g.status==='timer') {
       const t = g.timer||{};
@@ -9314,6 +9416,94 @@ function csfSubmit(){
   setTimeout(()=>{
     if (!P.csfSolved){ P.csfSeq=[null,null,null]; csfRenderSlots($('csfPlaySlots'), P.csfSeq); csfUpdateKeypadDisabled('csfPlayKeypad', P.csfSeq); }
   }, 450); // una piccola pausa per far vedere il tentativo completo prima di svuotare le caselle
+}
+/* ================================================================
+   7 E 1/2 — telefono
+================================================================ */
+function showPlayerSetteMezzo(g){
+  const m = g.settemezzo||{};
+  $('smpName').textContent = P.name;
+  $('smpScore').textContent = (((g.players||{})[P.id]||{}).score||0)+' pt';
+  showScreen('scrPlaySetteMezzo');
+  if (m.phase==='players'){
+    const h = (m.hands||{})[P.id];
+    if (!h) return; // non ero ancora in partita quando è iniziata la mano: aspetto la prossima
+    const sig = 'play:'+m.roundId;
+    if (P.smSig !== sig){
+      P.smSig = sig; P.smMinBet = m.minBet; P.smMaxBet = m.maxBet;
+      $('smpBetInput').value = m.minBet; $('smpBetInput').min = m.minBet; $('smpBetInput').max = m.maxBet;
+      $('smpResultMsg').style.display='none'; $('smpDealerBox').style.display='none';
+    }
+    smRenderPlayerHand(h);
+    if (h.status==='betting'){
+      $('smpBetBox').style.display='block'; $('smpActionBox').style.display='none'; $('smpStatus').style.display='none';
+    } else {
+      $('smpBetBox').style.display='none';
+      $('smpStatus').style.display='inline-block';
+      $('smpStatus').className = 'smStatusPill '+h.status;
+      $('smpStatus').textContent = h.status==='playing' ? 'IN GIOCO' : h.status==='sto' ? 'STAI' : 'SBALLATO';
+      $('smpActionBox').style.display = h.status==='playing' ? 'flex' : 'none';
+    }
+  } else if (m.phase==='dealer'){
+    $('smpBetBox').style.display='none'; $('smpActionBox').style.display='none';
+    $('smpDealerBox').style.display='block';
+    smRenderDealerPlayer(m.dealerHand);
+  } else if (m.phase==='result'){
+    $('smpActionBox').style.display='none'; $('smpDealerBox').style.display='block';
+    smRenderDealerPlayer(m.dealerHand);
+    const sig = 'res:'+m.roundId;
+    if (P.smResSig !== sig){
+      P.smResSig = sig;
+      const mine = (m.results||{})[P.id];
+      if (mine){
+        $('smpResultMsg').style.display='block';
+        $('smpResultMsg').className = 'feedback mtb '+(mine.won?'fb-ok':'fb-no');
+        $('smpResultMsg').textContent = mine.bust ? `💥 HAI SBALLATO! -${mine.bet} PUNTI`
+          : (mine.won ? `🎉 HAI BATTUTO IL BANCO! +${mine.bet} PUNTI` : `😔 IL BANCO HA VINTO. -${mine.bet} PUNTI`);
+        if (mine.won) confetti();
+      }
+    }
+  }
+}
+function smRenderPlayerHand(h){
+  $('smpHand').innerHTML = h.cards.map(c=>smCardHTML(c,false)).join('');
+  const cls = h.status==='bust' ? 'bust' : (h.total2x===15?'sette':'');
+  $('smpTotal').className = 'smTotal '+cls;
+  $('smpTotal').innerHTML = `<span class="num">${smFmtTotal(h.total2x)}</span> / 7½`;
+}
+function smRenderDealerPlayer(dealerHand){
+  if (!dealerHand){ $('smpDealerHand').innerHTML=''; $('smpDealerTotal').textContent=''; return; }
+  $('smpDealerHand').innerHTML = dealerHand.cards.map(c=>smCardHTML(c,false)).join('');
+  const cls = dealerHand.status==='bust' ? 'bust' : (dealerHand.total2x===15?'sette':'');
+  $('smpDealerTotal').className = 'smTotal '+cls;
+  $('smpDealerTotal').innerHTML = `<span class="num">${smFmtTotal(dealerHand.total2x)}</span> / 7½`;
+}
+function smConfirmBet(){
+  const bet = Math.round(+$('smpBetInput').value);
+  if (!bet || bet<P.smMinBet || bet>P.smMaxBet) return alert(`La puntata deve essere tra ${P.smMinBet} e ${P.smMaxBet} punti.`);
+  P.ref.child('settemezzo/hands/'+P.id).update({ bet, status:'playing' });
+}
+function smPlayerHit(){
+  smDrawCard(P.ref, card=>{
+    if (!card) return;
+    P.ref.child('settemezzo/hands/'+P.id).once('value').then(s=>{
+      const h = s.val();
+      h.cards.push(card);
+      h.total2x = smTotal2x(h.cards);
+      if (h.total2x>15) h.status='bust';
+      P.ref.child('settemezzo/hands/'+P.id).set(h);
+      smRenderPlayerHand(h);
+      if (h.status==='bust'){
+        $('smpActionBox').style.display='none';
+        $('smpStatus').style.display='inline-block'; $('smpStatus').className='smStatusPill bust'; $('smpStatus').textContent='SBALLATO';
+      }
+    });
+  });
+}
+function smPlayerStand(){
+  P.ref.child('settemezzo/hands/'+P.id+'/status').set('sto');
+  $('smpActionBox').style.display='none';
+  $('smpStatus').style.display='inline-block'; $('smpStatus').className='smStatusPill sto'; $('smpStatus').textContent='STAI';
 }
 /* ================================================================
    XOX — motore condiviso (giocatore contro computer)
@@ -15147,6 +15337,192 @@ function csfFinish(solvedList){
 }
 
 /* ================================================================
+   7 E 1/2 — funzioni condivise (regia, telefono e proiettore usano le stesse)
+   Mazzo da 40 carte italiane: 1-7 valgono il proprio numero, Fante/Cavallo/Re valgono 1/2.
+   I valori vengono tenuti internamente "in mezzi punti" (interi) per evitare i classici problemi
+   di arrotondamento dei decimali — 7 e 1/2 diventa semplicemente 15.
+================================================================ */
+const SM_SUITS = [
+  {k:'denari', label:'Denari', color:'#c98a1a'},
+  {k:'coppe', label:'Coppe', color:'#c93838'},
+  {k:'bastoni', label:'Bastoni', color:'#3a7d3a'},
+  {k:'spade', label:'Spade', color:'#2f5fa8'}
+];
+function smSuitIcon(suitKey, color){
+  if (suitKey==='denari') return `<svg viewBox="0 0 40 40" class="smSuitIcon"><circle cx="20" cy="20" r="15" fill="none" stroke="${color}" stroke-width="4"/><circle cx="20" cy="20" r="6" fill="${color}"/></svg>`;
+  if (suitKey==='coppe') return `<svg viewBox="0 0 40 40" class="smSuitIcon"><path d="M9 6 h22 v9 a11 11 0 0 1 -22 0 z" fill="${color}"/><rect x="18" y="24" width="4" height="7" fill="${color}"/><rect x="11" y="31" width="18" height="4" rx="2" fill="${color}"/></svg>`;
+  if (suitKey==='bastoni') return `<svg viewBox="0 0 40 40" class="smSuitIcon"><rect x="17" y="3" width="6" height="34" rx="3" fill="${color}" transform="rotate(18 20 20)"/><circle cx="16" cy="12" r="2.6" fill="${color}" transform="rotate(18 20 20)"/><circle cx="19" cy="20" r="2.6" fill="${color}" transform="rotate(18 20 20)"/><circle cx="22" cy="28" r="2.6" fill="${color}" transform="rotate(18 20 20)"/></svg>`;
+  if (suitKey==='spade') return `<svg viewBox="0 0 40 40" class="smSuitIcon"><path d="M20 2 L26 19 L21.5 19 L21.5 29 L25 34 L15 34 L18.5 29 L18.5 19 L14 19 Z" fill="${color}"/></svg>`;
+  return '';
+}
+function smCardValue2x(rank){ return rank<=7 ? rank*2 : 1; }
+function smTotal2x(cards){ return cards.reduce((s,c)=>s+smCardValue2x(c.rank),0); }
+function smFmtTotal(total2x){ return total2x%2===0 ? String(total2x/2) : (Math.floor(total2x/2))+'.5'; }
+function smRankLabel(rank){ return rank<=7 ? String(rank) : (rank===8?'F':rank===9?'C':'R'); }
+function smCardHTML(card, small){
+  const suit = SM_SUITS.find(s=>s.k===card.suit);
+  const rl = smRankLabel(card.rank);
+  return `<div class="smCard${small?' small':''}" style="color:${suit.color}">
+    <div class="smRank">${rl}</div>${smSuitIcon(card.suit, suit.color)}<div class="smRankB">${rl}</div>
+  </div>`;
+}
+function smBuildDeck(){
+  const deck = [];
+  for (const s of SM_SUITS) for (let r=1;r<=10;r++) deck.push({suit:s.k, rank:r});
+  return deck;
+}
+function smShuffleArr(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; } return arr; }
+function smBuildShoe(nDecks){
+  let shoe = [];
+  for (let i=0;i<nDecks;i++) shoe = shoe.concat(smBuildDeck());
+  return smShuffleArr(shoe);
+}
+// pesca una carta dal mazzo condiviso in modo atomico (transazione): se il mazzo è agli sgoccioli
+// lo ricostituisce da solo con altri sei mazzi mescolati insieme, così non si esaurisce mai davvero
+function smDrawCard(gref, cb){
+  let drawn = null;
+  gref.child('settemezzo/shoe').transaction(shoe=>{
+    if (!shoe || shoe.length===0) shoe = smBuildShoe(6);
+    shoe = shoe.slice();
+    drawn = shoe.pop();
+    return shoe;
+  }).then(result=>{ cb(result.committed ? drawn : null); });
+}
+
+/* ================================================================
+   7 E 1/2 — regia
+================================================================ */
+let SM = {};
+function openSetteMezzo(){
+  if (!isGameEnabled('settemezzo')) return alert('⚠️ Questo minigioco non è compreso nella licenza attiva. Contatta Alberto per sbloccarlo.');
+  if (!G) return alert('Avvia prima una partita!');
+  cancelLiveQuestion(); closeModal();
+  G.ref.child('settemezzo/hands').off();
+  G.ref.update({ status:'settemezzo', settemezzo:{ phase:'idle' } });
+  SM = {};
+  $('smSetup').style.display='block'; $('smLive').style.display='none';
+  pjSend({type:'smState'});
+  showScreen('scrSetteMezzo');
+}
+function smStart(){
+  const deckStyle = $('smDeckStyle').value;
+  const minBet = Math.max(10, Math.round(+$('smMinBet').value||100));
+  const maxBet = Math.max(minBet, Math.round(+$('smMaxBet').value||3000));
+  G.ref.child('players').once('value').then(ps=>{
+    const players = ps.val()||{};
+    const pids = Object.keys(players);
+    if (!pids.length) return alert('Nessun giocatore ancora in partita!');
+    const shoe = smBuildShoe(6);
+    const roundId = serverNow();
+    const hands = {};
+    pids.forEach(pid=>{
+      const card = shoe.pop();
+      hands[pid] = { name: players[pid].name, cards:[card], bet:null, status:'betting', total2x: smCardValue2x(card.rank) };
+    });
+    SM = { deckStyle, minBet, maxBet, roundId, resolved:false };
+    G.ref.update({ status:'settemezzo', settemezzo:{ phase:'players', deckStyle, minBet, maxBet, roundId, shoe, hands, dealerHand:null } });
+    $('smSetup').style.display='none'; $('smLive').style.display='block';
+    $('smMsg').textContent = '🎴 OGNUNO PUNTA E GIOCA LA PROPRIA MANO...';
+    $('smDealerHandHost').innerHTML=''; $('smDealerTotalHost').textContent='';
+    $('smBtnToDealer').style.display=''; $('smBtnToDealer').disabled=true;
+    $('smBtnDealerHit').style.display='none'; $('smBtnDealerStand').style.display='none';
+    $('smBtnResolve').style.display='none'; $('smBtnAgain').style.display='none';
+    pjSend({type:'smBet', deckStyle});
+    G.ref.child('settemezzo/hands').on('value', s=>{
+      const hs = s.val()||{};
+      smRenderPlayersLive(hs);
+      Object.entries(hs).forEach(([pid,h])=>{
+        if (h.total2x===15 && !SM['announced_'+pid]){
+          SM['announced_'+pid] = true;
+          pjSend({type:'smSette', name:h.name});
+        }
+      });
+    });
+  });
+}
+function smRenderPlayersLive(hands){
+  const rows = Object.values(hands);
+  const statusLbl = {betting:'sta puntando', playing:'in gioco', sto:'sta', bust:'sballato'};
+  $('smPlayersLive').innerHTML = rows.length ? rows.map(h=>
+    `<div class="leadRow"><span class="grow">${esc(h.name)}</span>
+      <span class="smStatusPill ${h.status}">${statusLbl[h.status]}</span>
+      <span class="pts" style="margin-left:10px">${h.bet!=null ? h.bet+' pt' : '—'}</span></div>`).join('') : '';
+  const allDone = rows.length>0 && rows.every(h=>h.status==='sto'||h.status==='bust');
+  const readyCount = rows.filter(h=>h.status==='sto'||h.status==='bust').length;
+  $('smBtnToDealer').disabled = !allDone;
+  $('smBtnToDealer').textContent = allDone ? '🎩 TOCCA AL BANCO' : `🎩 TOCCA AL BANCO (${readyCount}/${rows.length} pronti)`;
+}
+function smStartDealerPhase(){
+  smDrawCard(G.ref, card=>{
+    if (!card) return;
+    const dealerHand = { cards:[card], status:'playing', total2x: smCardValue2x(card.rank) };
+    G.ref.child('settemezzo/hands').off();
+    G.ref.update({ 'settemezzo/phase':'dealer', 'settemezzo/dealerHand':dealerHand });
+    $('smBtnToDealer').style.display='none';
+    $('smBtnDealerHit').style.display=''; $('smBtnDealerStand').style.display='';
+    $('smMsg').textContent = '🎩 TOCCA A TE: GUARDA LA TUA CARTA E DECIDI';
+    smRenderDealerHost(dealerHand);
+    pjSend({type:'smDealerReveal', dealerHand});
+  });
+}
+function smRenderDealerHost(dealerHand){
+  $('smDealerHandHost').innerHTML = dealerHand.cards.map(c=>smCardHTML(c,false)).join('');
+  const cls = dealerHand.status==='bust' ? 'bust' : (dealerHand.total2x===15?'sette':'');
+  $('smDealerTotalHost').className = 'smTotal '+cls;
+  $('smDealerTotalHost').innerHTML = `<span class="num">${smFmtTotal(dealerHand.total2x)}</span> / 7½`;
+}
+function smDealerHit(){
+  smDrawCard(G.ref, card=>{
+    if (!card) return;
+    G.ref.child('settemezzo/dealerHand').once('value').then(s=>{
+      const dealerHand = s.val();
+      dealerHand.cards.push(card);
+      dealerHand.total2x = smTotal2x(dealerHand.cards);
+      if (dealerHand.total2x>15) dealerHand.status='bust';
+      G.ref.child('settemezzo/dealerHand').set(dealerHand);
+      smRenderDealerHost(dealerHand);
+      pjSend({type:'smDealerReveal', dealerHand});
+      if (dealerHand.status==='bust'){
+        $('smBtnDealerHit').style.display='none'; $('smBtnDealerStand').style.display='none';
+        $('smBtnResolve').style.display='';
+        $('smMsg').textContent = '💥 IL BANCO HA SBALLATO!';
+      }
+    });
+  });
+}
+function smDealerStand(){
+  G.ref.child('settemezzo/dealerHand/status').set('sto');
+  $('smBtnDealerHit').style.display='none'; $('smBtnDealerStand').style.display='none';
+  $('smBtnResolve').style.display='';
+  $('smMsg').textContent = "✋ IL BANCO STA. PRONTO A RISOLVERE LA MANO...";
+}
+function smResolve(){
+  if (SM.resolved) return; SM.resolved = true;
+  Promise.all([
+    G.ref.child('settemezzo/hands').once('value'),
+    G.ref.child('settemezzo/dealerHand').once('value')
+  ]).then(([hs, ds])=>{
+    const hands = hs.val()||{};
+    const dealerHand = ds.val()||{total2x:0,status:'sto'};
+    const results = {};
+    const scorePromises = [];
+    Object.entries(hands).forEach(([pid,h])=>{
+      const won = h.status!=='bust' && (dealerHand.status==='bust' || h.total2x > dealerHand.total2x);
+      const delta = won ? h.bet : -h.bet;
+      results[pid] = { name:h.name, won, bust:h.status==='bust', total2x:h.total2x, bet:h.bet };
+      scorePromises.push(applyScoreDelta(pid, delta));
+    });
+    Promise.all(scorePromises).then(()=>{
+      G.ref.update({ 'settemezzo/phase':'result', 'settemezzo/results':results });
+      $('smMsg').textContent = '🏁 MANO CONCLUSA!';
+      $('smBtnResolve').style.display='none'; $('smBtnAgain').style.display='';
+      pjSend({type:'smResult', dealerHand, results});
+      confetti();
+    });
+  });
+}
+
+/* ================================================================
    XOX — regia
 ================================================================ */
 let XOX = {};
@@ -15656,6 +16032,7 @@ const GIOCHI_CATALOGO = [
   {k:'idr', l:"🔧 L'Idraulico"},
   {k:'patata', l:'💣 Patata Bollente'},
   {k:'cassaforte', l:'🔐 La Cassaforte'},
+  {k:'settemezzo', l:'🎴 7 e 1/2'},
   {k:'xox', l:'❌⭕ XOX'}
   // 👉 QUANDO AGGIUNGI UN NUOVO MINIGIOCO: aggiungi qui una riga {k:'chiave', l:'Emoji Nome'},
   // poi apri il quiz come host e clicca una volta su "GIOCHI": il pannello admin lo vedrà da solo.
@@ -15690,6 +16067,7 @@ function modalGamesSkill(){
     gk('rdc', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#5a3d8a,#2e1a5a); color:#fff; box-shadow:0 7px 0 #180e30,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(46,26,90,.4)" onclick="openRdc()">🧮 La Resa dei Conti</button>`),
     gk('mastermind', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#4a4a4a,#222); color:#fff; box-shadow:0 7px 0 #0a0a0a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(0,0,0,.4)" onclick="openMastermind()">🎯 Mastermind</button>`),
     gk('cassaforte', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#8a8f96,#3a3c40); color:#fff; box-shadow:0 7px 0 #1a1c1e,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(138,143,150,.35)" onclick="openCassaforte()">🔐 La Cassaforte</button>`),
+    gk('settemezzo', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#1a5c34,#0d3a20); color:#fff; box-shadow:0 7px 0 #082614,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(26,92,52,.4)" onclick="openSetteMezzo()">🎴 7 e 1/2</button>`),
     gk('shapes', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#c2183d,#ff8a3c); color:#fff; box-shadow:0 7px 0 #6b0e21,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(194,24,61,.4)" onclick="openShapes()">👁 Occhio alle Forme</button>`),
     gk('finddiff', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#4a2fb8,#9d4dff); color:#fff; box-shadow:0 7px 0 #2a1866,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(157,77,255,.4)" onclick="openFindDiff()">🔍 Trova le Differenze</button>`),
     gk('tamb', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#e8b45a,#8a4a12); color:#3a2000; box-shadow:0 7px 0 #4a2400,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(232,180,90,.4)" onclick="openTamb()">🥁 I Tamburini</button>`),
@@ -16277,6 +16655,7 @@ function backToQuiz(title){
   G.ref.child('idraulico/progress').off();
   G.ref.child('patata').off();
   G.ref.child('cassaforte/pendingAttempts').off();
+  G.ref.child('settemezzo/hands').off();
   G.ref.child('xox/results').off();
   clearInterval(($('hrsTrackHost')||{})._raceInt); clearInterval(($('hrsTrackHost')||{})._cdInt);
   clearInterval((TF||{}).timerInt);
@@ -16300,7 +16679,7 @@ function backToQuiz(title){
   clearInterval((PATATA||{}).timerInt);
   clearInterval((CSF||{}).timerInt);
   clearInterval((XOX||{}).timerInt);
-  G.ref.update({ status:'pausa', mini:null, dice:null, simon:null, voto:null, timer:null, tombola:null, cards:null, swiss:null, hilo:null, wheels:null, puzzle:null, wordsearch:null, anagram:null, seed:null, grad:null, taptap:null, ruota:null, memo:null, memocoppie:null, horses:null, tfiscale:null, toc:null, cenerentola:null, pacchi:null, roulette:null, pagliuzza:null, supertris:null, rdc:null, mastermind:null, bomba:null, shapes:null, finddiff:null, maggioranza:null, goldenticket:null, casino:null, tamburini:null, mercatista:null, morra:null, punto:null, dado:null, asta:null, idraulico:null, patata:null, cassaforte:null, xox:null });
+  G.ref.update({ status:'pausa', mini:null, dice:null, simon:null, voto:null, timer:null, tombola:null, cards:null, swiss:null, hilo:null, wheels:null, puzzle:null, wordsearch:null, anagram:null, seed:null, grad:null, taptap:null, ruota:null, memo:null, memocoppie:null, horses:null, tfiscale:null, toc:null, cenerentola:null, pacchi:null, roulette:null, pagliuzza:null, supertris:null, rdc:null, mastermind:null, bomba:null, shapes:null, finddiff:null, maggioranza:null, goldenticket:null, casino:null, tamburini:null, mercatista:null, morra:null, punto:null, dado:null, asta:null, idraulico:null, patata:null, cassaforte:null, settemezzo:null, xox:null });
   G.ref.child('players').once('value', ps=>{
     const players = ps.val()||{};
     $('hrTitle').textContent = title || 'SI TORNA AL QUIZ!';
@@ -16772,6 +17151,38 @@ function pjRouteInner(m){
       $('pjCsfMsg').textContent = opened ? `🔓 APERTA! COMBINAZIONE: ${(m.secret||[]).join(' - ')}` : `🔒 NESSUNO CE L'HA FATTA! ERA: ${(m.secret||[]).join(' - ')}`;
       csfRenderLiveRank($('pjCsfLiveRank'), m.results||[]);
       if (opened) confetti();
+    }
+    else if (m.type==='smState') {
+      showScreen('scrPjSetteMezzo');
+      $('pjSmMsg').textContent = 'SI GIOCA A 7 E 1/2!';
+      $('smDealerHandPj').innerHTML=''; $('smDealerTotalPj').textContent='';
+      $('smSettePj').style.display='none'; $('smResultsPj').innerHTML='';
+    }
+    else if (m.type==='smBet') {
+      showScreen('scrPjSetteMezzo');
+      $('pjSmMsg').textContent = 'OGNUNO PUNTA E GIOCA LA PROPRIA MANO DAL TELEFONO...';
+      $('smSettePj').style.display='none'; $('smResultsPj').innerHTML='';
+      $('smDealerHandPj').innerHTML=''; $('smDealerTotalPj').textContent='';
+    }
+    else if (m.type==='smSette') {
+      $('smSettePj').style.display='block';
+      $('smSettePj').textContent = `🎉 ${(m.name||'').toUpperCase()} HA FATTO 7 E MEZZO!`;
+      confetti();
+      setTimeout(()=>{ $('smSettePj').style.display='none'; }, 4000);
+    }
+    else if (m.type==='smDealerReveal') {
+      $('pjSmMsg').textContent = 'COSA HA IL BANCO...';
+      const dh = m.dealerHand;
+      $('smDealerHandPj').innerHTML = dh.cards.map(c=>smCardHTML(c,false)).join('');
+      const cls = dh.status==='bust' ? 'bust' : (dh.total2x===15?'sette':'');
+      $('smDealerTotalPj').className = 'smTotal '+cls;
+      $('smDealerTotalPj').innerHTML = `<span class="num">${smFmtTotal(dh.total2x)}</span> / 7½`;
+    }
+    else if (m.type==='smResult') {
+      $('pjSmMsg').textContent = m.dealerHand.status==='bust' ? '💥 IL BANCO HA SBALLATO!' : '🏁 MANO CONCLUSA!';
+      const rows = Object.values(m.results||{});
+      $('smResultsPj').innerHTML = rows.map(r=>`<div class="leadRow"><span class="grow">${esc(r.name)}</span><span class="pts" style="color:${r.won?'var(--lime)':'var(--red)'}">${r.won?'+':'-'}${r.bet}</span></div>`).join('');
+      confetti();
     }
     else if (m.type==='xoxActive') {
       showScreen('scrPjXox');
