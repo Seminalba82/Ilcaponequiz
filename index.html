@@ -35,6 +35,10 @@ body::before{ /* griglia retro-futuristica */
   -webkit-mask-image:radial-gradient(ellipse at 50% 45%, black 30%, transparent 75%);
 }
 .screen{display:none; position:relative; z-index:1; min-height:100vh; padding:22px; max-width:1100px; margin:0 auto;}
+/* con la fascia promozionale fissa in fondo (solo su telefoni/proiettore), aggiungo altrettanto spazio
+   in coda a ogni schermata: altrimenti l'ultimo pezzo di contenuto (es. l'ultimo tentativo nella
+   cronologia della Cassaforte) resterebbe sempre nascosto sotto la fascia, irraggiungibile scorrendo */
+body.hasPromoBanner .screen{padding-bottom:64px;}
 /* Sul proiettore, il contenuto "naturale" (prima dell'ingrandimento automatico) non deve essere limitato
    a 1100px come su regia/telefono — altrimenti il meccanismo che scala per riempire lo schermo parte già
    da un blocco troppo stretto, e arriva al tetto massimo di sicurezza senza mai riempire davvero lo schermo
@@ -1546,7 +1550,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.07</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.08</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -5009,7 +5013,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1307; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1308; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -18324,12 +18328,16 @@ function pjRouteInner(m){
    sta giocando/guardando, non per Alberto che lo sta già usando. */
 function setupPromoBanner(mode){
   const b = $('promoBanner');
-  if (!b || mode==='host'){ if (b) b.style.display='none'; return; }
+  if (!b || mode==='host'){ if (b) b.style.display='none'; document.body.classList.remove('hasPromoBanner'); return; }
   const dest = mode==='player'
     ? '<a href="https://ilcaponequiz.win" target="_blank" rel="noopener">ilcaponequiz.win</a>'
     : '<b>ilcaponequiz.win</b>';
   b.innerHTML = `🎩 Noleggia anche solo per un giorno <b>IL CAPONE QUIZ 3.0</b> per le tue serate. Vai su ${dest}`;
   b.style.display = 'block';
+  // spazio extra in fondo a ogni schermata, così lo scroll riesce sempre a portare in vista l'ultimo
+  // elemento (es. l'ultimo tentativo nella cronologia della Cassaforte) anche se la fascia fissa,
+  // sovrapposta, coprirebbe altrimenti quel poco di spazio proprio in fondo alla pagina
+  document.body.classList.add('hasPromoBanner');
 }
 /* ================================================================
    AVVIO / ROUTER
