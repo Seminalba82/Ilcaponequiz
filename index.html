@@ -207,6 +207,28 @@ body.proj .screen{max-width:none;}
 .scpProgressLbl{font-family:'Bungee'; font-size:13px; text-align:center; color:var(--muted); margin-top:2px;}
 @keyframes scpShake{0%,100%{transform:translateX(0);} 25%{transform:translateX(-8px);} 75%{transform:translateX(8px);}}
 .scpShake{animation:scpShake .35s;}
+/* ===== BINGO CON LE CARTE — tabellone, carte dorate, estrazione ===== */
+.bcBoard{display:flex; flex-direction:column; align-items:center; gap:16px; margin:14px auto; max-width:900px; width:100%;}
+.bcGoldRow{display:flex; justify-content:center; gap:12px; flex-wrap:wrap; min-height:20px;}
+.bcGoldSlot{position:relative; margin-top:16px;}
+.bcGoldNum{position:absolute; top:-16px; left:50%; transform:translateX(-50%); font-family:'Bungee'; font-size:14px; color:#1a0f2e;
+  background:var(--gold); border-radius:50%; width:28px; height:28px; display:flex; align-items:center; justify-content:center; z-index:2;
+  box-shadow:0 2px 6px rgba(0,0,0,.5);}
+.bcGrid{display:flex; flex-wrap:wrap; justify-content:center; gap:5px; max-width:820px;}
+.bcCard{width:38px; height:56px; border-radius:5px; position:relative; flex-shrink:0; transition:transform .2s, box-shadow .3s;
+  background:repeating-linear-gradient(45deg,#7a1414 0 6px,#5c0f0f 6px 12px); box-shadow:0 3px 6px rgba(0,0,0,.4), inset 0 0 0 2px #ffe9a8;
+  overflow:hidden;}
+.bcCard.selectable{cursor:pointer;} .bcCard.selectable:active{transform:scale(.92);}
+.bcCard.golden{width:66px; height:96px; box-shadow:0 8px 16px rgba(0,0,0,.5), 0 0 22px rgba(255,201,60,.8), inset 0 0 0 3px var(--gold);}
+.bcCard.revealed{background:#fffdf6; box-shadow:0 3px 6px rgba(0,0,0,.45);}
+.bcCard.golden.revealed{box-shadow:0 8px 16px rgba(0,0,0,.5), 0 0 26px rgba(255,201,60,.9), inset 0 0 0 3px var(--gold);}
+.bcCard.justDrawn{outline:4px solid var(--lime); outline-offset:2px; box-shadow:0 0 18px rgba(182,255,46,.75) !important;}
+.bcCard .bcFace{width:100%; height:100%; object-fit:cover; border-radius:5px; display:block;}
+.bcCard .bcFaceTxt{width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; font-family:'Bungee';}
+.bcCard .bcRankTxt{font-size:12px; line-height:1;} .bcCard .bcSuitTxt{font-size:17px; line-height:1.3;}
+.bcCard.golden .bcRankTxt{font-size:20px;} .bcCard.golden .bcSuitTxt{font-size:30px;}
+.bcMsg{font-family:'Bungee'; font-size:clamp(16px,3vw,26px); text-align:center; color:var(--gold); text-shadow:0 0 16px rgba(255,201,60,.5); margin-top:6px;}
+.bcPrizeReveal{font-family:'Bungee'; font-size:clamp(18px,3.4vw,30px); text-align:center; color:var(--lime); text-shadow:0 0 18px rgba(182,255,46,.7); margin-top:10px; min-height:1.4em;}
 /* ===== MALEDETTA STACCIONATA — assi di legno che si dipingono di bianco con la voce ===== */
 .stacScene{display:flex; align-items:flex-end; justify-content:center; gap:14px; margin:16px auto; max-width:480px;}
 .stacFence{display:flex; align-items:flex-end; gap:3px; height:170px; flex:1; max-width:340px;
@@ -1567,7 +1589,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.10</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.11</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -4236,6 +4258,58 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="scpScopaBanner" id="scpScopaBannerPl" style="display:none"></div>
 </div>
 
+<!-- ==================== HOST: BINGO CON LE CARTE ==================== -->
+<div class="screen" id="scrBingoCarte">
+  <div class="brand"><div class="t1" style="font-size:clamp(18px,3.4vw,32px)">🎴 BINGO CON LE CARTE</div></div>
+  <div class="panel mt" style="max-width:480px" id="bcSetupDeck">
+    <div class="label">Che mazzo usiamo?</div>
+    <select id="bcDeckType">
+      <option value="siciliane" selected>🂡 Siciliane (40 carte)</option>
+      <option value="poker">🂡 Poker (52 carte)</option>
+    </select>
+    <div class="byline mt" style="opacity:.75">🎴 Il tabellone mostra tutte le carte coperte, anonime — tu scegli 1-5 carte che daranno un premio: resteranno le ultime a essere girate, per un finale ad effetto. Nessuna interazione dai telefoni: proiettore e smartphone vedranno solo il tabellone girarsi in diretta.</div>
+    <button class="btn mg mt" style="width:100%" onclick="bingoPrepareBoard()">🃏 PREPARA IL TABELLONE</button>
+  </div>
+  <div id="bcSetupSelect" style="display:none; width:100%" class="center">
+    <div class="byline">Tocca 1-5 carte: saranno quelle che daranno un premio (max 5).</div>
+    <div class="bcBoard" id="bcSelectBoard"><div class="bcGoldRow"></div><div class="bcGrid"></div></div>
+    <div class="byline mt" id="bcSelectCount">0/5 carte scelte</div>
+    <button class="btn mg mt" id="bcBtnConfirmSelect" onclick="bcConfirmSelection()" disabled>✅ CONFERMA LA SCELTA</button>
+  </div>
+  <div class="panel mt" style="max-width:480px; display:none" id="bcSetupPrizes">
+    <div class="label">Scrivi il premio per ogni carta scelta</div>
+    <div id="bcPrizeInputs"></div>
+    <div class="row mt">
+      <button class="btn ghost" onclick="bcBackToSelect()">↩ Cambia scelta</button>
+      <button class="btn mg" onclick="bingoStartBoard()">🎬 AVVIA IL TABELLONE!</button>
+    </div>
+  </div>
+  <div id="bcLive" style="display:none; width:100%" class="center">
+    <div class="bcBoard" id="bcBoardHost"><div class="bcGoldRow"></div><div class="bcGrid"></div></div>
+    <div class="bcPrizeReveal" id="bcPrizeRevealHost"></div>
+    <button class="btn mg mt" style="width:100%; max-width:340px" onclick="bcRevealNext()">🔄 GIRA UNA CARTA</button>
+  </div>
+  <div class="row mt">
+    <button class="btn cy" onclick="bcShuffleRestart()">🔀 Mescola e ricomincia</button>
+    <button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button>
+  </div>
+</div>
+
+<!-- ==================== PROIETTORE: BINGO CON LE CARTE ==================== -->
+<div class="screen" id="scrPjBingoCarte">
+  <div class="brand"><div class="t1" style="font-size:clamp(24px,3.6vw,42px)">🎴 BINGO CON LE CARTE</div></div>
+  <div class="miniMsg" id="pjBcMsg"></div>
+  <div class="bcBoard" id="pjBcBoard"><div class="bcGoldRow"></div><div class="bcGrid"></div></div>
+  <div class="bcPrizeReveal" id="pjBcPrizeReveal"></div>
+</div>
+
+<!-- ==================== PLAYER: BINGO CON LE CARTE ==================== -->
+<div class="screen" id="scrPlayBingoCarte" style="align-items:center; justify-content:center">
+  <div class="bcMsg" id="bcMsgPl"></div>
+  <div class="bcBoard" id="bcBoardPl"><div class="bcGoldRow"></div><div class="bcGrid"></div></div>
+  <div class="bcPrizeReveal" id="bcPrizeRevealPl"></div>
+</div>
+
 <!-- ==================== HOST: ROULETTE ==================== -->
 <div class="screen" id="scrCasino">
   <div class="brand"><div class="t1" style="font-size:clamp(20px,3.6vw,36px)">🎰 ROULETTE</div></div>
@@ -5022,7 +5096,7 @@ body.suspense-on #pfRank{ display:none !important; }
 /* ================================================================
    📋 ELENCO MINIGIOCHI — aggiornare questa lista ogni volta che se ne
    aggiunge uno nuovo (serve ad Alberto per la documentazione delle licenze).
-   Ultimo aggiornamento: v13.09 — 48 minigiochi totali.
+   Ultimo aggiornamento: v13.11 — 49 minigiochi totali.
    ================================================================
    1.  🥃 Bussolotti
    2.  🎲 Pari o Dispari
@@ -5072,6 +5146,7 @@ body.suspense-on #pfRank{ display:none !important; }
    46. 🎴 7 e 1/2
    47. 🪵 Maledetta Staccionata
    48. 🧹 Scopa e Vinci
+   49. 🎴 Bingo con le Carte
 ================================================================ */
 
 /* ================================================================
@@ -5092,7 +5167,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1310; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1311; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -7043,6 +7118,7 @@ function listenGame(){
     else if (g.status==='cassaforte') showPlayerCassaforte(g);
     else if (g.status==='settemezzo') showPlayerSetteMezzo(g);
     else if (g.status==='scopa') showPlayerScopa(g);
+    else if (g.status==='bingocarte') showPlayerBingoCarte(g);
     else if (g.status==='xox') showPlayerXox(g);
     else if (g.status==='timer') {
       const t = g.timer||{};
@@ -9931,6 +10007,25 @@ function scopaPlayCard(){
     scopaRenderPlayScreen();
     if (st.scopa && chosen.length>0){ /* scopa raggiunta ma restano ancora carte da giocare: continuo comunque */ }
   }
+}
+/* ================================================================
+   BINGO CON LE CARTE — telefono (solo visualizzazione, nessuna interazione: è un'estrazione)
+================================================================ */
+function showPlayerBingoCarte(g){
+  const m = g.bingocarte||{};
+  showScreen('scrPlayBingoCarte');
+  if (m.phase!=='play'){
+    $('bcMsgPl').textContent = 'ASPETTA CHE LA REGIA PREPARI IL TABELLONE...';
+    $('bcPrizeRevealPl').textContent = '';
+    return;
+  }
+  $('bcMsgPl').textContent = '';
+  bcRenderBoardInto($('bcBoardPl'), m.deckType, m.cards, m.goldenPositions, m.revealedIdxs||[]);
+  const revealedIdxs = m.revealedIdxs||[];
+  const lastIdx = revealedIdxs.length ? revealedIdxs[revealedIdxs.length-1] : null;
+  const goldPos = lastIdx!=null ? (m.goldenPositions||[]).indexOf(lastIdx) : -1;
+  $('bcPrizeRevealPl').textContent = goldPos>=0
+    ? `🏆 CARTA ${m.goldenPositions.length-goldPos}° — PREMIO: ${m.prizes[goldPos]}` : '';
 }
 /* ================================================================
    XOX — motore condiviso (giocatore contro computer)
@@ -16201,6 +16296,153 @@ function scopaRenderRanking(rows){
 }
 
 /* ================================================================
+   BINGO CON LE CARTE — funzioni condivise
+   Le carte siciliane riusano SM_CARD_IMG (le stesse foto vere già usate altrove); per il mazzo da
+   poker disegno una faccia semplice (numero/lettera + seme colorato), dato che non ho foto vere di
+   quel mazzo. Il gioco è puramente posizionale: l'identità della carta è decorativa, non conta nulla
+   ai fini del risultato — conta solo la POSIZIONE scelta dalla regia come "dorata".
+================================================================ */
+const POKER_SUITS = [ {sym:'♥', color:'#d43838'}, {sym:'♦', color:'#d43838'}, {sym:'♠', color:'#232323'}, {sym:'♣', color:'#232323'} ];
+const POKER_RANK_LABELS = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+function bcBuildDeck(deckType){
+  if (deckType==='poker'){
+    const deck = [];
+    for (let s=0;s<4;s++) for (let r=1;r<=13;r++) deck.push({suit:s, rank:r});
+    return smShuffleArr(deck);
+  }
+  return smShuffleArr(smBuildDeck());
+}
+function bcCardFaceHTML(deckType, card){
+  if (deckType==='poker'){
+    const suit = POKER_SUITS[card.suit];
+    const rl = POKER_RANK_LABELS[card.rank-1];
+    return `<div class="bcFaceTxt" style="color:${suit.color}"><div class="bcRankTxt">${rl}</div><div class="bcSuitTxt">${suit.sym}</div></div>`;
+  }
+  const src = SM_CARD_IMG[card.suit+'_'+card.rank] || '';
+  return `<img class="bcFace" src="${src}" draggable="false">`;
+}
+// disegna il tabellone (fila dorata sopra + griglia sotto) dentro un contenitore che ha già al suo
+// interno un .bcGoldRow e un .bcGrid — usata identica da regia, proiettore e telefono
+function bcRenderBoardInto(container, deckType, cards, goldenPositions, revealedIdxs){
+  if (!container) return;
+  const revealedSet = new Set(revealedIdxs||[]);
+  const lastIdx = (revealedIdxs&&revealedIdxs.length) ? revealedIdxs[revealedIdxs.length-1] : null;
+  const n = (goldenPositions||[]).length;
+  const goldRow = (goldenPositions||[]).map((idx,i)=>{
+    const label = n-i;
+    const revealed = revealedSet.has(idx);
+    const face = revealed ? bcCardFaceHTML(deckType, cards[idx]) : '';
+    const cls = 'bcCard golden' + (revealed?' revealed':'') + (idx===lastIdx?' justDrawn':'');
+    return `<div class="bcGoldSlot"><div class="bcGoldNum">${label}</div><div class="${cls}">${face}</div></div>`;
+  }).join('');
+  const goldenSet = new Set(goldenPositions||[]);
+  const gridCards = (cards||[]).map((c,i)=>{
+    if (goldenSet.has(i)) return '';
+    const revealed = revealedSet.has(i);
+    const face = revealed ? bcCardFaceHTML(deckType, c) : '';
+    const cls = 'bcCard' + (revealed?' revealed':'') + (i===lastIdx?' justDrawn':'');
+    return `<div class="${cls}">${face}</div>`;
+  }).join('');
+  container.querySelector('.bcGoldRow').innerHTML = goldRow;
+  container.querySelector('.bcGrid').innerHTML = gridCards;
+}
+
+/* ================================================================
+   BINGO CON LE CARTE — regia
+   Gioco di sola estrazione, senza interazione dal telefono: la regia gira le carte una alla volta,
+   proiettore e telefoni vedono tutti lo stesso tabellone in tempo reale. Le carte senza bagliore non
+   valgono nulla; quelle dorate (scelte dalla regia, 1-5) danno un premio scritto, e sono sempre le
+   ultime a essere girate, nell'ordine deciso in fase di preparazione.
+================================================================ */
+let BC = {};
+function openBingo(){
+  if (!isGameEnabled('bingocarte')) return alert('⚠️ Questo minigioco non è compreso nella licenza attiva. Contatta Alberto per sbloccarlo.');
+  if (!G) return alert('Avvia prima una partita!');
+  cancelLiveQuestion(); closeModal();
+  G.ref.update({ status:'bingocarte', bingocarte:{ phase:'idle' } });
+  BC = { selecting:[] };
+  $('bcSetupDeck').style.display='block'; $('bcSetupSelect').style.display='none';
+  $('bcSetupPrizes').style.display='none'; $('bcLive').style.display='none';
+  pjSend({type:'bcState'});
+  showScreen('scrBingoCarte');
+}
+function bingoPrepareBoard(){
+  const deckType = $('bcDeckType').value;
+  const boardSize = deckType==='poker' ? 52 : 40;
+  const cards = bcBuildDeck(deckType).slice(0, boardSize);
+  BC = { deckType, boardSize, cards, selecting:[] };
+  $('bcSetupDeck').style.display='none'; $('bcSetupSelect').style.display='block';
+  bcRenderSelectGrid();
+}
+function bcRenderSelectGrid(){
+  $('bcSelectBoard').querySelector('.bcGoldRow').innerHTML='';
+  $('bcSelectBoard').querySelector('.bcGrid').innerHTML = BC.cards.map((c,i)=>{
+    const selIdx = BC.selecting.indexOf(i);
+    const cls = 'bcCard selectable' + (selIdx>=0?' golden':'');
+    const badge = selIdx>=0 ? `<div class="bcGoldNum">${selIdx+1}</div>` : '';
+    return `<div class="bcGoldSlot" onclick="bcToggleGolden(${i})">${badge}<div class="${cls}"></div></div>`;
+  }).join('');
+  $('bcSelectCount').textContent = `${BC.selecting.length}/5 carte scelte`;
+  $('bcBtnConfirmSelect').disabled = BC.selecting.length===0;
+}
+function bcToggleGolden(idx){
+  const pos = BC.selecting.indexOf(idx);
+  if (pos>=0) BC.selecting.splice(pos,1);
+  else { if (BC.selecting.length>=5) return alert('Massimo 5 carte premio!'); BC.selecting.push(idx); }
+  bcRenderSelectGrid();
+}
+function bcConfirmSelection(){
+  if (!BC.selecting.length) return;
+  $('bcSetupSelect').style.display='none'; $('bcSetupPrizes').style.display='block';
+  const n = BC.selecting.length;
+  // la prima scelta ottiene il numero più alto (girata per prima tra le dorate), l'ultima scelta è il
+  // numero 1: il gran premio, quello che si vede per ultimo — così la regia decide anche l'ordine
+  $('bcPrizeInputs').innerHTML = BC.selecting.map((idx,i)=>{
+    const label = n-i;
+    return `<div class="tmbPrizeRow"><span class="medal">${label}°</span>
+      <input type="text" id="bcPrize${i}" placeholder="Premio per la carta n°${label}" maxlength="60" style="flex:1"></div>`;
+  }).join('');
+}
+function bcBackToSelect(){
+  $('bcSetupPrizes').style.display='none'; $('bcSetupSelect').style.display='block';
+}
+function bingoStartBoard(){
+  const n = BC.selecting.length;
+  const prizes = BC.selecting.map((idx,i)=> ($('bcPrize'+i).value||'').trim() || `Premio ${n-i}°`);
+  const goldenPositions = BC.selecting.slice();
+  const goldenSet = new Set(goldenPositions);
+  const others = BC.cards.map((c,i)=>i).filter(i=>!goldenSet.has(i));
+  smShuffleArr(others);
+  BC.revealOrder = others.concat(goldenPositions);
+  BC.revealedIdxs = []; BC.prizes = prizes; BC.goldenPositions = goldenPositions;
+  G.ref.update({ status:'bingocarte', bingocarte:{
+    phase:'play', deckType:BC.deckType, boardSize:BC.boardSize, cards:BC.cards,
+    goldenPositions, prizes, revealedIdxs:[]
+  }});
+  $('bcSetupPrizes').style.display='none'; $('bcLive').style.display='block';
+  bcRenderBoardInto($('bcBoardHost'), BC.deckType, BC.cards, BC.goldenPositions, []);
+  $('bcPrizeRevealHost').textContent='';
+  pjSend({type:'bcStart', deckType:BC.deckType, cards:BC.cards, goldenPositions});
+}
+function bcRevealNext(){
+  if (!BC.revealOrder || BC.revealedIdxs.length >= BC.revealOrder.length) return;
+  BC.revealedIdxs.push(BC.revealOrder[BC.revealedIdxs.length]);
+  G.ref.child('bingocarte/revealedIdxs').set(BC.revealedIdxs);
+  bcRenderBoardInto($('bcBoardHost'), BC.deckType, BC.cards, BC.goldenPositions, BC.revealedIdxs);
+  const lastIdx = BC.revealedIdxs[BC.revealedIdxs.length-1];
+  const goldPos = BC.goldenPositions.indexOf(lastIdx);
+  let prizeMsg = '';
+  if (goldPos>=0){
+    const label = BC.goldenPositions.length-goldPos;
+    prizeMsg = `🏆 CARTA ${label}° — PREMIO: ${BC.prizes[goldPos]}`;
+    confetti();
+  }
+  $('bcPrizeRevealHost').textContent = prizeMsg;
+  pjSend({type:'bcReveal', revealedIdxs:BC.revealedIdxs, prizeMsg});
+}
+function bcShuffleRestart(){ openBingo(); }
+
+/* ================================================================
    XOX — regia
 ================================================================ */
 let XOX = {};
@@ -16712,6 +16954,7 @@ const GIOCHI_CATALOGO = [
   {k:'cassaforte', l:'🔐 La Cassaforte'},
   {k:'settemezzo', l:'🎴 7 e 1/2'},
   {k:'scopa', l:'🧹 Scopa e Vinci'},
+  {k:'bingocarte', l:'🎴 Bingo con le Carte'},
   {k:'staccionata', l:'🪵 Maledetta Staccionata'},
   {k:'xox', l:'❌⭕ XOX'}
   // 👉 QUANDO AGGIUNGI UN NUOVO MINIGIOCO: aggiungi qui una riga {k:'chiave', l:'Emoji Nome'},
@@ -16782,6 +17025,7 @@ function modalGamesLuck(){
     gk('merc', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#ff5d7a,#8a0f2e); color:#fff; box-shadow:0 7px 0 #5a0018,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,93,122,.4)" onclick="openMerc()">📣 Mercatista per un Giorno</button>`),
     gk('staccionata', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#8a6339,#5c4023); color:#fff; box-shadow:0 7px 0 #3d2a16,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(138,99,57,.4)" onclick="openStaccionata()">🪵 Maledetta Staccionata</button>`),
     gk('scopa', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#1a7a3a,#0a3a1a); color:#fff; box-shadow:0 7px 0 #052610,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(26,122,58,.4)" onclick="openScopa()">🧹 Scopa e Vinci</button>`),
+    gk('bingocarte', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#7a1414,#3d0a0a); color:#fff; box-shadow:0 7px 0 #260505,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(122,20,20,.4)" onclick="openBingo()">🎴 Bingo con le Carte</button>`),
     gk('morra', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#7a5cff,#2e0f8a); color:#fff; box-shadow:0 7px 0 #180a5c,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(122,92,255,.4)" onclick="openMorra()">✊✋✌️ Morra Cinese</button>`),
     gk('dado', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#ffe93d,#8a6f0b); color:#2e2400; box-shadow:0 7px 0 #4a3a00,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,233,61,.4)" onclick="openDado()">🎲 Il Dado del Destino</button>`),
     gk('patata', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#ff5d3d,#8a1a0b); color:#fff; box-shadow:0 7px 0 #4a0a00,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,93,61,.4)" onclick="openPatata()">💣 Patata Bollente</button>`)
@@ -17364,7 +17608,7 @@ function backToQuiz(title){
   clearInterval((PATATA||{}).timerInt);
   clearInterval((CSF||{}).timerInt);
   clearInterval((XOX||{}).timerInt);
-  G.ref.update({ status:'pausa', mini:null, dice:null, simon:null, voto:null, timer:null, tombola:null, cards:null, swiss:null, hilo:null, wheels:null, puzzle:null, wordsearch:null, anagram:null, seed:null, grad:null, taptap:null, ruota:null, memo:null, memocoppie:null, horses:null, tfiscale:null, toc:null, cenerentola:null, pacchi:null, roulette:null, pagliuzza:null, supertris:null, rdc:null, mastermind:null, bomba:null, shapes:null, finddiff:null, maggioranza:null, goldenticket:null, casino:null, tamburini:null, mercatista:null, staccionata:null, morra:null, punto:null, dado:null, asta:null, idraulico:null, patata:null, cassaforte:null, settemezzo:null, scopa:null, xox:null });
+  G.ref.update({ status:'pausa', mini:null, dice:null, simon:null, voto:null, timer:null, tombola:null, cards:null, swiss:null, hilo:null, wheels:null, puzzle:null, wordsearch:null, anagram:null, seed:null, grad:null, taptap:null, ruota:null, memo:null, memocoppie:null, horses:null, tfiscale:null, toc:null, cenerentola:null, pacchi:null, roulette:null, pagliuzza:null, supertris:null, rdc:null, mastermind:null, bomba:null, shapes:null, finddiff:null, maggioranza:null, goldenticket:null, casino:null, tamburini:null, mercatista:null, staccionata:null, morra:null, punto:null, dado:null, asta:null, idraulico:null, patata:null, cassaforte:null, settemezzo:null, scopa:null, bingocarte:null, xox:null });
   G.ref.child('players').once('value', ps=>{
     const players = ps.val()||{};
     $('hrTitle').textContent = title || 'SI TORNA AL QUIZ!';
@@ -17914,6 +18158,25 @@ function pjRouteInner(m){
           <span class="byline" style="margin:0 8px">prese: ${r.total}</span>
           <span class="pts" style="color:var(--lime)">+${r.points}</span></div>`).join('') : '';
       if (rows.some(r=>r.scopa)) confetti();
+    }
+    else if (m.type==='bcState') {
+      showScreen('scrPjBingoCarte');
+      $('pjBcMsg').textContent = 'IL TABELLONE STA PER ESSERE PREPARATO...';
+      $('pjBcBoard').querySelector('.bcGoldRow').innerHTML=''; $('pjBcBoard').querySelector('.bcGrid').innerHTML='';
+      $('pjBcPrizeReveal').textContent='';
+    }
+    else if (m.type==='bcStart') {
+      showScreen('scrPjBingoCarte');
+      $('pjBcMsg').textContent = 'SI GIRANO LE CARTE!';
+      window._pjBc = { deckType:m.deckType, cards:m.cards, goldenPositions:m.goldenPositions };
+      bcRenderBoardInto($('pjBcBoard'), m.deckType, m.cards, m.goldenPositions, []);
+      $('pjBcPrizeReveal').textContent='';
+    }
+    else if (m.type==='bcReveal') {
+      const d = window._pjBc||{};
+      bcRenderBoardInto($('pjBcBoard'), d.deckType, d.cards, d.goldenPositions, m.revealedIdxs);
+      $('pjBcPrizeReveal').textContent = m.prizeMsg||'';
+      if (m.prizeMsg) confetti();
     }
     else if (m.type==='xoxActive') {
       showScreen('scrPjXox');
