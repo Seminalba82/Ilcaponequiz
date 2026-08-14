@@ -1589,7 +1589,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.12</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.13</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -2833,7 +2833,7 @@ body.suspense-on #pfRank{ display:none !important; }
 
 <!-- ==================== HOST: CENERENTOLA ==================== -->
 <div class="screen" id="scrCenerentola">
-  <div class="brand"><div class="t1" style="font-size:clamp(20px,3.6vw,36px)">👠 CENERENTOLA</div></div>
+  <div class="brand"><div class="t1" style="font-size:clamp(20px,3.6vw,36px)">👠 CENERENTOLA DE NOI ARTRI</div></div>
   <div class="panel mt" style="max-width:480px" id="cnrSetup">
     <div class="label">Montepremi (punti a chi trova la scarpetta)</div>
     <select id="cnrPoints"></select>
@@ -2855,7 +2855,7 @@ body.suspense-on #pfRank{ display:none !important; }
 
 <!-- ==================== PROIETTORE: CENERENTOLA ==================== -->
 <div class="screen" id="scrPjCenerentola">
-  <div class="brand"><div class="t1" style="font-size:clamp(26px,4vw,48px)">👠 CENERENTOLA</div></div>
+  <div class="brand"><div class="t1" style="font-size:clamp(26px,4vw,48px)">👠 CENERENTOLA DE NOI ARTRI</div></div>
   <div class="timerWrap" style="max-width:420px"><div class="timerBar" id="pjCnrTimerBar"></div></div>
   <div class="miniMsg" id="pjCnrMsg" style="font-size:clamp(18px,3vw,30px)"></div>
   <div class="cnrGrid" id="cnrGridPj" style="max-width:560px"></div>
@@ -5118,7 +5118,7 @@ body.suspense-on #pfRank{ display:none !important; }
    17. 🐎 Pubbliche Offese
    18. 💶 Sei Troppo Fiscale!
    19. 🪙 Testa o Croce
-   20. 👠 Cenerentola
+   20. 👠 Cenerentola de Noi Artri
    21. 📦 Il Gioco dei Pacchi
    22. 🤠 Roulette Russa
    23. 🌾 La Pagliuzza
@@ -5168,7 +5168,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1312; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1313; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -16943,7 +16943,7 @@ const GIOCHI_CATALOGO = [
   {k:'horses', l:'🐎 Pubbliche Offese'},
   {k:'tfiscale', l:'💶 Sei Troppo Fiscale!'},
   {k:'toc', l:'🪙 Testa o Croce'},
-  {k:'cenerentola', l:'👠 Cenerentola'},
+  {k:'cenerentola', l:'👠 Cenerentola de Noi Artri'},
   {k:'pacchi', l:'📦 Il Gioco dei Pacchi'},
   {k:'roulette', l:'🤠 Roulette Russa'},
   {k:'pagliuzza', l:'🌾 La Pagliuzza'},
@@ -17026,7 +17026,7 @@ function modalGamesLuck(){
     gk('wheels', `<button class="btn gameBtn" onclick="openWheels()">🎡 Le Ruote della Fortuna</button>`),
     gk('horses', `<button class="btn mg gameBtn" onclick="openHorses()">🐎 Pubbliche Offese</button>`),
     gk('toc', `<button class="btn cy gameBtn" onclick="openToc()">🪙 Testa o Croce</button>`),
-    gk('cenerentola', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#c9a0ff,var(--viola)); color:#fff; box-shadow:0 7px 0 #5a2a9c,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(157,77,255,.35)" onclick="openCenerentola()">👠 Cenerentola</button>`),
+    gk('cenerentola', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#c9a0ff,var(--viola)); color:#fff; box-shadow:0 7px 0 #5a2a9c,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(157,77,255,.35)" onclick="openCenerentola()">👠 Cenerentola de Noi Artri</button>`),
     gk('pacchi', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#d9ac6e,#8a6428); color:#fff; box-shadow:0 7px 0 #5a3d18,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(138,100,40,.35)" onclick="openPacchi()">📦 Il Gioco dei Pacchi</button>`),
     gk('roulette', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#a85838,#6b3018); color:#ffe9a8; box-shadow:0 7px 0 #3a1a0c,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(107,48,24,.4)" onclick="openRoulette()">🤠 Roulette Russa</button>`),
     gk('pagliuzza', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#8a6428,#5a3d18); color:#ffe9a8; box-shadow:0 7px 0 #2e1e0a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(90,61,24,.4)" onclick="openPagliuzza()">🌾 La Pagliuzza</button>`),
