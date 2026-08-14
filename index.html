@@ -1546,7 +1546,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.06</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.07</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -4096,13 +4096,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrSetteMezzo">
   <div class="brand"><div class="t1" style="font-size:clamp(18px,3.4vw,32px)">🎴 7 E 1/2</div></div>
   <div class="panel mt" style="max-width:460px" id="smSetup">
-    <div class="label">Che mazzo usiamo?</div>
-    <select id="smDeckStyle">
-      <option value="napoletane" selected>🂡 Napoletane</option>
-      <option value="siciliane">🂡 Siciliane</option>
-      <option value="piacentine">🂡 Piacentine</option>
-    </select>
-    <div class="label mt">Puntata minima</div>
+    <div class="label">Puntata minima</div>
     <input type="number" id="smMinBet" value="100" min="10" step="10" style="text-align:center">
     <div class="label mt">Puntata massima</div>
     <input type="number" id="smMaxBet" value="3000" min="10" step="10" style="text-align:center">
@@ -5015,7 +5009,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1306; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1307; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -15713,11 +15707,13 @@ function smBuildShoe(nDecks){
   return smShuffleArr(shoe);
 }
 // pesca una carta dal mazzo condiviso in modo atomico (transazione): se il mazzo è agli sgoccioli
-// lo ricostituisce da solo con altri sei mazzi mescolati insieme, così non si esaurisce mai davvero
+// lo ricostituisce da solo con UN mazzo nuovo mescolato, appena il precedente si esaurisce: usando un
+// solo mazzo alla volta (non più sei insieme) non capitano mai due carte identiche in gioco, finché
+// non serve rimescolare — esattamente come giocando con un vero mazzo unico da 40 carte
 function smDrawCard(gref, cb){
   let drawn = null;
   gref.child('settemezzo/shoe').transaction(shoe=>{
-    if (!shoe || shoe.length===0) shoe = smBuildShoe(6);
+    if (!shoe || shoe.length===0) shoe = smBuildShoe(1);
     shoe = shoe.slice();
     drawn = shoe.pop();
     return shoe;
@@ -15740,29 +15736,29 @@ function openSetteMezzo(){
   showScreen('scrSetteMezzo');
 }
 function smStart(){
-  const deckStyle = $('smDeckStyle').value;
   const minBet = Math.max(10, Math.round(+$('smMinBet').value||100));
   const maxBet = Math.max(minBet, Math.round(+$('smMaxBet').value||3000));
   G.ref.child('players').once('value').then(ps=>{
     const players = ps.val()||{};
     const pids = Object.keys(players);
     if (!pids.length) return alert('Nessun giocatore ancora in partita!');
-    const shoe = smBuildShoe(6);
+    const shoe = smBuildShoe(1);
     const roundId = serverNow();
     const hands = {};
     pids.forEach(pid=>{
+      if (!shoe.length) shoe.push(...smBuildShoe(1)); // più di 40 giocatori in una sola mano: caso raro, ma non deve mai bloccarsi
       const card = shoe.pop();
       hands[pid] = { name: players[pid].name, cards:[card], bet:null, status:'betting', total2x: smCardValue2x(card.rank) };
     });
-    SM = { deckStyle, minBet, maxBet, roundId, resolved:false };
-    G.ref.update({ status:'settemezzo', settemezzo:{ phase:'players', deckStyle, minBet, maxBet, roundId, shoe, hands, dealerHand:null } });
+    SM = { minBet, maxBet, roundId, resolved:false };
+    G.ref.update({ status:'settemezzo', settemezzo:{ phase:'players', minBet, maxBet, roundId, shoe, hands, dealerHand:null } });
     $('smSetup').style.display='none'; $('smLive').style.display='block';
     $('smMsg').textContent = '🎴 OGNUNO PUNTA E GIOCA LA PROPRIA MANO...';
     $('smDealerHandHost').innerHTML=''; $('smDealerTotalHost').textContent='';
     $('smBtnToDealer').style.display=''; $('smBtnToDealer').disabled=true;
     $('smBtnDealerHit').style.display='none'; $('smBtnDealerStand').style.display='none';
     $('smBtnResolve').style.display='none'; $('smBtnAgain').style.display='none';
-    pjSend({type:'smBet', deckStyle});
+    pjSend({type:'smBet'});
     G.ref.child('settemezzo/hands').on('value', s=>{
       const hs = s.val()||{};
       smRenderPlayersLive(hs);
