@@ -190,6 +190,15 @@ body.proj .screen{max-width:none;}
 .smStatusPill.betting{background:rgba(255,201,60,.15); color:var(--gold);}
 .smStatusPill.excluded{background:rgba(255,255,255,.08); color:var(--muted);}
 .smSetteBanner{font-family:'Bungee'; font-size:clamp(20px,4vw,36px); text-align:center; color:var(--lime); text-shadow:0 0 20px rgba(182,255,46,.7); margin-top:10px;}
+/* ===== SCOPA E VINCI — tavolo condiviso, mano personale, carte prese ===== */
+.scpSection{margin-top:16px; text-align:center;}
+.scpSectionLbl{font-family:'Bungee'; font-size:13px; color:var(--muted); letter-spacing:1px; margin-bottom:8px;}
+.scpRow{display:flex; justify-content:center; gap:8px; flex-wrap:wrap;}
+.scpCapturedRow{display:flex; justify-content:center; gap:4px; flex-wrap:wrap; max-width:360px; margin:0 auto;}
+.scpCapturedRow .smCard{width:44px; height:65px;}
+.scpPointsBig{font-family:'Bungee'; font-size:clamp(30px,6vw,48px); text-align:center; margin-top:14px; color:var(--gold); text-shadow:0 0 18px rgba(255,201,60,.5);}
+.scpScopaBanner{font-family:'Bungee'; font-size:clamp(22px,4.4vw,40px); text-align:center; margin-top:12px; color:var(--lime); text-shadow:0 0 22px rgba(182,255,46,.75);}
+.scpWaitMsg{font-family:'Bungee'; font-size:clamp(16px,3vw,24px); text-align:center; margin-top:20px; color:var(--cyan);}
 /* ===== MALEDETTA STACCIONATA — assi di legno che si dipingono di bianco con la voce ===== */
 .stacScene{display:flex; align-items:flex-end; justify-content:center; gap:14px; margin:16px auto; max-width:480px;}
 .stacFence{display:flex; align-items:flex-end; gap:3px; height:170px; flex:1; max-width:340px;
@@ -1550,7 +1559,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.08</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.09</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -4158,6 +4167,61 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="feedback mtb" id="smpResultMsg" style="display:none"></div>
 </div>
 
+<!-- ==================== HOST: SCOPA E VINCI ==================== -->
+<div class="screen" id="scrScopa">
+  <div class="brand"><div class="t1" style="font-size:clamp(18px,3.4vw,32px)">🧹 SCOPA E VINCI</div></div>
+  <div class="panel mt" style="max-width:480px" id="scpSetup">
+    <div class="label">Moltiplicatore dei punti presi</div>
+    <input type="number" id="scopaMultiplier" value="10" min="1" step="1" style="text-align:center">
+    <div class="byline" style="opacity:.7; margin-top:4px">Es. con ×10: chi prende carte per un totale di 25 vince 250 punti.</div>
+    <div class="label mt">Bonus per chi fa scopa (prende tutte le carte)</div>
+    <select id="scopaBonusMode" onchange="scopaModeChanged()">
+      <option value="points" selected>💰 Punti extra</option>
+      <option value="text">📜 Premio scritto da te</option>
+    </select>
+    <div id="scopaBonusPointsBox">
+      <input type="number" id="scopaBonusPoints" value="500" min="0" step="50" style="text-align:center; margin-top:6px">
+    </div>
+    <div id="scopaBonusTextBox" style="display:none">
+      <input type="text" id="scopaBonusText" placeholder="Es. Un giro di shot per tutti!" maxlength="60" style="margin-top:6px">
+    </div>
+    <div class="byline mt" style="opacity:.75">🧹 Ogni giocatore riceve 3 carte contro le stesse 4 carte a terra, uguali per tutti — si gioca secondo le regole classiche della scopa, in automatico: in base alla fortuna del pescato, si prende tanto, poco o niente. Chi svuota il tavolo fa scopa e vince anche il bonus.</div>
+    <button class="btn mg mt" style="width:100%" onclick="scopaStart()">🃏 DISTRIBUISCI LE CARTE!</button>
+  </div>
+  <div id="scpLive" style="display:none; width:100%" class="center">
+    <div class="scpSectionLbl">LE 4 CARTE A TERRA</div>
+    <div class="scpRow" id="scpTableRow"></div>
+    <div class="lead mt" id="scpRanking" style="max-width:520px; width:100%"></div>
+    <button class="btn cy mt" onclick="openScopa()">🔁 Un'altra mano</button>
+  </div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
+</div>
+
+<!-- ==================== PROIETTORE: SCOPA E VINCI ==================== -->
+<div class="screen" id="scrPjScopa">
+  <div class="brand"><div class="t1" style="font-size:clamp(24px,3.6vw,42px)">🧹 SCOPA E VINCI</div></div>
+  <div class="miniMsg" id="pjScopaMsg">OGNUNO RICEVE 3 CARTE CONTRO QUESTE 4 A TERRA...</div>
+  <div class="scpSectionLbl" style="margin-top:14px">LE 4 CARTE A TERRA — UGUALI PER TUTTI</div>
+  <div class="scpRow" id="pjScopaTableRow"></div>
+  <div class="lead mt" id="pjScopaRanking" style="max-width:640px; width:100%"></div>
+</div>
+
+<!-- ==================== PLAYER: SCOPA E VINCI ==================== -->
+<div class="screen" id="scrPlayScopa" style="align-items:center; justify-content:center">
+  <div class="scpSectionLbl">LE 4 CARTE A TERRA</div>
+  <div class="scpRow" id="scpTableRowPl"></div>
+  <div class="scpSectionLbl mt">LE TUE 3 CARTE</div>
+  <div class="scpRow" id="scpHandRowPl"></div>
+  <div class="scpWaitMsg" id="scpRevealMsg" style="display:none">🃏 SI GIOCA...</div>
+  <div class="scpWaitMsg" id="scpWaitMsg" style="display:none"></div>
+  <div class="scpSection" id="scpCapturedWrap">
+    <div class="scpSectionLbl" id="scpCapturedLbl" style="display:none">HAI PRESO</div>
+    <div class="scpCapturedRow" id="scpCapturedRowPl"></div>
+  </div>
+  <div class="scpPointsBig" id="scpPointsPl"></div>
+  <div class="scpScopaBanner" id="scpScopaBannerPl" style="display:none"></div>
+</div>
+
 <!-- ==================== HOST: ROULETTE ==================== -->
 <div class="screen" id="scrCasino">
   <div class="brand"><div class="t1" style="font-size:clamp(20px,3.6vw,36px)">🎰 ROULETTE</div></div>
@@ -4944,7 +5008,7 @@ body.suspense-on #pfRank{ display:none !important; }
 /* ================================================================
    📋 ELENCO MINIGIOCHI — aggiornare questa lista ogni volta che se ne
    aggiunge uno nuovo (serve ad Alberto per la documentazione delle licenze).
-   Ultimo aggiornamento: v13.03 — 47 minigiochi totali.
+   Ultimo aggiornamento: v13.09 — 48 minigiochi totali.
    ================================================================
    1.  🥃 Bussolotti
    2.  🎲 Pari o Dispari
@@ -4993,6 +5057,7 @@ body.suspense-on #pfRank{ display:none !important; }
    45. 🔐 La Cassaforte
    46. 🎴 7 e 1/2
    47. 🪵 Maledetta Staccionata
+   48. 🧹 Scopa e Vinci
 ================================================================ */
 
 /* ================================================================
@@ -5013,7 +5078,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1308; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1309; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -6963,6 +7028,7 @@ function listenGame(){
     else if (g.status==='patata') showPlayerPatata(g);
     else if (g.status==='cassaforte') showPlayerCassaforte(g);
     else if (g.status==='settemezzo') showPlayerSetteMezzo(g);
+    else if (g.status==='scopa') showPlayerScopa(g);
     else if (g.status==='xox') showPlayerXox(g);
     else if (g.status==='timer') {
       const t = g.timer||{};
@@ -9719,6 +9785,41 @@ function smPlayerStand(){
   P.ref.child('settemezzo/hands/'+P.id+'/status').set('sto');
   $('smpActionBox').style.display='none';
   $('smpStatus').style.display='inline-block'; $('smpStatus').className='smStatusPill sto'; $('smpStatus').textContent='STAI';
+}
+/* ================================================================
+   SCOPA E VINCI — telefono
+   Gioco di fortuna: il risultato è già deciso nell'istante in cui arrivano le carte, ma lascio un
+   breve momento di suspense prima di svelare cosa si è riusciti a prendere, per un po' di pathos.
+================================================================ */
+function showPlayerScopa(g){
+  const m = g.scopa||{};
+  showScreen('scrPlayScopa');
+  if (m.phase!=='result') return;
+  const sig = 'res:'+m.roundId;
+  if (P.scopaSig === sig) return; // già mostrato questo risultato, non rifaccio la suspense da capo
+  P.scopaSig = sig;
+  const mine = (m.results||{})[P.id];
+  $('scpTableRowPl').innerHTML = (m.tableCards||[]).map(c=>smCardHTML(c,false)).join('');
+  if (!mine){
+    $('scpWaitMsg').style.display='block'; $('scpWaitMsg').textContent = 'NON ERI IN PARTITA QUANDO SONO STATE DISTRIBUITE LE CARTE...';
+    $('scpHandRowPl').innerHTML=''; $('scpCapturedRowPl').innerHTML=''; $('scpPointsPl').textContent=''; $('scpScopaBannerPl').style.display='none';
+    return;
+  }
+  $('scpWaitMsg').style.display='none';
+  $('scpHandRowPl').innerHTML = mine.hand.map(c=>smCardHTML(c,false)).join('');
+  $('scpCapturedRowPl').innerHTML=''; $('scpCapturedLbl').style.display='none'; $('scpPointsPl').textContent=''; $('scpScopaBannerPl').style.display='none';
+  $('scpRevealMsg').style.display='block'; $('scpRevealMsg').textContent='🃏 SI GIOCA...';
+  setTimeout(()=>{
+    $('scpRevealMsg').style.display='none';
+    $('scpCapturedLbl').style.display = mine.captured.length ? 'block' : 'none';
+    $('scpCapturedRowPl').innerHTML = mine.captured.length ? mine.captured.map(c=>smCardHTML(c,true)).join('') : '';
+    $('scpPointsPl').textContent = mine.total>0 ? '+'+mine.points+' PUNTI' : 'NIENTE DA PRENDERE...';
+    if (mine.scopa){
+      $('scpScopaBannerPl').style.display='block';
+      $('scpScopaBannerPl').textContent = mine.bonusMode==='points' ? `🧹 SCOPA! BONUS +${m.bonusPoints} PUNTI` : `🧹 SCOPA! ${mine.bonusText}`;
+      confetti();
+    }
+  }, 1400);
 }
 /* ================================================================
    XOX — motore condiviso (giocatore contro computer)
@@ -15880,6 +15981,111 @@ function smResolve(){
 }
 
 /* ================================================================
+   SCOPA E VINCI — funzioni condivise (le stesse carte siciliane di 7 e 1/2)
+   Il valore di ogni carta ai fini della cattura è semplicemente il suo numero (1-7, Fante=8,
+   Cavallo=9, Re=10) — le regole classiche della scopa: una carta cattura una singola carta di pari
+   valore sul tavolo (obbligatorio, se esiste), altrimenti la combinazione di più carte che sommate
+   danno lo stesso valore (scelgo quella che cattura più carte, per il gioco più generoso ed emozionante
+   possibile); se nessuna cattura è possibile, la carta resta scoperta sul proprio tavolo personale.
+================================================================ */
+function scopaFindCapture(tableCards, playedValue){
+  const exact = tableCards.filter(c=>c.rank===playedValue);
+  if (exact.length) return [exact[0]];
+  const n = tableCards.length;
+  let best = null;
+  for (let mask=1; mask<(1<<n); mask++){
+    let sum=0; const combo=[];
+    for (let i=0;i<n;i++) if (mask&(1<<i)){ sum+=tableCards[i].rank; combo.push(tableCards[i]); }
+    if (sum===playedValue && (!best || combo.length>best.length)) best = combo;
+  }
+  return best;
+}
+function scopaPlayHand(tableCards, handCards){
+  let table = tableCards.slice();
+  const captured = [];
+  let scopa = false;
+  handCards.forEach(card=>{
+    const capture = scopaFindCapture(table, card.rank);
+    if (capture && capture.length){
+      capture.forEach(cc=>{
+        const idx = table.findIndex(t=>t.suit===cc.suit && t.rank===cc.rank);
+        if (idx>=0) table.splice(idx,1);
+      });
+      captured.push(card, ...capture);
+      if (table.length===0) scopa = true;
+    } else {
+      table.push(card);
+    }
+  });
+  const total = captured.reduce((s,c)=>s+c.rank,0);
+  return { captured, total, scopa };
+}
+
+/* ================================================================
+   SCOPA E VINCI — regia
+   Gioco di fortuna: tutto si decide nell'istante stesso della distribuzione, in base a quali carte
+   capitano in mano contro il tavolo comune — nessuna scelta da parte dei giocatori, solo un tocco
+   per vedere il risultato.
+================================================================ */
+let SCP = {};
+function openScopa(){
+  if (!isGameEnabled('scopa')) return alert('⚠️ Questo minigioco non è compreso nella licenza attiva. Contatta Alberto per sbloccarlo.');
+  if (!G) return alert('Avvia prima una partita!');
+  cancelLiveQuestion(); closeModal();
+  G.ref.update({ status:'scopa', scopa:{ phase:'idle' } });
+  SCP = {};
+  $('scpSetup').style.display='block'; $('scpLive').style.display='none';
+  scopaModeChanged();
+  pjSend({type:'scopaState'});
+  showScreen('scrScopa');
+}
+function scopaModeChanged(){
+  const mode = $('scopaBonusMode').value;
+  $('scopaBonusPointsBox').style.display = mode==='points' ? 'block' : 'none';
+  $('scopaBonusTextBox').style.display = mode==='text' ? 'block' : 'none';
+}
+function scopaStart(){
+  const multiplier = Math.max(1, Math.round(+$('scopaMultiplier').value||10));
+  const bonusMode = $('scopaBonusMode').value;
+  const bonusPoints = Math.max(0, Math.round(+$('scopaBonusPoints').value||0));
+  const bonusText = ($('scopaBonusText').value||'').trim() || 'Premio scopa!';
+  G.ref.child('players').once('value').then(ps=>{
+    const players = ps.val()||{};
+    const pids = Object.keys(players);
+    if (!pids.length) return alert('Nessun giocatore ancora in partita!');
+    let shoe = smBuildShoe(1);
+    const draw = ()=>{ if (!shoe.length) shoe = smBuildShoe(1); return shoe.pop(); };
+    const tableCards = [draw(), draw(), draw(), draw()];
+    const roundId = serverNow();
+    const results = {};
+    pids.forEach(pid=>{
+      const hand = [draw(), draw(), draw()];
+      const play = scopaPlayHand(tableCards, hand);
+      const points = play.total*multiplier + (play.scopa ? (bonusMode==='points'?bonusPoints:0) : 0);
+      results[pid] = { name:players[pid].name, hand, captured:play.captured, total:play.total, scopa:play.scopa,
+        points, bonusMode, bonusText: play.scopa ? bonusText : null };
+    });
+    const scorePromises = Object.entries(results).map(([pid,r])=> applyScoreDelta(pid, r.points));
+    Promise.all(scorePromises).then(()=>{
+      SCP = { multiplier, bonusMode, bonusPoints, bonusText, tableCards, roundId };
+      G.ref.update({ status:'scopa', scopa:{ phase:'result', multiplier, bonusMode, bonusPoints, bonusText, tableCards, roundId, results } });
+      $('scpSetup').style.display='none'; $('scpLive').style.display='block';
+      $('scpTableRow').innerHTML = tableCards.map(c=>smCardHTML(c,false)).join('');
+      scopaRenderRanking(Object.values(results));
+      pjSend({type:'scopaResult', tableCards, results:Object.values(results)});
+      if (Object.values(results).some(r=>r.scopa)) confetti();
+    });
+  });
+}
+function scopaRenderRanking(rows){
+  rows = rows.slice().sort((a,b)=>b.points-a.points);
+  $('scpRanking').innerHTML = rows.length ? rows.map((r,i)=>
+    `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(r.name)} ${r.scopa?'<span style="color:var(--lime)">🧹 SCOPA!</span>':''}
+      <span class="byline" style="margin:0 8px">prese: ${r.total}</span>
+      <span class="pts" style="color:var(--lime)">+${r.points}</span></div>`).join('') : '<div class="byline">Nessun giocatore.</div>';
+}
+
+/* ================================================================
    XOX — regia
 ================================================================ */
 let XOX = {};
@@ -16390,6 +16596,7 @@ const GIOCHI_CATALOGO = [
   {k:'patata', l:'💣 Patata Bollente'},
   {k:'cassaforte', l:'🔐 La Cassaforte'},
   {k:'settemezzo', l:'🎴 7 e 1/2'},
+  {k:'scopa', l:'🧹 Scopa e Vinci'},
   {k:'staccionata', l:'🪵 Maledetta Staccionata'},
   {k:'xox', l:'❌⭕ XOX'}
   // 👉 QUANDO AGGIUNGI UN NUOVO MINIGIOCO: aggiungi qui una riga {k:'chiave', l:'Emoji Nome'},
@@ -16459,6 +16666,7 @@ function modalGamesLuck(){
     gk('casino', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#a3111c,#1a1108); color:#fff; box-shadow:0 7px 0 #3a0508,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(163,17,28,.4)" onclick="openCasino()">🎰 Roulette (Casinò)</button>`),
     gk('merc', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#ff5d7a,#8a0f2e); color:#fff; box-shadow:0 7px 0 #5a0018,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,93,122,.4)" onclick="openMerc()">📣 Mercatista per un Giorno</button>`),
     gk('staccionata', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#8a6339,#5c4023); color:#fff; box-shadow:0 7px 0 #3d2a16,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(138,99,57,.4)" onclick="openStaccionata()">🪵 Maledetta Staccionata</button>`),
+    gk('scopa', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#1a7a3a,#0a3a1a); color:#fff; box-shadow:0 7px 0 #052610,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(26,122,58,.4)" onclick="openScopa()">🧹 Scopa e Vinci</button>`),
     gk('morra', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#7a5cff,#2e0f8a); color:#fff; box-shadow:0 7px 0 #180a5c,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(122,92,255,.4)" onclick="openMorra()">✊✋✌️ Morra Cinese</button>`),
     gk('dado', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#ffe93d,#8a6f0b); color:#2e2400; box-shadow:0 7px 0 #4a3a00,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,233,61,.4)" onclick="openDado()">🎲 Il Dado del Destino</button>`),
     gk('patata', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#ff5d3d,#8a1a0b); color:#fff; box-shadow:0 7px 0 #4a0a00,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,93,61,.4)" onclick="openPatata()">💣 Patata Bollente</button>`)
@@ -17040,7 +17248,7 @@ function backToQuiz(title){
   clearInterval((PATATA||{}).timerInt);
   clearInterval((CSF||{}).timerInt);
   clearInterval((XOX||{}).timerInt);
-  G.ref.update({ status:'pausa', mini:null, dice:null, simon:null, voto:null, timer:null, tombola:null, cards:null, swiss:null, hilo:null, wheels:null, puzzle:null, wordsearch:null, anagram:null, seed:null, grad:null, taptap:null, ruota:null, memo:null, memocoppie:null, horses:null, tfiscale:null, toc:null, cenerentola:null, pacchi:null, roulette:null, pagliuzza:null, supertris:null, rdc:null, mastermind:null, bomba:null, shapes:null, finddiff:null, maggioranza:null, goldenticket:null, casino:null, tamburini:null, mercatista:null, staccionata:null, morra:null, punto:null, dado:null, asta:null, idraulico:null, patata:null, cassaforte:null, settemezzo:null, xox:null });
+  G.ref.update({ status:'pausa', mini:null, dice:null, simon:null, voto:null, timer:null, tombola:null, cards:null, swiss:null, hilo:null, wheels:null, puzzle:null, wordsearch:null, anagram:null, seed:null, grad:null, taptap:null, ruota:null, memo:null, memocoppie:null, horses:null, tfiscale:null, toc:null, cenerentola:null, pacchi:null, roulette:null, pagliuzza:null, supertris:null, rdc:null, mastermind:null, bomba:null, shapes:null, finddiff:null, maggioranza:null, goldenticket:null, casino:null, tamburini:null, mercatista:null, staccionata:null, morra:null, punto:null, dado:null, asta:null, idraulico:null, patata:null, cassaforte:null, settemezzo:null, scopa:null, xox:null });
   G.ref.child('players').once('value', ps=>{
     const players = ps.val()||{};
     $('hrTitle').textContent = title || 'SI TORNA AL QUIZ!';
@@ -17568,6 +17776,22 @@ function pjRouteInner(m){
       const rows = Object.values(m.results||{});
       $('smResultsPj').innerHTML = rows.map(r=>`<div class="leadRow"><span class="grow">${esc(r.name)}</span><span class="pts" style="color:${r.won?'var(--lime)':'var(--red)'}">${r.won?'+':'-'}${r.bet}</span></div>`).join('');
       confetti();
+    }
+    else if (m.type==='scopaState') {
+      showScreen('scrPjScopa');
+      $('pjScopaMsg').textContent = 'OGNUNO RICEVE 3 CARTE CONTRO QUESTE 4 A TERRA...';
+      $('pjScopaTableRow').innerHTML=''; $('pjScopaRanking').innerHTML='';
+    }
+    else if (m.type==='scopaResult') {
+      showScreen('scrPjScopa');
+      $('pjScopaMsg').textContent = 'QUESTE ERANO LE CARTE A TERRA — ECCO CHI HA VINTO!';
+      $('pjScopaTableRow').innerHTML = (m.tableCards||[]).map(c=>smCardHTML(c,false)).join('');
+      const rows = (m.results||[]).slice().sort((a,b)=>b.points-a.points);
+      $('pjScopaRanking').innerHTML = rows.length ? rows.map((r,i)=>
+        `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(r.name)} ${r.scopa?'<span style="color:var(--lime)">🧹 SCOPA!</span>':''}
+          <span class="byline" style="margin:0 8px">prese: ${r.total}</span>
+          <span class="pts" style="color:var(--lime)">+${r.points}</span></div>`).join('') : '';
+      if (rows.some(r=>r.scopa)) confetti();
     }
     else if (m.type==='xoxActive') {
       showScreen('scrPjXox');
