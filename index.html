@@ -1589,7 +1589,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.15</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.16</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -3802,10 +3802,9 @@ body.suspense-on #pfRank{ display:none !important; }
 
 <!-- ==================== PROIETTORE: IL DADO DEL DESTINO ==================== -->
 <div class="screen" id="scrPjDado">
-  <div class="brand"><div class="t1" style="font-size:clamp(24px,3.6vw,42px)">🎲 IL DADO DEL DESTINO</div></div>
-  <div class="miniMsg" id="pjDadoMsg">TIRATE IL DADO DAL TELEFONO!</div>
-  <div class="dadoBoard" id="dadoBoardPj" style="max-width:800px"><div class="dadoGrid"></div><div class="dadoDotsLayer"></div></div>
-  <div class="lead mt" id="pjDadoRanking" style="max-width:600px; width:100%"></div>
+  <div class="brand" style="margin-bottom:4px"><div class="t1" style="font-size:clamp(13px,1.8vw,24px)">🎲 IL DADO DEL DESTINO — <span id="pjDadoMsg" style="color:var(--cyan)">TIRATE IL DADO DAL TELEFONO!</span></div></div>
+  <div class="dadoBoard" id="dadoBoardPj" style="max-width:min(94vw,1300px)"><div class="dadoGrid"></div><div class="dadoDotsLayer"></div></div>
+  <div class="lead mt" id="pjDadoRanking" style="max-width:700px; width:100%"></div>
 </div>
 
 <!-- ==================== PLAYER: IL DADO DEL DESTINO ==================== -->
@@ -5165,7 +5164,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1315; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1316; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -15266,8 +15265,9 @@ function dadoRebuildPrizeInputs(){
     <div class="tmbPrizeRow"><span class="medal">${m}</span>
       <input type="number" id="dadoPz${k}" value="${DADO_PRIZE_DEFAULTS[k]}" min="0" style="width:110px; text-align:center"></div>`).join('');
 }
-function dadoRenderRanking(el, rows, notches, live){
-  el.innerHTML = rows.map((r,i)=>{
+function dadoRenderRanking(el, rows, notches, live, top3only){
+  const shown = top3only ? rows.slice(0,3) : rows;
+  el.innerHTML = shown.map((r,i)=>{
     const medal = i<3 ? ['🥇','🥈','🥉'][i] : (i+1)+'°';
     const status = r.finished ? '🏁 arrivato' : ((r.rollsLeft!=null && r.rollsLeft<=0) ? 'tiri finiti' : `tacca ${r.pos}/${notches}`);
     const ptsLabel = (!live && r.pts!=null) ? `<span class="pts" style="color:${r.pts>0?'var(--lime)':'var(--muted)'}">${r.pts>0?'+':''}${r.pts}</span>` : '';
@@ -18026,17 +18026,17 @@ function pjRouteInner(m){
     }
     else if (m.type==='dadoStart') {
       showScreen('scrPjDado');
-      $('pjDadoMsg').textContent = '🎲 TIRATE IL DADO DAL TELEFONO!';
+      $('pjDadoMsg').textContent = 'TIRATE IL DADO DAL TELEFONO!';
       dadoRenderBoard($('dadoBoardPj'), m.racers||[], m.notches);
-      dadoRenderRanking($('pjDadoRanking'), m.racers||[], m.notches, true);
+      dadoRenderRanking($('pjDadoRanking'), m.racers||[], m.notches, true, true);
       window._pjDadoNotches = m.notches;
     }
     else if (m.type==='dadoUpdate') {
       dadoRenderBoard($('dadoBoardPj'), m.rows||[], window._pjDadoNotches);
-      dadoRenderRanking($('pjDadoRanking'), m.rows||[], window._pjDadoNotches, true);
+      dadoRenderRanking($('pjDadoRanking'), m.rows||[], window._pjDadoNotches, true, true);
     }
     else if (m.type==='dadoEnd') {
-      dadoRenderRanking($('pjDadoRanking'), m.ranking||[], window._pjDadoNotches, false);
+      dadoRenderRanking($('pjDadoRanking'), m.ranking||[], window._pjDadoNotches, false, true);
       $('pjDadoMsg').textContent = (m.ranking&&m.ranking.length) ? `🏆 ${m.ranking[0].name} È IL PRIMO A DESTINAZIONE!` : 'NESSUNO HA GIOCATO!';
       if (m.ranking && m.ranking.length) confetti();
     }
