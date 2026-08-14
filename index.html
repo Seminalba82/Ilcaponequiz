@@ -1589,7 +1589,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.11</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.12</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -4248,6 +4248,7 @@ body.suspense-on #pfRank{ display:none !important; }
     <div class="scpSectionLbl mt" id="scpSectionLblHand">LE TUE CARTE — TOCCA QUELLA DA GIOCARE</div>
     <div class="scpRow" id="scpHandRowPl"></div>
     <button class="btn mg mt" id="scpBtnPlay" onclick="scopaPlayCard()" style="width:100%; max-width:320px" disabled>🃏 GIOCA QUESTA CARTA</button>
+    <button class="btn ghost mt" onclick="scopaEndTurn()" style="width:100%; max-width:320px" data-tip="Se non c'è più niente da prendere (es. dopo una scopa), premi qui invece di continuare a giocare le carte rimaste">🏁 FINE GIOCATA</button>
   </div>
   <div class="scpWaitMsg" id="scpWaitMsg" style="display:none"></div>
   <div class="scpSection" id="scpCapturedWrap">
@@ -5167,7 +5168,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1311; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1312; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -9977,6 +9978,18 @@ function scopaCardTap(area, idx){
   if (area==='hand') SCPPLAY.handIdx = (SCPPLAY.handIdx===idx) ? null : idx;
   else { if (SCPPLAY.tableIdxs.has(idx)) SCPPLAY.tableIdxs.delete(idx); else SCPPLAY.tableIdxs.add(idx); }
   scopaRenderPlayScreen();
+}
+// permette al giocatore di fermarsi quando vuole, senza dover calare per forza tutte e 5 le carte:
+// utile soprattutto dopo una scopa, quando il tavolo è vuoto e non c'è più nulla da prendere
+function scopaEndTurn(){
+  const st = P.scopaState; if (!st) return;
+  const cardsPlayed = 5-st.hand.length;
+  SCPPLAY = { handIdx:null, tableIdxs:new Set() };
+  P.ref.child('scopa/hands/'+P.id).update({ hand:st.hand, table:st.table, captured:st.captured, cardsPlayed, scopa:st.scopa, status:'done' });
+  $('scpPlayBox').style.display='none';
+  $('scpWaitMsg').style.display='block'; $('scpWaitMsg').textContent = '✅ HAI FINITO! ASPETTA CHE FINISCANO GLI ALTRI...';
+  scopaRenderCaptured();
+  if (st.scopa) confetti();
 }
 function scopaPlayCard(){
   const st = P.scopaState; if (!st || SCPPLAY.handIdx==null) return;
