@@ -199,6 +199,14 @@ body.proj .screen{max-width:none;}
 .scpPointsBig{font-family:'Bungee'; font-size:clamp(30px,6vw,48px); text-align:center; margin-top:14px; color:var(--gold); text-shadow:0 0 18px rgba(255,201,60,.5);}
 .scpScopaBanner{font-family:'Bungee'; font-size:clamp(22px,4.4vw,40px); text-align:center; margin-top:12px; color:var(--lime); text-shadow:0 0 22px rgba(182,255,46,.75);}
 .scpWaitMsg{font-family:'Bungee'; font-size:clamp(16px,3vw,24px); text-align:center; margin-top:20px; color:var(--cyan);}
+.smCard.tappable{cursor:pointer; transition:transform .15s, box-shadow .15s; -webkit-tap-highlight-color:transparent;}
+.smCard.tappable:active{transform:scale(.93);}
+.smCard.selected{outline:4px solid var(--lime); outline-offset:2px; transform:translateY(-10px); box-shadow:0 12px 20px rgba(0,0,0,.6), 0 0 18px rgba(182,255,46,.65);}
+.scpSumHint{font-family:'Bungee'; font-size:14px; text-align:center; margin-top:6px; min-height:20px;}
+.scpSumHint.ok{color:var(--lime);} .scpSumHint.bad{color:var(--red);}
+.scpProgressLbl{font-family:'Bungee'; font-size:13px; text-align:center; color:var(--muted); margin-top:2px;}
+@keyframes scpShake{0%,100%{transform:translateX(0);} 25%{transform:translateX(-8px);} 75%{transform:translateX(8px);}}
+.scpShake{animation:scpShake .35s;}
 /* ===== MALEDETTA STACCIONATA — assi di legno che si dipingono di bianco con la voce ===== */
 .stacScene{display:flex; align-items:flex-end; justify-content:center; gap:14px; margin:16px auto; max-width:480px;}
 .stacFence{display:flex; align-items:flex-end; gap:3px; height:170px; flex:1; max-width:340px;
@@ -1559,7 +1567,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.09</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.10</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -4185,13 +4193,15 @@ body.suspense-on #pfRank{ display:none !important; }
     <div id="scopaBonusTextBox" style="display:none">
       <input type="text" id="scopaBonusText" placeholder="Es. Un giro di shot per tutti!" maxlength="60" style="margin-top:6px">
     </div>
-    <div class="byline mt" style="opacity:.75">🧹 Ogni giocatore riceve 3 carte contro le stesse 4 carte a terra, uguali per tutti — si gioca secondo le regole classiche della scopa, in automatico: in base alla fortuna del pescato, si prende tanto, poco o niente. Chi svuota il tavolo fa scopa e vince anche il bonus.</div>
+    <div class="byline mt" style="opacity:.75">🧹 Ogni giocatore riceve 5 carte contro le stesse 4 carte a terra, uguali per tutti — poi gioca in autonomia sul proprio telefono, scegliendo lui stesso quale carta calare e quali carte prendere da terra, secondo le regole classiche della scopa. Chi svuota il tavolo fa scopa e vince anche il bonus.</div>
     <button class="btn mg mt" style="width:100%" onclick="scopaStart()">🃏 DISTRIBUISCI LE CARTE!</button>
   </div>
   <div id="scpLive" style="display:none; width:100%" class="center">
     <div class="scpSectionLbl">LE 4 CARTE A TERRA</div>
     <div class="scpRow" id="scpTableRow"></div>
+    <div class="scpSectionLbl mt" id="scpRankingLbl">CHI STA GIOCANDO</div>
     <div class="lead mt" id="scpRanking" style="max-width:520px; width:100%"></div>
+    <button class="btn mg mt" id="scpBtnResolve" onclick="scopaResolve()">🏁 CALCOLA I PUNTI</button>
     <button class="btn cy mt" onclick="openScopa()">🔁 Un'altra mano</button>
   </div>
   <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
@@ -4200,7 +4210,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <!-- ==================== PROIETTORE: SCOPA E VINCI ==================== -->
 <div class="screen" id="scrPjScopa">
   <div class="brand"><div class="t1" style="font-size:clamp(24px,3.6vw,42px)">🧹 SCOPA E VINCI</div></div>
-  <div class="miniMsg" id="pjScopaMsg">OGNUNO RICEVE 3 CARTE CONTRO QUESTE 4 A TERRA...</div>
+  <div class="miniMsg" id="pjScopaMsg">OGNUNO RICEVE 5 CARTE CONTRO QUESTE 4 A TERRA...</div>
   <div class="scpSectionLbl" style="margin-top:14px">LE 4 CARTE A TERRA — UGUALI PER TUTTI</div>
   <div class="scpRow" id="pjScopaTableRow"></div>
   <div class="lead mt" id="pjScopaRanking" style="max-width:640px; width:100%"></div>
@@ -4208,11 +4218,15 @@ body.suspense-on #pfRank{ display:none !important; }
 
 <!-- ==================== PLAYER: SCOPA E VINCI ==================== -->
 <div class="screen" id="scrPlayScopa" style="align-items:center; justify-content:center">
-  <div class="scpSectionLbl">LE 4 CARTE A TERRA</div>
-  <div class="scpRow" id="scpTableRowPl"></div>
-  <div class="scpSectionLbl mt">LE TUE 3 CARTE</div>
-  <div class="scpRow" id="scpHandRowPl"></div>
-  <div class="scpWaitMsg" id="scpRevealMsg" style="display:none">🃏 SI GIOCA...</div>
+  <div id="scpPlayBox" style="width:100%">
+    <div class="scpProgressLbl" id="scpProgressLbl"></div>
+    <div class="scpSectionLbl" id="scpSectionLblTable">SUL TAVOLO — TOCCA COSA VUOI PRENDERE</div>
+    <div class="scpRow" id="scpTableRowPl"></div>
+    <div class="scpSumHint" id="scpSumHint"></div>
+    <div class="scpSectionLbl mt" id="scpSectionLblHand">LE TUE CARTE — TOCCA QUELLA DA GIOCARE</div>
+    <div class="scpRow" id="scpHandRowPl"></div>
+    <button class="btn mg mt" id="scpBtnPlay" onclick="scopaPlayCard()" style="width:100%; max-width:320px" disabled>🃏 GIOCA QUESTA CARTA</button>
+  </div>
   <div class="scpWaitMsg" id="scpWaitMsg" style="display:none"></div>
   <div class="scpSection" id="scpCapturedWrap">
     <div class="scpSectionLbl" id="scpCapturedLbl" style="display:none">HAI PRESO</div>
@@ -5078,7 +5092,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1309; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1310; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -9018,9 +9032,12 @@ function showPlayerStaccionata(g){
       $('stacFbMsg').style.display='none'; $('stacFbPts').style.display='none';
       stacStartMic(pct=>{
         if (pct==null){ $('stacNoMic').style.display='block'; return; }
-        stacUpdateFence($('stacpFence'), pct);
         $('stacpPct').textContent = pct+'%';
         if (pct > P.stacPeak){ P.stacPeak = pct; $('stacpPeak').textContent = 'Record: '+pct+'%'; }
+        // dipingo in base al PICCO raggiunto finora, non al volume di questo istante: altrimenti, appena
+        // la voce cala anche solo un po' (fisiologico, nessuno grida sempre alla stessa intensità), le
+        // assi già dipinte tornerebbero indietro al colore del legno — cosa che non deve mai succedere
+        stacUpdateFence($('stacpFence'), P.stacPeak);
       });
       clearInterval(P.stacInt);
       P.stacInt = setInterval(()=>{
@@ -9791,35 +9808,129 @@ function smPlayerStand(){
    Gioco di fortuna: il risultato è già deciso nell'istante in cui arrivano le carte, ma lascio un
    breve momento di suspense prima di svelare cosa si è riusciti a prendere, per un po' di pathos.
 ================================================================ */
+/* ================================================================
+   SCOPA E VINCI — telefono (interattivo: il giocatore sceglie da solo cosa giocare e cosa prendere)
+================================================================ */
+let SCPPLAY = { handIdx:null, tableIdxs:new Set() };
+function scopaCardHTML(card, area, idx, extraClass){
+  const src = SM_CARD_IMG[card.suit+'_'+card.rank] || '';
+  return `<div class="smCard tappable ${extraClass||''}" onclick="scopaCardTap('${area}',${idx})">
+    <img src="${src}" alt="${smRankLabel(card.rank)} di ${card.suit}" draggable="false"></div>`;
+}
 function showPlayerScopa(g){
   const m = g.scopa||{};
   showScreen('scrPlayScopa');
-  if (m.phase!=='result') return;
-  const sig = 'res:'+m.roundId;
-  if (P.scopaSig === sig) return; // già mostrato questo risultato, non rifaccio la suspense da capo
-  P.scopaSig = sig;
-  const mine = (m.results||{})[P.id];
-  $('scpTableRowPl').innerHTML = (m.tableCards||[]).map(c=>smCardHTML(c,false)).join('');
-  if (!mine){
-    $('scpWaitMsg').style.display='block'; $('scpWaitMsg').textContent = 'NON ERI IN PARTITA QUANDO SONO STATE DISTRIBUITE LE CARTE...';
-    $('scpHandRowPl').innerHTML=''; $('scpCapturedRowPl').innerHTML=''; $('scpPointsPl').textContent=''; $('scpScopaBannerPl').style.display='none';
-    return;
-  }
-  $('scpWaitMsg').style.display='none';
-  $('scpHandRowPl').innerHTML = mine.hand.map(c=>smCardHTML(c,false)).join('');
-  $('scpCapturedRowPl').innerHTML=''; $('scpCapturedLbl').style.display='none'; $('scpPointsPl').textContent=''; $('scpScopaBannerPl').style.display='none';
-  $('scpRevealMsg').style.display='block'; $('scpRevealMsg').textContent='🃏 SI GIOCA...';
-  setTimeout(()=>{
-    $('scpRevealMsg').style.display='none';
+  if (m.phase==='play'){
+    const h = (m.hands||{})[P.id];
+    if (!h) return; // non ero ancora in partita quando è iniziata la mano
+    const sig = 'play:'+m.roundId;
+    if (P.scopaSig !== sig){
+      P.scopaSig = sig;
+      P.scopaState = { hand:(h.hand||[]).slice(), table:(h.table||[]).slice(), captured:(h.captured||[]).slice(), scopa:!!h.scopa };
+      SCPPLAY = { handIdx:null, tableIdxs:new Set() };
+    }
+    if (h.status==='done'){
+      $('scpPlayBox').style.display='none';
+      $('scpWaitMsg').style.display='block'; $('scpWaitMsg').textContent = '✅ HAI FINITO! ASPETTA CHE FINISCANO GLI ALTRI...';
+      scopaRenderCaptured();
+    } else {
+      $('scpWaitMsg').style.display='none'; $('scpPlayBox').style.display='block';
+      scopaRenderPlayScreen();
+    }
+  } else if (m.phase==='result'){
+    $('scpPlayBox').style.display='none'; $('scpWaitMsg').style.display='none';
+    const sig = 'res:'+m.roundId;
+    if (P.scopaResSig === sig) return;
+    P.scopaResSig = sig;
+    const mine = (m.results||{})[P.id];
+    $('scpTableRowPl').innerHTML=''; $('scpHandRowPl').innerHTML='';
+    $('scpSectionLblHand').style.display='none'; $('scpSectionLblTable').style.display='none';
+    if (!mine){
+      $('scpCapturedLbl').style.display='none'; $('scpCapturedRowPl').innerHTML='';
+      $('scpPointsPl').textContent='NON ERI IN PARTITA...'; $('scpScopaBannerPl').style.display='none';
+      return;
+    }
     $('scpCapturedLbl').style.display = mine.captured.length ? 'block' : 'none';
+    $('scpCapturedLbl').textContent = 'HAI PRESO IN TOTALE';
     $('scpCapturedRowPl').innerHTML = mine.captured.length ? mine.captured.map(c=>smCardHTML(c,true)).join('') : '';
-    $('scpPointsPl').textContent = mine.total>0 ? '+'+mine.points+' PUNTI' : 'NIENTE DA PRENDERE...';
+    $('scpPointsPl').textContent = mine.total>0 ? '+'+mine.points+' PUNTI' : 'NON HAI PRESO NULLA...';
     if (mine.scopa){
       $('scpScopaBannerPl').style.display='block';
       $('scpScopaBannerPl').textContent = mine.bonusMode==='points' ? `🧹 SCOPA! BONUS +${m.bonusPoints} PUNTI` : `🧹 SCOPA! ${mine.bonusText}`;
       confetti();
+    } else $('scpScopaBannerPl').style.display='none';
+  }
+}
+function scopaRenderCaptured(){
+  const st = P.scopaState; if (!st) return;
+  $('scpCapturedLbl').style.display = st.captured.length ? 'block' : 'none';
+  $('scpCapturedLbl').textContent = 'HAI PRESO FINORA';
+  $('scpCapturedRowPl').innerHTML = st.captured.length ? st.captured.map(c=>smCardHTML(c,true)).join('') : '';
+}
+function scopaRenderPlayScreen(){
+  const st = P.scopaState; if (!st) return;
+  $('scpSectionLblTable').style.display='block';
+  $('scpSectionLblHand').style.display='block';
+  $('scpProgressLbl').textContent = `Carta ${5-st.hand.length+1} di 5`;
+  $('scpTableRowPl').innerHTML = st.table.map((c,i)=>
+    scopaCardHTML(c, 'table', i, SCPPLAY.tableIdxs.has(i)?'selected':'')).join('') || '<div class="byline">Tavolo vuoto!</div>';
+  $('scpHandRowPl').innerHTML = st.hand.map((c,i)=>
+    scopaCardHTML(c, 'hand', i, SCPPLAY.handIdx===i?'selected':'')).join('');
+  scopaRenderCaptured();
+  const sumEl = $('scpSumHint');
+  if (SCPPLAY.handIdx==null){
+    sumEl.textContent = 'Tocca una tua carta da giocare'; sumEl.className='scpSumHint';
+    $('scpBtnPlay').disabled = true;
+  } else {
+    const playedVal = st.hand[SCPPLAY.handIdx].rank;
+    const chosen = [...SCPPLAY.tableIdxs].map(i=>st.table[i]);
+    const sum = scopaCaptureSum(chosen);
+    if (chosen.length===0){
+      sumEl.textContent = 'Nessuna carta scelta: la giochi scoperta sul tavolo'; sumEl.className='scpSumHint';
+      $('scpBtnPlay').disabled = false;
+    } else if (sum===playedVal){
+      sumEl.textContent = `✅ ${sum} = ${playedVal}: presa valida!`; sumEl.className='scpSumHint ok';
+      $('scpBtnPlay').disabled = false;
+    } else {
+      sumEl.textContent = `${sum} ≠ ${playedVal}: somma sbagliata`; sumEl.className='scpSumHint bad';
+      $('scpBtnPlay').disabled = true;
     }
-  }, 1400);
+  }
+}
+function scopaCardTap(area, idx){
+  if (area==='hand') SCPPLAY.handIdx = (SCPPLAY.handIdx===idx) ? null : idx;
+  else { if (SCPPLAY.tableIdxs.has(idx)) SCPPLAY.tableIdxs.delete(idx); else SCPPLAY.tableIdxs.add(idx); }
+  scopaRenderPlayScreen();
+}
+function scopaPlayCard(){
+  const st = P.scopaState; if (!st || SCPPLAY.handIdx==null) return;
+  const played = st.hand[SCPPLAY.handIdx];
+  const tableIdxs = [...SCPPLAY.tableIdxs];
+  const chosen = tableIdxs.map(i=>st.table[i]);
+  const sum = scopaCaptureSum(chosen);
+  if (chosen.length>0 && sum!==played.rank){
+    const box = $('scpPlayBox'); box.classList.remove('scpShake'); void box.offsetWidth; box.classList.add('scpShake');
+    return;
+  }
+  tableIdxs.sort((a,b)=>b-a).forEach(i=> st.table.splice(i,1));
+  if (chosen.length>0){ st.captured.push(played, ...chosen); if (st.table.length===0) st.scopa=true; }
+  else st.table.push(played);
+  st.hand.splice(SCPPLAY.handIdx,1);
+  SCPPLAY = { handIdx:null, tableIdxs:new Set() };
+  const cardsPlayed = 5-st.hand.length;
+  const done = st.hand.length===0;
+  const update = { hand:st.hand, table:st.table, captured:st.captured, cardsPlayed, scopa:st.scopa };
+  if (done) update.status='done';
+  P.ref.child('scopa/hands/'+P.id).update(update);
+  if (done){
+    $('scpPlayBox').style.display='none';
+    $('scpWaitMsg').style.display='block'; $('scpWaitMsg').textContent = '✅ HAI FINITO! ASPETTA CHE FINISCANO GLI ALTRI...';
+    scopaRenderCaptured();
+    if (st.scopa) confetti();
+  } else {
+    scopaRenderPlayScreen();
+    if (st.scopa && chosen.length>0){ /* scopa raggiunta ma restano ancora carte da giocare: continuo comunque */ }
+  }
 }
 /* ================================================================
    XOX — motore condiviso (giocatore contro computer)
@@ -15983,55 +16094,24 @@ function smResolve(){
 /* ================================================================
    SCOPA E VINCI — funzioni condivise (le stesse carte siciliane di 7 e 1/2)
    Il valore di ogni carta ai fini della cattura è semplicemente il suo numero (1-7, Fante=8,
-   Cavallo=9, Re=10) — le regole classiche della scopa: una carta cattura una singola carta di pari
-   valore sul tavolo (obbligatorio, se esiste), altrimenti la combinazione di più carte che sommate
-   danno lo stesso valore (scelgo quella che cattura più carte, per il gioco più generoso ed emozionante
-   possibile); se nessuna cattura è possibile, la carta resta scoperta sul proprio tavolo personale.
+   Cavallo=9, Re=10). A differenza della prima versione, ora è il GIOCATORE a scegliere quale
+   carta giocare e quali carte prendere da terra — il sistema si limita a controllare che la somma
+   delle carte scelte sul tavolo sia esattamente uguale al valore della carta giocata.
 ================================================================ */
-function scopaFindCapture(tableCards, playedValue){
-  const exact = tableCards.filter(c=>c.rank===playedValue);
-  if (exact.length) return [exact[0]];
-  const n = tableCards.length;
-  let best = null;
-  for (let mask=1; mask<(1<<n); mask++){
-    let sum=0; const combo=[];
-    for (let i=0;i<n;i++) if (mask&(1<<i)){ sum+=tableCards[i].rank; combo.push(tableCards[i]); }
-    if (sum===playedValue && (!best || combo.length>best.length)) best = combo;
-  }
-  return best;
-}
-function scopaPlayHand(tableCards, handCards){
-  let table = tableCards.slice();
-  const captured = [];
-  let scopa = false;
-  handCards.forEach(card=>{
-    const capture = scopaFindCapture(table, card.rank);
-    if (capture && capture.length){
-      capture.forEach(cc=>{
-        const idx = table.findIndex(t=>t.suit===cc.suit && t.rank===cc.rank);
-        if (idx>=0) table.splice(idx,1);
-      });
-      captured.push(card, ...capture);
-      if (table.length===0) scopa = true;
-    } else {
-      table.push(card);
-    }
-  });
-  const total = captured.reduce((s,c)=>s+c.rank,0);
-  return { captured, total, scopa };
-}
+function scopaCaptureSum(cards){ return cards.reduce((s,c)=>s+c.rank,0); }
 
 /* ================================================================
    SCOPA E VINCI — regia
-   Gioco di fortuna: tutto si decide nell'istante stesso della distribuzione, in base a quali carte
-   capitano in mano contro il tavolo comune — nessuna scelta da parte dei giocatori, solo un tocco
-   per vedere il risultato.
+   Ogni giocatore riceve 5 carte contro le stesse 4 carte a terra per tutti, e gioca in autonomia
+   sul proprio telefono scegliendo lui stesso cosa prendere — la regia vede solo l'avanzamento e
+   può chiudere la mano quando vuole (anche a metà, se qualcuno resta indietro o si disconnette).
 ================================================================ */
 let SCP = {};
 function openScopa(){
   if (!isGameEnabled('scopa')) return alert('⚠️ Questo minigioco non è compreso nella licenza attiva. Contatta Alberto per sbloccarlo.');
   if (!G) return alert('Avvia prima una partita!');
   cancelLiveQuestion(); closeModal();
+  G.ref.child('scopa/hands').off();
   G.ref.update({ status:'scopa', scopa:{ phase:'idle' } });
   SCP = {};
   $('scpSetup').style.display='block'; $('scpLive').style.display='none';
@@ -16057,22 +16137,57 @@ function scopaStart(){
     const draw = ()=>{ if (!shoe.length) shoe = smBuildShoe(1); return shoe.pop(); };
     const tableCards = [draw(), draw(), draw(), draw()];
     const roundId = serverNow();
-    const results = {};
+    const hands = {};
     pids.forEach(pid=>{
-      const hand = [draw(), draw(), draw()];
-      const play = scopaPlayHand(tableCards, hand);
-      const points = play.total*multiplier + (play.scopa ? (bonusMode==='points'?bonusPoints:0) : 0);
-      results[pid] = { name:players[pid].name, hand, captured:play.captured, total:play.total, scopa:play.scopa,
-        points, bonusMode, bonusText: play.scopa ? bonusText : null };
+      const hand = [draw(), draw(), draw(), draw(), draw()]; // 5 carte, per dare una vera possibilità di scopa
+      hands[pid] = { name: players[pid].name, hand, table: tableCards.slice(), captured:[], cardsPlayed:0, status:'playing', scopa:false };
     });
-    const scorePromises = Object.entries(results).map(([pid,r])=> applyScoreDelta(pid, r.points));
+    SCP = { multiplier, bonusMode, bonusPoints, bonusText, tableCards, roundId, resolved:false };
+    G.ref.update({ status:'scopa', scopa:{ phase:'play', multiplier, bonusMode, bonusPoints, bonusText, tableCards, roundId, hands } });
+    $('scpSetup').style.display='none'; $('scpLive').style.display='block';
+    $('scpTableRow').innerHTML = tableCards.map(c=>smCardHTML(c,false)).join('');
+    $('scpBtnResolve').style.display='';
+    $('scpRankingLbl').textContent = 'CHI STA GIOCANDO';
+    pjSend({type:'scopaBet', tableCards});
+    G.ref.child('scopa/hands').on('value', s=> scopaRenderPlayersLive(s.val()||{}));
+  });
+}
+function scopaRenderPlayersLive(hands){
+  const rows = Object.values(hands);
+  $('scpRanking').innerHTML = rows.length ? rows.map(h=>{
+    const lbl = h.status==='done' ? 'ha finito' : `sta giocando (${h.cardsPlayed||0}/5)`;
+    return `<div class="leadRow"><span class="grow">${esc(h.name)}</span> ${h.scopa?'<span style="color:var(--lime)">🧹</span>':''}
+      <span class="smStatusPill ${h.status==='done'?'sto':'playing'}">${lbl}</span></div>`;
+  }).join('') : '';
+  const total = rows.length, doneCount = rows.filter(h=>h.status==='done').length;
+  $('scpBtnResolve').textContent = (total && doneCount===total) ? '🏁 CALCOLA I PUNTI' : `🏁 CALCOLA I PUNTI (${doneCount}/${total} pronti)`;
+}
+function scopaResolve(){
+  if (SCP.resolved) return;
+  G.ref.child('scopa/hands').once('value').then(s=>{
+    const hands = s.val()||{};
+    const notDone = Object.values(hands).filter(h=>h.status!=='done');
+    if (notDone.length){
+      const names = notDone.map(h=>h.name).join(', ');
+      if (!confirm(`Non hanno ancora finito: ${names}.\nVerrà considerato solo quello che hanno preso finora. Procedere comunque?`)) return;
+    }
+    SCP.resolved = true;
+    G.ref.child('scopa/hands').off();
+    const results = {};
+    const scorePromises = [];
+    Object.entries(hands).forEach(([pid,h])=>{
+      const total = scopaCaptureSum(h.captured||[]);
+      const points = total*SCP.multiplier + (h.scopa ? (SCP.bonusMode==='points'?SCP.bonusPoints:0) : 0);
+      results[pid] = { name:h.name, captured:h.captured||[], total, scopa:!!h.scopa, points,
+        bonusMode:SCP.bonusMode, bonusText: h.scopa ? SCP.bonusText : null };
+      scorePromises.push(applyScoreDelta(pid, points));
+    });
     Promise.all(scorePromises).then(()=>{
-      SCP = { multiplier, bonusMode, bonusPoints, bonusText, tableCards, roundId };
-      G.ref.update({ status:'scopa', scopa:{ phase:'result', multiplier, bonusMode, bonusPoints, bonusText, tableCards, roundId, results } });
-      $('scpSetup').style.display='none'; $('scpLive').style.display='block';
-      $('scpTableRow').innerHTML = tableCards.map(c=>smCardHTML(c,false)).join('');
+      G.ref.update({ 'scopa/phase':'result', 'scopa/results':results });
+      $('scpBtnResolve').style.display='none';
+      $('scpRankingLbl').textContent = 'CLASSIFICA FINALE';
       scopaRenderRanking(Object.values(results));
-      pjSend({type:'scopaResult', tableCards, results:Object.values(results)});
+      pjSend({type:'scopaResult', tableCards:SCP.tableCards, results:Object.values(results)});
       if (Object.values(results).some(r=>r.scopa)) confetti();
     });
   });
@@ -17216,6 +17331,7 @@ function backToQuiz(title){
   G.ref.child('tamburini/counts').off();
   G.ref.child('mercatista/peaks').off();
   G.ref.child('staccionata/peaks').off();
+  G.ref.child('scopa/hands').off();
   G.ref.child('morra/tallies').off();
   G.ref.child('punto/racers').off();
   G.ref.child('dado/racers').off();
@@ -17779,8 +17895,14 @@ function pjRouteInner(m){
     }
     else if (m.type==='scopaState') {
       showScreen('scrPjScopa');
-      $('pjScopaMsg').textContent = 'OGNUNO RICEVE 3 CARTE CONTRO QUESTE 4 A TERRA...';
+      $('pjScopaMsg').textContent = 'OGNUNO RICEVE 5 CARTE CONTRO QUESTE 4 A TERRA...';
       $('pjScopaTableRow').innerHTML=''; $('pjScopaRanking').innerHTML='';
+    }
+    else if (m.type==='scopaBet') {
+      showScreen('scrPjScopa');
+      $('pjScopaMsg').textContent = 'OGNUNO GIOCA LA PROPRIA MANO SUL TELEFONO...';
+      $('pjScopaTableRow').innerHTML = (m.tableCards||[]).map(c=>smCardHTML(c,false)).join('');
+      $('pjScopaRanking').innerHTML='';
     }
     else if (m.type==='scopaResult') {
       showScreen('scrPjScopa');
