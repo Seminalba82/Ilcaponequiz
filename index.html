@@ -1589,7 +1589,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.13</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.15</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -3278,11 +3278,8 @@ body.suspense-on #pfRank{ display:none !important; }
     </div>
     <div class="label mt">Tempo sul timer</div>
     <select id="bombDuration">
-      <option value="60">1 minuto</option>
-      <option value="120" selected>2 minuti</option>
-      <option value="180">3 minuti</option>
-      <option value="240">4 minuti</option>
-      <option value="300">5 minuti</option>
+      <option value="30">30 secondi</option>
+      <option value="60" selected>1 minuto</option>
     </select>
     <button class="btn mg mt" style="width:100%" onclick="bombStart()">💣 INNESCA LA BOMBA!</button>
   </div>
@@ -5168,7 +5165,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1313; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1315; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -14185,7 +14182,7 @@ let BOMB = {};
 function bombStart(){
   const points = getPoints('bombPoints','bombPointsMan');
   const penalty = getPoints('bombPenalty','bombPenaltyMan');
-  const durationSec = +($('bombDuration').value||120);
+  const durationSec = +($('bombDuration').value||60);
   const durationMs = durationSec*1000;
   const endAt = serverNow()+durationMs;
   const roundId = serverNow();
@@ -16990,25 +16987,26 @@ function gk(key, html){
 function modalGamesSkill(){
   syncGiochiCatalogo();
   const btns = [
-    gk('mini', `<button class="btn mg gameBtn" onclick="openMini()">🥃 Bussolotti</button>`),
-    gk('simon', `<button class="btn lm gameBtn" onclick="openSimon()">🎨 Simon</button>`),
-    gk('puzzle', `<button class="btn mg gameBtn" onclick="openPuzzle()">🧩 Puzzle</button>`),
-    gk('wordsearch', `<button class="btn cy gameBtn" onclick="openWordSearch()">🔤 Trova la Parola</button>`),
-    gk('anagram', `<button class="btn gameBtn" onclick="openAnagram()">🔤➰ Anagramma</button>`),
-    gk('taptap', `<button class="btn mg gameBtn" onclick="openTapTap()">👆 Tap Tap</button>`),
-    gk('swiss', `<button class="btn cy gameBtn" onclick="openSwiss()">⌚ Precisione Svizzera</button>`),
-    gk('memo', `<button class="btn lm gameBtn" onclick="openMemo()">🔍 Trova la Carta</button>`),
-    gk('memocoppie', `<button class="btn gameBtn" onclick="openMemoCoppie()">🃏 Memo le Coppie</button>`),
-    gk('tfiscale', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#6fe08f,#2e9c4f); color:#fff; box-shadow:0 7px 0 #1a5c2e,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(46,156,79,.35)" onclick="openTFiscale()">💶 Sei Troppo Fiscale!</button>`),
-    gk('rdc', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#5a3d8a,#2e1a5a); color:#fff; box-shadow:0 7px 0 #180e30,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(46,26,90,.4)" onclick="openRdc()">🧮 La Resa dei Conti</button>`),
-    gk('mastermind', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#4a4a4a,#222); color:#fff; box-shadow:0 7px 0 #0a0a0a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(0,0,0,.4)" onclick="openMastermind()">🎯 Mastermind</button>`),
-    gk('cassaforte', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#8a8f96,#3a3c40); color:#fff; box-shadow:0 7px 0 #1a1c1e,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(138,143,150,.35)" onclick="openCassaforte()">🔐 La Cassaforte</button>`),
     gk('settemezzo', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#1a5c34,#0d3a20); color:#fff; box-shadow:0 7px 0 #082614,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(26,92,52,.4)" onclick="openSetteMezzo()">🎴 7 e 1/2</button>`),
-    gk('shapes', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#c2183d,#ff8a3c); color:#fff; box-shadow:0 7px 0 #6b0e21,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(194,24,61,.4)" onclick="openShapes()">👁 Occhio alle Forme</button>`),
-    gk('finddiff', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#4a2fb8,#9d4dff); color:#fff; box-shadow:0 7px 0 #2a1866,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(157,77,255,.4)" onclick="openFindDiff()">🔍 Trova le Differenze</button>`),
+    gk('anagram', `<button class="btn gameBtn" onclick="openAnagram()">🔤➰ Anagramma</button>`),
+    gk('mini', `<button class="btn mg gameBtn" onclick="openMini()">🥃 Bussolotti</button>`),
     gk('tamb', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#e8b45a,#8a4a12); color:#3a2000; box-shadow:0 7px 0 #4a2400,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(232,180,90,.4)" onclick="openTamb()">🥁 I Tamburini</button>`),
     gk('punto', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#3de0ff,#0b6f8a); color:#00272e; box-shadow:0 7px 0 #003a44,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(61,224,255,.4)" onclick="openPunto()">🏁 Il Punto della Situazione</button>`),
     gk('idr', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#7a8a9a,#3a4550); color:#fff; box-shadow:0 7px 0 #1a2028,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(122,138,154,.4)" onclick="openIdr()">🔧 L'Idraulico</button>`),
+    gk('cassaforte', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#8a8f96,#3a3c40); color:#fff; box-shadow:0 7px 0 #1a1c1e,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(138,143,150,.35)" onclick="openCassaforte()">🔐 La Cassaforte</button>`),
+    gk('rdc', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#5a3d8a,#2e1a5a); color:#fff; box-shadow:0 7px 0 #180e30,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(46,26,90,.4)" onclick="openRdc()">🧮 La Resa dei Conti</button>`),
+    gk('mastermind', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#4a4a4a,#222); color:#fff; box-shadow:0 7px 0 #0a0a0a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(0,0,0,.4)" onclick="openMastermind()">🎯 Mastermind</button>`),
+    gk('memocoppie', `<button class="btn gameBtn" onclick="openMemoCoppie()">🃏 Memo le Coppie</button>`),
+    gk('shapes', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#c2183d,#ff8a3c); color:#fff; box-shadow:0 7px 0 #6b0e21,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(194,24,61,.4)" onclick="openShapes()">👁 Occhio alle Forme</button>`),
+    gk('swiss', `<button class="btn cy gameBtn" onclick="openSwiss()">⌚ Precisione Svizzera</button>`),
+    gk('puzzle', `<button class="btn mg gameBtn" onclick="openPuzzle()">🧩 Puzzle</button>`),
+    gk('scopa', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#1a7a3a,#0a3a1a); color:#fff; box-shadow:0 7px 0 #052610,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(26,122,58,.4)" onclick="openScopa()">🧹 Scopa e Vinci</button>`),
+    gk('tfiscale', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#6fe08f,#2e9c4f); color:#fff; box-shadow:0 7px 0 #1a5c2e,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(46,156,79,.35)" onclick="openTFiscale()">💶 Sei Troppo Fiscale!</button>`),
+    gk('simon', `<button class="btn lm gameBtn" onclick="openSimon()">🎨 Simon</button>`),
+    gk('taptap', `<button class="btn mg gameBtn" onclick="openTapTap()">👆 Tap Tap</button>`),
+    gk('memo', `<button class="btn lm gameBtn" onclick="openMemo()">🔍 Trova la Carta</button>`),
+    gk('wordsearch', `<button class="btn cy gameBtn" onclick="openWordSearch()">🔤 Trova la Parola</button>`),
+    gk('finddiff', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#4a2fb8,#9d4dff); color:#fff; box-shadow:0 7px 0 #2a1866,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(157,77,255,.4)" onclick="openFindDiff()">🔍 Trova le Differenze</button>`),
     gk('xox', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#5ec8ff,#0b6fb8); color:#fff; box-shadow:0 7px 0 #063a5c,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(94,200,255,.4)" onclick="openXox()">❌⭕ XOX</button>`)
   ].filter(Boolean).join('');
   const msgVuoto = btns ? '' : '<div class="byline" style="letter-spacing:1px">Nessun gioco di abilità abilitato per questa licenza.</div>';
@@ -17017,31 +17015,30 @@ function modalGamesSkill(){
 function modalGamesLuck(){
   syncGiochiCatalogo();
   const btns = [
-    gk('dice', `<button class="btn cy gameBtn" onclick="openDice()">🎲 Pari o Dispari</button>`),
-    gk('tombola', `<button class="btn lm gameBtn" onclick="openTombola()">🎱 Tombola</button>`),
-    gk('cards', `<button class="btn mg gameBtn" onclick="openCards()">🎴 Carta Rossa, Carta Nera</button>`),
-    gk('seed', `<button class="btn gameBtn" onclick="openSeed()">🃏 Il Seme Vincente</button>`),
-    gk('ruota', `<button class="btn cy gameBtn" onclick="openRuota()">🎡 La Ruota Gira per Tutti</button>`),
-    gk('hilo', `<button class="btn lm gameBtn" onclick="openHiLo()">🃏 Carta Alta, Carta Bassa</button>`),
-    gk('wheels', `<button class="btn gameBtn" onclick="openWheels()">🎡 Le Ruote della Fortuna</button>`),
-    gk('horses', `<button class="btn mg gameBtn" onclick="openHorses()">🐎 Pubbliche Offese</button>`),
-    gk('toc', `<button class="btn cy gameBtn" onclick="openToc()">🪙 Testa o Croce</button>`),
-    gk('cenerentola', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#c9a0ff,var(--viola)); color:#fff; box-shadow:0 7px 0 #5a2a9c,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(157,77,255,.35)" onclick="openCenerentola()">👠 Cenerentola de Noi Artri</button>`),
-    gk('pacchi', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#d9ac6e,#8a6428); color:#fff; box-shadow:0 7px 0 #5a3d18,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(138,100,40,.35)" onclick="openPacchi()">📦 Il Gioco dei Pacchi</button>`),
-    gk('roulette', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#a85838,#6b3018); color:#ffe9a8; box-shadow:0 7px 0 #3a1a0c,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(107,48,24,.4)" onclick="openRoulette()">🤠 Roulette Russa</button>`),
-    gk('pagliuzza', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#8a6428,#5a3d18); color:#ffe9a8; box-shadow:0 7px 0 #2e1e0a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(90,61,24,.4)" onclick="openPagliuzza()">🌾 La Pagliuzza</button>`),
-    gk('supertris', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#2d8a4e,#0d4020); color:#ffe042; box-shadow:0 7px 0 #072410,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(13,64,32,.4)" onclick="openSupertris()">🎰 SUPERTRIS</button>`),
-    gk('bomba', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#8a2020,#4a1010); color:#fff; box-shadow:0 7px 0 #2a0a0a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(138,32,32,.4)" onclick="openBomba()">💣 Bomba a Orologeria</button>`),
-    gk('maj', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#189a4a,#0b6fb8); color:#fff; box-shadow:0 7px 0 #0a3a1e,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(24,154,74,.4)" onclick="openMaj()">🗳️ La Maggioranza Vince</button>`),
-    gk('gold', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#ffcf3d,#8a5a00); color:#3a2600; box-shadow:0 7px 0 #4a2f00,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,207,61,.4)" onclick="openGold()">🎫 Il Biglietto d'Oro</button>`),
-    gk('casino', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#a3111c,#1a1108); color:#fff; box-shadow:0 7px 0 #3a0508,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(163,17,28,.4)" onclick="openCasino()">🎰 Roulette (Casinò)</button>`),
-    gk('merc', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#ff5d7a,#8a0f2e); color:#fff; box-shadow:0 7px 0 #5a0018,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,93,122,.4)" onclick="openMerc()">📣 Mercatista per un Giorno</button>`),
-    gk('staccionata', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#8a6339,#5c4023); color:#fff; box-shadow:0 7px 0 #3d2a16,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(138,99,57,.4)" onclick="openStaccionata()">🪵 Maledetta Staccionata</button>`),
-    gk('scopa', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#1a7a3a,#0a3a1a); color:#fff; box-shadow:0 7px 0 #052610,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(26,122,58,.4)" onclick="openScopa()">🧹 Scopa e Vinci</button>`),
     gk('bingocarte', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#7a1414,#3d0a0a); color:#fff; box-shadow:0 7px 0 #260505,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(122,20,20,.4)" onclick="openBingo()">🎴 Bingo con le Carte</button>`),
-    gk('morra', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#7a5cff,#2e0f8a); color:#fff; box-shadow:0 7px 0 #180a5c,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(122,92,255,.4)" onclick="openMorra()">✊✋✌️ Morra Cinese</button>`),
+    gk('bomba', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#8a2020,#4a1010); color:#fff; box-shadow:0 7px 0 #2a0a0a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(138,32,32,.4)" onclick="openBomba()">💣 Bomba a Orologeria</button>`),
+    gk('hilo', `<button class="btn lm gameBtn" onclick="openHiLo()">🃏 Carta Alta, Carta Bassa</button>`),
+    gk('cards', `<button class="btn mg gameBtn" onclick="openCards()">🎴 Carta Rossa, Carta Nera</button>`),
+    gk('cenerentola', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#c9a0ff,var(--viola)); color:#fff; box-shadow:0 7px 0 #5a2a9c,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(157,77,255,.35)" onclick="openCenerentola()">👠 Cenerentola de Noi Artri</button>`),
+    gk('gold', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#ffcf3d,#8a5a00); color:#3a2600; box-shadow:0 7px 0 #4a2f00,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,207,61,.4)" onclick="openGold()">🎫 Il Biglietto d'Oro</button>`),
     gk('dado', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#ffe93d,#8a6f0b); color:#2e2400; box-shadow:0 7px 0 #4a3a00,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,233,61,.4)" onclick="openDado()">🎲 Il Dado del Destino</button>`),
-    gk('patata', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#ff5d3d,#8a1a0b); color:#fff; box-shadow:0 7px 0 #4a0a00,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,93,61,.4)" onclick="openPatata()">💣 Patata Bollente</button>`)
+    gk('pacchi', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#d9ac6e,#8a6428); color:#fff; box-shadow:0 7px 0 #5a3d18,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(138,100,40,.35)" onclick="openPacchi()">📦 Il Gioco dei Pacchi</button>`),
+    gk('seed', `<button class="btn gameBtn" onclick="openSeed()">🃏 Il Seme Vincente</button>`),
+    gk('maj', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#189a4a,#0b6fb8); color:#fff; box-shadow:0 7px 0 #0a3a1e,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(24,154,74,.4)" onclick="openMaj()">🗳️ La Maggioranza Vince</button>`),
+    gk('pagliuzza', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#8a6428,#5a3d18); color:#ffe9a8; box-shadow:0 7px 0 #2e1e0a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(90,61,24,.4)" onclick="openPagliuzza()">🌾 La Pagliuzza</button>`),
+    gk('ruota', `<button class="btn cy gameBtn" onclick="openRuota()">🎡 La Ruota Gira per Tutti</button>`),
+    gk('wheels', `<button class="btn gameBtn" onclick="openWheels()">🎡 Le Ruote della Fortuna</button>`),
+    gk('staccionata', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#8a6339,#5c4023); color:#fff; box-shadow:0 7px 0 #3d2a16,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(138,99,57,.4)" onclick="openStaccionata()">🪵 Maledetta Staccionata</button>`),
+    gk('merc', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#ff5d7a,#8a0f2e); color:#fff; box-shadow:0 7px 0 #5a0018,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,93,122,.4)" onclick="openMerc()">📣 Mercatista per un Giorno</button>`),
+    gk('morra', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#7a5cff,#2e0f8a); color:#fff; box-shadow:0 7px 0 #180a5c,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(122,92,255,.4)" onclick="openMorra()">✊✋✌️ Morra Cinese</button>`),
+    gk('dice', `<button class="btn cy gameBtn" onclick="openDice()">🎲 Pari o Dispari</button>`),
+    gk('patata', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#ff5d3d,#8a1a0b); color:#fff; box-shadow:0 7px 0 #4a0a00,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,93,61,.4)" onclick="openPatata()">💣 Patata Bollente</button>`),
+    gk('horses', `<button class="btn mg gameBtn" onclick="openHorses()">🐎 Pubbliche Offese</button>`),
+    gk('casino', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#a3111c,#1a1108); color:#fff; box-shadow:0 7px 0 #3a0508,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(163,17,28,.4)" onclick="openCasino()">🎰 Roulette (Casinò)</button>`),
+    gk('roulette', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#a85838,#6b3018); color:#ffe9a8; box-shadow:0 7px 0 #3a1a0c,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(107,48,24,.4)" onclick="openRoulette()">🤠 Roulette Russa</button>`),
+    gk('supertris', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#2d8a4e,#0d4020); color:#ffe042; box-shadow:0 7px 0 #072410,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(13,64,32,.4)" onclick="openSupertris()">🎰 SUPERTRIS</button>`),
+    gk('toc', `<button class="btn cy gameBtn" onclick="openToc()">🪙 Testa o Croce</button>`),
+    gk('tombola', `<button class="btn lm gameBtn" onclick="openTombola()">🎱 Tombola</button>`)
   ].filter(Boolean).join('');
   const msgVuoto = btns ? '' : '<div class="byline" style="letter-spacing:1px">Nessun gioco di fortuna abilitato per questa licenza.</div>';
   openModal('🍀 GIOCHI DI FORTUNA', `<div style="display:flex; flex-direction:column; gap:10px">${btns}</div>${msgVuoto}`);
