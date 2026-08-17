@@ -750,6 +750,23 @@ body.barOn.barCollapsed .screen.active{padding-bottom:70px;}
 .zanzResultBig{font-family:'Bungee'; font-size:clamp(20px,4.4vw,32px); text-align:center; margin-top:10px; letter-spacing:1px;}
 .zanzResultBig.win{color:var(--lime); text-shadow:0 0 12px rgba(182,242,46,.6);}
 .zanzResultBig.lose{color:var(--muted);}
+/* ===== LISTA DELLA SPESA ===== */
+.spesaListBox{background:linear-gradient(180deg,#1c1236,#120a26); border-radius:16px; padding:14px; max-width:440px; margin:14px auto;
+  box-shadow:inset 0 3px 8px rgba(0,0,0,.5), 0 0 0 2px rgba(157,77,255,.22); display:grid; grid-template-columns:1fr 1fr; gap:6px;}
+.spesaListItem{display:flex; align-items:center; gap:8px; padding:7px 9px; font-family:'Outfit'; font-weight:800; font-size:13.5px; color:#fff;
+  background:rgba(255,255,255,.05); border-radius:9px;}
+.spesaListItem .emoji{font-size:22px; flex-shrink:0;}
+.spesaBasketBar{display:flex; align-items:center; justify-content:center; gap:10px; margin:10px auto; font-family:'Bungee'; font-size:22px; color:var(--gold); text-shadow:0 0 14px rgba(255,201,60,.5);}
+.spesaBasketIcon{font-size:38px; filter:drop-shadow(0 4px 6px rgba(0,0,0,.5));}
+.spesaItemGrid{display:grid; grid-template-columns:repeat(auto-fill, minmax(74px,1fr)); gap:8px; max-width:480px; margin:10px auto;}
+.spesaItemCard{position:relative; background:linear-gradient(180deg,#241a3d,#150d28); border:2px solid rgba(255,255,255,.12); border-radius:12px;
+  padding:8px 4px 6px; text-align:center; cursor:pointer; transition:transform .12s, border-color .15s, background .15s; -webkit-tap-highlight-color:transparent;}
+.spesaItemCard:active{transform:scale(.93);}
+.spesaItemCard .emoji{font-size:27px; display:block;}
+.spesaItemCard .lbl{font-family:'Outfit'; font-weight:700; font-size:10px; color:#ddd; margin-top:3px; line-height:1.15;}
+.spesaItemCard.inBasket{border-color:var(--lime); background:linear-gradient(180deg,rgba(182,255,46,.2),rgba(182,255,46,.06)); box-shadow:0 0 12px rgba(182,255,46,.35);}
+.spesaItemCard.inBasket::after{content:'✓'; position:absolute; top:2px; right:5px; color:var(--lime); font-weight:900; font-size:13px;}
+.spesaItemCard.disabled{opacity:.28; pointer-events:none;}
 .shapePreviewRow .sBtn svg{width:40px; height:40px;}
 
 /* ===== TROVA LE DIFFERENZE ===== */
@@ -1611,7 +1628,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.17</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.18</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -3468,6 +3485,82 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="zanzResultBig" id="zanzpResult"></div>
 </div>
 
+<!-- ==================== HOST: LISTA DELLA SPESA ==================== -->
+<div class="screen" id="scrSpesa">
+  <div class="brand"><div class="t1" style="font-size:clamp(20px,3.6vw,36px)">🛒 LISTA DELLA SPESA</div></div>
+  <div class="panel mt" style="max-width:480px" id="spesaSetup">
+    <div class="row mt">
+      <div class="grow"><div class="label">Quanti oggetti nella lista?</div>
+        <select id="spesaItemCount">
+          <option value="10">10 oggetti</option><option value="11">11 oggetti</option><option value="12" selected>12 oggetti</option>
+          <option value="13">13 oggetti</option><option value="14">14 oggetti</option><option value="15">15 oggetti</option>
+          <option value="16">16 oggetti</option><option value="17">17 oggetti</option><option value="18">18 oggetti</option>
+          <option value="19">19 oggetti</option><option value="20">20 oggetti</option>
+        </select>
+      </div>
+      <div class="grow"><div class="label">Quanti secondi a vista?</div>
+        <select id="spesaPreviewSec">
+          <option value="3">3 secondi</option><option value="4">4 secondi</option><option value="5" selected>5 secondi</option>
+          <option value="6">6 secondi</option><option value="7">7 secondi</option><option value="8">8 secondi</option>
+          <option value="9">9 secondi</option><option value="10">10 secondi</option>
+        </select>
+      </div>
+    </div>
+    <div class="label mt">Quanto tempo per fare la spesa?</div>
+    <select id="spesaDuration">
+      <option value="20">20 secondi</option>
+      <option value="30">30 secondi</option>
+      <option value="40">40 secondi</option>
+      <option value="50">50 secondi</option>
+      <option value="60" selected>1 minuto</option>
+    </select>
+    <div class="row mt">
+      <div class="grow"><div class="label">Punti per ogni oggetto giusto</div><select id="spesaPoints"></select></div>
+      <div><div class="label">O scrivili</div><input type="number" id="spesaPointsMan" class="ptsManual" placeholder="—" min="1"></div>
+    </div>
+    <div class="byline mt" style="opacity:.75">🛒 All'inizio la lista si vede su telefoni e proiettore per pochi secondi. Poi sparisce, spunta la cesta, e ogni giocatore deve scegliere sul proprio telefono solo gli oggetti visti nella lista — tra tanti altri messi lì apposta per confondere. Vince chi ne indovina di più.</div>
+    <button class="btn mg mt" style="width:100%" onclick="spesaStart()">🛒 GENERA LA LISTA E PARTI!</button>
+  </div>
+  <div id="spesaLive" style="display:none; width:100%" class="center">
+    <div class="miniMsg" id="spesaMsg"></div>
+    <div class="spesaListBox" id="spesaListPreview" style="display:none"></div>
+    <div class="byline" id="spesaCount"></div>
+    <div class="lead mt" id="spesaResultsLive" style="max-width:500px; width:100%"></div>
+    <div class="row mt" style="justify-content:center">
+      <button class="btn lm" id="spesaBtnResults" onclick="spesaShowResults()" style="display:none">🏆 Mostra la classifica</button>
+      <button class="btn cy" id="spesaBtnAgain" onclick="openSpesa()" style="display:none">🔁 Un'altra manche</button>
+    </div>
+  </div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
+</div>
+
+<!-- ==================== PROIETTORE: LISTA DELLA SPESA ==================== -->
+<div class="screen" id="scrPjSpesa">
+  <div class="brand"><div class="t1" style="font-size:clamp(26px,4vw,48px)">🛒 LISTA DELLA SPESA</div></div>
+  <div class="miniMsg" id="pjSpesaMsg" style="font-size:clamp(18px,3vw,30px)"></div>
+  <div class="timerWrap mt" style="max-width:460px"><div class="timerBar" id="pjSpesaTimerBar"></div></div>
+  <div class="spesaListBox" id="pjSpesaListBox" style="max-width:760px; display:none"></div>
+  <div class="spesaBasketBar" id="pjSpesaBasketBar" style="display:none">🧺 SI FA LA SPESA SUI TELEFONI...</div>
+  <div class="lead mt" id="pjSpesaResults" style="max-width:600px; width:100%"></div>
+</div>
+
+<!-- ==================== PLAYER: LISTA DELLA SPESA ==================== -->
+<div class="screen" id="scrPlaySpesa" style="align-items:center; justify-content:center">
+  <div class="row" style="width:100%; justify-content:space-between">
+    <div class="pill" id="spesapName" style="color:var(--gold)"></div>
+    <div class="pill" id="spesapScore"></div>
+  </div>
+  <div class="timerWrap mt" style="max-width:300px"><div class="timerBar" id="spesapTimerBar"></div></div>
+  <div class="byline mt" id="spesapStatus">👀 MEMORIZZA LA LISTA!</div>
+  <div class="spesaListBox" id="spesapListBox" style="display:none"></div>
+  <div id="spesapShopBox" style="display:none; width:100%">
+    <div class="spesaBasketBar">🧺 <span id="spesapBasketCount">0/0</span></div>
+    <div class="spesaItemGrid" id="spesapGrid"></div>
+    <button class="btn mg mt" id="spesaBtnConfirm" onclick="spesaSubmit()" style="display:none; width:100%; max-width:320px; margin:12px auto 0">✅ HO FINITO!</button>
+  </div>
+  <div class="zanzResultBig" id="spesapResult"></div>
+</div>
+
 <!-- ==================== HOST: XOX ==================== -->
 <div class="screen" id="scrXox">
   <div class="brand"><div class="t1" style="font-size:clamp(20px,3.6vw,36px)">❌⭕ XOX</div></div>
@@ -5174,7 +5267,7 @@ body.suspense-on #pfRank{ display:none !important; }
 /* ================================================================
    📋 ELENCO MINIGIOCHI — aggiornare questa lista ogni volta che se ne
    aggiunge uno nuovo (serve ad Alberto per la documentazione delle licenze).
-   Ultimo aggiornamento: v13.17 — 50 minigiochi totali.
+   Ultimo aggiornamento: v13.18 — 51 minigiochi totali.
    ================================================================
    1.  🥃 Bussolotti
    2.  🎲 Pari o Dispari
@@ -5226,6 +5319,7 @@ body.suspense-on #pfRank{ display:none !important; }
    48. 🧹 Scopa e Vinci
    49. 🎴 Bingo con le Carte
    50. 🦟 Zanzare
+   51. 🛒 Lista della Spesa
 ================================================================ */
 
 /* ================================================================
@@ -5246,7 +5340,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1317; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1318; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -7182,6 +7276,7 @@ function listenGame(){
     else if (g.status==='bomba') showPlayerBomba(g);
     else if (g.status==='shapes') showPlayerShapes(g);
     else if (g.status==='zanzare') showPlayerZanzare(g);
+    else if (g.status==='spesa') showPlayerSpesa(g);
     else if (g.status==='finddiff') showPlayerFindDiff(g);
     else if (g.status==='maggioranza') showPlayerMaj(g);
     else if (g.status==='goldenticket') showPlayerGold(g);
@@ -8575,6 +8670,107 @@ function showPlayerZanzare(g){
         }
       }, 100);
     }
+  }
+}
+/* ================================================================
+   LISTA DELLA SPESA — catalogo prodotti veri da supermercato, funzioni condivise, telefono
+================================================================ */
+const SPESA_ITEMS = [
+  {id:'pane', name:'Pane', emoji:'🍞'}, {id:'latte', name:'Latte', emoji:'🥛'}, {id:'uova', name:'Uova', emoji:'🥚'},
+  {id:'pasta', name:'Pasta', emoji:'🍝'}, {id:'riso', name:'Riso', emoji:'🍚'}, {id:'formaggio', name:'Formaggio', emoji:'🧀'},
+  {id:'prosciutto', name:'Prosciutto', emoji:'🥓'}, {id:'mele', name:'Mele', emoji:'🍎'}, {id:'banane', name:'Banane', emoji:'🍌'},
+  {id:'pomodori', name:'Pomodori', emoji:'🍅'}, {id:'insalata', name:'Insalata', emoji:'🥬'}, {id:'cipolle', name:'Cipolle', emoji:'🧅'},
+  {id:'patate', name:'Patate', emoji:'🥔'}, {id:'carote', name:'Carote', emoji:'🥕'}, {id:'limoni', name:'Limoni', emoji:'🍋'},
+  {id:'arance', name:'Arance', emoji:'🍊'}, {id:'uva', name:'Uva', emoji:'🍇'}, {id:'fragole', name:'Fragole', emoji:'🍓'},
+  {id:'anguria', name:'Anguria', emoji:'🍉'}, {id:'ananas', name:'Ananas', emoji:'🍍'}, {id:'peperoni', name:'Peperoni', emoji:'🫑'},
+  {id:'melanzane', name:'Melanzane', emoji:'🍆'}, {id:'funghi', name:'Funghi', emoji:'🍄'}, {id:'aglio', name:'Aglio', emoji:'🧄'},
+  {id:'cetrioli', name:'Cetrioli', emoji:'🥒'}, {id:'miele', name:'Miele', emoji:'🍯'}, {id:'cioccolato', name:'Cioccolato', emoji:'🍫'},
+  {id:'biscotti', name:'Biscotti', emoji:'🍪'}, {id:'caffe', name:'Caffè', emoji:'☕'}, {id:'te', name:'Tè', emoji:'🍵'},
+  {id:'vino', name:'Vino', emoji:'🍷'}, {id:'birra', name:'Birra', emoji:'🍺'}, {id:'acqua', name:'Acqua', emoji:'💧'},
+  {id:'pesce', name:'Pesce', emoji:'🐟'}, {id:'pollo', name:'Pollo', emoji:'🍗'}, {id:'carne', name:'Carne', emoji:'🥩'},
+  {id:'burro', name:'Burro', emoji:'🧈'}, {id:'yogurt', name:'Yogurt', emoji:'🥣'}, {id:'gelato', name:'Gelato', emoji:'🍦'},
+  {id:'torta', name:'Torta', emoji:'🍰'}, {id:'olio', name:"Olio d'oliva", emoji:'🫒'}, {id:'succo', name:'Succo di Frutta', emoji:'🧃'},
+  {id:'noci', name:'Noci', emoji:'🌰'}, {id:'sale', name:'Sale', emoji:'🧂'}, {id:'farina', name:'Farina', emoji:'🌾'}
+];
+function spesaBuildList(n){ const pool = SPESA_ITEMS.slice(); smShuffleArr(pool); return pool.slice(0,n); }
+function spesaBuildSelectionPool(list){
+  const listIds = new Set(list.map(i=>i.id));
+  const decoys = SPESA_ITEMS.filter(i=>!listIds.has(i.id));
+  smShuffleArr(decoys);
+  const decoyCount = Math.min(decoys.length, Math.max(6, Math.round(list.length*0.8)));
+  const pool = list.concat(decoys.slice(0, decoyCount));
+  return smShuffleArr(pool);
+}
+function spesaListHTML(list){
+  return list.map(it=>`<div class="spesaListItem"><span class="emoji">${it.emoji}</span> ${esc(it.name)}</div>`).join('');
+}
+function spesaRenderShopGrid(){
+  const maxCount = P.spesaMaxCount;
+  $('spesapBasketCount').textContent = `${P.spesaBasket.size}/${maxCount}`;
+  $('spesapGrid').innerHTML = P.spesaPool.map(it=>{
+    const inBasket = P.spesaBasket.has(it.id);
+    const full = P.spesaBasket.size>=maxCount && !inBasket;
+    return `<div class="spesaItemCard ${inBasket?'inBasket':''} ${full?'disabled':''}" onclick="spesaToggleItem('${it.id}')">
+      <div class="emoji">${it.emoji}</div><div class="lbl">${esc(it.name)}</div></div>`;
+  }).join('');
+  $('spesaBtnConfirm').style.display = P.spesaBasket.size>=maxCount ? 'block' : 'none';
+}
+function spesaToggleItem(id){
+  if (P.spesaResolved) return;
+  if (P.spesaBasket.has(id)) P.spesaBasket.delete(id);
+  else { if (P.spesaBasket.size>=P.spesaMaxCount) return; P.spesaBasket.add(id); }
+  spesaRenderShopGrid();
+}
+function spesaSubmit(){
+  if (P.spesaResolved) return;
+  P.spesaResolved = true;
+  clearInterval(P.spesaShopInt);
+  const listIds = new Set((P.spesaList||[]).map(i=>i.id));
+  let correct = 0;
+  P.spesaBasket.forEach(id=>{ if (listIds.has(id)) correct++; });
+  const pts = correct * (P.spesaPoints||0);
+  $('spesapShopBox').style.display='none';
+  $('spesapResult').className = 'zanzResultBig ' + (correct>0?'win':'lose');
+  $('spesapResult').textContent = `🛒 ${correct}/${listIds.size} OGGETTI GIUSTI! +${pts} PUNTI`;
+  $('spesapStatus').textContent = correct>0 ? 'BRAVA/O A FARE LA SPESA!' : 'PROVA A RICORDARE MEGLIO LA PROSSIMA VOLTA...';
+  if (correct>0) confetti();
+  P.ref.child('spesa/results/'+P.id).set({ correct, pts, total:P.spesaBasket.size });
+}
+function showPlayerSpesa(g){
+  const m = g.spesa||{};
+  $('spesapName').textContent = P.name;
+  $('spesapScore').textContent = (((g.players||{})[P.id]||{}).score||0)+' pt';
+  showScreen('scrPlaySpesa');
+  if (m.phase==='preview'){
+    const sig = 'prev:'+m.roundId;
+    if (P.spesaSig !== sig){
+      P.spesaSig = sig; P.spesaResolved = false; P.spesaBasket = new Set();
+      P.spesaList = m.list; P.spesaPoints = m.points;
+      $('spesapListBox').style.display='grid'; $('spesapShopBox').style.display='none';
+      $('spesapResult').textContent=''; $('spesapResult').className='zanzResultBig';
+      $('spesapListBox').innerHTML = spesaListHTML(m.list);
+      $('spesapStatus').textContent = '👀 MEMORIZZA LA LISTA!';
+    }
+    clearInterval(P.spesaInt);
+    P.spesaInt = setInterval(()=>{
+      const left = Math.max(0, (m.previewEndAt||0) - serverNow());
+      $('spesapTimerBar').style.width = (left/(m.previewMs||1)*100)+'%';
+      if (left<=0) clearInterval(P.spesaInt);
+    }, 100);
+  } else if (m.phase==='shopping'){
+    const sig = 'shop:'+m.roundId;
+    if (P.spesaShopSig !== sig){
+      P.spesaShopSig = sig; P.spesaPool = m.pool; P.spesaMaxCount = m.itemCount;
+      $('spesapListBox').style.display='none'; $('spesapShopBox').style.display='block';
+      $('spesapStatus').textContent = `🛒 SCEGLI ${m.itemCount} OGGETTI GIUSTI!`;
+      spesaRenderShopGrid();
+    }
+    clearInterval(P.spesaShopInt);
+    P.spesaShopInt = setInterval(()=>{
+      const left = Math.max(0, (m.shopEndAt||0) - serverNow());
+      $('spesapTimerBar').style.width = (left/(m.durationMs||1)*100)+'%';
+      if (left<=0){ if (!P.spesaResolved) spesaSubmit(); }
+    }, 100);
   }
 }
 /* ================================================================
@@ -14542,6 +14738,90 @@ function zanzareStart(){
 }
 
 /* ================================================================
+   LISTA DELLA SPESA — regia
+   Prima si mostra la lista (uguale per tutti, telefono e proiettore), poi sparisce e compare la cesta:
+   ogni giocatore sceglie in autonomia sul proprio telefono, entro il tempo dato, cercando di ricordare
+   e selezionare solo gli oggetti visti nella lista — tra tanti altri prodotti "civetta" di riempimento.
+================================================================ */
+let SPESA = {};
+function openSpesa(){
+  if (!isGameEnabled('spesa')) return alert('⚠️ Questo minigioco non è compreso nella licenza attiva. Contatta Alberto per sbloccarlo.');
+  if (!G) return alert('Avvia prima una partita!');
+  cancelLiveQuestion(); closeModal(); clearInterval((SPESA||{}).timerInt); clearTimeout((SPESA||{}).previewTimeout);
+  G.ref.child('spesa/results').off();
+  G.ref.update({ status:'spesa', spesa:{ phase:'idle' } });
+  SPESA = {};
+  $('spesaSetup').style.display='block'; $('spesaLive').style.display='none';
+  if (!$('spesaPoints').innerHTML){
+    $('spesaPoints').innerHTML = Array.from({length:20},(_,k)=>`<option value="${(k+1)*50}" ${k===3?'selected':''}>${(k+1)*50} punti</option>`).join('');
+  }
+  pjSend({type:'spesaState'});
+  showScreen('scrSpesa');
+}
+function spesaStart(){
+  const itemCount = +($('spesaItemCount').value||12);
+  const previewSec = +($('spesaPreviewSec').value||5);
+  const previewMs = previewSec*1000;
+  const durationSec = +($('spesaDuration').value||60);
+  const durationMs = durationSec*1000;
+  const points = getPoints('spesaPoints','spesaPointsMan');
+  const list = spesaBuildList(itemCount);
+  const pool = spesaBuildSelectionPool(list);
+  const roundId = serverNow();
+  const previewEndAt = serverNow() + previewMs;
+  const shopEndAt = previewEndAt + durationMs;
+  SPESA = { credited:{}, list, points, timerInt:null };
+  G.ref.update({ status:'spesa', spesa:{
+    phase:'preview', list, pool, itemCount, points,
+    previewEndAt, previewMs, shopEndAt, durationMs, roundId
+  }});
+  G.ref.child('spesa/results').remove();
+  $('spesaSetup').style.display='none'; $('spesaLive').style.display='block';
+  $('spesaMsg').textContent = '📋 MOSTRA LA LISTA... MEMORIZZATELA!';
+  $('spesaListPreview').style.display='grid'; $('spesaListPreview').innerHTML = spesaListHTML(list);
+  $('spesaCount').textContent=''; $('spesaResultsLive').innerHTML=''; $('spesaBtnAgain').style.display='none'; $('spesaBtnResults').style.display='none';
+  pjSend({type:'spesaPreview', list, previewEndAt, previewMs});
+  clearTimeout(SPESA.previewTimeout);
+  SPESA.previewTimeout = setTimeout(()=>{
+    G.ref.update({ 'spesa/phase':'shopping' });
+    $('spesaMsg').textContent = '🛒 SI FA LA SPESA SUI TELEFONI!';
+    $('spesaListPreview').style.display='none';
+    pjSend({type:'spesaShopping', shopEndAt, durationMs});
+  }, Math.max(0, previewEndAt - serverNow()));
+  clearInterval(SPESA.timerInt);
+  G.ref.child('spesa/results').on('child_added', snap=>{
+    const pid = snap.key, r = snap.val();
+    if (!r || SPESA.credited[pid]) return;
+    SPESA.credited[pid] = true;
+    applyScoreDelta(pid, r.pts);
+  });
+  G.ref.child('spesa/results').on('value', s=>{
+    const results = s.val()||{};
+    const entries = Object.entries(results);
+    $('spesaCount').textContent = `Risultati arrivati: ${entries.length}`;
+    if (entries.length>0){ $('spesaBtnAgain').style.display=''; $('spesaBtnResults').style.display=''; }
+    G.ref.child('players').once('value').then(ps=>{
+      const pl = ps.val()||{};
+      $('spesaResultsLive').innerHTML = entries.map(([pid,r])=>
+        `<div class="leadRow"><span class="pos">🛒</span> ${esc((pl[pid]||{}).name||'?')} <span class="pts">${r.correct}/${itemCount} giusti · ${r.pts>0?'+'+r.pts:'0'}</span></div>`).join('')
+        || '<div class="byline">Nessun risultato ancora...</div>';
+    });
+  });
+}
+function spesaShowResults(){
+  G.ref.child('spesa/results').once('value').then(s=>{
+    const results = s.val()||{};
+    G.ref.child('players').once('value').then(ps=>{
+      const pl = ps.val()||{};
+      const rows = Object.entries(results).map(([pid,r])=>({name:(pl[pid]||{}).name||'?', correct:r.correct, pts:r.pts}))
+        .sort((a,b)=> b.correct-a.correct || b.pts-a.pts);
+      pjSend({type:'spesaResult', rows, listLen:(SPESA.list||[]).length});
+      if (rows.length) confetti();
+    });
+  });
+}
+
+/* ================================================================
    TROVA LE DIFFERENZE — regia
 ================================================================ */
 let FD = { markers:[], orig:null, mod:null };
@@ -17199,6 +17479,7 @@ const GIOCHI_CATALOGO = [
   {k:'pagliuzza', l:'🌾 La Pagliuzza'},
   {k:'supertris', l:'🎰 SUPERTRIS'},
   {k:'rdc', l:'🧮 La Resa dei Conti'},
+  {k:'spesa', l:'🛒 Lista della Spesa'},
   {k:'mastermind', l:'🎯 Mastermind'},
   {k:'bomba', l:'💣 Bomba a Orologeria'},
   {k:'shapes', l:'👁 Occhio alle Forme'},
@@ -17249,6 +17530,7 @@ function modalGamesSkill(){
     gk('idr', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#7a8a9a,#3a4550); color:#fff; box-shadow:0 7px 0 #1a2028,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(122,138,154,.4)" onclick="openIdr()">🔧 L'Idraulico</button>`),
     gk('cassaforte', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#8a8f96,#3a3c40); color:#fff; box-shadow:0 7px 0 #1a1c1e,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(138,143,150,.35)" onclick="openCassaforte()">🔐 La Cassaforte</button>`),
     gk('rdc', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#5a3d8a,#2e1a5a); color:#fff; box-shadow:0 7px 0 #180e30,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(46,26,90,.4)" onclick="openRdc()">🧮 La Resa dei Conti</button>`),
+    gk('spesa', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#e0a83d,#8a5a0b); color:#3a2600; box-shadow:0 7px 0 #4a3300,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(224,168,61,.4)" onclick="openSpesa()">🛒 Lista della Spesa</button>`),
     gk('mastermind', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#4a4a4a,#222); color:#fff; box-shadow:0 7px 0 #0a0a0a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(0,0,0,.4)" onclick="openMastermind()">🎯 Mastermind</button>`),
     gk('memocoppie', `<button class="btn gameBtn" onclick="openMemoCoppie()">🃏 Memo le Coppie</button>`),
     gk('shapes', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#c2183d,#ff8a3c); color:#fff; box-shadow:0 7px 0 #6b0e21,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(194,24,61,.4)" onclick="openShapes()">👁 Occhio alle Forme</button>`),
@@ -17834,6 +18116,7 @@ function backToQuiz(title){
   G.ref.child('bomba/results').off();
   G.ref.child('shapes/results').off();
   G.ref.child('zanzare/results').off();
+  G.ref.child('spesa/results').off();
   G.ref.child('finddiff/results').off();
   G.ref.child('maggioranza/votes').off();
   G.ref.child('goldenticket/results').off();
@@ -17862,6 +18145,7 @@ function backToQuiz(title){
   clearInterval((MM||{}).timerInt);
   clearInterval((BOMB||{}).timerInt);
   clearInterval((SHAPES||{}).timerInt);
+  clearInterval((SPESA||{}).timerInt); clearTimeout((SPESA||{}).previewTimeout);
   clearInterval((FD||{}).timerInt);
   clearInterval((MAJ||{}).timerInt);
   clearInterval((GOLD||{}).timerInt);
@@ -17874,7 +18158,7 @@ function backToQuiz(title){
   clearInterval((PATATA||{}).timerInt);
   clearInterval((CSF||{}).timerInt);
   clearInterval((XOX||{}).timerInt);
-  G.ref.update({ status:'pausa', mini:null, dice:null, simon:null, voto:null, timer:null, tombola:null, cards:null, swiss:null, hilo:null, wheels:null, puzzle:null, wordsearch:null, anagram:null, seed:null, grad:null, taptap:null, ruota:null, memo:null, memocoppie:null, horses:null, tfiscale:null, toc:null, cenerentola:null, pacchi:null, roulette:null, pagliuzza:null, supertris:null, rdc:null, mastermind:null, bomba:null, shapes:null, zanzare:null, finddiff:null, maggioranza:null, goldenticket:null, casino:null, tamburini:null, mercatista:null, staccionata:null, morra:null, punto:null, dado:null, asta:null, idraulico:null, patata:null, cassaforte:null, settemezzo:null, scopa:null, bingocarte:null, xox:null });
+  G.ref.update({ status:'pausa', mini:null, dice:null, simon:null, voto:null, timer:null, tombola:null, cards:null, swiss:null, hilo:null, wheels:null, puzzle:null, wordsearch:null, anagram:null, seed:null, grad:null, taptap:null, ruota:null, memo:null, memocoppie:null, horses:null, tfiscale:null, toc:null, cenerentola:null, pacchi:null, roulette:null, pagliuzza:null, supertris:null, rdc:null, mastermind:null, bomba:null, shapes:null, zanzare:null, spesa:null, finddiff:null, maggioranza:null, goldenticket:null, casino:null, tamburini:null, mercatista:null, staccionata:null, morra:null, punto:null, dado:null, asta:null, idraulico:null, patata:null, cassaforte:null, settemezzo:null, scopa:null, bingocarte:null, xox:null });
   G.ref.child('players').once('value', ps=>{
     const players = ps.val()||{};
     $('hrTitle').textContent = title || 'SI TORNA AL QUIZ!';
@@ -19136,6 +19420,43 @@ function pjRouteInner(m){
         $('pjZanzTimerBar').style.width = (left/m.durationMs*100)+'%';
         if (left<=0) clearInterval(window._pjZanzInt);
       }, 100);
+    }
+    else if (m.type==='spesaState') {
+      showScreen('scrPjSpesa');
+      $('pjSpesaMsg').textContent=''; $('pjSpesaTimerBar').style.width='0%';
+      $('pjSpesaListBox').style.display='none'; $('pjSpesaBasketBar').style.display='none'; $('pjSpesaResults').innerHTML='';
+      clearInterval(window._pjSpesaInt);
+    }
+    else if (m.type==='spesaPreview') {
+      showScreen('scrPjSpesa');
+      $('pjSpesaMsg').textContent = '👀 MEMORIZZATE LA LISTA!';
+      $('pjSpesaBasketBar').style.display='none'; $('pjSpesaResults').innerHTML='';
+      $('pjSpesaListBox').style.display='grid';
+      $('pjSpesaListBox').innerHTML = m.list.map(it=>`<div class="spesaListItem"><span class="emoji">${it.emoji}</span> ${esc(it.name)}</div>`).join('');
+      clearInterval(window._pjSpesaInt);
+      window._pjSpesaInt = setInterval(()=>{
+        const left = Math.max(0, m.previewEndAt - serverNow());
+        $('pjSpesaTimerBar').style.width = (left/m.previewMs*100)+'%';
+        if (left<=0) clearInterval(window._pjSpesaInt);
+      }, 100);
+    }
+    else if (m.type==='spesaShopping') {
+      $('pjSpesaMsg').textContent = '🛒 SI FA LA SPESA SUI TELEFONI!';
+      $('pjSpesaListBox').style.display='none'; $('pjSpesaBasketBar').style.display='flex';
+      clearInterval(window._pjSpesaInt);
+      window._pjSpesaInt = setInterval(()=>{
+        const left = Math.max(0, m.shopEndAt - serverNow());
+        $('pjSpesaTimerBar').style.width = (left/m.durationMs*100)+'%';
+        if (left<=0) clearInterval(window._pjSpesaInt);
+      }, 100);
+    }
+    else if (m.type==='spesaResult') {
+      clearInterval(window._pjSpesaInt);
+      $('pjSpesaBasketBar').style.display='none'; $('pjSpesaListBox').style.display='none'; $('pjSpesaTimerBar').style.width='0%';
+      $('pjSpesaMsg').textContent = m.rows.length ? `🏆 ${m.rows[0].name} HA FATTO LA SPESA MIGLIORE!` : 'NESSUNO HA FATTO LA SPESA...';
+      $('pjSpesaResults').innerHTML = m.rows.length ? m.rows.map((r,i)=>
+        `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(r.name)} <span class="pts">${r.correct}/${m.listLen} giusti · +${r.pts}</span></div>`).join('') : '<div class="byline">Nessun risultato.</div>';
+      if (m.rows.length) confetti();
     }
     else if (m.type==='fdActive') {
       showScreen('scrPjFindDiff');
