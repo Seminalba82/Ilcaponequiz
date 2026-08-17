@@ -1628,7 +1628,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.18</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.19</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -3502,7 +3502,9 @@ body.suspense-on #pfRank{ display:none !important; }
         <select id="spesaPreviewSec">
           <option value="3">3 secondi</option><option value="4">4 secondi</option><option value="5" selected>5 secondi</option>
           <option value="6">6 secondi</option><option value="7">7 secondi</option><option value="8">8 secondi</option>
-          <option value="9">9 secondi</option><option value="10">10 secondi</option>
+          <option value="9">9 secondi</option><option value="10">10 secondi</option><option value="11">11 secondi</option>
+          <option value="12">12 secondi</option><option value="13">13 secondi</option><option value="14">14 secondi</option>
+          <option value="15">15 secondi</option>
         </select>
       </div>
     </div>
@@ -5340,7 +5342,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1318; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1319; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -8746,6 +8748,11 @@ function showPlayerSpesa(g){
     if (P.spesaSig !== sig){
       P.spesaSig = sig; P.spesaResolved = false; P.spesaBasket = new Set();
       P.spesaList = m.list; P.spesaPoints = m.points;
+      // fermo subito l'eventuale timer della fase acquisti di una manche precedente non ancora
+      // conclusa: altrimenti, se quella manche aveva già superato il proprio tempo, scatterebbe una
+      // conferma automatica in ritardo che marcherebbe la manche NUOVA come "già fatta" prima ancora
+      // che il giocatore possa selezionare qualcosa
+      clearInterval(P.spesaShopInt); P.spesaShopSig = null;
       $('spesapListBox').style.display='grid'; $('spesapShopBox').style.display='none';
       $('spesapResult').textContent=''; $('spesapResult').className='zanzResultBig';
       $('spesapListBox').innerHTML = spesaListHTML(m.list);
