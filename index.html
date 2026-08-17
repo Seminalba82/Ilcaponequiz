@@ -1628,7 +1628,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.19</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.20</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -5342,7 +5342,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1319; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1320; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -8707,6 +8707,7 @@ function spesaListHTML(list){
   return list.map(it=>`<div class="spesaListItem"><span class="emoji">${it.emoji}</span> ${esc(it.name)}</div>`).join('');
 }
 function spesaRenderShopGrid(){
+  if (!P.spesaBasket) P.spesaBasket = new Set(); // protezione: non deve mai bloccarsi anche se la fase acquisti arrivasse senza essere passata prima dall'anteprima
   const maxCount = P.spesaMaxCount;
   $('spesapBasketCount').textContent = `${P.spesaBasket.size}/${maxCount}`;
   $('spesapGrid').innerHTML = P.spesaPool.map(it=>{
@@ -8727,6 +8728,7 @@ function spesaSubmit(){
   if (P.spesaResolved) return;
   P.spesaResolved = true;
   clearInterval(P.spesaShopInt);
+  if (!P.spesaBasket) P.spesaBasket = new Set();
   const listIds = new Set((P.spesaList||[]).map(i=>i.id));
   let correct = 0;
   P.spesaBasket.forEach(id=>{ if (listIds.has(id)) correct++; });
@@ -8745,18 +8747,26 @@ function showPlayerSpesa(g){
   showScreen('scrPlaySpesa');
   if (m.phase==='preview'){
     const sig = 'prev:'+m.roundId;
-    if (P.spesaSig !== sig){
+    const isNewRound = P.spesaSig !== sig;
+    if (isNewRound){
       P.spesaSig = sig; P.spesaResolved = false; P.spesaBasket = new Set();
-      P.spesaList = m.list; P.spesaPoints = m.points;
       // fermo subito l'eventuale timer della fase acquisti di una manche precedente non ancora
       // conclusa: altrimenti, se quella manche aveva già superato il proprio tempo, scatterebbe una
       // conferma automatica in ritardo che marcherebbe la manche NUOVA come "già fatta" prima ancora
       // che il giocatore possa selezionare qualcosa
       clearInterval(P.spesaShopInt); P.spesaShopSig = null;
-      $('spesapListBox').style.display='grid'; $('spesapShopBox').style.display='none';
+      $('spesapShopBox').style.display='none';
       $('spesapResult').textContent=''; $('spesapResult').className='zanzResultBig';
-      $('spesapListBox').innerHTML = spesaListHTML(m.list);
       $('spesapStatus').textContent = '👀 MEMORIZZA LA LISTA!';
+    }
+    // renderizzo la lista ogni volta che arrivano dati completi, anche se il segnale del turno è già
+    // lo stesso di prima: così, se un primo aggiornamento fosse arrivato senza la lista (una possibile
+    // sincronizzazione parziale), quello vero e completo che arriva subito dopo la mostra comunque,
+    // invece di restare con lo schermo vuoto perché il turno "sembrava" già gestito
+    if (m.list && m.list.length && (isNewRound || !$('spesapListBox').children.length)){
+      P.spesaList = m.list; P.spesaPoints = m.points;
+      $('spesapListBox').style.display='grid';
+      $('spesapListBox').innerHTML = spesaListHTML(m.list);
     }
     clearInterval(P.spesaInt);
     P.spesaInt = setInterval(()=>{
@@ -8766,10 +8776,14 @@ function showPlayerSpesa(g){
     }, 100);
   } else if (m.phase==='shopping'){
     const sig = 'shop:'+m.roundId;
-    if (P.spesaShopSig !== sig){
-      P.spesaShopSig = sig; P.spesaPool = m.pool; P.spesaMaxCount = m.itemCount;
+    const isNewShop = P.spesaShopSig !== sig;
+    if (isNewShop){
+      P.spesaShopSig = sig;
       $('spesapListBox').style.display='none'; $('spesapShopBox').style.display='block';
       $('spesapStatus').textContent = `🛒 SCEGLI ${m.itemCount} OGGETTI GIUSTI!`;
+    }
+    if (m.pool && m.pool.length && (isNewShop || !$('spesapGrid').children.length)){
+      P.spesaPool = m.pool; P.spesaMaxCount = m.itemCount;
       spesaRenderShopGrid();
     }
     clearInterval(P.spesaShopInt);
