@@ -1646,7 +1646,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.21</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.22</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -5437,7 +5437,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1321; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1322; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -6869,15 +6869,26 @@ function closeQuestion(){
         results[pid] = { ok:false, pts:-penN, none:true };
         scorePromises.push(applyScoreDelta(pid, -penN));
       }
-      // MODALITÀ HIGHLANDER: chi sbaglia o non risponde viene eliminato, e non potrà più rispondere alle prossime domande
+      // MODALITÀ HIGHLANDER: chi sbaglia o non risponde viene eliminato, ma SOLO se almeno uno dei
+      // rimasti in gioco ha risposto giusto a questa domanda. Se sbagliano TUTTI insieme, nessuno
+      // viene eliminato: il gruppo resta intatto e si passa alla domanda successiva — altrimenti,
+      // in caso di sfortuna collettiva, si rischierebbe di azzerare tutti i giocatori in un colpo solo
+      // senza mai arrivare a un campione assoluto.
       const eliminatedNow = [];
+      let highlanderAllWrong = false;
       if (highlanderMode) {
-        for (const pid in players) {
-          if (players[pid].eliminated) continue; // già fuori da prima, non serve rifarlo
+        const stillActive = Object.keys(players).filter(pid => !players[pid].eliminated);
+        const wrongThisRound = [], rightThisRound = [];
+        for (const pid of stillActive) {
           const r = results[pid];
           const answered = !!ans[pid];
           const wrong = !answered || (r && r.ok===false);
-          if (wrong) { eliminatedNow.push(pid); scorePromises.push(G.ref.child('players/'+pid+'/eliminated').set(true)); }
+          (wrong ? wrongThisRound : rightThisRound).push(pid);
+        }
+        if (rightThisRound.length > 0) {
+          wrongThisRound.forEach(pid=>{ eliminatedNow.push(pid); scorePromises.push(G.ref.child('players/'+pid+'/eliminated').set(true)); });
+        } else if (stillActive.length > 0) {
+          highlanderAllWrong = true; // tutti i rimasti hanno sbagliato insieme: nessuna eliminazione questo giro
         }
       }
       const correctText = q.type==='mult'
@@ -6896,7 +6907,9 @@ function closeQuestion(){
           G.report.questions.push({ i:G.qi+1, text:q.text, type:q.type, points:q.points, timer:q.timer,
             correctText, nAnswered, nPlayers, rows });
         }
-        if (highlanderMode && eliminatedNow.length){
+        if (highlanderMode && highlanderAllWrong){
+          setTimeout(()=> alert('😅 Hanno sbagliato TUTTI i giocatori rimasti in gioco! Nessuno eliminato questo giro: si va avanti con la prossima domanda.'), 300);
+        } else if (highlanderMode && eliminatedNow.length){
           const survivors = Object.keys(players).filter(pid => !players[pid].eliminated && !eliminatedNow.includes(pid));
           if (survivors.length === 1){
             const winnerName = players[survivors[0]].name;
@@ -6904,8 +6917,6 @@ function closeQuestion(){
               alert(`💀🏆 "${winnerName}" è l'ULTIMO HIGHLANDER RIMASTO IN GIOCO! Tutti gli altri sono stati eliminati.`);
               pjSend({type:'msgOverlay', on:true, text:`🏆 ${winnerName.toUpperCase()} È L'ULTIMO HIGHLANDER!`});
             }, 300);
-          } else if (survivors.length === 0){
-            setTimeout(()=> alert('💀 Tutti i giocatori rimasti sono stati eliminati in questo stesso round! Nessun Highlander superstite.'), 300);
           }
         }
       });
@@ -13264,18 +13275,23 @@ function closeAnagram(){
         results[pid] = { ok:false, pts:-q.penNone, none:true };
         scorePromises.push(applyScoreDelta(pid, -q.penNone));
       }
+      let anaAllWrong = false;
       if (highlanderMode) {
-        for (const pid in players) {
-          if (players[pid].eliminated) continue;
+        const stillActive = Object.keys(players).filter(pid => !players[pid].eliminated);
+        const wrongThisRound = [], rightThisRound = [];
+        for (const pid of stillActive) {
           const r = results[pid];
           const wrong = !ans[pid] || (r && r.ok===false);
-          if (wrong) scorePromises.push(G.ref.child('players/'+pid+'/eliminated').set(true));
+          (wrong ? wrongThisRound : rightThisRound).push(pid);
         }
+        if (rightThisRound.length > 0) wrongThisRound.forEach(pid=> scorePromises.push(G.ref.child('players/'+pid+'/eliminated').set(true)));
+        else if (stillActive.length > 0) anaAllWrong = true;
       }
       const updates = { 'anagram/phase':'result', 'anagram/reveal':{ correctText:q.accepted, results } };
       Promise.all(scorePromises).then(()=>{
       G.ref.update(updates);
       showAnagramReveal(q, players, pending, results);
+      if (anaAllWrong) setTimeout(()=> alert('😅 Hanno sbagliato TUTTI i giocatori rimasti in gioco! Nessuno eliminato questo giro: si va avanti con la prossima domanda.'), 300);
       });
     });
   });
