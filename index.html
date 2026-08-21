@@ -1646,7 +1646,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.23</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.24</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -5438,7 +5438,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1323; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1324; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -6755,7 +6755,22 @@ function nextQuestion(){
   // conta risposte live
   G.ref.child('answers/'+G.qi).on('value', s=>{
     const n = s.numChildren(); $('hqAnswered').textContent = n + (n===1?' risposta':' risposte');
-    G.ref.child('players').once('value', ps=>{ if (n>0 && n>=ps.numChildren() && !G.closed) closeQuestion(); });
+    const roundQi = G.qi; // catturo l'indice di QUESTA domanda: G persiste per tutto il quiz, cambia solo G.qi
+    if (n<=0 || G.closed) return;
+    G.ref.child('players').once('value', ps=>{
+      if (G.closed || G.qi !== roundQi) return; // nel frattempo si è già passati a un'altra domanda: ignoro
+      if (n < ps.numChildren()) return;
+      // stessa cautela usata per l'Anagramma: non chiudo all'istante, riverifico dopo una breve pausa
+      // rileggendo da capo sia le risposte che i giocatori, invece di fidarmi del primo conteggio
+      clearTimeout(G.closeTimeout);
+      G.closeTimeout = setTimeout(()=>{
+        if (G.closed || G.qi !== roundQi) return;
+        Promise.all([G.ref.child('answers/'+roundQi).once('value'), G.ref.child('players').once('value')]).then(([s2,ps2])=>{
+          if (G.closed || G.qi !== roundQi) return;
+          if (s2.numChildren()>0 && s2.numChildren()>=ps2.numChildren()) closeQuestion();
+        });
+      }, 700);
+    });
   });
   // timer
   const t0 = Date.now(), dur = q.timer*1000;
@@ -13242,7 +13257,24 @@ function runAnagram(q){
     photo: (q.media && q.media.kind==='photo' && q.media.data) ? q.media.data : null});
   G.ref.child('anagram/answers').on('value', s=>{
     const n = s.numChildren(); $('anaAnswered').textContent = n + (n===1?' risposta':' risposte');
-    G.ref.child('players').once('value', ps=>{ if (n>0 && n>=ps.numChildren() && !ANA.closed) closeAnagram(); });
+    const roundRef = ANA; // catturo il riferimento ESATTO di questo turno (ANA viene sostituito a ogni nuovo turno)
+    if (n<=0 || roundRef.closed) return;
+    G.ref.child('players').once('value', ps=>{
+      if (roundRef.closed || roundRef !== ANA) return; // il turno è già cambiato nel frattempo: ignoro
+      if (n < ps.numChildren()) return;
+      // non chiudo all'istante: riverifico dopo una breve pausa, rileggendo da capo sia le risposte
+      // che i giocatori. Se il primo conteggio era per qualche motivo temporaneamente sballato (una
+      // lettura non ancora aggiornata), questo evita di chiudere il turno subito dopo la prima
+      // risposta, bloccando tutti gli altri che devono ancora rispondere.
+      clearTimeout(roundRef.closeTimeout);
+      roundRef.closeTimeout = setTimeout(()=>{
+        if (roundRef.closed || roundRef !== ANA) return;
+        Promise.all([G.ref.child('anagram/answers').once('value'), G.ref.child('players').once('value')]).then(([s2,ps2])=>{
+          if (roundRef.closed || roundRef !== ANA) return;
+          if (s2.numChildren()>0 && s2.numChildren()>=ps2.numChildren()) closeAnagram();
+        });
+      }, 700);
+    });
   });
   clearInterval($('anaTimerBar')._int);
   $('anaTimerBar')._int = setInterval(()=>{
