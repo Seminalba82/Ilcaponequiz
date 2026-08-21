@@ -363,7 +363,7 @@ option{background:var(--bg2);}
 .tag.open{background:rgba(255,46,154,.15); color:var(--magenta); border:1px solid rgba(255,46,154,.5);}
 .tag.media{background:rgba(255,201,60,.15); color:var(--gold); border:1px solid rgba(255,201,60,.5);}
 .pill{font-family:'Bungee'; font-size:14px; color:var(--lime); text-shadow:0 0 10px rgba(182,255,46,.6);}
-.playersLobby{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:14px;}
+.playersLobby{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:14px; max-height:100px; overflow:hidden;}
 .pChip{font-weight:900; padding:10px 18px; border-radius:99px; font-size:16px;
   background:linear-gradient(180deg,rgba(157,77,255,.35),rgba(157,77,255,.15));
   border:2px solid var(--viola); box-shadow:0 0 16px rgba(157,77,255,.5); animation:pop .3s;}
@@ -1646,7 +1646,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.22</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.23</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -5314,6 +5314,7 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="mtb center"><div id="pjQrBox" style="background:#fff;padding:16px;border-radius:18px;display:inline-block;box-shadow:0 0 40px rgba(0,240,255,.6)"></div></div>
   <div class="label center mt">CODICE PARTITA</div>
   <div class="gameCode" id="pjLobbyCode"></div>
+  <div class="label center mt" id="pjLobbyCount" style="font-size:20px; color:var(--lime)"></div>
   <div class="playersLobby" id="pjLobbyPlayers"></div>
 </div>
 
@@ -5437,7 +5438,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1322; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1323; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -12331,9 +12332,10 @@ function ruotaSpinDouble(){
    TAP TAP — motore condiviso + regia
 ================================================================ */
 const TAP_MEDALS = ['🥇','🥈','🥉','4°','5°'];
-function renderTapRanking(el, rows, prizes, live){
+function renderTapRanking(el, rows, prizes, live, top3only){
   if (!rows.length){ el.innerHTML = '<div class="byline">Ancora nessun tap...</div>'; return; }
-  el.innerHTML = rows.map((r,i)=> `<div class="tapRankRow">
+  const shown = top3only ? rows.slice(0,3) : rows;
+  el.innerHTML = shown.map((r,i)=> `<div class="tapRankRow">
       <span class="medal">${TAP_MEDALS[i]||((i+1)+'°')}</span>
       <span class="grow">${esc(r.name)}</span>
       ${(!live && i<5) ? `<span class="pz">+${prizes[i]||0}</span>` : ''}
@@ -13040,8 +13042,9 @@ function puzzleCountdown(barEl, msgEl, endAt, dur, onExpire){
     }
   },100);
 }
-function renderPuzRanking(el, rows){
-  el.innerHTML = rows.length ? rows.map((r,i)=>
+function renderPuzRanking(el, rows, top3only){
+  const shown = top3only ? rows.slice(0,3) : rows;
+  el.innerHTML = shown.length ? shown.map((r,i)=>
     `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(r.name)} — ${(r.t/1000).toFixed(1)}s <span class="pts">+${r.pts}</span></div>`).join('')
     : '<div class="byline">Ancora nessuno ha risolto...</div>';
 }
@@ -13354,8 +13357,9 @@ function renderWsGrid(el, grid, size){
   el.style.gridTemplateColumns = `repeat(${size},1fr)`;
   el.innerHTML = grid.map((row,r)=> [...row].map((ch,c)=>`<div class="wsTile" data-r="${r}" data-c="${c}">${ch}</div>`).join('')).join('');
 }
-function renderWsRanking(el, rows){
-  el.innerHTML = rows.length ? rows.map((r,i)=>
+function renderWsRanking(el, rows, top3only){
+  const shown = top3only ? rows.slice(0,3) : rows;
+  el.innerHTML = shown.length ? shown.map((r,i)=>
     `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(r.name)} — ${(r.t/1000).toFixed(1)}s <span class="pts">+${r.pts}</span></div>`).join('')
     : '<div class="byline">Ancora nessuno l\'ha trovata...</div>';
 }
@@ -15569,9 +15573,10 @@ const TAMB_PRIZE_DEFAULTS = [1000,700,500,300,200];
 const TAMB_LOSS_LABELS = ['Ultimo 💢','Penultimo','Terzultimo','4°ultimo','5°ultimo'];
 const TAMB_LOSS_DEFAULTS = [300,200,100,0,0];
 let TAMB = {};
-function tambRenderRanking(el, rows, prizes, losses, live){
+function tambRenderRanking(el, rows, prizes, losses, live, top3only){
   const n = rows.length;
-  el.innerHTML = rows.map((r,i)=>{
+  const shown = top3only ? rows.slice(0,3) : rows;
+  el.innerHTML = shown.map((r,i)=>{
     const fromEnd = n-1-i; // 0 = ultimo, 1 = penultimo...
     let ptsLabel = '';
     if (!live){
@@ -15669,9 +15674,10 @@ const MERC_PRIZE_DEFAULTS = [1000,700,500,300,200];
 const MERC_LOSS_LABELS = ['Ultimo 💢','Penultimo','Terzultimo','4°ultimo','5°ultimo'];
 const MERC_LOSS_DEFAULTS = [300,200,100,0,0];
 let MERC = {};
-function mercRenderRanking(el, rows, prizes, losses, live){
+function mercRenderRanking(el, rows, prizes, losses, live, top3only){
   const n = rows.length;
-  el.innerHTML = rows.map((r,i)=>{
+  const shown = top3only ? rows.slice(0,3) : rows;
+  el.innerHTML = shown.map((r,i)=>{
     const fromEnd = n-1-i;
     let ptsLabel = '';
     if (!live){
@@ -15759,8 +15765,9 @@ function mercFinish(){
 const STAC_MEDALS = ['🥇','🥈','🥉','4°','5°'];
 const STAC_PRIZE_DEFAULTS = [1000,700,500,300,200];
 let STAC = {};
-function stacRenderRanking(el, rows, mode, prizes, live){
-  el.innerHTML = rows.length ? rows.map((r,i)=>{
+function stacRenderRanking(el, rows, mode, prizes, live, top3only){
+  const shown = top3only ? rows.slice(0,3) : rows;
+  el.innerHTML = shown.length ? shown.map((r,i)=>{
     let ptsLabel = '';
     if (!live) ptsLabel = r.prize ? `<span class="pts" style="color:var(--lime)">${mode==='points'?'+':''}${r.prize}</span>` : `<span class="pts">—</span>`;
     const medal = i<3 ? STAC_MEDALS[i] : (i+1)+'°';
@@ -15845,8 +15852,9 @@ function stacFinish(){
    così in regia si vede una classifica live di chi sta guadagnando più punti.
 ================================================================ */
 let MORRA = {};
-function morraRenderRanking(el, rows, live){
-  el.innerHTML = rows.map((r,i)=>{
+function morraRenderRanking(el, rows, live, top3only){
+  const shown = top3only ? rows.slice(0,3) : rows;
+  el.innerHTML = shown.map((r,i)=>{
     const medal = i<3 ? ['🥇','🥈','🥉'][i] : (i+1)+'°';
     const ptsColor = r.pts>0 ? 'var(--lime)' : (r.pts<0 ? '#ff5d5d' : 'var(--muted)');
     return `<div class="leadRow"><span class="pos">${medal}</span> ${esc(r.name)}
@@ -15933,24 +15941,40 @@ const PUNTO_SHAPES = ['●','▲','✖','■','★'];
 function puntoAssign(players){
   return players.map((p,i)=>({ ...p, color: PUNTO_COLORS[i%10], shape: PUNTO_SHAPES[Math.floor(i/10)%5] }));
 }
-function puntoRenderTrack(el, racers, notches, bigTop){
+function puntoRenderTrack(el, racers, notches, bigTop, maxLanes){
   if (!el) return;
-  const key = racers.map(r=>r.id).join(',')+'|'+notches;
+  // sul proiettore, con tante squadre, mostro solo le prime in classifica (quelle che contano per il
+  // suspense) fino a un tetto massimo di corsie: altrimenti una corsia per ogni squadra farebbe
+  // diventare il tracciato altissimo, schiacciando tutto il resto della schermata. In regia invece
+  // (maxLanes non passato) restano sempre visibili tutte le squadre, senza alcun taglio.
+  let shown = racers, hiddenCount = 0;
+  if (maxLanes && racers.length > maxLanes){
+    const sorted = [...racers].sort((a,b)=>b.pos-a.pos);
+    const topIds = new Set(sorted.slice(0, maxLanes).map(r=>r.id));
+    shown = racers.filter(r=>topIds.has(r.id));
+    hiddenCount = racers.length - shown.length;
+  }
+  const key = shown.map(r=>r.id).join(',')+'|'+notches;
   if (el._key !== key){
     el._key = key;
-    el.innerHTML = racers.map((r,i)=>`<div class="puntoLane" id="${el.id}_l${i}">
+    el.innerHTML = shown.map((r,i)=>`<div class="puntoLane" id="${el.id}_l${i}">
       <div class="puntoTicks">${Array.from({length:notches}).map(()=>'<div class="puntoTick"></div>').join('')}</div>
       <div class="puntoLaneName">${esc(r.name)}</div>
       <div class="puntoDot" id="${el.id}_d${i}" style="left:0%; color:${r.color}">${r.shape}</div>
       <div class="puntoFinishBar"></div>
     </div>`).join('');
+    let note = el.parentElement && el.parentElement.querySelector('.puntoHiddenNote');
+    if (hiddenCount > 0){
+      if (!note){ note = document.createElement('div'); note.className='puntoHiddenNote byline center mt'; el.insertAdjacentElement('afterend', note); }
+      note.textContent = `+ altr${hiddenCount===1?'o':'i'} ${hiddenCount} in gara`;
+    } else if (note) note.remove();
   }
   // determino chi è attualmente nei primi 4 per posizione (solo sul proiettore, mai in regia): la loro
   // corsia si ingrandisce per dare più suspense a chi guarda da lontano. Le corsie restano SEMPRE
   // nello stesso ordine (non si riordinano scavalcandosi) — cambia solo quanto sono grandi, così la
   // gara resta facile da seguire con lo sguardo anche mentre le posizioni cambiano.
-  const bigIds = bigTop ? new Set([...racers].sort((a,b)=>b.pos-a.pos).slice(0,4).map(r=>r.id)) : null;
-  racers.forEach((r,i)=>{
+  const bigIds = bigTop ? new Set([...shown].sort((a,b)=>b.pos-a.pos).slice(0,4).map(r=>r.id)) : null;
+  shown.forEach((r,i)=>{
     const dot = document.getElementById(el.id+'_d'+i);
     if (!dot) return;
     if (bigTop){
@@ -15965,8 +15989,9 @@ function puntoRenderTrack(el, racers, notches, bigTop){
     dot._pos = r.pos;
   });
 }
-function puntoRenderRanking(el, rows, notches, live){
-  el.innerHTML = rows.map((r,i)=>{
+function puntoRenderRanking(el, rows, notches, live, top3only){
+  const shown = top3only ? rows.slice(0,3) : rows;
+  el.innerHTML = shown.map((r,i)=>{
     const medal = i<3 ? ['🥇','🥈','🥉'][i] : (i+1)+'°';
     const arrived = r.pos>=notches;
     const ptsLabel = (!live && r.pts!=null) ? `<span class="pts" style="color:${r.pts>0?'var(--lime)':(r.pts<0?'#ff5d5d':'var(--muted)')}">${r.pts>0?'+':''}${r.pts}</span>` : '';
@@ -16502,8 +16527,9 @@ function idrRenderGrid(el, path, shapes, placedCount, solved){
     } else if (wrap) wrap.remove();
   });
 }
-function idrRenderRanking(el, rows, live){
-  el.innerHTML = rows.map((r,i)=>{
+function idrRenderRanking(el, rows, live, top3only){
+  const shown = top3only ? rows.slice(0,3) : rows;
+  el.innerHTML = shown.map((r,i)=>{
     const medal = i<3 ? ['🥇','🥈','🥉'][i] : (i+1)+'°';
     const status = r.solved ? '✅ completato' : (live ? 'in corso...' : '⏱ tempo scaduto');
     const ptsLabel = (!live && r.pts!=null) ? `<span class="pts" style="color:${r.pts>0?'var(--lime)':'#ff5d5d'}">${r.pts>0?'+':''}${r.pts}</span>` : '';
@@ -16707,8 +16733,9 @@ function csfUpdateKeypadDisabled(containerId, seq){
     k.classList.toggle('disabled', seq.includes(+k.dataset.d));
   });
 }
-function csfRenderLiveRank(el, list){
-  el.innerHTML = list.length ? list.map((r,i)=>`<div class="csfLiveRow"><span>${i+1}° ${esc(r.name)}</span><span style="margin-left:auto">⏱ ${(r.t/1000).toFixed(1)}s</span></div>`).join('')
+function csfRenderLiveRank(el, list, top3only){
+  const shown = top3only ? list.slice(0,3) : list;
+  el.innerHTML = shown.length ? shown.map((r,i)=>`<div class="csfLiveRow"><span>${i+1}° ${esc(r.name)}</span><span style="margin-left:auto">⏱ ${(r.t/1000).toFixed(1)}s</span></div>`).join('')
     : '<div class="byline" style="letter-spacing:1px">Ancora nessuno l\'ha aperta...</div>';
 }
 let CSF_SETUP_SEQ = [null,null,null], CSF = {};
@@ -18600,7 +18627,9 @@ function pjRouteInner(m){
         $('pjQrBox').innerHTML=''; new QRCode($('pjQrBox'), {text:m.url, width:260, height:260, colorDark:'#0b0614'});
         window._pjQrDone = true; window._pjQrCode = m.code;
       }
-      $('pjLobbyPlayers').innerHTML = (m.names||[]).map(n=>`<div class="pChip">${esc(n)}</div>`).join('');
+      const names = m.names||[];
+      $('pjLobbyCount').textContent = names.length ? `🎉 ${names.length} ISCRITT${names.length===1?'O':'I'}!` : '';
+      $('pjLobbyPlayers').innerHTML = names.map(n=>`<div class="pChip">${esc(n)}</div>`).join('');
       showScreen('scrPjLobby');
     }
     else if (m.type==='question') {
@@ -18703,7 +18732,7 @@ function pjRouteInner(m){
     else if (m.type==='swissResult') {
       const c = $('swissClockPj'); clearInterval(c._int); c.textContent='10.000'; c.classList.add('stopped');
       $('pjSwissMsg').textContent = (m.rows&&m.rows.length) ? `🏆 IL PIÙ SVIZZERO: ${m.rows[0].name}!` : 'NESSUNO HA FERMATO!';
-      $('pjSwissLead').innerHTML = (m.rows||[]).map((r,i)=>
+      $('pjSwissLead').innerHTML = (m.rows||[]).slice(0,3).map((r,i)=>
         `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(r.name)} — ${(r.t/1000).toFixed(3)}s
          <span class="pts" style="color:${r.pts>=0?'var(--lime)':'var(--red)'}">${r.pts>=0?'+':''}${r.pts}</span></div>`).join('');
       if (m.rows && m.rows.length) confetti();
@@ -18770,11 +18799,11 @@ function pjRouteInner(m){
       },100);
     }
     else if (m.type==='tapRank') {
-      renderTapRanking($('pjTapRanking'), m.rows||[], [], true);
+      renderTapRanking($('pjTapRanking'), m.rows||[], [], true, true);
     }
     else if (m.type==='tapEnd') {
       clearInterval(window._pjTapInt); $('pjTapTimerBar').style.width='0%';
-      renderTapRanking($('pjTapRanking'), m.ranking||[], m.prizes||[], false);
+      renderTapRanking($('pjTapRanking'), m.ranking||[], m.prizes||[], false, true);
       $('pjTapMsg').textContent = (m.ranking&&m.ranking.length) ? `🏆 ${m.ranking[0].name} VINCE CON ${m.ranking[0].n} TAP!` : 'NESSUNO HA TOCCATO IL PULSANTE!';
       if (m.ranking && m.ranking.length) confetti();
     }
@@ -18795,11 +18824,11 @@ function pjRouteInner(m){
       },100);
     }
     else if (m.type==='tambRank') {
-      tambRenderRanking($('pjTambRanking'), m.rows||[], [], [], true);
+      tambRenderRanking($('pjTambRanking'), m.rows||[], [], [], true, true);
     }
     else if (m.type==='tambEnd') {
       clearInterval(window._pjTambInt); $('pjTambTimerBar').style.width='0%';
-      tambRenderRanking($('pjTambRanking'), m.ranking||[], m.prizes||[], m.losses||[], false);
+      tambRenderRanking($('pjTambRanking'), m.ranking||[], m.prizes||[], m.losses||[], false, true);
       $('pjTambMsg').textContent = (m.ranking&&m.ranking.length) ? `🏆 ${m.ranking[0].name} VINCE CON ${m.ranking[0].n} TAP!` : 'NESSUNO HA SUONATO!';
       if (m.ranking && m.ranking.length) confetti();
     }
@@ -18822,7 +18851,7 @@ function pjRouteInner(m){
     }
     else if (m.type==='mercEnd') {
       clearInterval(window._pjMercInt); $('pjMercTimerBar').style.width='0%'; $('pjMercSub').textContent='';
-      mercRenderRanking($('pjMercRanking'), m.ranking||[], m.prizes||[], m.losses||[], false);
+      mercRenderRanking($('pjMercRanking'), m.ranking||[], m.prizes||[], m.losses||[], false, true);
       $('pjMercMsg').textContent = (m.ranking&&m.ranking.length) ? `🏆 ${m.ranking[0].name} È IL MERCATISTA DEL GIORNO CON IL ${m.ranking[0].peak}%!` : 'NESSUNO HA GRIDATO!';
       if (m.ranking && m.ranking.length) confetti();
     }
@@ -18846,7 +18875,7 @@ function pjRouteInner(m){
     }
     else if (m.type==='stacEnd') {
       clearInterval(window._pjStacInt); $('pjStacTimerBar').style.width='0%';
-      stacRenderRanking($('pjStacRanking'), m.ranking||[], m.mode, null, false);
+      stacRenderRanking($('pjStacRanking'), m.ranking||[], m.mode, null, false, true);
       $('pjStacMsg').textContent = (m.ranking&&m.ranking.length) ? `🏆 ${m.ranking[0].name} HA IMBIANCATO LA STACCIONATA COL ${m.ranking[0].peak}%!` : 'NESSUNO HA GRIDATO!';
       if (m.ranking && m.ranking.length) confetti();
     }
@@ -18865,11 +18894,11 @@ function pjRouteInner(m){
       },100);
     }
     else if (m.type==='morraRank') {
-      morraRenderRanking($('pjMorraRanking'), m.rows||[], true);
+      morraRenderRanking($('pjMorraRanking'), m.rows||[], true, true);
     }
     else if (m.type==='morraEnd') {
       clearInterval(window._pjMorraInt); $('pjMorraTimerBar').style.width='0%';
-      morraRenderRanking($('pjMorraRanking'), m.ranking||[], false);
+      morraRenderRanking($('pjMorraRanking'), m.ranking||[], false, true);
       if (m.ranking && m.ranking.length) confetti();
     }
     else if (m.type==='puntoState') {
@@ -18879,16 +18908,16 @@ function pjRouteInner(m){
     else if (m.type==='puntoStart') {
       showScreen('scrPjPunto');
       $('pjPuntoMsg').textContent = '🧮 RISPONDETE DAL TELEFONO PER AVANZARE!';
-      puntoRenderTrack($('puntoTrackPj'), m.racers||[], m.notches, true);
-      puntoRenderRanking($('pjPuntoRanking'), m.racers||[], m.notches, true);
+      puntoRenderTrack($('puntoTrackPj'), m.racers||[], m.notches, true, 20);
+      puntoRenderRanking($('pjPuntoRanking'), m.racers||[], m.notches, true, true);
       window._pjPuntoNotches = m.notches;
     }
     else if (m.type==='puntoUpdate') {
-      puntoRenderTrack($('puntoTrackPj'), m.rows||[], window._pjPuntoNotches, true);
-      puntoRenderRanking($('pjPuntoRanking'), m.rows||[], window._pjPuntoNotches, true);
+      puntoRenderTrack($('puntoTrackPj'), m.rows||[], window._pjPuntoNotches, true, 20);
+      puntoRenderRanking($('pjPuntoRanking'), m.rows||[], window._pjPuntoNotches, true, true);
     }
     else if (m.type==='puntoEnd') {
-      puntoRenderRanking($('pjPuntoRanking'), m.ranking||[], window._pjPuntoNotches, false);
+      puntoRenderRanking($('pjPuntoRanking'), m.ranking||[], window._pjPuntoNotches, false, true);
       $('pjPuntoMsg').textContent = (m.ranking&&m.ranking.length) ? `🏆 ${m.ranking[0].name} TAGLIA IL TRAGUARDO PER PRIMO!` : 'NESSUNO HA GIOCATO!';
       if (m.ranking && m.ranking.length) confetti();
     }
@@ -18944,11 +18973,11 @@ function pjRouteInner(m){
       },100);
     }
     else if (m.type==='idrRank') {
-      idrRenderRanking($('pjIdrRanking'), m.rows||[], true);
+      idrRenderRanking($('pjIdrRanking'), m.rows||[], true, true);
     }
     else if (m.type==='idrEnd') {
       clearInterval(window._pjIdrInt); $('pjIdrTimerBar').style.width='0%';
-      idrRenderRanking($('pjIdrRanking'), m.ranking||[], false);
+      idrRenderRanking($('pjIdrRanking'), m.ranking||[], false, true);
       $('pjIdrMsg').textContent = (m.ranking||[]).some(r=>r.solved) ? '🏆 CIRCUITO COMPLETATO!' : "NESSUNO CE L'HA FATTA!";
       if ((m.ranking||[]).some(r=>r.solved)) confetti();
     }
@@ -18979,13 +19008,13 @@ function pjRouteInner(m){
       $('pjCsfMsg').textContent = m.type==='csfBet' ? "OGNUNO PROVA LA SUA COMBINAZIONE..." : "CHI LA APRE PER PRIMO?!";
     }
     else if (m.type==='csfSolved') {
-      csfRenderLiveRank($('pjCsfLiveRank'), m.list||[]);
+      csfRenderLiveRank($('pjCsfLiveRank'), m.list||[], true);
     }
     else if (m.type==='csfEnd') {
       const opened = (m.results||[]).length>0;
       if (opened) $('pjCsfSafeWrap').classList.add('open');
       $('pjCsfMsg').textContent = opened ? `🔓 APERTA! COMBINAZIONE: ${(m.secret||[]).join(' - ')}` : `🔒 NESSUNO CE L'HA FATTA! ERA: ${(m.secret||[]).join(' - ')}`;
-      csfRenderLiveRank($('pjCsfLiveRank'), m.results||[]);
+      csfRenderLiveRank($('pjCsfLiveRank'), m.results||[], true);
       if (opened) confetti();
     }
     else if (m.type==='smState') {
@@ -19036,7 +19065,7 @@ function pjRouteInner(m){
       $('pjScopaMsg').textContent = 'QUESTE ERANO LE CARTE A TERRA — ECCO CHI HA VINTO!';
       $('pjScopaTableRow').innerHTML = (m.tableCards||[]).map(c=>smCardHTML(c,false)).join('');
       const rows = (m.results||[]).slice().sort((a,b)=>b.points-a.points);
-      $('pjScopaRanking').innerHTML = rows.length ? rows.map((r,i)=>
+      $('pjScopaRanking').innerHTML = rows.length ? rows.slice(0,3).map((r,i)=>
         `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(r.name)} ${r.scopa?'<span style="color:var(--lime)">🧹 SCOPA!</span>':''}
           <span class="byline" style="margin:0 8px">prese: ${r.total}</span>
           <span class="pts" style="color:var(--lime)">+${r.points}</span></div>`).join('') : '';
@@ -19074,7 +19103,11 @@ function pjRouteInner(m){
     else if (m.type==='xoxResult') {
       const icon = m.result==='win'?'🎉':m.result==='lose'?'💢':m.result==='draw'?'🤝':'⏱';
       const label = m.delta>0?`+${m.delta}`:m.delta;
-      $('pjXoxResults').innerHTML = `<div class="leadRow"><span class="pos">${icon}</span> ${esc(m.name)} <span class="pts">${label}</span></div>` + $('pjXoxResults').innerHTML;
+      const el = $('pjXoxResults');
+      el.innerHTML = `<div class="leadRow"><span class="pos">${icon}</span> ${esc(m.name)} <span class="pts">${label}</span></div>` + el.innerHTML;
+      // tengo solo le 3 righe più recenti: altrimenti, accumulandosi una partita dopo l'altra per tutta
+      // la manche, questa lista crescerebbe senza fine e farebbe rimpicciolire il resto della schermata
+      while (el.children.length > 3) el.removeChild(el.lastElementChild);
     }
     else if (m.type==='gradState') {
       showScreen('scrPjGrad');
@@ -19130,7 +19163,7 @@ function pjRouteInner(m){
       clearInterval(window._pjMemoInt); $('memoTimerWrapPj').style.display='none';
       renderMemoGrid($('memoGridPj'), 8, m.cards, -1, m.targetIdx, true);
       $('pjMemoMsg').textContent = m.rows.length ? `🏆 CARTA IN POSIZIONE ${m.targetIdx+1}!` : `😅 ERA IN POSIZIONE ${m.targetIdx+1}`;
-      $('pjMemoLead').innerHTML = m.rows.length ? m.rows.map((r,i)=>
+      $('pjMemoLead').innerHTML = m.rows.length ? m.rows.slice(0,3).map((r,i)=>
         `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(r.name)} <span class="pts">+${r.pts}</span></div>`).join('')
         : '<div class="byline">Nessuno ha indovinato la posizione</div>';
       if (m.rows.length) confetti();
@@ -19253,7 +19286,7 @@ function pjRouteInner(m){
       confetti();
     }
     else if (m.type==='anaRank') {
-      $('pjAnaLead').innerHTML = (m.lead||[]).map((p,i)=>
+      $('pjAnaLead').innerHTML = (m.lead||[]).slice(0,3).map((p,i)=>
         `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(p.name)} <span class="pts">${p.score}</span></div>`).join('');
     }
     else if (m.type==='wsState') {
@@ -19271,12 +19304,12 @@ function pjRouteInner(m){
       puzzleCountdown($('pjWsTimerBar'), $('pjWsMsg'), m.endAt, m.dur, ()=>{});
     }
     else if (m.type==='wsRank') {
-      renderWsRanking($('pjWsRanking'), m.rows||[]);
+      renderWsRanking($('pjWsRanking'), m.rows||[], true);
       if (m.rows && m.rows.length) confetti();
     }
     else if (m.type==='wsEnd') {
       clearInterval($('pjWsTimerBar')._int);
-      renderWsRanking($('pjWsRanking'), m.rows||[]);
+      renderWsRanking($('pjWsRanking'), m.rows||[], true);
       setTimeout(()=>{ $('pjWsMsg').innerHTML = `⏱ TEMPO SCADUTO!!! <span style="color:var(--gold)">La parola era: ${m.word}</span>`; }, 1700);
     }
     else if (m.type==='puzzleState') {
@@ -19292,12 +19325,12 @@ function pjRouteInner(m){
       puzzleCountdown($('pjPuzTimerBar'), $('pjPuzMsg'), m.endAt, m.dur, ()=>{});
     }
     else if (m.type==='puzzleRank') {
-      renderPuzRanking($('pjPuzRanking'), m.rows||[]);
+      renderPuzRanking($('pjPuzRanking'), m.rows||[], true);
       if (m.rows && m.rows.length) confetti();
     }
     else if (m.type==='puzzleEnd') {
       clearInterval($('pjPuzTimerBar')._int);
-      renderPuzRanking($('pjPuzRanking'), m.rows||[]);
+      renderPuzRanking($('pjPuzRanking'), m.rows||[], true);
     }
     else if (m.type==='timerStart') {
       showScreen('scrPjTimer');
@@ -19412,7 +19445,7 @@ function pjRouteInner(m){
       $('pjRevealTitle').textContent = m.title || 'RISPOSTA GIUSTA';
       $('pjAnswer').innerHTML = (m.sym?`<span class="sym">${m.sym}</span> `:'')+esc(m.correctText||'');
       if (m.stats && m.opts) renderStats($('pjStats'), m.opts, m.stats, m.corrects||[], m.optKind==='photo'); else $('pjStats').innerHTML='';
-      $('pjLead').innerHTML = m.suspense ? '' : (m.lead||[]).map((p,i)=>
+      $('pjLead').innerHTML = m.suspense ? '' : (m.lead||[]).slice(0,3).map((p,i)=>
         `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(p.name)} <span class="pts">${p.score}</span></div>`).join('');
       showScreen('scrPjReveal');
     }
@@ -19671,7 +19704,7 @@ function pjRouteInner(m){
         (m.secret||[]).map(c=>`<div class="mmSlot filled"><div class="mmPeg" style="background:${MM_COLORS[c].hex}; background-image:radial-gradient(circle at 35% 30%, rgba(255,255,255,.75), rgba(255,255,255,0) 55%)"></div></div>`).join('')
       }</div>`;
       const results = m.results||[];
-      $('pjMmResults').innerHTML = secretRow + (results.length ? results.map(r=>
+      $('pjMmResults').innerHTML = secretRow + (results.length ? results.slice(0,3).map(r=>
         `<div class="leadRow"><span class="pos">🎯</span> ${esc(r.name)} <span class="pts">+${r.pts}</span></div>`).join('')
         : '<div class="byline">Nessuno ha risolto la sequenza in tempo!</div>');
       confetti();
@@ -19787,7 +19820,7 @@ function pjRouteInner(m){
       clearInterval(window._pjSpesaInt);
       $('pjSpesaBasketBar').style.display='none'; $('pjSpesaListBox').style.display='none'; $('pjSpesaTimerBar').style.width='0%';
       $('pjSpesaMsg').textContent = m.rows.length ? `🏆 ${m.rows[0].name} HA FATTO LA SPESA MIGLIORE!` : 'NESSUNO HA FATTO LA SPESA...';
-      $('pjSpesaResults').innerHTML = m.rows.length ? m.rows.map((r,i)=>
+      $('pjSpesaResults').innerHTML = m.rows.length ? m.rows.slice(0,3).map((r,i)=>
         `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(r.name)} <span class="pts">${r.correct}/${m.listLen} giusti · +${r.pts}</span></div>`).join('') : '<div class="byline">Nessun risultato.</div>';
       if (m.rows.length) confetti();
     }
