@@ -795,6 +795,13 @@ body.barOn.barCollapsed .screen.active{padding-bottom:70px;}
 .telDisplay::before{content:''; position:absolute; inset:0; background:repeating-linear-gradient(180deg, rgba(255,255,255,.025) 0px, rgba(255,255,255,.025) 1px, transparent 1px, transparent 3px); pointer-events:none;}
 .telDigits{font-family:'Courier New',monospace; font-weight:700; font-size:clamp(22px,6vw,30px); letter-spacing:5px; color:#7dffb0;
   text-shadow:0 0 10px rgba(125,255,176,.65); min-height:1.3em;}
+.telDigitCells{display:flex; align-items:center; justify-content:center; gap:4px; margin-top:8px; flex-wrap:wrap;}
+.telCell{width:9%; max-width:24px; aspect-ratio:.72; border-radius:5px; background:#0a0f0b; border:1.5px solid rgba(125,255,176,.3);
+  display:flex; align-items:center; justify-content:center; font-family:'Courier New',monospace; font-weight:700;
+  font-size:clamp(13px,4.2vw,18px); color:#7dffb0; text-shadow:0 0 8px rgba(125,255,176,.6); box-shadow:inset 0 2px 5px rgba(0,0,0,.55);
+  transition:border-color .15s, background .15s;}
+.telCell.filled{border-color:rgba(125,255,176,.75); background:#0e1c11; box-shadow:inset 0 2px 5px rgba(0,0,0,.55), 0 0 8px rgba(125,255,176,.25);}
+.telCellGap{width:9px;}
 .telHint{font-family:'Outfit'; font-size:11px; color:#3a5a44; letter-spacing:1px; margin-top:2px;}
 .telStatusText{font-family:'Bungee'; font-size:clamp(15px,4vw,19px); text-align:center; margin-top:6px; letter-spacing:1px;}
 .telStatusText.busy{color:#ff5d5d; animation:telBusyFlash .5s steps(1) infinite;}
@@ -1717,7 +1724,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.26</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.27</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -4825,7 +4832,7 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="miniMsg mt" style="font-size:clamp(13px,3.6vw,16px)">RINTRACCIA IL CAPONE QUIZ E VINCI!</div>
   <div class="telPhone">
     <div class="telDisplay" id="telDisplayBox"><div class="telIdleIcon">☎️</div><div class="telHint">digita un numero e chiama...</div></div>
-    <div class="telDigits" id="telDigits" style="text-align:center; margin-top:8px"></div>
+    <div class="telDigitCells" id="telDigitCells"></div>
     <div class="telKeypad">
       <div class="telKey" onclick="telKeyPress('1')">1</div>
       <div class="telKey" onclick="telKeyPress('2')">2</div>
@@ -5652,7 +5659,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1326; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1327; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -9310,16 +9317,27 @@ function telWinFanfare(){
     });
   }catch(e){}
 }
+function telRenderDigitCells(){
+  const el = $('telDigitCells'); if (!el) return;
+  const digits = P.telDigits || '';
+  let html = '';
+  for (let i=0;i<3;i++) html += `<div class="telCell ${i<digits.length?'filled':''}">${digits[i]||''}</div>`;
+  html += `<div class="telCellGap"></div>`;
+  for (let i=3;i<10;i++) html += `<div class="telCell ${i<digits.length?'filled':''}">${digits[i]||''}</div>`;
+  el.innerHTML = html;
+}
 function telKeyPress(d){
-  if (P.telDigits==null || P.telDigits.length>=12) return;
+  // dieci caselle in tutto, come un vero numero di cellulare (3 + 7): non serve a nulla ai fini del
+  // gioco, è solo per dare più senso al digitare
+  if (P.telDigits==null || P.telDigits.length>=10) return;
   P.telDigits += d;
-  $('telDigits').textContent = P.telDigits;
+  telRenderDigitCells();
   beepHz(350+Math.random()*250, 60, 'square');
 }
 function telBackspace(){
   if (!P.telDigits) return;
   P.telDigits = P.telDigits.slice(0,-1);
-  $('telDigits').textContent = P.telDigits || '';
+  telRenderDigitCells();
 }
 function telCall(){
   if (P.telResolved) return; P.telResolved = true;
@@ -9348,7 +9366,7 @@ function showPlayerTelefonata(g){
   const sig = 'act:'+m.roundId;
   if (P.telSig !== sig){
     P.telSig = sig; P.telResolved = false; P.telDigits = ''; P.telAssignments = m.assignments||{};
-    $('telDigits').textContent = '';
+    telRenderDigitCells();
     $('telDisplayBox').innerHTML = `<div class="telIdleIcon">☎️</div><div class="telHint">digita un numero e chiama...</div>`;
     $('telCallBtn').disabled = false;
     document.querySelectorAll('.telKey').forEach(k=>k.style.pointerEvents='');
