@@ -815,6 +815,47 @@ body.barOn.barCollapsed .screen.active{padding-bottom:70px;}
 .telCallBtn:active{transform:translateY(4px); box-shadow:0 2px 0 #0d5c26;}
 .telCallBtn:disabled{opacity:.35; pointer-events:none; box-shadow:none;}
 .telPjPhone{width:min(46vw,420px); margin:10px auto;}
+/* ===== LA SCOSSA ===== */
+.scossaArena{position:relative; width:100%; max-width:420px; aspect-ratio:3/4.4; margin:14px auto; border-radius:20px;
+  background:radial-gradient(ellipse at 50% 20%, #241a30 0%, #0c0810 100%); border:4px solid #3a2a4a;
+  box-shadow:inset 0 0 30px rgba(0,0,0,.6), 0 12px 26px rgba(0,0,0,.5); overflow:hidden; touch-action:none; cursor:pointer;}
+.scossaArena svg{position:absolute; inset:0; width:100%; height:100%; overflow:visible;}
+.scossaTrackBg{fill:none; stroke:#3a2e4a; stroke-width:16; stroke-linecap:round; stroke-linejoin:round; opacity:.7;}
+.scossaTrackBg2{fill:none; stroke:#1a1420; stroke-width:22; stroke-linecap:round; stroke-linejoin:round;}
+.scossaTrackProgress{fill:none; stroke:url(#scossaGreenGrad); stroke-width:16; stroke-linecap:round; stroke-linejoin:round;
+  filter:drop-shadow(0 0 8px rgba(182,255,46,.7));}
+.scossaMarker{filter:drop-shadow(0 2px 4px rgba(0,0,0,.6));}
+.scossaFinger{position:absolute; width:34px; height:34px; border-radius:50%; background:radial-gradient(circle, rgba(182,255,46,.9), rgba(182,255,46,0) 70%);
+  pointer-events:none; transform:translate(-50%,-50%); z-index:5; transition:opacity .2s;}
+.scossaShockFlash{position:absolute; inset:0; background:radial-gradient(circle, rgba(255,60,60,.55), rgba(255,60,60,0) 70%); pointer-events:none; opacity:0; z-index:6;}
+.scossaShockFlash.active{animation:scossaFlash .6s ease;}
+@keyframes scossaFlash{0%{opacity:0;} 15%{opacity:1;} 30%{opacity:.2;} 45%{opacity:1;} 100%{opacity:0;}}
+.scossaHint{font-family:'Outfit'; font-weight:700; font-size:12px; color:#fff; opacity:.65; text-align:center; margin-top:4px;}
+/* fulmini multipli che crepitano attorno al punto della scossa */
+.scossaBoltFx{position:absolute; font-size:40px; pointer-events:none; z-index:8; opacity:0; filter:drop-shadow(0 0 10px rgba(255,220,80,.9));
+  animation:scossaBoltCrackle .6s ease forwards;}
+@keyframes scossaBoltCrackle{0%{opacity:0; transform:translate(-50%,-50%) scale(.4);} 12%{opacity:1; transform:translate(-50%,-50%) scale(1.25);}
+  25%{opacity:.25;} 38%{opacity:1;} 55%{opacity:.15;} 70%{opacity:.9; transform:translate(-50%,-50%) scale(1);} 100%{opacity:0; transform:translate(-50%,-50%) scale(.85);}}
+/* scossone di tutta l'arena al momento della scossa */
+@keyframes scossaShake{0%,100%{transform:translateX(0);} 10%{transform:translate(-9px,2px) rotate(-1.2deg);} 20%{transform:translate(8px,-2px) rotate(1.2deg);}
+  30%{transform:translate(-7px,1px);} 40%{transform:translate(6px,-1px);} 50%{transform:translate(-5px);} 60%{transform:translate(4px);}
+  70%{transform:translate(-3px);} 80%{transform:translate(2px);} 90%{transform:translate(-1px);}}
+.scossaArena.shake{animation:scossaShake .5s ease;}
+/* il binario "sfarfalla" rosso/verde per un istante quando si prende la scossa */
+@keyframes scossaGlitch{0%,100%{stroke:url(#scossaGreenGrad);} 25%{stroke:#ff3b3b;} 50%{stroke:url(#scossaGreenGrad);} 75%{stroke:#ff3b3b;}}
+.scossaTrackProgress.glitch{animation:scossaGlitch .45s steps(1) 2;}
+/* onda luminosa che percorre il binario a vittoria completata, con scintille al seguito */
+.scossaWinGlowDot{position:absolute; width:28px; height:28px; border-radius:50%; z-index:9; pointer-events:none; transform:translate(-50%,-50%);
+  background:radial-gradient(circle, #fff, #b6ff2e 45%, rgba(182,255,46,0) 75%); box-shadow:0 0 22px 7px rgba(255,225,110,.85);}
+.scossaSparkle{position:absolute; font-size:20px; pointer-events:none; z-index:8; transform:translate(-50%,-50%); animation:scossaSparkleFade .75s ease forwards;}
+@keyframes scossaSparkleFade{0%{opacity:0; transform:translate(-50%,-50%) scale(.3) rotate(0deg);} 30%{opacity:1; transform:translate(-50%,-50%) scale(1.3) rotate(20deg);}
+  100%{opacity:0; transform:translate(-50%,-55%) scale(.7) rotate(40deg);}}
+@keyframes scossaWinPulse{0%,100%{filter:drop-shadow(0 0 8px rgba(182,255,46,.7));} 50%{filter:drop-shadow(0 0 26px rgba(255,221,110,1));}}
+.scossaTrackProgress.winPulse{animation:scossaWinPulse .55s ease 3;}
+.scossaWinBurst{position:absolute; font-size:46px; z-index:9; pointer-events:none; transform:translate(-50%,-50%) scale(.2); opacity:0;
+  animation:scossaBurstPop .8s cubic-bezier(.2,1.4,.4,1) forwards;}
+@keyframes scossaBurstPop{0%{opacity:0; transform:translate(-50%,-50%) scale(.2) rotate(-20deg);} 55%{opacity:1; transform:translate(-50%,-50%) scale(1.4) rotate(10deg);}
+  100%{opacity:1; transform:translate(-50%,-50%) scale(1) rotate(0);}}
 .shapePreviewRow .sBtn svg{width:40px; height:40px;}
 
 /* ===== TROVA LE DIFFERENZE ===== */
@@ -1676,7 +1717,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.25</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.26</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -4803,6 +4844,67 @@ body.suspense-on #pfRank{ display:none !important; }
   </div>
 </div>
 
+<!-- ==================== HOST: LA SCOSSA ==================== -->
+<div class="screen" id="scrScossa">
+  <div class="brand"><div class="t1" style="font-size:clamp(20px,3.6vw,36px)">⚡ LA SCOSSA</div></div>
+  <div class="panel mt" style="max-width:480px" id="scossaSetup">
+    <div class="label">Quanti percorsi fortunati?</div>
+    <select id="scossaNumWinners" onchange="scossaRenderPrizeRows()">
+      <option value="1">1 vincitore</option>
+      <option value="2">2 vincitori</option>
+      <option value="3" selected>3 vincitori</option>
+      <option value="4">4 vincitori</option>
+      <option value="5">5 vincitori</option>
+    </select>
+    <div class="label mt">Premi (uno per ogni vincitore)</div>
+    <div id="scossaPrizeRows"></div>
+    <div class="label mt">Tempo per tracciare il percorso</div>
+    <select id="scossaDuration">
+      <option value="15">15 secondi</option>
+      <option value="20">20 secondi</option>
+      <option value="25" selected>25 secondi</option>
+      <option value="30">30 secondi</option>
+      <option value="40">40 secondi</option>
+      <option value="45">45 secondi</option>
+    </select>
+    <div class="byline mt" style="opacity:.75">⚡ Ogni giocatore vede sul telefono un binario che serpeggia su tutto lo schermo: deve tracciarlo con il dito, dallo START fino alla FINE. Se durante il percorso prende la scossa ha perso — altrimenti, arrivando in fondo, ha vinto! Chi vince o perde è già deciso a sorte: il percorso serve solo a far passare il tempo con un po' di suspense.</div>
+    <button class="btn mg mt" style="width:100%" onclick="scossaStart()">⚡ FATE PARTIRE I PERCORSI!</button>
+  </div>
+  <div id="scossaLive" style="display:none; width:100%" class="center">
+    <div class="miniMsg" id="scossaMsg"></div>
+    <div class="timerWrap mt" style="max-width:420px"><div class="timerBar" id="scossaTimerBarHost"></div></div>
+    <div class="byline" id="scossaCount"></div>
+    <div class="lead mt" id="scossaResultsLive" style="max-width:500px; width:100%"></div>
+    <div class="row mt" style="justify-content:center">
+      <button class="btn lm" id="scossaBtnResults" onclick="scossaShowResults()" style="display:none">🏆 Mostra i vincitori</button>
+      <button class="btn cy" id="scossaBtnAgain" onclick="openScossa()" style="display:none">🔁 Un'altra manche</button>
+    </div>
+  </div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
+</div>
+
+<!-- ==================== PROIETTORE: LA SCOSSA ==================== -->
+<div class="screen" id="scrPjScossa">
+  <div class="brand"><div class="t1" style="font-size:clamp(24px,3.6vw,42px)">⚡ LA SCOSSA</div></div>
+  <div class="miniMsg" id="pjScossaMsg">TRACCIATE IL PERCORSO DAL TELEFONO, DALLO START ALLA FINE!</div>
+  <div class="timerWrap mt" style="max-width:460px"><div class="timerBar" id="pjScossaTimerBar"></div></div>
+  <div class="scossaArena" id="pjScossaArena" style="max-width:340px; aspect-ratio:16/11; cursor:default"></div>
+  <div class="lead mt" id="pjScossaResults" style="max-width:600px; width:100%"></div>
+</div>
+
+<!-- ==================== PLAYER: LA SCOSSA ==================== -->
+<div class="screen" id="scrPlayScossa" style="align-items:center; justify-content:center">
+  <div class="row" style="width:100%; justify-content:space-between">
+    <div class="pill" id="scossapName" style="color:var(--gold)"></div>
+    <div class="pill" id="scossapScore"></div>
+  </div>
+  <div class="timerWrap mt" style="max-width:280px"><div class="timerBar" id="scossapTimerBar"></div></div>
+  <div class="byline mt" id="scossaStatus">👆 TRACCIA IL PERCORSO CON IL DITO, DALLO START ALLA FINE!</div>
+  <div class="scossaArena" id="scossaArena"></div>
+  <div class="scossaHint">Se prendi la scossa hai perso — se arrivi in fondo hai vinto!</div>
+  <div class="zanzResultBig" id="scossaResult"></div>
+</div>
+
 <!-- ==================== HOST: LA MAGGIORANZA VINCE ==================== -->
 <div class="screen" id="scrMaj">
   <div class="brand"><div class="t1" style="font-size:clamp(20px,3.6vw,36px)">🗳️ LA MAGGIORANZA VINCE</div></div>
@@ -5474,7 +5576,7 @@ body.suspense-on #pfRank{ display:none !important; }
 /* ================================================================
    📋 ELENCO MINIGIOCHI — aggiornare questa lista ogni volta che se ne
    aggiunge uno nuovo (serve ad Alberto per la documentazione delle licenze).
-   Ultimo aggiornamento: v13.25 — 53 minigiochi totali.
+   Ultimo aggiornamento: v13.26 — 54 minigiochi totali.
    ================================================================
    1.  🥃 Bussolotti
    2.  🎲 Pari o Dispari
@@ -5529,6 +5631,7 @@ body.suspense-on #pfRank{ display:none !important; }
    51. 🛒 Lista della Spesa
    52. 🔪 Salumi e Formaggi
    53. ☎️ Una Telefonata che ti Premia
+   54. ⚡ La Scossa
 ================================================================ */
 
 /* ================================================================
@@ -5549,7 +5652,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1325; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1326; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -7514,6 +7617,7 @@ function listenGame(){
     else if (g.status==='spesa') showPlayerSpesa(g);
     else if (g.status==='salumi') showPlayerSalumi(g);
     else if (g.status==='telefonata') showPlayerTelefonata(g);
+    else if (g.status==='scossa') showPlayerScossa(g);
     else if (g.status==='finddiff') showPlayerFindDiff(g);
     else if (g.status==='maggioranza') showPlayerMaj(g);
     else if (g.status==='goldenticket') showPlayerGold(g);
@@ -9259,6 +9363,211 @@ function showPlayerTelefonata(g){
         P.telResolved = true; $('telCallBtn').disabled = true;
         document.querySelectorAll('.telKey').forEach(k=>k.style.pointerEvents='none');
         $('telDisplayBox').innerHTML = `<div class="telIdleIcon">⏱</div><div class="telStatusText busy">TEMPO SCADUTO!</div>`;
+      }
+    }
+  }, 100);
+}
+/* ================================================================
+   LA SCOSSA — generatore del percorso, suoni, funzioni condivise, telefono
+   Gioco di fortuna: l'esito (vincita/scossa) è già deciso a sorte dalla regia per ogni giocatore,
+   esattamente come per Una Telefonata che ti Premia. Il percorso serpeggiante che si traccia con il
+   dito è pura scenografia per far passare il tempo — per chi perde, la "trappola" è piazzata a un
+   punto casuale lungo il tracciato: superarlo tracciando fa scattare la scossa.
+================================================================ */
+function scossaBuildPathD(w, h, rows){
+  const marginX = w*0.13, marginY = h*0.07;
+  const usableH = h - marginY*2;
+  const rowH = usableH / rows;
+  const leftX = marginX, rightX = w-marginX;
+  const pts = [];
+  for (let r=0;r<rows;r++){
+    const y = marginY + rowH*(r+0.5);
+    if (r%2===0) pts.push([leftX,y],[rightX,y]);
+    else pts.push([rightX,y],[leftX,y]);
+  }
+  let d = `M ${pts[0][0].toFixed(1)} ${pts[0][1].toFixed(1)}`;
+  for (let i=1;i<pts.length;i++){
+    const [x0,y0] = pts[i-1], [x1,y1] = pts[i];
+    if (Math.abs(y0-y1) < 1){
+      const midX = (x0+x1)/2, wob = (i%4<2 ? -1 : 1) * rowH*0.16;
+      d += ` C ${midX.toFixed(1)} ${(y0+wob).toFixed(1)}, ${midX.toFixed(1)} ${(y1-wob).toFixed(1)}, ${x1.toFixed(1)} ${y1.toFixed(1)}`;
+    } else {
+      const midY = (y0+y1)/2;
+      d += ` C ${x0.toFixed(1)} ${midY.toFixed(1)}, ${x1.toFixed(1)} ${midY.toFixed(1)}, ${x1.toFixed(1)} ${y1.toFixed(1)}`;
+    }
+  }
+  return { d, start: pts[0], end: pts[pts.length-1] };
+}
+function scossaShockSound(){
+  try{
+    _audioCtx = _audioCtx || new (window.AudioContext||window.webkitAudioContext)();
+    const t0 = _audioCtx.currentTime;
+    const o = _audioCtx.createOscillator(), g = _audioCtx.createGain();
+    o.type='sawtooth';
+    o.frequency.setValueAtTime(180, t0);
+    o.frequency.exponentialRampToValueAtTime(45, t0+.35);
+    g.gain.setValueAtTime(.32, t0);
+    g.gain.exponentialRampToValueAtTime(.0001, t0+.4);
+    o.connect(g); g.connect(_audioCtx.destination); o.start(t0); o.stop(t0+.42);
+    // un piccolo crepitio sopra al ronzio principale, per un effetto "elettrico" più credibile
+    for (let i=0;i<6;i++){
+      const start = t0 + Math.random()*0.35;
+      const o2 = _audioCtx.createOscillator(), g2 = _audioCtx.createGain();
+      o2.type='square'; o2.frequency.value = 800+Math.random()*1200;
+      g2.gain.setValueAtTime(.12, start);
+      g2.gain.exponentialRampToValueAtTime(.0001, start+.04);
+      o2.connect(g2); g2.connect(_audioCtx.destination); o2.start(start); o2.stop(start+.05);
+    }
+  }catch(e){}
+}
+function scossaSetupTrack(container){
+  const rect = container.getBoundingClientRect();
+  const w = rect.width, h = rect.height;
+  const rows = 7;
+  const {d, start, end} = scossaBuildPathD(w, h, rows);
+  container.innerHTML = `<svg viewBox="0 0 ${w} ${h}">
+      <defs><linearGradient id="scossaGreenGrad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#b6ff2e"/><stop offset="100%" stop-color="#3ddc6b"/>
+      </linearGradient></defs>
+      <path class="scossaTrackBg2" d="${d}"/>
+      <path class="scossaTrackBg" d="${d}"/>
+      <path class="scossaTrackProgress" id="scossaProgressPath" d="${d}"/>
+      <circle cx="${start[0]}" cy="${start[1]}" r="11" fill="#b6ff2e" class="scossaMarker"/>
+      <text x="${start[0]}" y="${start[1]-18}" text-anchor="middle" font-size="13" font-family="Bungee" fill="#b6ff2e" class="scossaMarker">START</text>
+      <circle cx="${end[0]}" cy="${end[1]}" r="11" fill="#ffc93c" class="scossaMarker"/>
+      <text x="${end[0]}" y="${end[1]-18}" text-anchor="middle" font-size="13" font-family="Bungee" fill="#ffc93c" class="scossaMarker">FINE</text>
+    </svg>
+    <div class="scossaFinger" id="scossaFinger" style="opacity:0"></div>
+    <div class="scossaShockFlash" id="scossaShockFlash"></div>`;
+  const pathEl = container.querySelector('#scossaProgressPath');
+  const totalLen = pathEl.getTotalLength();
+  pathEl.style.strokeDasharray = totalLen;
+  pathEl.style.strokeDashoffset = totalLen;
+  const samples = [];
+  const N = 260;
+  for (let i=0;i<=N;i++){
+    const len = totalLen*i/N;
+    const pt = pathEl.getPointAtLength(len);
+    samples.push({x:pt.x, y:pt.y, len});
+  }
+  return { pathEl, totalLen, samples };
+}
+function scossaFindNearestProgress(samples, x, y){
+  let best = 0, bestDist = Infinity;
+  for (const s of samples){
+    const dx = s.x-x, dy = s.y-y, dist = dx*dx+dy*dy;
+    if (dist<bestDist){ bestDist=dist; best=s.len; }
+  }
+  return best;
+}
+function scossaPointerMove(e, arena){
+  if (P.scossaResolved || !P.scossaTrack) return;
+  const rect = arena.getBoundingClientRect();
+  const x = e.clientX-rect.left, y = e.clientY-rect.top;
+  const finger = $('scossaFinger');
+  if (finger){ finger.style.opacity='1'; finger.style.left=x+'px'; finger.style.top=y+'px'; }
+  const track = P.scossaTrack;
+  const progress = scossaFindNearestProgress(track.samples, x, y);
+  if (progress > P.scossaMaxProgress){
+    P.scossaMaxProgress = progress;
+    track.pathEl.style.strokeDashoffset = track.totalLen - progress;
+    if (!P.scossaWin && progress >= P.scossaTrapLen) scossaTriggerShock(arena, x, y);
+    else if (progress >= track.totalLen-4) scossaTriggerWin(arena);
+  }
+}
+function scossaSpawnBolts(arena, x, y, count){
+  for (let i=0;i<count;i++){
+    const bolt = document.createElement('div');
+    bolt.className = 'scossaBoltFx';
+    const ox = x + (Math.random()-0.5)*80, oy = y + (Math.random()-0.5)*80;
+    const rot = (Math.random()-0.5)*55, scale = 0.7+Math.random()*0.65;
+    bolt.style.left = ox+'px'; bolt.style.top = oy+'px';
+    bolt.style.transform = `translate(-50%,-50%) rotate(${rot}deg) scale(${scale})`;
+    bolt.style.animationDelay = (i*0.06)+'s';
+    bolt.textContent = '⚡';
+    arena.appendChild(bolt);
+    setTimeout(()=>bolt.remove(), 850);
+  }
+}
+function scossaWinShimmer(arena){
+  const track = P.scossaTrack; if (!track || !track.pathEl) return;
+  const pathEl = track.pathEl, dur = 850, startT = performance.now();
+  const glow = document.createElement('div'); glow.className='scossaWinGlowDot'; arena.appendChild(glow);
+  function step(t){
+    const frac = Math.min(1, (t-startT)/dur);
+    const pt = pathEl.getPointAtLength(track.totalLen*frac);
+    glow.style.left = pt.x+'px'; glow.style.top = pt.y+'px';
+    if (Math.random()<0.55){
+      const spark = document.createElement('div'); spark.className='scossaSparkle';
+      spark.style.left = pt.x+'px'; spark.style.top = pt.y+'px';
+      spark.textContent = ['✨','⭐','💫'][Math.floor(Math.random()*3)];
+      arena.appendChild(spark); setTimeout(()=>spark.remove(), 750);
+    }
+    if (frac<1) requestAnimationFrame(step);
+    else {
+      glow.remove();
+      const burst = document.createElement('div'); burst.className='scossaWinBurst';
+      burst.style.left = pt.x+'px'; burst.style.top = pt.y+'px'; burst.textContent = '🌟';
+      arena.appendChild(burst); setTimeout(()=>burst.remove(), 850);
+    }
+  }
+  requestAnimationFrame(step);
+}
+function scossaTriggerShock(arena, x, y){
+  if (P.scossaResolved) return; P.scossaResolved = true;
+  clearInterval(P.scossaInt); arena.onpointerdown=null; arena.onpointermove=null;
+  $('scossaShockFlash').classList.add('active');
+  arena.classList.add('shake'); setTimeout(()=>arena.classList.remove('shake'), 520);
+  const track = P.scossaTrack;
+  if (track && track.pathEl){ track.pathEl.classList.add('glitch'); setTimeout(()=>track.pathEl.classList.remove('glitch'), 480); }
+  if (x!=null) scossaSpawnBolts(arena, x, y, 5);
+  scossaShockSound(); if (navigator.vibrate) navigator.vibrate([60,40,60,40,180]);
+  $('scossaStatus').textContent = '⚡ HAI PRESO LA SCOSSA!';
+  $('scossaResult').className = 'zanzResultBig lose';
+  $('scossaResult').textContent = '⚡ SCOSSA! NIENTE DA FARE QUESTA VOLTA...';
+  P.ref.child('scossa/results/'+P.id).set({ win:false, prize:null });
+}
+function scossaTriggerWin(arena){
+  if (P.scossaResolved) return; P.scossaResolved = true;
+  clearInterval(P.scossaInt); arena.onpointerdown=null; arena.onpointermove=null;
+  const track = P.scossaTrack;
+  if (track && track.pathEl) track.pathEl.classList.add('winPulse');
+  scossaWinShimmer(arena);
+  const prizeLabel = P.scossaPrize.kind==='points' ? `+${P.scossaPrize.points} PUNTI!` : P.scossaPrize.text;
+  telWinFanfare(); confetti(); if (navigator.vibrate) navigator.vibrate([80,50,80,50,150]);
+  $('scossaStatus').textContent = "🎉 CE L'HAI FATTA!";
+  $('scossaResult').className = 'zanzResultBig win';
+  $('scossaResult').textContent = `🎉 PERCORSO COMPLETATO! 🎁 ${prizeLabel}`;
+  P.ref.child('scossa/results/'+P.id).set({ win:true, prize:P.scossaPrize });
+}
+function showPlayerScossa(g){
+  const m = g.scossa||{};
+  $('scossapName').textContent = P.name;
+  $('scossapScore').textContent = (((g.players||{})[P.id]||{}).score||0)+' pt';
+  showScreen('scrPlayScossa');
+  if (m.phase!=='active') return;
+  const sig = 'act:'+m.roundId;
+  if (P.scossaSig !== sig){
+    P.scossaSig = sig; P.scossaResolved = false; P.scossaMaxProgress = 0;
+    const outcome = (m.assignments||{})[P.id] || {win:false};
+    P.scossaWin = outcome.win; P.scossaPrize = outcome.prize;
+    const arena = $('scossaArena');
+    P.scossaTrack = scossaSetupTrack(arena);
+    P.scossaTrapLen = outcome.win ? Infinity : P.scossaTrack.totalLen*(0.25+Math.random()*0.55);
+    $('scossaResult').textContent=''; $('scossaResult').className='zanzResultBig';
+    $('scossaStatus').textContent = '👆 TRACCIA IL PERCORSO CON IL DITO, DALLO START ALLA FINE!';
+    arena.onpointerdown = (e)=>{ try{arena.setPointerCapture(e.pointerId);}catch(err){} scossaPointerMove(e, arena); };
+    arena.onpointermove = (e)=>{ if (e.buttons>0) scossaPointerMove(e, arena); };
+  }
+  clearInterval(P.scossaInt);
+  P.scossaInt = setInterval(()=>{
+    const left = Math.max(0, (m.endAt||0) - serverNow());
+    $('scossapTimerBar').style.width = (left/(m.durationMs||1)*100)+'%';
+    if (left<=0){
+      clearInterval(P.scossaInt);
+      if (!P.scossaResolved){
+        P.scossaResolved = true; const arena=$('scossaArena'); arena.onpointerdown=null; arena.onpointermove=null;
+        $('scossaStatus').textContent = '⏱ TEMPO SCADUTO!';
       }
     }
   }, 100);
@@ -15831,6 +16140,120 @@ function telShowResults(){
 }
 
 /* ================================================================
+   LA SCOSSA — regia
+   Stesso impianto di Una Telefonata che ti Premia: la regia estrae a sorte, prima ancora che si
+   giochi, chi tra i telefoni collegati sarà vincitore. Ogni giocatore scopre il proprio esito
+   tracciando il percorso con il dito sul proprio telefono.
+================================================================ */
+let SCOSSA = {};
+function openScossa(){
+  if (!isGameEnabled('scossa')) return alert('⚠️ Questo minigioco non è compreso nella licenza attiva. Contatta Alberto per sbloccarlo.');
+  if (!G) return alert('Avvia prima una partita!');
+  cancelLiveQuestion(); closeModal(); clearInterval((SCOSSA||{}).timerInt);
+  G.ref.child('scossa/results').off();
+  G.ref.update({ status:'scossa', scossa:{ phase:'idle' } });
+  SCOSSA = {};
+  $('scossaSetup').style.display='block'; $('scossaLive').style.display='none';
+  scossaRenderPrizeRows();
+  showScreen('scrScossa');
+}
+function scossaRenderPrizeRows(){
+  const n = +$('scossaNumWinners').value;
+  const box = $('scossaPrizeRows');
+  const prev = box._vals || [];
+  box.innerHTML = Array.from({length:n},(_,i)=>{
+    const p = prev[i] || { kind:'points', points:500, text:'' };
+    return `<div class="gtPrizeRow">
+      <span style="font-family:'Bungee'; color:var(--gold); width:20px">${i+1}°</span>
+      <select id="scossaKind${i}" onchange="scossaToggleKind(${i})">
+        <option value="points" ${p.kind==='points'?'selected':''}>Punti</option>
+        <option value="text" ${p.kind==='text'?'selected':''}>Premio scritto</option>
+      </select>
+      <input type="number" id="scossaPoints${i}" class="grow" placeholder="Punti" value="${p.points||500}" style="${p.kind==='text'?'display:none':''}">
+      <input type="text" id="scossaText${i}" class="grow" placeholder="Es. Una birra 🍺" value="${esc(p.text||'')}" style="${p.kind==='points'?'display:none':''}">
+    </div>`;
+  }).join('');
+}
+function scossaToggleKind(i){
+  const kind = $('scossaKind'+i).value;
+  $('scossaPoints'+i).style.display = kind==='points' ? '' : 'none';
+  $('scossaText'+i).style.display = kind==='text' ? '' : 'none';
+}
+function scossaCollectPrizes(){
+  const n = +$('scossaNumWinners').value;
+  const prizes = [];
+  for (let i=0;i<n;i++){
+    const kind = $('scossaKind'+i).value;
+    if (kind==='points') prizes.push({ kind:'points', points:+$('scossaPoints'+i).value||0 });
+    else prizes.push({ kind:'text', text:$('scossaText'+i).value.trim()||'Premio a sorpresa!' });
+  }
+  return prizes;
+}
+function scossaStart(){
+  const prizes = scossaCollectPrizes();
+  const durationSec = +($('scossaDuration').value||25);
+  const durationMs = durationSec*1000;
+  const endAt = serverNow()+durationMs;
+  const roundId = serverNow();
+  SCOSSA = { credited:{} };
+  G.ref.child('players').once('value').then(ps=>{
+    const players = ps.val()||{};
+    const pids = Object.keys(players);
+    const numWinners = Math.min(prizes.length, pids.length);
+    const outcomes = [];
+    for (let i=0;i<numWinners;i++) outcomes.push({ win:true, prize:prizes[i] });
+    while (outcomes.length < pids.length) outcomes.push({ win:false });
+    for (let i=outcomes.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [outcomes[i],outcomes[j]]=[outcomes[j],outcomes[i]]; }
+    const assignments = {};
+    pids.forEach((pid,i)=> assignments[pid] = outcomes[i]);
+    G.ref.update({ status:'scossa', scossa:{ phase:'active', endAt, durationMs, roundId, assignments } });
+    G.ref.child('scossa/results').remove();
+    $('scossaSetup').style.display='none'; $('scossaLive').style.display='block';
+    $('scossaMsg').textContent = `⚡ SI TRACCIA IL PERCORSO! ${numWinners} FORTUNATI SU ${pids.length}!`;
+    $('scossaCount').textContent=''; $('scossaResultsLive').innerHTML=''; $('scossaBtnAgain').style.display='none'; $('scossaBtnResults').style.display='none';
+    pjSend({type:'scossaActive', endAt, durationMs});
+    clearInterval(SCOSSA.timerInt);
+    SCOSSA.timerInt = setInterval(()=>{
+      const left = Math.max(0, endAt-serverNow());
+      $('scossaTimerBarHost').style.width = (left/durationMs*100)+'%';
+      if (left<=0) clearInterval(SCOSSA.timerInt);
+    }, 100);
+    G.ref.child('scossa/results').on('child_added', snap=>{
+      const pid = snap.key, r = snap.val();
+      if (!r || SCOSSA.credited[pid]) return;
+      SCOSSA.credited[pid] = true;
+      if (r.win && r.prize && r.prize.kind==='points') applyScoreDelta(pid, r.prize.points);
+    });
+    G.ref.child('scossa/results').on('value', s=>{
+      const results = s.val()||{};
+      const entries = Object.entries(results);
+      $('scossaCount').textContent = `Percorsi conclusi: ${entries.length}/${pids.length}`;
+      if (entries.length>0){ $('scossaBtnAgain').style.display=''; $('scossaBtnResults').style.display=''; }
+      G.ref.child('players').once('value').then(ps2=>{
+        const pl = ps2.val()||{};
+        $('scossaResultsLive').innerHTML = entries.map(([pid,r])=>{
+          const label = r.win ? (r.prize.kind==='points' ? `🎉 +${r.prize.points} punti` : `🎁 ${esc(r.prize.text)}`) : '⚡ Scossa';
+          return `<div class="leadRow"><span class="pos">${r.win?'🏆':'—'}</span> ${esc((pl[pid]||{}).name||'?')} <span class="pts">${label}</span></div>`;
+        }).join('') || '<div class="byline">Nessun percorso concluso ancora...</div>';
+      });
+    });
+  });
+}
+function scossaShowResults(){
+  G.ref.child('scossa/results').once('value').then(s=>{
+    const results = s.val()||{};
+    G.ref.child('players').once('value').then(ps=>{
+      const pl = ps.val()||{};
+      const rows = Object.entries(results).filter(([,r])=>r.win).map(([pid,r])=>({
+        name:(pl[pid]||{}).name||'?', prize:r.prize
+      }));
+      pjSend({type:'scossaResult', rows});
+      if (rows.length) confetti();
+    });
+  });
+}
+
+/* ================================================================
    ROULETTE — regia
 ================================================================ */
 let RW = {};
@@ -18180,6 +18603,7 @@ const GIOCHI_CATALOGO = [
   {k:'seed', l:'🃏 Il Seme Vincente'},
   {k:'taptap', l:'👆 Tap Tap'},
   {k:'ruota', l:'🎡 La Ruota Gira per Tutti'},
+  {k:'scossa', l:'⚡ La Scossa'},
   {k:'swiss', l:'⌚ Precisione Svizzera'},
   {k:'hilo', l:'🃏 Carta Alta, Carta Bassa'},
   {k:'wheels', l:'🎡 Le Ruote della Fortuna'},
@@ -18280,6 +18704,7 @@ function modalGamesLuck(){
     gk('maj', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#189a4a,#0b6fb8); color:#fff; box-shadow:0 7px 0 #0a3a1e,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(24,154,74,.4)" onclick="openMaj()">🗳️ La Maggioranza Vince</button>`),
     gk('pagliuzza', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#8a6428,#5a3d18); color:#ffe9a8; box-shadow:0 7px 0 #2e1e0a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(90,61,24,.4)" onclick="openPagliuzza()">🌾 La Pagliuzza</button>`),
     gk('ruota', `<button class="btn cy gameBtn" onclick="openRuota()">🎡 La Ruota Gira per Tutti</button>`),
+    gk('scossa', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#ffe93d,#8a5a0b); color:#2e2400; box-shadow:0 7px 0 #4a3300,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,233,61,.4)" onclick="openScossa()">⚡ La Scossa</button>`),
     gk('wheels', `<button class="btn gameBtn" onclick="openWheels()">🎡 Le Ruote della Fortuna</button>`),
     gk('staccionata', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#8a6339,#5c4023); color:#fff; box-shadow:0 7px 0 #3d2a16,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(138,99,57,.4)" onclick="openStaccionata()">🪵 Maledetta Staccionata</button>`),
     gk('merc', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#ff5d7a,#8a0f2e); color:#fff; box-shadow:0 7px 0 #5a0018,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,93,122,.4)" onclick="openMerc()">📣 Mercatista per un Giorno</button>`),
@@ -18839,6 +19264,7 @@ function backToQuiz(title){
   G.ref.child('maggioranza/votes').off();
   G.ref.child('goldenticket/results').off();
   G.ref.child('telefonata/results').off();
+  G.ref.child('scossa/results').off();
   G.ref.child('casino/bets').off();
   G.ref.child('tamburini/counts').off();
   G.ref.child('mercatista/peaks').off();
@@ -18870,6 +19296,7 @@ function backToQuiz(title){
   clearInterval((MAJ||{}).timerInt);
   clearInterval((GOLD||{}).timerInt);
   clearInterval((TEL||{}).timerInt);
+  clearInterval((SCOSSA||{}).timerInt);
   clearInterval((RW||{}).timerInt);
   clearInterval((TAMB||{}).timerInt);
   clearInterval((MERC||{}).timerInt);
@@ -18879,7 +19306,7 @@ function backToQuiz(title){
   clearInterval((PATATA||{}).timerInt);
   clearInterval((CSF||{}).timerInt);
   clearInterval((XOX||{}).timerInt);
-  G.ref.update({ status:'pausa', mini:null, dice:null, simon:null, voto:null, timer:null, tombola:null, cards:null, swiss:null, hilo:null, wheels:null, puzzle:null, wordsearch:null, anagram:null, seed:null, grad:null, taptap:null, ruota:null, memo:null, memocoppie:null, horses:null, tfiscale:null, toc:null, cenerentola:null, pacchi:null, roulette:null, pagliuzza:null, supertris:null, rdc:null, mastermind:null, bomba:null, shapes:null, zanzare:null, spesa:null, salumi:null, finddiff:null, maggioranza:null, goldenticket:null, telefonata:null, casino:null, tamburini:null, mercatista:null, staccionata:null, morra:null, punto:null, dado:null, asta:null, idraulico:null, patata:null, cassaforte:null, settemezzo:null, scopa:null, bingocarte:null, xox:null });
+  G.ref.update({ status:'pausa', mini:null, dice:null, simon:null, voto:null, timer:null, tombola:null, cards:null, swiss:null, hilo:null, wheels:null, puzzle:null, wordsearch:null, anagram:null, seed:null, grad:null, taptap:null, ruota:null, memo:null, memocoppie:null, horses:null, tfiscale:null, toc:null, cenerentola:null, pacchi:null, roulette:null, pagliuzza:null, supertris:null, rdc:null, mastermind:null, bomba:null, shapes:null, zanzare:null, spesa:null, salumi:null, finddiff:null, maggioranza:null, goldenticket:null, telefonata:null, scossa:null, casino:null, tamburini:null, mercatista:null, staccionata:null, morra:null, punto:null, dado:null, asta:null, idraulico:null, patata:null, cassaforte:null, settemezzo:null, scopa:null, bingocarte:null, xox:null });
   G.ref.child('players').once('value', ps=>{
     const players = ps.val()||{};
     $('hrTitle').textContent = title || 'SI TORNA AL QUIZ!';
@@ -20261,6 +20688,26 @@ function pjRouteInner(m){
       clearInterval(window._pjTelInt); $('pjTelTimerBar').style.width='0%';
       $('pjTelMsg').textContent = m.rows.length ? `🏆 ${m.rows.length} FORTUNATI HANNO RINTRACCIATO IL CAPONE!` : 'NESSUNO HA RINTRACCIATO IL CAPONE QUESTA VOLTA...';
       $('pjTelResults').innerHTML = m.rows.slice(0,5).map(r=>{
+        const label = r.prize.kind==='points' ? `+${r.prize.points} punti` : esc(r.prize.text);
+        return `<div class="leadRow"><span class="pos">🏆</span> ${esc(r.name)} <span class="pts">${label}</span></div>`;
+      }).join('') || '<div class="byline">Nessun vincitore questa volta.</div>';
+    }
+    else if (m.type==='scossaActive') {
+      showScreen('scrPjScossa');
+      $('pjScossaMsg').textContent = 'TRACCIATE IL PERCORSO DAL TELEFONO, DALLO START ALLA FINE!';
+      $('pjScossaResults').innerHTML='';
+      scossaSetupTrack($('pjScossaArena'));
+      clearInterval(window._pjScossaInt);
+      window._pjScossaInt = setInterval(()=>{
+        const left = Math.max(0, m.endAt - serverNow());
+        $('pjScossaTimerBar').style.width = (left/m.durationMs*100)+'%';
+        if (left<=0) clearInterval(window._pjScossaInt);
+      }, 100);
+    }
+    else if (m.type==='scossaResult') {
+      clearInterval(window._pjScossaInt); $('pjScossaTimerBar').style.width='0%';
+      $('pjScossaMsg').textContent = m.rows.length ? `🏆 ${m.rows.length} FORTUNATI HANNO COMPLETATO IL PERCORSO!` : 'NESSUNO È ARRIVATO IN FONDO SENZA SCOSSA QUESTA VOLTA...';
+      $('pjScossaResults').innerHTML = m.rows.slice(0,5).map(r=>{
         const label = r.prize.kind==='points' ? `+${r.prize.points} punti` : esc(r.prize.text);
         return `<div class="leadRow"><span class="pos">🏆</span> ${esc(r.name)} <span class="pts">${label}</span></div>`;
       }).join('') || '<div class="byline">Nessun vincitore questa volta.</div>';
