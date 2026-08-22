@@ -1725,7 +1725,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.28</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.29</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -3224,7 +3224,7 @@ body.suspense-on #pfRank{ display:none !important; }
 
 <!-- ==================== HOST: SUPERTRIS ==================== -->
 <div class="screen" id="scrSupertris">
-  <div class="brand"><div class="t1" style="font-size:clamp(20px,3.6vw,36px)">🎰 SUPERTRIS</div></div>
+  <div class="brand"><div class="t1" style="font-size:clamp(20px,3.6vw,36px)">💎 SUPERTRIS</div></div>
   <div class="panel mt" style="max-width:480px" id="stSetup">
     <div class="label">Modalità premi</div>
     <select id="stMode" onchange="stModeChanged()">
@@ -3245,10 +3245,10 @@ body.suspense-on #pfRank{ display:none !important; }
       <input type="text" id="stPrizeText2" placeholder="2° premio" maxlength="60" class="mt">
       <input type="text" id="stPrizeText3" placeholder="3° premio" maxlength="60" class="mt">
     </div>
-    <button class="btn mg mt" style="width:100%" onclick="stStart()">🎰 DISTRIBUISCI LE CARTELLE!</button>
+    <button class="btn mg mt" style="width:100%" onclick="stStart()">💎 DISTRIBUISCI LE CARTELLE!</button>
   </div>
   <div id="stLive" style="display:none; width:100%" class="center">
-    <div class="miniMsg">🎰 OGNUNO GRATTA LA PROPRIA CARTELLA DAL TELEFONO!</div>
+    <div class="miniMsg">💎 OGNUNO GRATTA LA PROPRIA CARTELLA DAL TELEFONO!</div>
     <div class="byline" id="stCount"></div>
     <div class="lead mt" id="stWinnersLive" style="max-width:500px; width:100%"></div>
     <div class="row mt" style="justify-content:center">
@@ -3260,7 +3260,7 @@ body.suspense-on #pfRank{ display:none !important; }
 
 <!-- ==================== PROIETTORE: SUPERTRIS ==================== -->
 <div class="screen" id="scrPjSupertris">
-  <div class="brand"><div class="t1" style="font-size:clamp(26px,4vw,48px)">🎰 SUPERTRIS</div></div>
+  <div class="brand"><div class="t1" style="font-size:clamp(26px,4vw,48px)">💎 SUPERTRIS</div></div>
   <div class="miniMsg" id="pjStMsg" style="font-size:clamp(18px,3vw,30px)">Ognuno gratta la propria cartella sul telefono!</div>
   <div class="lead mt" id="pjStWinners" style="max-width:600px; width:100%"></div>
 </div>
@@ -5609,7 +5609,7 @@ body.suspense-on #pfRank{ display:none !important; }
    21. 📦 Il Gioco dei Pacchi
    22. 🤠 Roulette Russa
    23. 🌾 La Pagliuzza
-   24. 🎰 SUPERTRIS
+   24. 💎 SUPERTRIS
    25. 🧮 La Resa dei Conti
    26. 🎯 Mastermind
    27. 💣 Bomba a Orologeria
@@ -5660,7 +5660,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1328; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1329; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -8432,7 +8432,7 @@ function showPlayerSupertris(g){
       $('stpStatus').className='stStatus'; $('stpStatus').textContent = 'GRATTA TUTTI I RIQUADRI!';
       $('stGrid').innerHTML = Array.from({length:9},(_,i)=>`
         <div class="stCell" id="stCell${i}" data-i="${i}" onclick="stScratch(${i})">
-          <div class="stCellFoil">🎰</div>
+          <div class="stCellFoil">💎</div>
           <div class="stCellSymbol">${esc(P.stCard.grid[i])}</div>
         </div>`).join('');
     }
@@ -11521,18 +11521,27 @@ function showPlayerMemoCoppie(g){
       P.mcStartAt = m.startAt; P.mcPoints = m.points; P.mcNPairs = m.nPairs;
       P.mcDeck = mcBuildDeck(m.nPairs);
       P.mcSolved = new Set(); P.mcPick1 = null; P.mcBusy = false; P.mcSubmitted = false;
-      $('pmcStatus').textContent = '🃏 TOCCA DUE CARTE PER TROVARE LE COPPIE!';
-      renderMcGrid($('mcGridPl'), P.mcDeck, P.mcSolved, false);
-      document.querySelectorAll('#mcGridPl .mcCard').forEach((c,i)=>{ c.onclick = ()=> mcTap(i); });
-      clearInterval(P.mcInt);
-      P.mcInt = setInterval(()=>{
-        const left = Math.max(0, (m.endAt||0) - serverNow());
-        $('pmcTimerBar').style.width = (left/((m.secs||60)*1000)*100)+'%';
-        if (left<=0){ clearInterval(P.mcInt); mcSubmitResult(); }
-      },100);
+      // anteprima: tutte le carte restano scoperte per un secondo, per farle memorizzare, poi si
+      // coprono e SOLO A QUEL PUNTO parte il vero tempo di risoluzione del gioco
+      $('pmcStatus').textContent = '👀 MEMORIZZA LE CARTE!';
+      renderMcGrid($('mcGridPl'), P.mcDeck, P.mcSolved, false, true);
+      $('pmcTimerBar').style.width = '100%';
+      clearInterval(P.mcInt); clearTimeout(P.mcRevealTimeout);
+      const revealEndAt = m.revealEndAt || (m.startAt+1000);
+      P.mcRevealTimeout = setTimeout(()=>{
+        if (P.mcStartAt !== m.startAt) return; // nel frattempo è già partito un altro round: ignoro
+        renderMcGrid($('mcGridPl'), P.mcDeck, P.mcSolved, false, false);
+        document.querySelectorAll('#mcGridPl .mcCard').forEach((c,i)=>{ c.onclick = ()=> mcTap(i); });
+        $('pmcStatus').textContent = '🃏 TOCCA DUE CARTE PER TROVARE LE COPPIE!';
+        P.mcInt = setInterval(()=>{
+          const left = Math.max(0, (m.endAt||0) - serverNow());
+          $('pmcTimerBar').style.width = (left/((m.secs||60)*1000)*100)+'%';
+          if (left<=0){ clearInterval(P.mcInt); mcSubmitResult(); }
+        },100);
+      }, Math.max(0, revealEndAt-serverNow()));
     }
   } else if (m.phase==='result'){
-    clearInterval(P.mcInt); $('pmcTimerBar').style.width='0%';
+    clearInterval(P.mcInt); clearTimeout(P.mcRevealTimeout); $('pmcTimerBar').style.width='0%';
     mcSubmitResult();
     document.querySelectorAll('#mcGridPl .mcCard').forEach(c=>{ c.onclick=null; c.classList.add('locked'); });
     const found = P.mcSolved ? P.mcSolved.size/2 : 0;
@@ -18212,7 +18221,7 @@ function mcBuildDeck(nPairs){
 }
 function mcGridClass(nCards){ return nCards===20?'g20':(nCards===36?'g36':'g48'); }
 /* Griglia PERSONALE del singolo telefono: ogni giocatore ha il proprio mazzo mescolato, tutto locale, niente da condividere */
-function renderMcGrid(el, deck, solvedSet, big){
+function renderMcGrid(el, deck, solvedSet, big, revealAll){
   const n = deck.length;
   el.className = 'mcGrid ' + mcGridClass(n) + (big?' big':'');
   if (el._n !== n){
@@ -18224,10 +18233,11 @@ function renderMcGrid(el, deck, solvedSet, big){
   }
   el.querySelectorAll('.mcCard').forEach((cardEl,i)=>{
     const isSolved = solvedSet && solvedSet.has(i);
+    const showFace = revealAll || isSolved;
     cardEl.querySelector('.mcSym').textContent = deck[i].sym;
-    cardEl.classList.toggle('flip', isSolved); // le coppie trovate restano scoperte; le altre si girano solo "a mano" quando toccate
+    cardEl.classList.toggle('flip', showFace); // durante l'anteprima tutte le carte si girano, non solo quelle già trovate
     cardEl.classList.toggle('solved', isSolved);
-    cardEl.classList.toggle('locked', isSolved);
+    cardEl.classList.toggle('locked', isSolved || revealAll); // bloccate anche durante l'anteprima, per evitare tocchi prematuri
   });
 }
 
@@ -18256,14 +18266,16 @@ function mcStart(){
   const nPairs = nCards/2;
   const points = getPoints('mcPoints','mcPointsMan');
   const secs = +$('mcSecs').value;
-  const startAt = serverNow()+800, endAt = startAt + secs*1000;
-  MC = { nPairs, points, secs, startAt, endAt, credited:new Set(), rows:[] };
-  G.ref.update({ status:'memocoppie', memocoppie:{ phase:'play', nPairs, points, secs, startAt, endAt, results:null } });
+  const startAt = serverNow()+800;
+  const revealEndAt = startAt + 1000; // le carte restano scoperte 1 secondo prima che parta il vero tempo di risoluzione
+  const endAt = revealEndAt + secs*1000;
+  MC = { nPairs, points, secs, startAt, revealEndAt, endAt, credited:new Set(), rows:[] };
+  G.ref.update({ status:'memocoppie', memocoppie:{ phase:'play', nPairs, points, secs, startAt, revealEndAt, endAt, results:null } });
   G.ref.child('memocoppie/results').remove();
   $('mcSetup').style.display='none'; $('mcLive').style.display='block';
   $('mcMsg').textContent = `🃏 Ogni telefono ha la sua griglia da ${nPairs} coppie — via!`;
   $('mcLead').innerHTML=''; $('mcBtnAgain').style.display='none';
-  pjSend({type:'mcStart', nPairs, startAt, endAt, secs});
+  pjSend({type:'mcStart', nPairs, startAt, revealEndAt, endAt, secs});
   G.ref.child('memocoppie/results').on('value', s=>{
     const results = s.val()||{};
     G.ref.child('players').once('value', ps=>{
@@ -18635,7 +18647,7 @@ const GIOCHI_CATALOGO = [
   {k:'pacchi', l:'📦 Il Gioco dei Pacchi'},
   {k:'roulette', l:'🤠 Roulette Russa'},
   {k:'pagliuzza', l:'🌾 La Pagliuzza'},
-  {k:'supertris', l:'🎰 SUPERTRIS'},
+  {k:'supertris', l:'💎 SUPERTRIS'},
   {k:'rdc', l:'🧮 La Resa dei Conti'},
   {k:'spesa', l:'🛒 Lista della Spesa'},
   {k:'mastermind', l:'🎯 Mastermind'},
@@ -18689,8 +18701,10 @@ function modalGamesSkill(){
     gk('cassaforte', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#8a8f96,#3a3c40); color:#fff; box-shadow:0 7px 0 #1a1c1e,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(138,143,150,.35)" onclick="openCassaforte()">🔐 La Cassaforte</button>`),
     gk('rdc', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#5a3d8a,#2e1a5a); color:#fff; box-shadow:0 7px 0 #180e30,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(46,26,90,.4)" onclick="openRdc()">🧮 La Resa dei Conti</button>`),
     gk('spesa', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#e0a83d,#8a5a0b); color:#3a2600; box-shadow:0 7px 0 #4a3300,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(224,168,61,.4)" onclick="openSpesa()">🛒 Lista della Spesa</button>`),
+    gk('staccionata', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#8a6339,#5c4023); color:#fff; box-shadow:0 7px 0 #3d2a16,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(138,99,57,.4)" onclick="openStaccionata()">🪵 Maledetta Staccionata</button>`),
     gk('mastermind', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#4a4a4a,#222); color:#fff; box-shadow:0 7px 0 #0a0a0a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(0,0,0,.4)" onclick="openMastermind()">🎯 Mastermind</button>`),
     gk('memocoppie', `<button class="btn gameBtn" onclick="openMemoCoppie()">🃏 Memo le Coppie</button>`),
+    gk('merc', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#ff5d7a,#8a0f2e); color:#fff; box-shadow:0 7px 0 #5a0018,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,93,122,.4)" onclick="openMerc()">📣 Mercatista per un Giorno</button>`),
     gk('shapes', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#c2183d,#ff8a3c); color:#fff; box-shadow:0 7px 0 #6b0e21,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(194,24,61,.4)" onclick="openShapes()">👁 Occhio alle Forme</button>`),
     gk('swiss', `<button class="btn cy gameBtn" onclick="openSwiss()">⌚ Precisione Svizzera</button>`),
     gk('puzzle', `<button class="btn mg gameBtn" onclick="openPuzzle()">🧩 Puzzle</button>`),
@@ -18725,15 +18739,13 @@ function modalGamesLuck(){
     gk('ruota', `<button class="btn cy gameBtn" onclick="openRuota()">🎡 La Ruota Gira per Tutti</button>`),
     gk('scossa', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#ffe93d,#8a5a0b); color:#2e2400; box-shadow:0 7px 0 #4a3300,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,233,61,.4)" onclick="openScossa()">⚡ La Scossa</button>`),
     gk('wheels', `<button class="btn gameBtn" onclick="openWheels()">🎡 Le Ruote della Fortuna</button>`),
-    gk('staccionata', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#8a6339,#5c4023); color:#fff; box-shadow:0 7px 0 #3d2a16,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(138,99,57,.4)" onclick="openStaccionata()">🪵 Maledetta Staccionata</button>`),
-    gk('merc', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#ff5d7a,#8a0f2e); color:#fff; box-shadow:0 7px 0 #5a0018,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,93,122,.4)" onclick="openMerc()">📣 Mercatista per un Giorno</button>`),
     gk('morra', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#7a5cff,#2e0f8a); color:#fff; box-shadow:0 7px 0 #180a5c,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(122,92,255,.4)" onclick="openMorra()">✊✋✌️ Morra Cinese</button>`),
     gk('dice', `<button class="btn cy gameBtn" onclick="openDice()">🎲 Pari o Dispari</button>`),
     gk('patata', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#ff5d3d,#8a1a0b); color:#fff; box-shadow:0 7px 0 #4a0a00,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,93,61,.4)" onclick="openPatata()">💣 Patata Bollente</button>`),
     gk('horses', `<button class="btn mg gameBtn" onclick="openHorses()">🐎 Pubbliche Offese</button>`),
     gk('casino', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#a3111c,#1a1108); color:#fff; box-shadow:0 7px 0 #3a0508,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(163,17,28,.4)" onclick="openCasino()">🎰 Roulette (Casinò)</button>`),
     gk('roulette', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#a85838,#6b3018); color:#ffe9a8; box-shadow:0 7px 0 #3a1a0c,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(107,48,24,.4)" onclick="openRoulette()">🤠 Roulette Russa</button>`),
-    gk('supertris', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#2d8a4e,#0d4020); color:#ffe042; box-shadow:0 7px 0 #072410,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(13,64,32,.4)" onclick="openSupertris()">🎰 SUPERTRIS</button>`),
+    gk('supertris', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#2d8a4e,#0d4020); color:#ffe042; box-shadow:0 7px 0 #072410,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(13,64,32,.4)" onclick="openSupertris()">💎 SUPERTRIS</button>`),
     gk('toc', `<button class="btn cy gameBtn" onclick="openToc()">🪙 Testa o Croce</button>`),
     gk('tombola', `<button class="btn lm gameBtn" onclick="openTombola()">🎱 Tombola</button>`),
     gk('telefonata', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#42e07a,#159944); color:#fff; box-shadow:0 7px 0 #0d5c26,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(66,224,122,.4)" onclick="openTelefonata()">☎️ Una Telefonata che ti Premia</button>`)
@@ -19982,9 +19994,12 @@ function pjRouteInner(m){
     else if (m.type==='mcStart') {
       showScreen('scrPjMemoCoppie');
       $('pjMcMsg').textContent = `🃏 ${m.nPairs} coppie da trovare — a chi tocca prima!`;
+      $('pjMcTimerBar').style.width = '100%';
       clearInterval(window._pjMcInt);
       window._pjMcInt = setInterval(()=>{
-        const left = Math.max(0, m.endAt - serverNow());
+        const now = serverNow();
+        if (now < m.revealEndAt){ $('pjMcTimerBar').style.width='100%'; return; }
+        const left = Math.max(0, m.endAt - now);
         $('pjMcTimerBar').style.width = (left/(m.secs*1000)*100)+'%';
         if (left<=0) clearInterval(window._pjMcInt);
       },100);
