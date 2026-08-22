@@ -839,6 +839,35 @@ body.barOn.barCollapsed .screen.active{padding-bottom:70px;}
 .scossaShockFlash.active{animation:scossaFlash .6s ease;}
 @keyframes scossaFlash{0%{opacity:0;} 15%{opacity:1;} 30%{opacity:.2;} 45%{opacity:1;} 100%{opacity:0;}}
 .scossaHint{font-family:'Outfit'; font-weight:700; font-size:12px; color:#fff; opacity:.65; text-align:center; margin-top:4px;}
+/* ===== SLOT MACHINE ===== */
+.slotCabinet{position:relative; width:100%; max-width:320px; margin:14px auto; padding:18px 16px 26px; border-radius:26px;
+  background:linear-gradient(150deg,#5a1030,#2a0616); border:4px solid #ffc93c;
+  box-shadow:0 16px 32px rgba(0,0,0,.6), inset 0 2px 4px rgba(255,255,255,.15), 0 0 30px rgba(255,201,60,.25);}
+.slotCabinet::before{content:'✨ SLOT MACHINE ✨'; display:block; text-align:center; font-family:'Bungee'; font-size:13px;
+  color:#ffc93c; letter-spacing:1px; margin-bottom:10px; text-shadow:0 0 8px rgba(255,201,60,.6);}
+.slotBody{display:flex; align-items:stretch; gap:10px;}
+.slotWindowFrame{flex:1; background:#0a0a12; border-radius:14px; border:5px solid #1a1a26; padding:8px;
+  box-shadow:inset 0 4px 14px rgba(0,0,0,.85);}
+.slotWindow{display:flex; gap:6px; overflow:hidden; border-radius:8px; background:#050508; position:relative;}
+.slotWindow::before{content:''; position:absolute; inset:0; z-index:3; pointer-events:none;
+  background:linear-gradient(180deg, rgba(0,0,0,.55) 0%, transparent 22%, transparent 78%, rgba(0,0,0,.55) 100%);}
+.slotReel{flex:1; overflow:hidden; height:198px; position:relative;}
+.slotReelStrip{display:flex; flex-direction:column; will-change:transform;}
+.slotSym{height:66px; display:flex; align-items:center; justify-content:center; font-size:38px;
+  background:linear-gradient(180deg,#1c1424,#120c18); border-bottom:1px solid rgba(255,255,255,.06);}
+.slotWinLine{position:absolute; left:4px; right:4px; height:66px; border-radius:6px; pointer-events:none; z-index:4;
+  background:rgba(182,255,46,.18); border:3px solid var(--lime); box-shadow:0 0 16px rgba(182,255,46,.8); opacity:0;}
+.slotWinLine.show{opacity:1; animation:slotWinPulse .7s ease infinite;}
+@keyframes slotWinPulse{0%,100%{box-shadow:0 0 12px rgba(182,255,46,.6);} 50%{box-shadow:0 0 26px rgba(255,221,110,1);}}
+.slotLeverWrap{width:46px; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; padding-bottom:6px;}
+.slotLeverRail{width:10px; height:150px; background:linear-gradient(90deg,#3a2010,#6b3a1c,#3a2010); border-radius:6px; position:relative; box-shadow:inset 0 0 6px rgba(0,0,0,.6);}
+.slotLeverBall{position:absolute; left:50%; width:34px; height:34px; border-radius:50%; transform:translate(-50%,0);
+  background:radial-gradient(circle at 35% 30%, #ff5d5d, #8a0f1e 75%); box-shadow:0 4px 10px rgba(0,0,0,.5), inset 0 2px 4px rgba(255,255,255,.4);
+  cursor:pointer; transition:top .18s cubic-bezier(.4,0,.6,1); top:0;}
+.slotLeverBall.pulled{top:118px;}
+.slotLeverBase{width:20px; height:14px; background:#5c4023; border-radius:0 0 8px 8px; margin-top:-2px;}
+.slotStatus{font-family:'Bungee'; font-size:clamp(14px,3.8vw,18px); text-align:center; margin-top:12px; color:#fff;}
+.slotPullsLeft{font-family:'Outfit'; font-weight:700; font-size:13px; color:#ffc93c; text-align:center; margin-top:4px; opacity:.85;}
 /* fulmini multipli che crepitano attorno al punto della scossa */
 .scossaBoltFx{position:absolute; font-size:40px; pointer-events:none; z-index:8; opacity:0; filter:drop-shadow(0 0 10px rgba(255,220,80,.9));
   animation:scossaBoltCrackle .6s ease forwards;}
@@ -1729,7 +1758,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.30</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.31</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -4929,6 +4958,66 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="zanzResultBig" id="scossaResult"></div>
 </div>
 
+<!-- ==================== HOST: SLOT MACHINE ==================== -->
+<div class="screen" id="scrSlotMachine">
+  <div class="brand"><div class="t1" style="font-size:clamp(20px,3.6vw,36px)">🎰 SLOT MACHINE</div></div>
+  <div class="panel mt" style="max-width:480px" id="slotSetup">
+    <div class="label">Quanti jackpot fortunati?</div>
+    <select id="slotNumWinners" onchange="slotRenderPrizeRows()">
+      <option value="1">1 vincitore</option>
+      <option value="2">2 vincitori</option>
+      <option value="3" selected>3 vincitori</option>
+      <option value="4">4 vincitori</option>
+      <option value="5">5 vincitori</option>
+    </select>
+    <div class="label mt">Premi (uno per ogni vincitore)</div>
+    <div id="slotPrizeRows"></div>
+    <div class="label mt">Tempo a disposizione</div>
+    <select id="slotDuration">
+      <option value="20">20 secondi</option>
+      <option value="25">25 secondi</option>
+      <option value="30" selected>30 secondi</option>
+      <option value="35">35 secondi</option>
+      <option value="40">40 secondi</option>
+      <option value="45">45 secondi</option>
+    </select>
+    <div class="byline mt" style="opacity:.75">🎰 Ogni giocatore ha una slot machine con tre tiri di leva a disposizione. Chi vince otterrà tre simboli uguali in orizzontale proprio al terzo e ultimo tiro — chi perde non li otterrà mai in nessuno dei tre tentativi. Chi vince o perde è già deciso a sorte: i rulli girano solo per la suspense.</div>
+    <button class="btn mg mt" style="width:100%" onclick="slotStart()">🎰 FATE PARTIRE LE SLOT!</button>
+  </div>
+  <div id="slotLive" style="display:none; width:100%" class="center">
+    <div class="miniMsg" id="slotMsg"></div>
+    <div class="timerWrap mt" style="max-width:420px"><div class="timerBar" id="slotTimerBarHost"></div></div>
+    <div class="byline" id="slotCount"></div>
+    <div class="lead mt" id="slotResultsLive" style="max-width:500px; width:100%"></div>
+    <div class="row mt" style="justify-content:center">
+      <button class="btn lm" id="slotBtnResults" onclick="slotShowResults()" style="display:none">🏆 Mostra i vincitori</button>
+      <button class="btn cy" id="slotBtnAgain" onclick="openSlotMachine()" style="display:none">🔁 Un'altra manche</button>
+    </div>
+  </div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
+</div>
+
+<!-- ==================== PROIETTORE: SLOT MACHINE ==================== -->
+<div class="screen" id="scrPjSlotMachine">
+  <div class="brand"><div class="t1" style="font-size:clamp(24px,3.6vw,42px)">🎰 SLOT MACHINE</div></div>
+  <div class="miniMsg" id="pjSlotMsg">TIRATE LA LEVA DAL TELEFONO, TRE TENTATIVI A TESTA!</div>
+  <div class="timerWrap mt" style="max-width:460px"><div class="timerBar" id="pjSlotTimerBar"></div></div>
+  <div class="slotCabinet" id="pjSlotCabinet" style="max-width:300px"></div>
+  <div class="lead mt" id="pjSlotResults" style="max-width:600px; width:100%"></div>
+</div>
+
+<!-- ==================== PLAYER: SLOT MACHINE ==================== -->
+<div class="screen" id="scrPlaySlotMachine" style="align-items:center; justify-content:center">
+  <div class="row" style="width:100%; justify-content:space-between">
+    <div class="pill" id="slotpName" style="color:var(--gold)"></div>
+    <div class="pill" id="slotpScore"></div>
+  </div>
+  <div class="timerWrap mt" style="max-width:280px"><div class="timerBar" id="slotpTimerBar"></div></div>
+  <div class="slotCabinet" id="slotCabinet"></div>
+  <div class="slotStatus" id="slotStatus">🎰 TIRA LA LEVA!</div>
+  <div class="slotPullsLeft" id="slotPullsLeft">Tentativi rimasti: 3</div>
+</div>
+
 <!-- ==================== HOST: LA MAGGIORANZA VINCE ==================== -->
 <div class="screen" id="scrMaj">
   <div class="brand"><div class="t1" style="font-size:clamp(20px,3.6vw,36px)">🗳️ LA MAGGIORANZA VINCE</div></div>
@@ -5676,7 +5765,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1330; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1331; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -7642,6 +7731,7 @@ function listenGame(){
     else if (g.status==='salumi') showPlayerSalumi(g);
     else if (g.status==='telefonata') showPlayerTelefonata(g);
     else if (g.status==='scossa') showPlayerScossa(g);
+    else if (g.status==='slotmachine') showPlayerSlotMachine(g);
     else if (g.status==='finddiff') showPlayerFindDiff(g);
     else if (g.status==='maggioranza') showPlayerMaj(g);
     else if (g.status==='goldenticket') showPlayerGold(g);
@@ -9603,6 +9693,169 @@ function showPlayerScossa(g){
       if (!P.scossaResolved){
         P.scossaResolved = true; const arena=$('scossaArena'); arena.onpointerdown=null; arena.onpointermove=null;
         $('scossaStatus').textContent = '⏱ TEMPO SCADUTO!';
+      }
+    }
+  }, 100);
+}
+/* ================================================================
+   SLOT MACHINE — generatore griglie, animazione rulli, funzioni condivise, telefono
+   Gioco di fortuna: l'esito (vincita/sconfitta) è già deciso a sorte dalla regia per ogni giocatore,
+   esattamente come per La Scossa e Una Telefonata che ti Premia. Ogni telefono ha a disposizione tre
+   tiri di leva. Chi è stato estratto come perdente non otterrà MAI tre simboli uguali in orizzontale
+   (né in diagonale, per non generare falsi allarmi visivi) in nessuno dei tre tentativi. Chi è stato
+   estratto come vincitore otterrà la combinazione vincente proprio al terzo e ultimo tiro.
+================================================================ */
+const SLOT_SYMBOLS = ['🍒','🍋','🍊','🔔','⭐','💰','7️⃣','🍇','💎'];
+function slotRand(){ return SLOT_SYMBOLS[Math.floor(Math.random()*SLOT_SYMBOLS.length)]; }
+function slotCountWinningLines(grid){
+  let count = 0;
+  for (let r=0;r<3;r++) if (grid[r][0]===grid[r][1] && grid[r][1]===grid[r][2]) count++;
+  if (grid[0][0]===grid[1][1] && grid[1][1]===grid[2][2]) count++;
+  if (grid[0][2]===grid[1][1] && grid[1][1]===grid[2][0]) count++;
+  return count;
+}
+function slotFindWinningRow(grid){
+  for (let r=0;r<3;r++) if (grid[r][0]===grid[r][1] && grid[r][1]===grid[r][2]) return r;
+  return -1;
+}
+function slotSafeGrid(){
+  let grid, tries=0;
+  do {
+    grid = Array.from({length:3},()=> Array.from({length:3}, slotRand));
+    tries++;
+  } while (slotCountWinningLines(grid)>0 && tries<200);
+  return grid;
+}
+function slotWinningGrid(){
+  let grid, tries=0;
+  do {
+    const winRow = Math.floor(Math.random()*3), sym = slotRand();
+    grid = Array.from({length:3},()=> Array.from({length:3}, slotRand));
+    grid[winRow] = [sym, sym, sym];
+    tries++;
+  } while (slotCountWinningLines(grid)!==1 && tries<200);
+  return grid;
+}
+function slotSpinSound(){
+  try{
+    _audioCtx = _audioCtx || new (window.AudioContext||window.webkitAudioContext)();
+    const t0 = _audioCtx.currentTime;
+    for (let i=0;i<16;i++){
+      const start = t0 + i*0.1;
+      const o = _audioCtx.createOscillator(), g = _audioCtx.createGain();
+      o.type='square'; o.frequency.value = 480+Math.random()*90;
+      g.gain.setValueAtTime(.11, start);
+      g.gain.exponentialRampToValueAtTime(.0001, start+.05);
+      o.connect(g); g.connect(_audioCtx.destination); o.start(start); o.stop(start+.06);
+    }
+  }catch(e){}
+}
+function slotSetupCabinet(container){
+  container.innerHTML = `<div class="slotBody">
+      <div class="slotWindowFrame">
+        <div class="slotWindow" id="slotWindow">
+          <div class="slotReel"><div class="slotReelStrip" id="slotStrip0"></div></div>
+          <div class="slotReel"><div class="slotReelStrip" id="slotStrip1"></div></div>
+          <div class="slotReel"><div class="slotReelStrip" id="slotStrip2"></div></div>
+          <div class="slotWinLine" id="slotWinLine0" style="top:0"></div>
+          <div class="slotWinLine" id="slotWinLine1" style="top:66px"></div>
+          <div class="slotWinLine" id="slotWinLine2" style="top:132px"></div>
+        </div>
+      </div>
+      <div class="slotLeverWrap">
+        <div class="slotLeverRail"><div class="slotLeverBall" id="slotLeverBall"></div></div>
+        <div class="slotLeverBase"></div>
+      </div>
+    </div>`;
+  for (let c=0;c<3;c++){
+    const strip = document.getElementById('slotStrip'+c);
+    strip.innerHTML = [slotRand(),slotRand(),slotRand()].map(s=>`<div class="slotSym">${s}</div>`).join('');
+    strip.style.transition='none'; strip.style.transform='translateY(0)';
+  }
+}
+function slotSpin(targetGrid, onDone){
+  const FILLER = 18, CELL_H = 66;
+  slotSpinSound();
+  for (let c=0;c<3;c++){
+    const strip = document.getElementById('slotStrip'+c);
+    const finalSyms = [targetGrid[0][c], targetGrid[1][c], targetGrid[2][c]];
+    const allSyms = [...Array.from({length:FILLER}, slotRand), ...finalSyms];
+    strip.style.transition = 'none'; strip.style.transform = 'translateY(0)';
+    strip.innerHTML = allSyms.map(s=>`<div class="slotSym">${s}</div>`).join('');
+    void strip.offsetHeight;
+    const delay = c*220, duration = 900 + c*380;
+    setTimeout(()=>{
+      strip.style.transition = `transform ${duration}ms cubic-bezier(.18,.72,.32,1)`;
+      strip.style.transform = `translateY(-${FILLER*CELL_H}px)`;
+    }, delay);
+  }
+  setTimeout(onDone, 220*2 + 900+380*2 + 150);
+}
+function slotResolveWin(){
+  if (P.slotResolved) return; P.slotResolved = true;
+  $('slotLeverBall').onclick = null;
+  const prizeLabel = P.slotPrize.kind==='points' ? `+${P.slotPrize.points} PUNTI!` : P.slotPrize.text;
+  telWinFanfare(); confetti(); if (navigator.vibrate) navigator.vibrate([80,50,80,50,150]);
+  $('slotStatus').textContent = "🎉 JACKPOT! CE L'HAI FATTA!";
+  $('slotPullsLeft').textContent = `🎁 ${prizeLabel}`;
+  P.ref.child('slotmachine/results/'+P.id).set({ win:true, prize:P.slotPrize });
+}
+function slotResolveLose(){
+  if (P.slotResolved) return; P.slotResolved = true;
+  $('slotLeverBall').onclick = null;
+  if (navigator.vibrate) navigator.vibrate(150);
+  $('slotStatus').textContent = '😬 NIENTE JACKPOT QUESTA VOLTA...';
+  $('slotPullsLeft').textContent = 'Tentativi esauriti';
+  P.ref.child('slotmachine/results/'+P.id).set({ win:false, prize:null });
+}
+function slotPull(){
+  if (P.slotResolved || P.slotSpinning || P.slotPullsUsed>=3) return;
+  P.slotSpinning = true; P.slotPullsUsed++;
+  const ball = $('slotLeverBall');
+  ball.classList.add('pulled'); setTimeout(()=> ball.classList.remove('pulled'), 220);
+  document.querySelectorAll('.slotWinLine').forEach(el=>el.classList.remove('show'));
+  $('slotStatus').textContent = 'I RULLI GIRANO...';
+  const isLastPull = P.slotPullsUsed>=3;
+  const grid = (P.slotWin && isLastPull) ? slotWinningGrid() : slotSafeGrid();
+  slotSpin(grid, ()=>{
+    P.slotSpinning = false;
+    const winRow = slotFindWinningRow(grid);
+    if (winRow>=0){
+      const lineEl = document.getElementById('slotWinLine'+winRow); if (lineEl) lineEl.classList.add('show');
+      slotResolveWin();
+    } else if (isLastPull){
+      slotResolveLose();
+    } else {
+      $('slotPullsLeft').textContent = `Tentativi rimasti: ${3-P.slotPullsUsed}`;
+      $('slotStatus').textContent = '😬 NIENTE... TIRA ANCORA LA LEVA!';
+    }
+  });
+}
+function showPlayerSlotMachine(g){
+  const m = g.slotmachine||{};
+  $('slotpName').textContent = P.name;
+  $('slotpScore').textContent = (((g.players||{})[P.id]||{}).score||0)+' pt';
+  showScreen('scrPlaySlotMachine');
+  if (m.phase!=='active') return;
+  const sig = 'act:'+m.roundId;
+  if (P.slotSig !== sig){
+    P.slotSig = sig; P.slotResolved = false; P.slotPullsUsed = 0; P.slotSpinning = false;
+    const outcome = (m.assignments||{})[P.id] || {win:false};
+    P.slotWin = outcome.win; P.slotPrize = outcome.prize;
+    slotSetupCabinet($('slotCabinet'));
+    $('slotStatus').textContent = '🎰 TIRA LA LEVA!';
+    $('slotPullsLeft').textContent = 'Tentativi rimasti: 3';
+    $('slotLeverBall').onclick = slotPull;
+  }
+  clearInterval(P.slotInt);
+  P.slotInt = setInterval(()=>{
+    const left = Math.max(0, (m.endAt||0) - serverNow());
+    $('slotpTimerBar').style.width = (left/(m.durationMs||1)*100)+'%';
+    if (left<=0){
+      clearInterval(P.slotInt);
+      if (!P.slotResolved){
+        P.slotResolved = true; const ball=$('slotLeverBall'); if (ball) ball.onclick=null;
+        $('slotStatus').textContent = '⏱ TEMPO SCADUTO!';
       }
     }
   }, 100);
@@ -16344,6 +16597,120 @@ function scossaShowResults(){
 }
 
 /* ================================================================
+   SLOT MACHINE — regia
+   Stesso impianto de La Scossa e Una Telefonata che ti Premia: la regia estrae a sorte, prima ancora
+   che si giochi, chi tra i telefoni collegati sarà vincitore. Ogni giocatore ha tre tiri di leva a
+   disposizione sul proprio telefono.
+================================================================ */
+let SLOT = {};
+function openSlotMachine(){
+  if (!isGameEnabled('slotmachine')) return alert('⚠️ Questo minigioco non è compreso nella licenza attiva. Contatta Alberto per sbloccarlo.');
+  if (!G) return alert('Avvia prima una partita!');
+  cancelLiveQuestion(); closeModal(); clearInterval((SLOT||{}).timerInt);
+  G.ref.child('slotmachine/results').off();
+  G.ref.update({ status:'slotmachine', slotmachine:{ phase:'idle' } });
+  SLOT = {};
+  $('slotSetup').style.display='block'; $('slotLive').style.display='none';
+  slotRenderPrizeRows();
+  showScreen('scrSlotMachine');
+}
+function slotRenderPrizeRows(){
+  const n = +$('slotNumWinners').value;
+  const box = $('slotPrizeRows');
+  const prev = box._vals || [];
+  box.innerHTML = Array.from({length:n},(_,i)=>{
+    const p = prev[i] || { kind:'points', points:500, text:'' };
+    return `<div class="gtPrizeRow">
+      <span style="font-family:'Bungee'; color:var(--gold); width:20px">${i+1}°</span>
+      <select id="slotKind${i}" onchange="slotToggleKind(${i})">
+        <option value="points" ${p.kind==='points'?'selected':''}>Punti</option>
+        <option value="text" ${p.kind==='text'?'selected':''}>Premio scritto</option>
+      </select>
+      <input type="number" id="slotPoints${i}" class="grow" placeholder="Punti" value="${p.points||500}" style="${p.kind==='text'?'display:none':''}">
+      <input type="text" id="slotText${i}" class="grow" placeholder="Es. Una birra 🍺" value="${esc(p.text||'')}" style="${p.kind==='points'?'display:none':''}">
+    </div>`;
+  }).join('');
+}
+function slotToggleKind(i){
+  const kind = $('slotKind'+i).value;
+  $('slotPoints'+i).style.display = kind==='points' ? '' : 'none';
+  $('slotText'+i).style.display = kind==='text' ? '' : 'none';
+}
+function slotCollectPrizes(){
+  const n = +$('slotNumWinners').value;
+  const prizes = [];
+  for (let i=0;i<n;i++){
+    const kind = $('slotKind'+i).value;
+    if (kind==='points') prizes.push({ kind:'points', points:+$('slotPoints'+i).value||0 });
+    else prizes.push({ kind:'text', text:$('slotText'+i).value.trim()||'Premio a sorpresa!' });
+  }
+  return prizes;
+}
+function slotStart(){
+  const prizes = slotCollectPrizes();
+  const durationSec = +($('slotDuration').value||30);
+  const durationMs = durationSec*1000;
+  const endAt = serverNow()+durationMs;
+  const roundId = serverNow();
+  SLOT = { credited:{} };
+  G.ref.child('players').once('value').then(ps=>{
+    const players = ps.val()||{};
+    const pids = Object.keys(players);
+    const numWinners = Math.min(prizes.length, pids.length);
+    const outcomes = [];
+    for (let i=0;i<numWinners;i++) outcomes.push({ win:true, prize:prizes[i] });
+    while (outcomes.length < pids.length) outcomes.push({ win:false });
+    for (let i=outcomes.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [outcomes[i],outcomes[j]]=[outcomes[j],outcomes[i]]; }
+    const assignments = {};
+    pids.forEach((pid,i)=> assignments[pid] = outcomes[i]);
+    G.ref.update({ status:'slotmachine', slotmachine:{ phase:'active', endAt, durationMs, roundId, assignments } });
+    G.ref.child('slotmachine/results').remove();
+    $('slotSetup').style.display='none'; $('slotLive').style.display='block';
+    $('slotMsg').textContent = `🎰 SI TIRA LA LEVA! ${numWinners} JACKPOT SU ${pids.length}!`;
+    $('slotCount').textContent=''; $('slotResultsLive').innerHTML=''; $('slotBtnAgain').style.display='none'; $('slotBtnResults').style.display='none';
+    pjSend({type:'slotActive', endAt, durationMs});
+    clearInterval(SLOT.timerInt);
+    SLOT.timerInt = setInterval(()=>{
+      const left = Math.max(0, endAt-serverNow());
+      $('slotTimerBarHost').style.width = (left/durationMs*100)+'%';
+      if (left<=0) clearInterval(SLOT.timerInt);
+    }, 100);
+    G.ref.child('slotmachine/results').on('child_added', snap=>{
+      const pid = snap.key, r = snap.val();
+      if (!r || SLOT.credited[pid]) return;
+      SLOT.credited[pid] = true;
+      if (r.win && r.prize && r.prize.kind==='points') applyScoreDelta(pid, r.prize.points);
+    });
+    G.ref.child('slotmachine/results').on('value', s=>{
+      const results = s.val()||{};
+      const entries = Object.entries(results);
+      $('slotCount').textContent = `Giocate concluse: ${entries.length}/${pids.length}`;
+      if (entries.length>0){ $('slotBtnAgain').style.display=''; $('slotBtnResults').style.display=''; }
+      G.ref.child('players').once('value').then(ps2=>{
+        const pl = ps2.val()||{};
+        $('slotResultsLive').innerHTML = entries.map(([pid,r])=>{
+          const label = r.win ? (r.prize.kind==='points' ? `🎉 +${r.prize.points} punti` : `🎁 ${esc(r.prize.text)}`) : 'Niente jackpot';
+          return `<div class="leadRow"><span class="pos">${r.win?'🏆':'—'}</span> ${esc((pl[pid]||{}).name||'?')} <span class="pts">${label}</span></div>`;
+        }).join('') || '<div class="byline">Nessuna giocata conclusa ancora...</div>';
+      });
+    });
+  });
+}
+function slotShowResults(){
+  G.ref.child('slotmachine/results').once('value').then(s=>{
+    const results = s.val()||{};
+    G.ref.child('players').once('value').then(ps=>{
+      const pl = ps.val()||{};
+      const rows = Object.entries(results).filter(([,r])=>r.win).map(([pid,r])=>({
+        name:(pl[pid]||{}).name||'?', prize:r.prize
+      }));
+      pjSend({type:'slotResult', rows});
+      if (rows.length) confetti();
+    });
+  });
+}
+
+/* ================================================================
    ROULETTE — regia
 ================================================================ */
 let RW = {};
@@ -18708,6 +19075,7 @@ const GIOCHI_CATALOGO = [
   {k:'cenerentola', l:'👠 Cenerentola de Noi Artri'},
   {k:'pacchi', l:'📦 Il Gioco dei Pacchi'},
   {k:'roulette', l:'🤠 Roulette Russa'},
+  {k:'slotmachine', l:'🎰 Slot Machine'},
   {k:'pagliuzza', l:'🌾 La Pagliuzza'},
   {k:'supertris', l:'💎 SUPERTRIS'},
   {k:'rdc', l:'🧮 La Resa dei Conti'},
@@ -18807,6 +19175,7 @@ function modalGamesLuck(){
     gk('horses', `<button class="btn mg gameBtn" onclick="openHorses()">🐎 Pubbliche Offese</button>`),
     gk('casino', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#a3111c,#1a1108); color:#fff; box-shadow:0 7px 0 #3a0508,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(163,17,28,.4)" onclick="openCasino()">🎰 Roulette (Casinò)</button>`),
     gk('roulette', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#a85838,#6b3018); color:#ffe9a8; box-shadow:0 7px 0 #3a1a0c,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(107,48,24,.4)" onclick="openRoulette()">🤠 Roulette Russa</button>`),
+    gk('slotmachine', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#ff2e9a,#5a1030); color:#fff; box-shadow:0 7px 0 #3a0a20,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,46,154,.4)" onclick="openSlotMachine()">🎰 Slot Machine</button>`),
     gk('supertris', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#2d8a4e,#0d4020); color:#ffe042; box-shadow:0 7px 0 #072410,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(13,64,32,.4)" onclick="openSupertris()">💎 SUPERTRIS</button>`),
     gk('toc', `<button class="btn cy gameBtn" onclick="openToc()">🪙 Testa o Croce</button>`),
     gk('tombola', `<button class="btn lm gameBtn" onclick="openTombola()">🎱 Tombola</button>`),
@@ -19358,6 +19727,7 @@ function backToQuiz(title){
   G.ref.child('goldenticket/results').off();
   G.ref.child('telefonata/results').off();
   G.ref.child('scossa/results').off();
+  G.ref.child('slotmachine/results').off();
   G.ref.child('tombola/marks').off();
   G.ref.child('casino/bets').off();
   G.ref.child('tamburini/counts').off();
@@ -19391,6 +19761,7 @@ function backToQuiz(title){
   clearInterval((GOLD||{}).timerInt);
   clearInterval((TEL||{}).timerInt);
   clearInterval((SCOSSA||{}).timerInt);
+  clearInterval((SLOT||{}).timerInt);
   clearInterval((RW||{}).timerInt);
   clearInterval((TAMB||{}).timerInt);
   clearInterval((MERC||{}).timerInt);
@@ -19400,7 +19771,7 @@ function backToQuiz(title){
   clearInterval((PATATA||{}).timerInt);
   clearInterval((CSF||{}).timerInt);
   clearInterval((XOX||{}).timerInt);
-  G.ref.update({ status:'pausa', mini:null, dice:null, simon:null, voto:null, timer:null, tombola:null, cards:null, swiss:null, hilo:null, wheels:null, puzzle:null, wordsearch:null, anagram:null, seed:null, grad:null, taptap:null, ruota:null, memo:null, memocoppie:null, horses:null, tfiscale:null, toc:null, cenerentola:null, pacchi:null, roulette:null, pagliuzza:null, supertris:null, rdc:null, mastermind:null, bomba:null, shapes:null, zanzare:null, spesa:null, salumi:null, finddiff:null, maggioranza:null, goldenticket:null, telefonata:null, scossa:null, casino:null, tamburini:null, mercatista:null, staccionata:null, morra:null, punto:null, dado:null, asta:null, idraulico:null, patata:null, cassaforte:null, settemezzo:null, scopa:null, bingocarte:null, xox:null });
+  G.ref.update({ status:'pausa', mini:null, dice:null, simon:null, voto:null, timer:null, tombola:null, cards:null, swiss:null, hilo:null, wheels:null, puzzle:null, wordsearch:null, anagram:null, seed:null, grad:null, taptap:null, ruota:null, memo:null, memocoppie:null, horses:null, tfiscale:null, toc:null, cenerentola:null, pacchi:null, roulette:null, pagliuzza:null, supertris:null, rdc:null, mastermind:null, bomba:null, shapes:null, zanzare:null, spesa:null, salumi:null, finddiff:null, maggioranza:null, goldenticket:null, telefonata:null, scossa:null, slotmachine:null, casino:null, tamburini:null, mercatista:null, staccionata:null, morra:null, punto:null, dado:null, asta:null, idraulico:null, patata:null, cassaforte:null, settemezzo:null, scopa:null, bingocarte:null, xox:null });
   G.ref.child('players').once('value', ps=>{
     const players = ps.val()||{};
     $('hrTitle').textContent = title || 'SI TORNA AL QUIZ!';
@@ -20805,6 +21176,26 @@ function pjRouteInner(m){
       clearInterval(window._pjScossaInt); $('pjScossaTimerBar').style.width='0%';
       $('pjScossaMsg').textContent = m.rows.length ? `🏆 ${m.rows.length} FORTUNATI HANNO COMPLETATO IL PERCORSO!` : 'NESSUNO È ARRIVATO IN FONDO SENZA SCOSSA QUESTA VOLTA...';
       $('pjScossaResults').innerHTML = m.rows.slice(0,5).map(r=>{
+        const label = r.prize.kind==='points' ? `+${r.prize.points} punti` : esc(r.prize.text);
+        return `<div class="leadRow"><span class="pos">🏆</span> ${esc(r.name)} <span class="pts">${label}</span></div>`;
+      }).join('') || '<div class="byline">Nessun vincitore questa volta.</div>';
+    }
+    else if (m.type==='slotActive') {
+      showScreen('scrPjSlotMachine');
+      $('pjSlotMsg').textContent = 'TIRATE LA LEVA DAL TELEFONO, TRE TENTATIVI A TESTA!';
+      $('pjSlotResults').innerHTML='';
+      slotSetupCabinet($('pjSlotCabinet'));
+      clearInterval(window._pjSlotInt);
+      window._pjSlotInt = setInterval(()=>{
+        const left = Math.max(0, m.endAt - serverNow());
+        $('pjSlotTimerBar').style.width = (left/m.durationMs*100)+'%';
+        if (left<=0) clearInterval(window._pjSlotInt);
+      }, 100);
+    }
+    else if (m.type==='slotResult') {
+      clearInterval(window._pjSlotInt); $('pjSlotTimerBar').style.width='0%';
+      $('pjSlotMsg').textContent = m.rows.length ? `🏆 ${m.rows.length} FORTUNATI HANNO FATTO JACKPOT!` : 'NESSUN JACKPOT QUESTA VOLTA...';
+      $('pjSlotResults').innerHTML = m.rows.slice(0,5).map(r=>{
         const label = r.prize.kind==='points' ? `+${r.prize.points} punti` : esc(r.prize.text);
         return `<div class="leadRow"><span class="pos">🏆</span> ${esc(r.name)} <span class="pts">${label}</span></div>`;
       }).join('') || '<div class="byline">Nessun vincitore questa volta.</div>';
