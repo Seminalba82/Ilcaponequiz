@@ -1529,6 +1529,10 @@ body.barOn.barCollapsed .screen.active{padding-bottom:70px;}
 .carN.empty{background:rgba(0,0,0,.28); border-color:transparent;}
 .carN.hit{color:#fff; background:radial-gradient(circle at 35% 30%, #ff7a95, #c2183d 70%); border-color:#6e0e21;
   box-shadow:0 0 12px rgba(255,46,154,.8); animation:pop .35s;}
+.carN.markable{cursor:pointer; border-color:var(--lime); box-shadow:0 0 10px rgba(182,255,46,.5); animation:carPulse 1.1s ease infinite;}
+@keyframes carPulse{0%,100%{box-shadow:0 0 6px rgba(182,255,46,.4);} 50%{box-shadow:0 0 14px rgba(182,255,46,.85);}}
+@keyframes carNope{0%,100%{transform:translateX(0);} 25%{transform:translateX(-4px);} 75%{transform:translateX(4px);}}
+.carN.nope{animation:carNope .3s;}
 .rotWrap{width:100%;}
 @media (orientation:landscape){ #ptRotateHint{display:none;} }
 
@@ -1725,7 +1729,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.29</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.30</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -2579,6 +2583,18 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="panel mt" style="max-width:620px" id="tomSetup">
     <div class="label">Premi (punti quiz + eventuale premio extra: birre, gadget...)</div>
     <div id="tomPrizeInputs"></div>
+    <div class="label mt">Segnatura dei numeri estratti sulla cartella</div>
+    <div class="row" style="gap:10px">
+      <label class="salumiShapeChoice">
+        <input type="radio" name="tomMarkMode" value="auto" checked style="display:none">
+        <div class="salumiShapeCard">🤖<br>Automatica</div>
+      </label>
+      <label class="salumiShapeChoice">
+        <input type="radio" name="tomMarkMode" value="manual" style="display:none">
+        <div class="salumiShapeCard">👆<br>Manuale</div>
+      </label>
+    </div>
+    <div class="byline mt" style="opacity:.75">🤖 Automatica: i numeri estratti si segnano da soli sulla cartella. 👆 Manuale: il pubblico deve toccare da sé, sulla propria cartella, ogni numero man mano che viene estratto — più simile a una vera tombola in cartaceo.</div>
     <button class="btn mg mt" style="width:100%" onclick="tombolaStart()" data-tip="Genera una cartella unica per ogni giocatore già collegato in questo momento — chi entra dopo non riceve la cartella per questa partita">🎱 GENERA LE CARTELLE E VIA!</button>
     <div class="label mt" style="text-transform:none; letter-spacing:0">Ogni squadra collegata riceve una cartella unica sul telefono. Chi entra dopo l'avvio non ha la cartella per questa partita.</div>
   </div>
@@ -5660,7 +5676,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1329; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1330; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -11884,8 +11900,17 @@ function showPlayerTombola(g){
   $('ptLast').textContent = drawn.length ? 'N° '+drawn[drawn.length-1] : 'SI COMINCIA...';
   const card = (t.cards||{})[P.id];
   if (card && card.r) {
-    renderCartella($('ptCard'), card.r, drawnSet);
-    const mine = card.r.flat().filter(x=>x && drawnSet.has(x)).length;
+    let mine;
+    if (t.manualMark){
+      // in modalità manuale il conteggio e l'evidenziazione riflettono solo i numeri che il
+      // giocatore ha toccato di persona sulla propria cartella, non semplicemente quelli estratti
+      if (!P.tomMarked) P.tomMarked = new Set((t.marks && t.marks[P.id]) || []);
+      renderCartella($('ptCard'), card.r, drawnSet, { markedSet: P.tomMarked, onTap: (n, cellEl)=> tombolaMarkNumber(n, cellEl, drawnSet) });
+      mine = card.r.flat().filter(x=>x && P.tomMarked.has(x)).length;
+    } else {
+      renderCartella($('ptCard'), card.r, drawnSet);
+      mine = card.r.flat().filter(x=>x && drawnSet.has(x)).length;
+    }
     let msg = 'SEGNATI '+mine+' SU 15';
     const lw = t.lastWin;
     if (lw && lw.pids && lw.pids[P.id]) {
@@ -11893,6 +11918,7 @@ function showPlayerTombola(g){
       if (P.tomWinAt !== lw.at) { P.tomWinAt = lw.at; if (navigator.vibrate) navigator.vibrate([120,60,120,60,200]); confetti(); }
     } else if (lw && P.tomLwAt !== lw.at) { P.tomLwAt = lw.at; msg = lw.label+' di '+(lw.names||[]).join(', ')+'!'; }
     else if (lw) msg = lw.label+' di '+(lw.names||[]).join(', ')+' · '+msg;
+    else if (t.manualMark) msg += ' · TOCCA I NUMERI ESTRATTI!';
     $('ptMsg').textContent = msg;
   } else {
     $('ptCard').innerHTML = '';
@@ -11902,6 +11928,18 @@ function showPlayerTombola(g){
   renderTomDrawn($('ptDrawn'), drawn);
   renderTomPrizes($('ptPrizes'), t.prizes||{}, t.won||{});
   showScreen('scrPlayTombola');
+}
+function tombolaMarkNumber(n, cellEl, drawnSet){
+  if (!drawnSet.has(n)){
+    // numero non ancora estratto: una piccola scossa per far capire che non è (ancora) valido
+    if (cellEl){ cellEl.classList.remove('nope'); void cellEl.offsetWidth; cellEl.classList.add('nope'); }
+    if (navigator.vibrate) navigator.vibrate(15);
+    return;
+  }
+  if (!P.tomMarked) P.tomMarked = new Set();
+  if (P.tomMarked.has(n)) P.tomMarked.delete(n); else P.tomMarked.add(n);
+  P.ref.child('tombola/marks/'+P.id).set(Array.from(P.tomMarked));
+  if (navigator.vibrate) navigator.vibrate(25);
 }
 function showPlayerVoto(g){
   clearInterval(P.timerInt);
@@ -13462,10 +13500,21 @@ function renderTomDrawn(el, drawn){
   const last15 = drawn.slice(-15);
   el.innerHTML = last15.map((n,i)=>`<div class="tomBall ${i===last15.length-1?'new':''}">${n}</div>`).join('');
 }
-function renderCartella(el, grid, drawnSet){
-  el.innerHTML = grid.map(row=> row.map(n=>
-    n ? `<div class="carN ${drawnSet.has(n)?'hit':''}">${n}</div>` : '<div class="carN empty"></div>'
-  ).join('')).join('');
+function renderCartella(el, grid, drawnSet, opts){
+  opts = opts || {};
+  const markedSet = opts.markedSet || null; // se presente, siamo in modalità manuale: "segnato" != "estratto"
+  const onTap = opts.onTap || null;
+  el.innerHTML = grid.map(row=> row.map(n=>{
+    if (!n) return '<div class="carN empty"></div>';
+    const isHit = markedSet ? markedSet.has(n) : drawnSet.has(n);
+    const isMarkable = markedSet && !isHit && drawnSet.has(n); // estratto ma non ancora segnato dal giocatore
+    return `<div class="carN ${isHit?'hit':''} ${isMarkable?'markable':''}" data-n="${n}">${n}</div>`;
+  }).join('')).join('');
+  if (onTap){
+    el.querySelectorAll('.carN[data-n]').forEach(cell=>{
+      cell.onclick = ()=> onTap(+cell.dataset.n, cell);
+    });
+  }
 }
 
 /* ================================================================
@@ -13477,6 +13526,7 @@ function openTombola(){
   if (!isGameEnabled('tombola')) return alert('⚠️ Questo minigioco non è compreso nella licenza attiva. Contatta Alberto per sbloccarlo.');
   if (!G) return alert('Avvia prima una partita!');
   cancelLiveQuestion(); closeModal();
+  G.ref.child('tombola/marks').off();
   $('tomPrizeInputs').innerHTML = [...TOM_LEVELS].reverse().map(([k,,label])=>`
     <div class="row mt"><b style="font-family:'Bungee'; min-width:110px; color:var(--cyan)">${label}</b>
       <input type="number" id="tomPts_${k}" value="${TOM_DEFAULTS[k]}" min="0" style="width:100px; text-align:center">
@@ -13487,6 +13537,7 @@ function openTombola(){
 function tombolaStart(){
   const prizes = {};
   TOM_LEVELS.forEach(([k])=> prizes[k] = { pts: Math.max(0,+$('tomPts_'+k).value||0), txt: $('tomTxt_'+k).value.trim() });
+  const manualMark = document.querySelector('input[name="tomMarkMode"]:checked')?.value === 'manual';
   G.ref.child('players').once('value').then(ps=>{
     const players = ps.val()||{};
     const cards = {}, seen = new Set();
@@ -13496,8 +13547,10 @@ function tombolaStart(){
       seen.add(key);
       cards[pid] = { r: grid };
     }
-    TOM = { prizes, cards, drawn:[], won:{}, remaining: Array.from({length:90},(_,i)=>i+1), players };
-    G.ref.update({ status:'tombola', tombola:{ phase:'play', prizes, cards, drawn:null, won:null, lastWin:null } });
+    TOM = { prizes, cards, drawn:[], won:{}, marks:{}, manualMark, remaining: Array.from({length:90},(_,i)=>i+1), players };
+    G.ref.update({ status:'tombola', tombola:{ phase:'play', prizes, cards, manualMark, drawn:null, won:null, lastWin:null, marks:null } });
+    G.ref.child('tombola/marks').off();
+    if (manualMark) G.ref.child('tombola/marks').on('value', s=>{ TOM.marks = s.val()||{}; tombolaCheckWins(); });
     $('tomSetup').style.display='none'; $('tomLive').style.display='block';
     $('tomLastNum').textContent='—'; $('tomBtnDraw').disabled=false;
     const cardsCount = Object.keys(cards).length;
@@ -13506,29 +13559,29 @@ function tombolaStart(){
     renderTabellone($('tomBoardHost'), new Set(), null);
     renderTomPrizes($('tomPrizesHost'), prizes, {});
     renderTomDrawn($('tomDrawnHost'), []);
-    pjSend({type:'tombola', prizes, drawn:[], won:{}, cardsCount});
+    pjSend({type:'tombola', prizes, drawn:[], won:{}, cardsCount, manualMark});
   });
 }
-function tombolaDraw(){
-  if (!TOM.remaining || !TOM.remaining.length) return;
-  const idx = Math.floor(Math.random()*TOM.remaining.length);
-  const n = TOM.remaining.splice(idx,1)[0];
-  TOM.drawn.push(n);
+function tombolaCheckWins(){
+  if (!TOM.drawn) return;
   const drawnSet = new Set(TOM.drawn);
-  // controllo vincite sui livelli non ancora assegnati
   const newWins = [];
   G.ref.child('players').once('value').then(ps=>{
     const players = ps.val()||{};
-    const updates = { 'tombola/drawn': TOM.drawn };
+    const updates = {};
     const scorePromises = [];
     for (const [k, need, label] of TOM_LEVELS){
       if (TOM.won[k]) continue;
       const winners = [];
       for (const pid in TOM.cards){
         const grid = TOM.cards[pid].r;
+        // in modalità manuale, contano solo i numeri che il giocatore ha segnato di persona sulla
+        // propria cartella (e che risultano davvero estratti); in automatica, come prima, contano
+        // semplicemente tutti i numeri estratti presenti sulla cartella
+        const effectiveSet = TOM.manualMark ? new Set((TOM.marks[pid]||[]).filter(x=>drawnSet.has(x))) : drawnSet;
         const hit = k==='tombola'
-          ? grid.flat().filter(x=>x && drawnSet.has(x)).length >= 15
-          : grid.some(row=> row.filter(x=>x && drawnSet.has(x)).length >= need);
+          ? grid.flat().filter(x=>x && effectiveSet.has(x)).length >= 15
+          : grid.some(row=> row.filter(x=>x && effectiveSet.has(x)).length >= need);
         if (hit) winners.push(pid);
       }
       if (winners.length){
@@ -13542,18 +13595,27 @@ function tombolaDraw(){
       }
     }
     Promise.all(scorePromises).then(()=>{
-    G.ref.update(updates);
-    // schermo host
-    $('tomLastNum').textContent = n;
-    $('tomDrawnCount').textContent = `🎱 ${TOM.drawn.length} pallin${TOM.drawn.length===1?'a estratta':'e estratte'}`;
-    renderTabellone($('tomBoardHost'), drawnSet, n);
-    renderTomPrizes($('tomPrizesHost'), TOM.prizes, TOM.won);
-    renderTomDrawn($('tomDrawnHost'), TOM.drawn);
-    pjSend({type:'tombola', prizes:TOM.prizes, drawn:TOM.drawn, won:TOM.won, lastN:n, cardsCount:Object.keys(TOM.cards).length});
-    newWins.forEach((w,i)=> setTimeout(()=> pjSend({type:'tombolaWin', ...w}), 600 + i*4000));
-    if (TOM.won.tombola || !TOM.remaining.length) $('tomBtnDraw').disabled = true;
+      if (Object.keys(updates).length) G.ref.update(updates);
+      renderTomPrizes($('tomPrizesHost'), TOM.prizes, TOM.won);
+      newWins.forEach((w,i)=> setTimeout(()=> pjSend({type:'tombolaWin', ...w}), 600 + i*4000));
+      if (TOM.won.tombola) $('tomBtnDraw').disabled = true;
     });
   });
+}
+function tombolaDraw(){
+  if (!TOM.remaining || !TOM.remaining.length) return;
+  const idx = Math.floor(Math.random()*TOM.remaining.length);
+  const n = TOM.remaining.splice(idx,1)[0];
+  TOM.drawn.push(n);
+  const drawnSet = new Set(TOM.drawn);
+  G.ref.update({ 'tombola/drawn': TOM.drawn });
+  $('tomLastNum').textContent = n;
+  $('tomDrawnCount').textContent = `🎱 ${TOM.drawn.length} pallin${TOM.drawn.length===1?'a estratta':'e estratte'}`;
+  renderTabellone($('tomBoardHost'), drawnSet, n);
+  renderTomDrawn($('tomDrawnHost'), TOM.drawn);
+  pjSend({type:'tombola', prizes:TOM.prizes, drawn:TOM.drawn, won:TOM.won, lastN:n, cardsCount:Object.keys(TOM.cards).length, manualMark:TOM.manualMark});
+  if (!TOM.remaining.length) $('tomBtnDraw').disabled = true;
+  tombolaCheckWins();
 }
 
 /* ================================================================
@@ -19296,6 +19358,7 @@ function backToQuiz(title){
   G.ref.child('goldenticket/results').off();
   G.ref.child('telefonata/results').off();
   G.ref.child('scossa/results').off();
+  G.ref.child('tombola/marks').off();
   G.ref.child('casino/bets').off();
   G.ref.child('tamburini/counts').off();
   G.ref.child('mercatista/peaks').off();
