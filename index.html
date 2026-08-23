@@ -841,7 +841,7 @@ body.barOn.barCollapsed .screen.active{padding-bottom:70px;}
 .scossaHint{font-family:'Outfit'; font-weight:700; font-size:12px; color:#fff; opacity:.65; text-align:center; margin-top:4px;}
 /* ===== SLOT MACHINE ===== */
 .slotCabinet{position:relative; width:100%; max-width:320px; margin:14px auto; padding:18px 16px 26px; border-radius:26px;
-  background:linear-gradient(150deg,#5a1030,#2a0616); border:4px solid #ffc93c;
+  background:linear-gradient(150deg,#5a1030,#2a0616); border:4px solid #ffc93c; touch-action:none;
   box-shadow:0 16px 32px rgba(0,0,0,.6), inset 0 2px 4px rgba(255,255,255,.15), 0 0 30px rgba(255,201,60,.25);}
 .slotCabinet::before{content:'✨ SLOT MACHINE ✨'; display:block; text-align:center; font-family:'Bungee'; font-size:13px;
   color:#ffc93c; letter-spacing:1px; margin-bottom:10px; text-shadow:0 0 8px rgba(255,201,60,.6);}
@@ -859,15 +859,49 @@ body.barOn.barCollapsed .screen.active{padding-bottom:70px;}
   background:rgba(182,255,46,.18); border:3px solid var(--lime); box-shadow:0 0 16px rgba(182,255,46,.8); opacity:0;}
 .slotWinLine.show{opacity:1; animation:slotWinPulse .7s ease infinite;}
 @keyframes slotWinPulse{0%,100%{box-shadow:0 0 12px rgba(182,255,46,.6);} 50%{box-shadow:0 0 26px rgba(255,221,110,1);}}
-.slotLeverWrap{width:46px; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; padding-bottom:6px;}
-.slotLeverRail{width:10px; height:150px; background:linear-gradient(90deg,#3a2010,#6b3a1c,#3a2010); border-radius:6px; position:relative; box-shadow:inset 0 0 6px rgba(0,0,0,.6);}
-.slotLeverBall{position:absolute; left:50%; width:34px; height:34px; border-radius:50%; transform:translate(-50%,0);
+.slotLeverWrap{width:46px; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; padding-bottom:6px; touch-action:none;}
+.slotLeverRail{width:10px; height:150px; background:linear-gradient(90deg,#3a2010,#6b3a1c,#3a2010); border-radius:6px; position:relative; box-shadow:inset 0 0 6px rgba(0,0,0,.6); touch-action:none;}
+.slotLeverBall{position:absolute; left:50%; width:34px; height:34px; border-radius:50%; transform:translate(-50%,0); touch-action:none;
   background:radial-gradient(circle at 35% 30%, #ff5d5d, #8a0f1e 75%); box-shadow:0 4px 10px rgba(0,0,0,.5), inset 0 2px 4px rgba(255,255,255,.4);
   cursor:pointer; transition:top .18s cubic-bezier(.4,0,.6,1); top:0;}
 .slotLeverBall.pulled{top:118px;}
 .slotLeverBase{width:20px; height:14px; background:#5c4023; border-radius:0 0 8px 8px; margin-top:-2px;}
 .slotStatus{font-family:'Bungee'; font-size:clamp(14px,3.8vw,18px); text-align:center; margin-top:12px; color:#fff;}
 .slotPullsLeft{font-family:'Outfit'; font-weight:700; font-size:13px; color:#ffc93c; text-align:center; margin-top:4px; opacity:.85;}
+/* ===== IL PONTE SOSPESO ===== */
+.bridgeArena{position:relative; width:100%; max-width:340px; margin:14px auto; height:440px; overflow-y:auto; overflow-x:hidden;
+  border-radius:20px; background:linear-gradient(180deg, #0a1420 0%, #16241a 45%, #0d1a0a 100%);
+  border:4px solid #4a3319; box-shadow:inset 0 0 44px rgba(0,0,0,.75), 0 12px 26px rgba(0,0,0,.55); padding:16px 8px;
+  scroll-behavior:smooth;}
+.bridgeArena::-webkit-scrollbar{width:5px;} .bridgeArena::-webkit-scrollbar-thumb{background:rgba(255,201,60,.4); border-radius:3px;}
+.bridgeMist{position:sticky; top:0; height:0; text-align:center; z-index:2;}
+.bridgeEnd{text-align:center; font-family:'Bungee'; font-size:12px; color:var(--gold); letter-spacing:1px; padding:6px 0;
+  text-shadow:0 0 8px rgba(255,201,60,.6);}
+.bridgeTrack{position:relative; display:flex; flex-direction:column-reverse; gap:5px; padding:0 24px;}
+.bridgeSideRope{position:absolute; top:0; bottom:0; width:7px; border-radius:4px; z-index:1;
+  background:repeating-linear-gradient(180deg,#9a7a48 0px,#6b4a24 7px,#9a7a48 14px); box-shadow:0 0 4px rgba(0,0,0,.5);}
+.bridgeSideRope.left{left:6px;} .bridgeSideRope.right{right:6px;}
+.bridgeRow{position:relative; display:flex; align-items:center; gap:5px; height:36px; z-index:2;}
+.bridgePlank{flex:1; height:30px; border-radius:5px; display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(180deg,#b8875088 0%, #a8763e 12%, #8a6030 50%, #7a5228 88%, #6b4620 100%);
+  background-color:#8a6030;
+  border:1.5px solid #4a2f14; box-shadow:0 2px 3px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.15);
+  font-size:13px; cursor:pointer; transition:transform .1s, box-shadow .2s; position:relative; overflow:hidden;}
+.bridgePlank::before{content:''; position:absolute; inset:0; opacity:.25; pointer-events:none;
+  background:repeating-linear-gradient(90deg, rgba(0,0,0,.12) 0px, transparent 2px, transparent 5px);}
+.bridgePlank:active{transform:scale(.93);}
+.bridgePlank.current{box-shadow:0 0 0 2px var(--gold), 0 0 14px rgba(255,201,60,.75); animation:bridgePulse 1s ease infinite;}
+.bridgePlank.good{background:linear-gradient(180deg,#a5f06a,#4fae34); border-color:#256b1a; box-shadow:0 0 12px rgba(143,226,90,.7);}
+.bridgePlank.bad{background:linear-gradient(180deg,#ff7a6b,#c62828); border-color:#7a0f0f; animation:bridgeShake .35s;}
+.bridgePlank.locked{pointer-events:none; opacity:.5;}
+.bridgePlank.future{opacity:.35; pointer-events:none;}
+@keyframes bridgePulse{0%,100%{box-shadow:0 0 8px rgba(255,201,60,.5);} 50%{box-shadow:0 0 20px rgba(255,201,60,.95);}}
+@keyframes bridgeShake{0%,100%{transform:translateX(0);} 25%{transform:translateX(-5px);} 50%{transform:translateX(4px);} 75%{transform:translateX(-3px);}}
+.bridgeArena.complete .bridgePlank{background:linear-gradient(180deg,#a5f06a,#4fae34)!important; border-color:#256b1a!important;
+  box-shadow:0 0 14px rgba(143,226,90,.8)!important; animation:bridgeCompleteGlow 1.4s ease infinite!important;}
+@keyframes bridgeCompleteGlow{0%,100%{filter:brightness(1);} 50%{filter:brightness(1.35);}}
+.bridgeStatus{font-family:'Bungee'; font-size:clamp(14px,3.8vw,18px); text-align:center; margin-top:10px; color:#fff;}
+.bridgeStepCount{font-family:'Outfit'; font-weight:700; font-size:13px; color:#ffc93c; text-align:center; margin-top:3px; opacity:.85;}
 /* fulmini multipli che crepitano attorno al punto della scossa */
 .scossaBoltFx{position:absolute; font-size:40px; pointer-events:none; z-index:8; opacity:0; filter:drop-shadow(0 0 10px rgba(255,220,80,.9));
   animation:scossaBoltCrackle .6s ease forwards;}
@@ -1758,7 +1792,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.31</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.33</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -4981,7 +5015,7 @@ body.suspense-on #pfRank{ display:none !important; }
       <option value="40">40 secondi</option>
       <option value="45">45 secondi</option>
     </select>
-    <div class="byline mt" style="opacity:.75">🎰 Ogni giocatore ha una slot machine con tre tiri di leva a disposizione. Chi vince otterrà tre simboli uguali in orizzontale proprio al terzo e ultimo tiro — chi perde non li otterrà mai in nessuno dei tre tentativi. Chi vince o perde è già deciso a sorte: i rulli girano solo per la suspense.</div>
+    <div class="byline mt" style="opacity:.75">🎰 Ogni giocatore ha una slot machine con tre tentativi a disposizione, premendo il pulsante rosso della leva (da toccare, non da trascinare). Chi vince otterrà tre simboli uguali in orizzontale proprio al terzo e ultimo tentativo — chi perde non li otterrà mai in nessuno dei tre tentativi. Chi vince o perde è già deciso a sorte: i rulli girano solo per la suspense.</div>
     <button class="btn mg mt" style="width:100%" onclick="slotStart()">🎰 FATE PARTIRE LE SLOT!</button>
   </div>
   <div id="slotLive" style="display:none; width:100%" class="center">
@@ -5000,7 +5034,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <!-- ==================== PROIETTORE: SLOT MACHINE ==================== -->
 <div class="screen" id="scrPjSlotMachine">
   <div class="brand"><div class="t1" style="font-size:clamp(24px,3.6vw,42px)">🎰 SLOT MACHINE</div></div>
-  <div class="miniMsg" id="pjSlotMsg">TIRATE LA LEVA DAL TELEFONO, TRE TENTATIVI A TESTA!</div>
+  <div class="miniMsg" id="pjSlotMsg">PREMETE IL PULSANTE ROSSO DAL TELEFONO, TRE TENTATIVI A TESTA!</div>
   <div class="timerWrap mt" style="max-width:460px"><div class="timerBar" id="pjSlotTimerBar"></div></div>
   <div class="slotCabinet" id="pjSlotCabinet" style="max-width:300px"></div>
   <div class="lead mt" id="pjSlotResults" style="max-width:600px; width:100%"></div>
@@ -5014,8 +5048,55 @@ body.suspense-on #pfRank{ display:none !important; }
   </div>
   <div class="timerWrap mt" style="max-width:280px"><div class="timerBar" id="slotpTimerBar"></div></div>
   <div class="slotCabinet" id="slotCabinet"></div>
-  <div class="slotStatus" id="slotStatus">🎰 TIRA LA LEVA!</div>
+  <div class="slotStatus" id="slotStatus">🎰 PREMI IL PULSANTE ROSSO!</div>
   <div class="slotPullsLeft" id="slotPullsLeft">Tentativi rimasti: 3</div>
+</div>
+
+<!-- ==================== HOST: IL PONTE SOSPESO ==================== -->
+<div class="screen" id="scrPonteSospeso">
+  <div class="brand"><div class="t1" style="font-size:clamp(18px,3.4vw,32px)">🌉 IL PONTE SOSPESO</div></div>
+  <div class="panel mt" style="max-width:480px" id="bridgeSetup">
+    <div class="row">
+      <div class="grow"><div class="label">Punti pieni in palio (a chi lo attraversa subito)</div><select id="bridgePoints"></select></div>
+      <div><div class="label">O scrivili</div><input type="number" id="bridgePointsMan" class="ptsManual" placeholder="—" min="1"></div>
+    </div>
+    <div class="label mt">Tempo a disposizione</div>
+    <select id="bridgeDuration">
+      <option value="1">1 minuto</option>
+      <option value="2" selected>2 minuti</option>
+      <option value="3">3 minuti</option>
+    </select>
+    <div class="byline mt" style="opacity:.75">🌉 Ogni giocatore vede un ponte di 20 tacche, ciascuna con una tavoletta a sinistra e una a destra: una sola delle due è quella giusta. Sbagliando, la tavoletta si colora di rosso e si torna alla partenza — il tempo però non si ferma mai. I punti scendono più tempo si impiega: chi attraversa subito il ponte prende il massimo, chi ci mette di più prende sempre meno.</div>
+    <button class="btn mg mt" style="width:100%" onclick="bridgeStart()">🌉 SI PARTE!</button>
+  </div>
+  <div id="bridgeLive" style="display:none; width:100%" class="center">
+    <div class="miniMsg" id="bridgeMsg"></div>
+    <div class="timerWrap mt" style="max-width:420px"><div class="timerBar" id="bridgeTimerBarHost"></div></div>
+    <div class="byline" id="bridgeCount"></div>
+    <div class="lead mt" id="bridgeResultsLive" style="max-width:500px; width:100%"></div>
+  </div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
+</div>
+
+<!-- ==================== PROIETTORE: IL PONTE SOSPESO ==================== -->
+<div class="screen" id="scrPjPonteSospeso">
+  <div class="brand"><div class="t1" style="font-size:clamp(22px,3.6vw,40px)">🌉 IL PONTE SOSPESO</div></div>
+  <div class="miniMsg" id="pjBridgeMsg">SCEGLIETE LE TAVOLETTE GIUSTE PER ATTRAVERSARE IL PONTE!</div>
+  <div class="timerWrap mt" style="max-width:460px"><div class="timerBar" id="pjBridgeTimerBar"></div></div>
+  <div class="bridgeArena" id="pjBridgeArena" style="max-width:300px; height:380px; cursor:default"></div>
+  <div class="lead mt" id="pjBridgeResults" style="max-width:600px; width:100%"></div>
+</div>
+
+<!-- ==================== PLAYER: IL PONTE SOSPESO ==================== -->
+<div class="screen" id="scrPlayPonteSospeso" style="align-items:center; justify-content:center">
+  <div class="row" style="width:100%; justify-content:space-between">
+    <div class="pill" id="bridgepName" style="color:var(--gold)"></div>
+    <div class="pill" id="bridgepScore"></div>
+  </div>
+  <div class="timerWrap mt" style="max-width:280px"><div class="timerBar" id="bridgepTimerBar"></div></div>
+  <div class="bridgeArena" id="bridgeArena"></div>
+  <div class="bridgeStatus" id="bridgeStatus">🌉 SCEGLI LA TAVOLETTA GIUSTA!</div>
+  <div class="bridgeStepCount" id="bridgeStepCount">Tacca 1 di 20</div>
 </div>
 
 <!-- ==================== HOST: LA MAGGIORANZA VINCE ==================== -->
@@ -5765,7 +5846,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1331; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1333; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -7732,6 +7813,7 @@ function listenGame(){
     else if (g.status==='telefonata') showPlayerTelefonata(g);
     else if (g.status==='scossa') showPlayerScossa(g);
     else if (g.status==='slotmachine') showPlayerSlotMachine(g);
+    else if (g.status==='pontesospeso') showPlayerPonteSospeso(g);
     else if (g.status==='finddiff') showPlayerFindDiff(g);
     else if (g.status==='maggioranza') showPlayerMaj(g);
     else if (g.status==='goldenticket') showPlayerGold(g);
@@ -9827,7 +9909,7 @@ function slotPull(){
       slotResolveLose();
     } else {
       $('slotPullsLeft').textContent = `Tentativi rimasti: ${3-P.slotPullsUsed}`;
-      $('slotStatus').textContent = '😬 NIENTE... TIRA ANCORA LA LEVA!';
+      $('slotStatus').textContent = '😬 NIENTE... PREMI ANCORA IL PULSANTE ROSSO!';
     }
   });
 }
@@ -9843,7 +9925,7 @@ function showPlayerSlotMachine(g){
     const outcome = (m.assignments||{})[P.id] || {win:false};
     P.slotWin = outcome.win; P.slotPrize = outcome.prize;
     slotSetupCabinet($('slotCabinet'));
-    $('slotStatus').textContent = '🎰 TIRA LA LEVA!';
+    $('slotStatus').textContent = '🎰 PREMI IL PULSANTE ROSSO!';
     $('slotPullsLeft').textContent = 'Tentativi rimasti: 3';
     $('slotLeverBall').onclick = slotPull;
   }
@@ -9856,6 +9938,144 @@ function showPlayerSlotMachine(g){
       if (!P.slotResolved){
         P.slotResolved = true; const ball=$('slotLeverBall'); if (ball) ball.onclick=null;
         $('slotStatus').textContent = '⏱ TEMPO SCADUTO!';
+      }
+    }
+  }, 100);
+}
+/* ================================================================
+   IL PONTE SOSPESO — generatore percorso, suoni, funzioni condivise, telefono
+   Ogni giocatore genera in autonomia, sul proprio telefono, un percorso segreto di 20 tacche (una
+   giusta e una sbagliata per ogni fila) e deve scoprirlo per tentativi: sbagliando si torna alla
+   partenza, ma l'orologio generale della manche non si ferma mai. I punti finali dipendono da quanto
+   tempo resta quando si completa l'attraversata.
+================================================================ */
+function bridgeGeneratePath(nRows){
+  return Array.from({length:nRows}, ()=> Math.random()<0.5 ? 0 : 1);
+}
+function bridgeStepGoodSound(){
+  try{
+    _audioCtx = _audioCtx || new (window.AudioContext||window.webkitAudioContext)();
+    const t0 = _audioCtx.currentTime;
+    const o = _audioCtx.createOscillator(), g = _audioCtx.createGain();
+    o.type='triangle'; o.frequency.setValueAtTime(520, t0); o.frequency.exponentialRampToValueAtTime(820, t0+.11);
+    g.gain.setValueAtTime(.32, t0); g.gain.exponentialRampToValueAtTime(.0001, t0+.2);
+    o.connect(g); g.connect(_audioCtx.destination); o.start(t0); o.stop(t0+.22);
+  }catch(e){}
+}
+function bridgeStepBadSound(){
+  try{
+    _audioCtx = _audioCtx || new (window.AudioContext||window.webkitAudioContext)();
+    const t0 = _audioCtx.currentTime;
+    const o = _audioCtx.createOscillator(), g = _audioCtx.createGain();
+    o.type='sawtooth'; o.frequency.setValueAtTime(220, t0); o.frequency.exponentialRampToValueAtTime(80, t0+.38);
+    g.gain.setValueAtTime(.3, t0); g.gain.exponentialRampToValueAtTime(.0001, t0+.42);
+    o.connect(g); g.connect(_audioCtx.destination); o.start(t0); o.stop(t0+.44);
+  }catch(e){}
+}
+function bridgeRenderTrack(container, nRows, currentRow, path){
+  let rows = '';
+  for (let r=0;r<nRows;r++){
+    const isPast = r<currentRow, isCurrent = r===currentRow;
+    let cls0 = 'future', cls1 = 'future';
+    if (isCurrent){ cls0 = 'current'; cls1 = 'current'; }
+    else if (isPast){ cls0 = path[r]===0 ? 'good' : 'future'; cls1 = path[r]===1 ? 'good' : 'future'; }
+    rows += `<div class="bridgeRow" data-row="${r}">
+      <div class="bridgePlank ${cls0}" data-side="0"></div>
+      <div class="bridgePlank ${cls1}" data-side="1"></div>
+    </div>`;
+  }
+  container.innerHTML = `<div class="bridgeEnd">🏁 ARRIVO</div><div class="bridgeTrack">${rows}<div class="bridgeSideRope left"></div><div class="bridgeSideRope right"></div></div><div class="bridgeEnd">🚩 PARTENZA</div>`;
+  const rowEl = container.querySelector(`.bridgeRow[data-row="${currentRow}"]`);
+  if (rowEl) rowEl.querySelectorAll('.bridgePlank').forEach(el=>{ el.onclick = ()=> bridgeChoose(+el.dataset.side); });
+}
+function bridgeScrollToCurrent(container, currentRow){
+  const rowEl = container.querySelector(`.bridgeRow[data-row="${currentRow}"]`);
+  if (rowEl) rowEl.scrollIntoView({ block:'center', behavior:'smooth' });
+}
+function bridgeSetupDecorative(container, nRows){
+  const path = bridgeGeneratePath(nRows);
+  let rows = '';
+  for (let r=0;r<nRows;r++){
+    rows += `<div class="bridgeRow" data-row="${r}">
+      <div class="bridgePlank ${path[r]===0?'good':''}"></div>
+      <div class="bridgePlank ${path[r]===1?'good':''}"></div>
+    </div>`;
+  }
+  container.innerHTML = `<div class="bridgeEnd">🏁 ARRIVO</div><div class="bridgeTrack">${rows}<div class="bridgeSideRope left"></div><div class="bridgeSideRope right"></div></div><div class="bridgeEnd">🚩 PARTENZA</div>`;
+}
+function bridgeResolveWin(){
+  if (P.bridgeResolved) return; P.bridgeResolved = true;
+  clearInterval(P.bridgeInt);
+  $('bridgeArena').classList.add('complete');
+  telWinFanfare(); confetti(); if (navigator.vibrate) navigator.vibrate([80,50,80,50,150]);
+  const left = Math.max(0, P.bridgeEndAt - serverNow());
+  const pts = Math.max(0, Math.round(P.bridgeMaxPoints * (left/P.bridgeDurationMs)));
+  $('bridgeStatus').textContent = `🎉 PONTE ATTRAVERSATO! +${pts} PUNTI!`;
+  $('bridgeStepCount').textContent = '';
+  P.ref.child('pontesospeso/results/'+P.id).set({ pts, completed:true });
+}
+function bridgeChoose(side){
+  if (P.bridgeResolved || P.bridgeBusy) return;
+  const arena = $('bridgeArena');
+  const rowEl = arena.querySelector(`.bridgeRow[data-row="${P.bridgeRow}"]`);
+  const plankEl = rowEl.querySelector(`.bridgePlank[data-side="${side}"]`);
+  P.bridgeBusy = true;
+  rowEl.querySelectorAll('.bridgePlank').forEach(el=> el.onclick=null);
+  if (side === P.bridgePath[P.bridgeRow]){
+    plankEl.classList.remove('current'); plankEl.classList.add('good');
+    bridgeStepGoodSound(); if (navigator.vibrate) navigator.vibrate(30);
+    P.bridgeRow++;
+    if (P.bridgeRow >= P.bridgeNRows){
+      setTimeout(bridgeResolveWin, 300);
+    } else {
+      setTimeout(()=>{
+        P.bridgeBusy = false;
+        bridgeRenderTrack(arena, P.bridgeNRows, P.bridgeRow, P.bridgePath);
+        bridgeScrollToCurrent(arena, P.bridgeRow);
+        $('bridgeStepCount').textContent = `Tacca ${P.bridgeRow+1} di ${P.bridgeNRows}`;
+      }, 350);
+    }
+  } else {
+    plankEl.classList.remove('current'); plankEl.classList.add('bad');
+    bridgeStepBadSound(); if (navigator.vibrate) navigator.vibrate(120);
+    $('bridgeStatus').textContent = '💥 SBAGLIATO! SI RICOMINCIA DA CAPO...';
+    setTimeout(()=>{
+      P.bridgeBusy = false; P.bridgeRow = 0;
+      bridgeRenderTrack(arena, P.bridgeNRows, P.bridgeRow, P.bridgePath);
+      bridgeScrollToCurrent(arena, P.bridgeRow);
+      $('bridgeStepCount').textContent = `Tacca 1 di ${P.bridgeNRows}`;
+      $('bridgeStatus').textContent = '🌉 SCEGLI LA TAVOLETTA GIUSTA!';
+    }, 700);
+  }
+}
+function showPlayerPonteSospeso(g){
+  const m = g.pontesospeso||{};
+  $('bridgepName').textContent = P.name;
+  $('bridgepScore').textContent = (((g.players||{})[P.id]||{}).score||0)+' pt';
+  showScreen('scrPlayPonteSospeso');
+  if (m.phase!=='active') return;
+  const sig = 'act:'+m.roundId;
+  if (P.bridgeSig !== sig){
+    P.bridgeSig = sig; P.bridgeResolved = false; P.bridgeBusy = false; P.bridgeRow = 0;
+    P.bridgeNRows = 20; P.bridgePath = bridgeGeneratePath(P.bridgeNRows);
+    P.bridgeMaxPoints = m.maxPoints; P.bridgeEndAt = m.endAt; P.bridgeDurationMs = m.durationMs;
+    $('bridgeStatus').textContent = '🌉 SCEGLI LA TAVOLETTA GIUSTA!';
+    $('bridgeStepCount').textContent = `Tacca 1 di ${P.bridgeNRows}`;
+    const arena = $('bridgeArena'); arena.classList.remove('complete');
+    bridgeRenderTrack(arena, P.bridgeNRows, P.bridgeRow, P.bridgePath);
+    setTimeout(()=> bridgeScrollToCurrent(arena, P.bridgeRow), 50);
+  }
+  clearInterval(P.bridgeInt);
+  P.bridgeInt = setInterval(()=>{
+    const left = Math.max(0, (m.endAt||0) - serverNow());
+    $('bridgepTimerBar').style.width = (left/(m.durationMs||1)*100)+'%';
+    if (left<=0){
+      clearInterval(P.bridgeInt);
+      if (!P.bridgeResolved){
+        P.bridgeResolved = true;
+        document.querySelectorAll('#bridgeArena .bridgePlank').forEach(el=> el.onclick=null);
+        $('bridgeStatus').textContent = '⏱ TEMPO SCADUTO!';
+        P.ref.child('pontesospeso/results/'+P.id).set({ pts:0, completed:false });
       }
     }
   }, 100);
@@ -16666,7 +16886,7 @@ function slotStart(){
     G.ref.update({ status:'slotmachine', slotmachine:{ phase:'active', endAt, durationMs, roundId, assignments } });
     G.ref.child('slotmachine/results').remove();
     $('slotSetup').style.display='none'; $('slotLive').style.display='block';
-    $('slotMsg').textContent = `🎰 SI TIRA LA LEVA! ${numWinners} JACKPOT SU ${pids.length}!`;
+    $('slotMsg').textContent = `🎰 SI PREME IL PULSANTE! ${numWinners} JACKPOT SU ${pids.length}!`;
     $('slotCount').textContent=''; $('slotResultsLive').innerHTML=''; $('slotBtnAgain').style.display='none'; $('slotBtnResults').style.display='none';
     pjSend({type:'slotActive', endAt, durationMs});
     clearInterval(SLOT.timerInt);
@@ -16706,6 +16926,64 @@ function slotShowResults(){
       }));
       pjSend({type:'slotResult', rows});
       if (rows.length) confetti();
+    });
+  });
+}
+
+/* ================================================================
+   IL PONTE SOSPESO — regia
+   Gioco individuale a tempo condiviso: ogni telefono genera in autonomia il proprio percorso segreto
+   e lo scopre per tentativi. L'orologio della manche è lo stesso per tutti e non si ferma mai, anche
+   quando un giocatore sbaglia e deve ricominciare dalla partenza.
+================================================================ */
+let BRIDGE = {};
+function openPonteSospeso(){
+  if (!isGameEnabled('pontesospeso')) return alert('⚠️ Questo minigioco non è compreso nella licenza attiva. Contatta Alberto per sbloccarlo.');
+  if (!G) return alert('Avvia prima una partita!');
+  cancelLiveQuestion(); closeModal(); clearInterval((BRIDGE||{}).timerInt);
+  G.ref.child('pontesospeso/results').off();
+  G.ref.update({ status:'pontesospeso', pontesospeso:{ phase:'idle' } });
+  BRIDGE = {};
+  $('bridgeSetup').style.display='block'; $('bridgeLive').style.display='none';
+  if (!$('bridgePoints').innerHTML){
+    $('bridgePoints').innerHTML = Array.from({length:20},(_,k)=>`<option value="${(k+1)*100}" ${k===4?'selected':''}>${(k+1)*100} punti</option>`).join('');
+  }
+  showScreen('scrPonteSospeso');
+}
+function bridgeStart(){
+  const maxPoints = getPoints('bridgePoints','bridgePointsMan');
+  const durationMin = +($('bridgeDuration').value||2);
+  const durationMs = durationMin*60*1000;
+  const endAt = serverNow()+durationMs;
+  const roundId = serverNow();
+  BRIDGE = { credited:{} };
+  G.ref.update({ status:'pontesospeso', pontesospeso:{ phase:'active', maxPoints, durationMs, endAt, roundId } });
+  G.ref.child('pontesospeso/results').remove();
+  $('bridgeSetup').style.display='none'; $('bridgeLive').style.display='block';
+  $('bridgeMsg').textContent = `🌉 SI ATTRAVERSA IL PONTE! Fino a ${maxPoints} punti in palio`;
+  $('bridgeCount').textContent=''; $('bridgeResultsLive').innerHTML='';
+  pjSend({type:'bridgeActive', endAt, durationMs});
+  clearInterval(BRIDGE.timerInt);
+  BRIDGE.timerInt = setInterval(()=>{
+    const left = Math.max(0, endAt-serverNow());
+    $('bridgeTimerBarHost').style.width = (left/durationMs*100)+'%';
+    if (left<=0) clearInterval(BRIDGE.timerInt);
+  }, 100);
+  G.ref.child('pontesospeso/results').on('child_added', snap=>{
+    const pid = snap.key, r = snap.val();
+    if (!r || BRIDGE.credited[pid]) return;
+    BRIDGE.credited[pid] = true;
+    if (r.pts>0) applyScoreDelta(pid, r.pts);
+  });
+  G.ref.child('pontesospeso/results').on('value', s=>{
+    const results = s.val()||{};
+    const entries = Object.entries(results);
+    $('bridgeCount').textContent = `Concluso (arrivo o tempo scaduto): ${entries.length}`;
+    G.ref.child('players').once('value').then(ps=>{
+      const pl = ps.val()||{};
+      $('bridgeResultsLive').innerHTML = entries.map(([pid,r])=>
+        `<div class="leadRow"><span class="pos">${r.completed?'🏆':'⏱'}</span> ${esc((pl[pid]||{}).name||'?')} <span class="pts">${r.completed?'+'+r.pts:'0'}</span></div>`).join('')
+        || '<div class="byline">Nessuno ha ancora concluso...</div>';
     });
   });
 }
@@ -19090,6 +19368,7 @@ const GIOCHI_CATALOGO = [
   {k:'tamb', l:'🥁 I Tamburini'},
   {k:'merc', l:'📣 Mercatista per un Giorno'},
   {k:'morra', l:'✊✋✌️ Morra Cinese'},
+  {k:'pontesospeso', l:'🌉 Il Ponte Sospeso'},
   {k:'punto', l:'🏁 Il Punto della Situazione'},
   {k:'dado', l:'🎲 Il Dado del Destino'},
   {k:'asta', l:'🔨 Asta'},
@@ -19126,6 +19405,7 @@ function modalGamesSkill(){
     gk('anagram', `<button class="btn gameBtn" onclick="openAnagram()">🔤➰ Anagramma</button>`),
     gk('mini', `<button class="btn mg gameBtn" onclick="openMini()">🥃 Bussolotti</button>`),
     gk('tamb', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#e8b45a,#8a4a12); color:#3a2000; box-shadow:0 7px 0 #4a2400,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(232,180,90,.4)" onclick="openTamb()">🥁 I Tamburini</button>`),
+    gk('pontesospeso', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#8a6030,#4a3319); color:#fff; box-shadow:0 7px 0 #2a1c0d,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(138,96,48,.4)" onclick="openPonteSospeso()">🌉 Il Ponte Sospeso</button>`),
     gk('punto', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#3de0ff,#0b6f8a); color:#00272e; box-shadow:0 7px 0 #003a44,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(61,224,255,.4)" onclick="openPunto()">🏁 Il Punto della Situazione</button>`),
     gk('idr', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#7a8a9a,#3a4550); color:#fff; box-shadow:0 7px 0 #1a2028,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(122,138,154,.4)" onclick="openIdr()">🔧 L'Idraulico</button>`),
     gk('cassaforte', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#8a8f96,#3a3c40); color:#fff; box-shadow:0 7px 0 #1a1c1e,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(138,143,150,.35)" onclick="openCassaforte()">🔐 La Cassaforte</button>`),
@@ -19728,6 +20008,7 @@ function backToQuiz(title){
   G.ref.child('telefonata/results').off();
   G.ref.child('scossa/results').off();
   G.ref.child('slotmachine/results').off();
+  G.ref.child('pontesospeso/results').off();
   G.ref.child('tombola/marks').off();
   G.ref.child('casino/bets').off();
   G.ref.child('tamburini/counts').off();
@@ -19762,6 +20043,7 @@ function backToQuiz(title){
   clearInterval((TEL||{}).timerInt);
   clearInterval((SCOSSA||{}).timerInt);
   clearInterval((SLOT||{}).timerInt);
+  clearInterval((BRIDGE||{}).timerInt);
   clearInterval((RW||{}).timerInt);
   clearInterval((TAMB||{}).timerInt);
   clearInterval((MERC||{}).timerInt);
@@ -19771,7 +20053,7 @@ function backToQuiz(title){
   clearInterval((PATATA||{}).timerInt);
   clearInterval((CSF||{}).timerInt);
   clearInterval((XOX||{}).timerInt);
-  G.ref.update({ status:'pausa', mini:null, dice:null, simon:null, voto:null, timer:null, tombola:null, cards:null, swiss:null, hilo:null, wheels:null, puzzle:null, wordsearch:null, anagram:null, seed:null, grad:null, taptap:null, ruota:null, memo:null, memocoppie:null, horses:null, tfiscale:null, toc:null, cenerentola:null, pacchi:null, roulette:null, pagliuzza:null, supertris:null, rdc:null, mastermind:null, bomba:null, shapes:null, zanzare:null, spesa:null, salumi:null, finddiff:null, maggioranza:null, goldenticket:null, telefonata:null, scossa:null, slotmachine:null, casino:null, tamburini:null, mercatista:null, staccionata:null, morra:null, punto:null, dado:null, asta:null, idraulico:null, patata:null, cassaforte:null, settemezzo:null, scopa:null, bingocarte:null, xox:null });
+  G.ref.update({ status:'pausa', mini:null, dice:null, simon:null, voto:null, timer:null, tombola:null, cards:null, swiss:null, hilo:null, wheels:null, puzzle:null, wordsearch:null, anagram:null, seed:null, grad:null, taptap:null, ruota:null, memo:null, memocoppie:null, horses:null, tfiscale:null, toc:null, cenerentola:null, pacchi:null, roulette:null, pagliuzza:null, supertris:null, rdc:null, mastermind:null, bomba:null, shapes:null, zanzare:null, spesa:null, salumi:null, finddiff:null, maggioranza:null, goldenticket:null, telefonata:null, scossa:null, slotmachine:null, pontesospeso:null, casino:null, tamburini:null, mercatista:null, staccionata:null, morra:null, punto:null, dado:null, asta:null, idraulico:null, patata:null, cassaforte:null, settemezzo:null, scopa:null, bingocarte:null, xox:null });
   G.ref.child('players').once('value', ps=>{
     const players = ps.val()||{};
     $('hrTitle').textContent = title || 'SI TORNA AL QUIZ!';
@@ -21182,7 +21464,7 @@ function pjRouteInner(m){
     }
     else if (m.type==='slotActive') {
       showScreen('scrPjSlotMachine');
-      $('pjSlotMsg').textContent = 'TIRATE LA LEVA DAL TELEFONO, TRE TENTATIVI A TESTA!';
+      $('pjSlotMsg').textContent = 'PREMETE IL PULSANTE ROSSO DAL TELEFONO, TRE TENTATIVI A TESTA!';
       $('pjSlotResults').innerHTML='';
       slotSetupCabinet($('pjSlotCabinet'));
       clearInterval(window._pjSlotInt);
@@ -21199,6 +21481,18 @@ function pjRouteInner(m){
         const label = r.prize.kind==='points' ? `+${r.prize.points} punti` : esc(r.prize.text);
         return `<div class="leadRow"><span class="pos">🏆</span> ${esc(r.name)} <span class="pts">${label}</span></div>`;
       }).join('') || '<div class="byline">Nessun vincitore questa volta.</div>';
+    }
+    else if (m.type==='bridgeActive') {
+      showScreen('scrPjPonteSospeso');
+      $('pjBridgeMsg').textContent = 'SCEGLIETE LE TAVOLETTE GIUSTE PER ATTRAVERSARE IL PONTE!';
+      $('pjBridgeResults').innerHTML='';
+      bridgeSetupDecorative($('pjBridgeArena'), 20);
+      clearInterval(window._pjBridgeInt);
+      window._pjBridgeInt = setInterval(()=>{
+        const left = Math.max(0, m.endAt - serverNow());
+        $('pjBridgeTimerBar').style.width = (left/m.durationMs*100)+'%';
+        if (left<=0) clearInterval(window._pjBridgeInt);
+      }, 100);
     }
     else if (m.type==='rwActive') {
       showScreen('scrPjCasino');
