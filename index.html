@@ -1822,7 +1822,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.35</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.36</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -2221,10 +2221,16 @@ body.suspense-on #pfRank{ display:none !important; }
       <option value="200">⚡ Fulmine</option>
       <option value="120">🚀 Turbo</option>
     </select></div>
+    <div><div class="label">Tempo per votare</div><select id="miniDuration" style="width:130px" data-tip="Tempo a disposizione per votare, allo scadere si rivela da sé">
+      <option value="10">10 secondi</option>
+      <option value="20" selected>20 secondi</option>
+      <option value="30">30 secondi</option>
+    </select></div>
     <button class="btn mg" id="miniBtnGo" onclick="miniShuffle()" data-tip="Nasconde la pallina e mescola i bussolotti">🎲 NASCONDI E MESCOLA</button>
     <button class="btn lm" id="miniBtnReveal" onclick="miniReveal()" style="display:none" data-tip="Svela sotto quale bussolotto si trova davvero la pallina">👁 RIVELA</button>
     <button class="btn cy" id="miniBtnAgain" onclick="miniAgain()" style="display:none">🔁 Un'altra manche</button>
   </div>
+  <div class="timerWrap mt" style="max-width:420px; margin-left:auto; margin-right:auto; display:none" id="miniTimerWrapHost"><div class="timerBar" id="miniTimerBarHost"></div></div>
   <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
 
@@ -3366,10 +3372,16 @@ body.suspense-on #pfRank{ display:none !important; }
       <input type="text" id="stPrizeText2" placeholder="2° premio" maxlength="60" class="mt">
       <input type="text" id="stPrizeText3" placeholder="3° premio" maxlength="60" class="mt">
     </div>
+    <div class="label mt">Tempo per grattare tutta la cartella</div>
+    <select id="stDuration">
+      <option value="30">30 secondi</option>
+      <option value="60" selected>1 minuto</option>
+    </select>
     <button class="btn mg mt" style="width:100%" onclick="stStart()">💎 DISTRIBUISCI LE CARTELLE!</button>
   </div>
   <div id="stLive" style="display:none; width:100%" class="center">
     <div class="miniMsg">💎 OGNUNO GRATTA LA PROPRIA CARTELLA DAL TELEFONO!</div>
+    <div class="timerWrap mt" style="max-width:420px"><div class="timerBar" id="stTimerBarHost"></div></div>
     <div class="byline" id="stCount"></div>
     <div class="lead mt" id="stWinnersLive" style="max-width:500px; width:100%"></div>
     <div class="row mt" style="justify-content:center">
@@ -3382,6 +3394,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <!-- ==================== PROIETTORE: SUPERTRIS ==================== -->
 <div class="screen" id="scrPjSupertris">
   <div class="brand"><div class="t1" style="font-size:clamp(26px,4vw,48px)">💎 SUPERTRIS</div></div>
+  <div class="timerWrap mt" style="max-width:460px"><div class="timerBar" id="pjStTimerBar"></div></div>
   <div class="miniMsg" id="pjStMsg" style="font-size:clamp(18px,3vw,30px)">Ognuno gratta la propria cartella sul telefono!</div>
   <div class="lead mt" id="pjStWinners" style="max-width:600px; width:100%"></div>
 </div>
@@ -3392,6 +3405,7 @@ body.suspense-on #pfRank{ display:none !important; }
     <div class="pill" id="stpName" style="color:var(--gold)"></div>
     <div class="pill" id="stpScore"></div>
   </div>
+  <div class="timerWrap mt" style="max-width:280px"><div class="timerBar" id="stpTimerBar"></div></div>
   <div class="stTicket">
     <div class="stGrid" id="stGrid"></div>
   </div>
@@ -4609,11 +4623,17 @@ body.suspense-on #pfRank{ display:none !important; }
     <input type="number" id="smMinBet" value="100" min="10" step="10" style="text-align:center">
     <div class="label mt">Puntata massima</div>
     <input type="number" id="smMaxBet" value="3000" min="10" step="10" style="text-align:center">
-    <div class="byline mt" style="opacity:.75">🎴 Ogni giocatore riceve una carta e punta quanto vuole nel range scelto. Da lì può chiamare per avvicinarsi a 7 e 1/2 o stare se si sente già forte — sballando (superando 7 e 1/2) perde subito la puntata. Quando tutti hanno finito tocca a te, il banco: la tua carta e le tue mosse si vedono in diretta su telefoni e proiettore. Chi ti batte vince il doppio della puntata, chi perde la cede a te.</div>
+    <div class="label mt">Tempo per puntare e giocare la propria mano</div>
+    <select id="smDuration">
+      <option value="30">30 secondi</option>
+      <option value="60" selected>1 minuto</option>
+    </select>
+    <div class="byline mt" style="opacity:.75">🎴 Ogni giocatore riceve una carta e punta quanto vuole nel range scelto. Da lì può chiamare per avvicinarsi a 7 e 1/2 o stare se si sente già forte — sballando (superando 7 e 1/2) perde subito la puntata. Allo scadere del tempo si passa comunque al banco: chi non aveva ancora puntato viene escluso, chi era già in gioco resta fermo con le carte in mano. Quando tocca a te, il banco: la tua carta e le tue mosse si vedono in diretta su telefoni e proiettore. Chi ti batte vince il doppio della puntata, chi perde la cede a te.</div>
     <button class="btn mg mt" style="width:100%" onclick="smStart()">🎴 DAI LE CARTE!</button>
   </div>
   <div id="smLive" style="display:none; width:100%" class="center">
     <div class="miniMsg" id="smMsg"></div>
+    <div class="timerWrap mt" style="max-width:420px" id="smTimerWrapHost"><div class="timerBar" id="smTimerBarHost"></div></div>
     <div class="smTable"><div class="smHandRow" id="smDealerHandHost"></div><div class="smTotal" id="smDealerTotalHost"></div></div>
     <div class="lead mt" id="smPlayersLive" style="max-width:460px; width:100%"></div>
     <div class="row mt">
@@ -4630,6 +4650,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <!-- ==================== PROIETTORE: 7 E 1/2 ==================== -->
 <div class="screen" id="scrPjSetteMezzo">
   <div class="brand"><div class="t1" style="font-size:clamp(24px,3.6vw,42px)">🎴 7 E 1/2</div></div>
+  <div class="timerWrap mt" style="max-width:460px" id="pjSmTimerWrap"><div class="timerBar" id="pjSmTimerBar"></div></div>
   <div class="miniMsg" id="pjSmMsg">SI GIOCA A 7 E 1/2!</div>
   <div class="smTable"><div class="smHandRow" id="smDealerHandPj"></div><div class="smTotal" id="smDealerTotalPj"></div></div>
   <div class="smSetteBanner" id="smSettePj" style="display:none"></div>
@@ -4642,6 +4663,7 @@ body.suspense-on #pfRank{ display:none !important; }
     <div class="pill" id="smpName" style="color:var(--gold)"></div>
     <div class="pill" id="smpScore"></div>
   </div>
+  <div class="timerWrap mt" style="max-width:280px" id="smpTimerWrap"><div class="timerBar" id="smpTimerBar"></div></div>
   <div class="smTable">
     <div class="smHandRow" id="smpHand"></div>
     <div class="smTotal" id="smpTotal"></div>
@@ -4681,10 +4703,16 @@ body.suspense-on #pfRank{ display:none !important; }
     <div id="scopaBonusTextBox" style="display:none">
       <input type="text" id="scopaBonusText" placeholder="Es. Un giro di shot per tutti!" maxlength="60" style="margin-top:6px">
     </div>
-    <div class="byline mt" style="opacity:.75">🧹 Ogni giocatore riceve 5 carte contro le stesse 4 carte a terra, uguali per tutti — poi gioca in autonomia sul proprio telefono, scegliendo lui stesso quale carta calare e quali carte prendere da terra, secondo le regole classiche della scopa. Chi svuota il tavolo fa scopa e vince anche il bonus.</div>
+    <div class="label mt">Tempo per giocare la propria mano</div>
+    <select id="scopaDuration">
+      <option value="30">30 secondi</option>
+      <option value="60" selected>1 minuto</option>
+    </select>
+    <div class="byline mt" style="opacity:.75">🧹 Ogni giocatore riceve 5 carte contro le stesse 4 carte a terra, uguali per tutti — poi gioca in autonomia sul proprio telefono, scegliendo lui stesso quale carta calare e quali carte prendere da terra, secondo le regole classiche della scopa. Chi svuota il tavolo fa scopa e vince anche il bonus. Allo scadere del tempo si calcolano i punti su quello che ognuno ha preso fino a quel momento.</div>
     <button class="btn mg mt" style="width:100%" onclick="scopaStart()">🃏 DISTRIBUISCI LE CARTE!</button>
   </div>
   <div id="scpLive" style="display:none; width:100%" class="center">
+    <div class="timerWrap mt" style="max-width:420px" id="scopaTimerWrapHost"><div class="timerBar" id="scopaTimerBarHost"></div></div>
     <div class="scpSectionLbl">LE 4 CARTE A TERRA</div>
     <div class="scpRow" id="scpTableRow"></div>
     <div class="scpSectionLbl mt" id="scpRankingLbl">CHI STA GIOCANDO</div>
@@ -4698,6 +4726,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <!-- ==================== PROIETTORE: SCOPA E VINCI ==================== -->
 <div class="screen" id="scrPjScopa">
   <div class="brand"><div class="t1" style="font-size:clamp(24px,3.6vw,42px)">🧹 SCOPA E VINCI</div></div>
+  <div class="timerWrap mt" style="max-width:460px" id="pjScopaTimerWrap"><div class="timerBar" id="pjScopaTimerBar"></div></div>
   <div class="miniMsg" id="pjScopaMsg">OGNUNO RICEVE 5 CARTE CONTRO QUESTE 4 A TERRA...</div>
   <div class="scpSectionLbl" style="margin-top:14px">LE 4 CARTE A TERRA — UGUALI PER TUTTI</div>
   <div class="scpRow" id="pjScopaTableRow"></div>
@@ -4706,6 +4735,7 @@ body.suspense-on #pfRank{ display:none !important; }
 
 <!-- ==================== PLAYER: SCOPA E VINCI ==================== -->
 <div class="screen" id="scrPlayScopa" style="align-items:center; justify-content:center">
+  <div class="timerWrap mt" style="max-width:280px" id="scpTimerWrap"><div class="timerBar" id="scpTimerBar"></div></div>
   <div id="scpPlayBox" style="width:100%">
     <div class="scpProgressLbl" id="scpProgressLbl"></div>
     <div class="scpSectionLbl" id="scpSectionLblTable">SUL TAVOLO — TOCCA COSA VUOI PRENDERE</div>
@@ -5711,6 +5741,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <!-- ==================== PROIETTORE: MINIGIOCO ==================== -->
 <div class="screen" id="scrPjMini">
   <div class="brand"><div class="t1" style="font-size:clamp(26px,4vw,48px)">🥃 I TRE BUSSOLOTTI</div></div>
+  <div class="timerWrap mt" style="max-width:460px; display:none" id="pjMiniTimerWrap"><div class="timerBar" id="pjMiniTimerBar"></div></div>
   <div class="miniStage" id="pjMiniStage" style="max-width:900px; height:380px"></div>
   <div class="miniMsg" id="pjMiniMsg" style="font-size:clamp(24px,4vw,46px)"></div>
   <div class="voteCounts" id="pjMiniCounts"></div>
@@ -5723,6 +5754,7 @@ body.suspense-on #pfRank{ display:none !important; }
     <div class="pill" id="bslScore"></div>
   </div>
   <div class="miniStage" id="pmStage" style="height:210px"></div>
+  <div class="timerWrap mt" style="max-width:280px; display:none" id="pmTimerWrap"><div class="timerBar" id="pmTimerBar"></div></div>
   <div class="byline mt" id="bslStatus">SOTTO QUALE BUSSOLOTTO È LA PALLINA?</div>
   <div class="remote">
     <button class="rBtn rA" id="pmA" onclick="voteMini('A')">A</button>
@@ -5888,7 +5920,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1335; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1336; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -8756,6 +8788,23 @@ function showPlayerSupertris(g){
           <div class="stCellSymbol">${esc(P.stCard.grid[i])}</div>
         </div>`).join('');
     }
+    clearInterval(P.stInt);
+    if (m.endAt){
+      P.stInt = setInterval(()=>{
+        const left = Math.max(0, m.endAt-serverNow());
+        $('stpTimerBar').style.width = (left/(m.durationMs||1)*100)+'%';
+        if (left<=0){
+          clearInterval(P.stInt);
+          if (!P.stDone){
+            P.stDone = true;
+            document.querySelectorAll('#stGrid .stCell').forEach(c=> c.onclick=null);
+            $('stpStatus').className='stStatus lose';
+            $('stpStatus').textContent = '⏱ TEMPO SCADUTO!';
+            P.ref.child('supertris/results/'+P.id).set({ win:false, prize:null, mode:null });
+          }
+        }
+      }, 100);
+    }
   }
 }
 function stScratch(i){
@@ -8777,6 +8826,7 @@ function stScratch(i){
   P.stScratchedCount++;
   if (P.stScratchedCount >= 9){
     P.stDone = true;
+    clearInterval(P.stInt);
     const card = P.stCard;
     if (card.winLine){
       card.winLine.forEach(idx=>{ const c = $('stCell'+idx); if (c) c.classList.add('winline'); });
@@ -11647,7 +11697,17 @@ function showPlayerSetteMezzo(g){
       $('smpStatus').textContent = h.status==='playing' ? 'IN GIOCO' : h.status==='sto' ? 'STAI' : h.status==='excluded' ? 'ESCLUSO/A DA QUESTA MANO' : 'SBALLATO';
       $('smpActionBox').style.display = h.status==='playing' ? 'flex' : 'none';
     }
+    clearInterval(P.timerInt);
+    if (m.endAt){
+      $('smpTimerWrap').style.display='';
+      P.timerInt = setInterval(()=>{
+        const left = Math.max(0, m.endAt-serverNow());
+        $('smpTimerBar').style.width = (left/(m.durationMs||1)*100)+'%';
+        if (left<=0) clearInterval(P.timerInt);
+      }, 100);
+    }
   } else if (m.phase==='dealer'){
+    clearInterval(P.timerInt); $('smpTimerWrap').style.display='none';
     $('smpBetBox').style.display='none'; $('smpActionBox').style.display='none';
     $('smpDealerBox').style.display='block';
     smRenderDealerPlayer(m.dealerHand);
@@ -11742,7 +11802,17 @@ function showPlayerScopa(g){
       $('scpWaitMsg').style.display='none'; $('scpPlayBox').style.display='block';
       scopaRenderPlayScreen();
     }
+    clearInterval(P.timerInt);
+    if (m.endAt){
+      $('scpTimerWrap').style.display='';
+      P.timerInt = setInterval(()=>{
+        const left = Math.max(0, m.endAt-serverNow());
+        $('scpTimerBar').style.width = (left/(m.durationMs||1)*100)+'%';
+        if (left<=0) clearInterval(P.timerInt);
+      }, 100);
+    }
   } else if (m.phase==='result'){
+    clearInterval(P.timerInt); $('scpTimerWrap').style.display='none';
     $('scpPlayBox').style.display='none'; $('scpWaitMsg').style.display='none';
     const sig = 'res:'+m.roundId;
     if (P.scopaResSig === sig) return;
@@ -12724,6 +12794,16 @@ function showPlayerMini(g){
     $('bslStatus').textContent = voting ? '🗳 VOTA: SOTTO QUALE POSIZIONE È LA PALLINA?' : '👀 OCCHIO ALLA PALLINA...';
     $('pmSent').style.display = P.miniVoted ? 'block' : 'none';
     showScreen('scrPlayMini');
+    if (voting && m.voteEndAt){
+      $('pmTimerWrap').style.display='';
+      P.timerInt = setInterval(()=>{
+        const left = Math.max(0, m.voteEndAt-serverNow());
+        $('pmTimerBar').style.width = (left/(m.durationMs||1)*100)+'%';
+        if (left<=0) clearInterval(P.timerInt);
+      }, 100);
+    } else {
+      $('pmTimerWrap').style.display='none';
+    }
     if (m.phase==='watch' && m.plan && P.miniAnimRound !== m.round) {
       P.miniAnimRound = m.round;
       runCupAnim($('pmStage'), m.plan);
@@ -15740,6 +15820,7 @@ function stStart(){
   const prizes = mode==='points'
     ? [+$('stPrize1').value, +$('stPrize2').value, +$('stPrize3').value]
     : [1,2,3].map(n => (($('stPrizeText'+n).value||'').trim()) || (n+'° premio!'));
+  const durationMs = +$('stDuration').value*1000;
   G.ref.child('players').once('value').then(ps=>{
     const players = ps.val()||{};
     const pids = Object.keys(players);
@@ -15759,12 +15840,19 @@ function stStart(){
       cards[pid] = { grid, winLine:null, mode:null, prize:null };
     });
     const roundId = serverNow();
-    G.ref.update({ status:'supertris', supertris:{ phase:'active', cards, roundId } });
+    const endAt = serverNow()+durationMs;
+    G.ref.update({ status:'supertris', supertris:{ phase:'active', cards, roundId, endAt, durationMs } });
     G.ref.child('supertris/results').remove();
     $('stSetup').style.display='none'; $('stLive').style.display='block';
     $('stCount').textContent = `0 su ${pids.length} hanno finito di grattare`;
     $('stWinnersLive').innerHTML=''; $('stBtnAgain').style.display='none';
-    pjSend({type:'stBet'});
+    pjSend({type:'stBet', endAt, durationMs});
+    clearInterval(ST.timerInt);
+    ST.timerInt = setInterval(()=>{
+      const left = Math.max(0, endAt-serverNow());
+      $('stTimerBarHost').style.width = (left/durationMs*100)+'%';
+      if (left<=0) clearInterval(ST.timerInt);
+    }, 100);
     G.ref.child('supertris/results').on('value', s=>{
       const results = s.val()||{};
       const n = Object.keys(results).length;
@@ -18595,6 +18683,7 @@ function openSetteMezzo(){
 function smStart(){
   const minBet = Math.max(10, Math.round(+$('smMinBet').value||100));
   const maxBet = Math.max(minBet, Math.round(+$('smMaxBet').value||3000));
+  const durationMs = +$('smDuration').value*1000;
   G.ref.child('players').once('value').then(ps=>{
     const players = ps.val()||{};
     const pids = Object.keys(players);
@@ -18607,15 +18696,23 @@ function smStart(){
       const card = shoe.pop();
       hands[pid] = { name: players[pid].name, cards:[card], bet:null, status:'betting', total2x: smCardValue2x(card.rank) };
     });
-    SM = { minBet, maxBet, roundId, resolved:false };
-    G.ref.update({ status:'settemezzo', settemezzo:{ phase:'players', minBet, maxBet, roundId, shoe, hands, dealerHand:null } });
+    const endAt = serverNow()+durationMs;
+    SM = { minBet, maxBet, roundId, resolved:false, endAt, durationMs };
+    G.ref.update({ status:'settemezzo', settemezzo:{ phase:'players', minBet, maxBet, roundId, shoe, hands, dealerHand:null, endAt, durationMs } });
     $('smSetup').style.display='none'; $('smLive').style.display='block';
     $('smMsg').textContent = '🎴 OGNUNO PUNTA E GIOCA LA PROPRIA MANO...';
     $('smDealerHandHost').innerHTML=''; $('smDealerTotalHost').textContent='';
     $('smBtnToDealer').style.display=''; $('smBtnToDealer').disabled=true;
     $('smBtnDealerHit').style.display='none'; $('smBtnDealerStand').style.display='none';
     $('smBtnResolve').style.display='none'; $('smBtnAgain').style.display='none';
-    pjSend({type:'smBet'});
+    $('smTimerWrapHost').style.display='';
+    pjSend({type:'smBet', endAt, durationMs});
+    clearInterval(SM.timerInt);
+    SM.timerInt = setInterval(()=>{
+      const left = Math.max(0, endAt-serverNow());
+      $('smTimerBarHost').style.width = (left/durationMs*100)+'%';
+      if (left<=0){ clearInterval(SM.timerInt); smStartDealerPhase(true); }
+    }, 100);
     G.ref.child('settemezzo/hands').on('value', s=>{
       const hs = s.val()||{};
       smRenderPlayersLive(hs);
@@ -18642,12 +18739,13 @@ function smRenderPlayersLive(hands){
   $('smBtnToDealer').disabled = false;
   $('smBtnToDealer').textContent = allDone ? '🎩 TOCCA AL BANCO' : `🎩 TOCCA AL BANCO (${readyCount}/${rows.length} pronti)`;
 }
-function smStartDealerPhase(){
+function smStartDealerPhase(skipConfirm){
+  clearInterval((SM||{}).timerInt); $('smTimerWrapHost').style.display='none';
   G.ref.child('settemezzo/hands').once('value').then(s=>{
     const hands = s.val()||{};
     const rows = Object.values(hands);
     const notReady = rows.filter(h=>h.status!=='sto' && h.status!=='bust');
-    if (notReady.length){
+    if (notReady.length && !skipConfirm){
       const names = notReady.map(h=>h.name).join(', ');
       if (!confirm(`Non hanno ancora finito: ${names}.\nChi stava puntando verrà escluso dalla manche, chi era già in gioco resterà fermo con le carte che ha in mano ora. Procedere comunque?`)) return;
     }
@@ -18770,6 +18868,7 @@ function scopaStart(){
   const bonusMode = $('scopaBonusMode').value;
   const bonusPoints = Math.max(0, Math.round(+$('scopaBonusPoints').value||0));
   const bonusText = ($('scopaBonusText').value||'').trim() || 'Premio scopa!';
+  const durationMs = +$('scopaDuration').value*1000;
   G.ref.child('players').once('value').then(ps=>{
     const players = ps.val()||{};
     const pids = Object.keys(players);
@@ -18783,13 +18882,21 @@ function scopaStart(){
       const hand = [draw(), draw(), draw(), draw(), draw()]; // 5 carte, per dare una vera possibilità di scopa
       hands[pid] = { name: players[pid].name, hand, table: tableCards.slice(), captured:[], cardsPlayed:0, status:'playing', scopa:false };
     });
-    SCP = { multiplier, bonusMode, bonusPoints, bonusText, tableCards, roundId, resolved:false };
-    G.ref.update({ status:'scopa', scopa:{ phase:'play', multiplier, bonusMode, bonusPoints, bonusText, tableCards, roundId, hands } });
+    const endAt = serverNow()+durationMs;
+    SCP = { multiplier, bonusMode, bonusPoints, bonusText, tableCards, roundId, resolved:false, endAt, durationMs };
+    G.ref.update({ status:'scopa', scopa:{ phase:'play', multiplier, bonusMode, bonusPoints, bonusText, tableCards, roundId, hands, endAt, durationMs } });
     $('scpSetup').style.display='none'; $('scpLive').style.display='block';
     $('scpTableRow').innerHTML = tableCards.map(c=>smCardHTML(c,false)).join('');
     $('scpBtnResolve').style.display='';
     $('scpRankingLbl').textContent = 'CHI STA GIOCANDO';
-    pjSend({type:'scopaBet', tableCards});
+    $('scopaTimerWrapHost').style.display='';
+    pjSend({type:'scopaBet', tableCards, endAt, durationMs});
+    clearInterval(SCP.timerInt);
+    SCP.timerInt = setInterval(()=>{
+      const left = Math.max(0, endAt-serverNow());
+      $('scopaTimerBarHost').style.width = (left/durationMs*100)+'%';
+      if (left<=0){ clearInterval(SCP.timerInt); scopaResolve(true); }
+    }, 100);
     G.ref.child('scopa/hands').on('value', s=> scopaRenderPlayersLive(s.val()||{}));
   });
 }
@@ -18803,12 +18910,13 @@ function scopaRenderPlayersLive(hands){
   const total = rows.length, doneCount = rows.filter(h=>h.status==='done').length;
   $('scpBtnResolve').textContent = (total && doneCount===total) ? '🏁 CALCOLA I PUNTI' : `🏁 CALCOLA I PUNTI (${doneCount}/${total} pronti)`;
 }
-function scopaResolve(){
+function scopaResolve(skipConfirm){
   if (SCP.resolved) return;
+  clearInterval(SCP.timerInt); $('scopaTimerWrapHost').style.display='none';
   G.ref.child('scopa/hands').once('value').then(s=>{
     const hands = s.val()||{};
     const notDone = Object.values(hands).filter(h=>h.status!=='done');
-    if (notDone.length){
+    if (notDone.length && !skipConfirm){
       const names = notDone.map(h=>h.name).join(', ');
       if (!confirm(`Non hanno ancora finito: ${names}.\nVerrà considerato solo quello che hanno preso finora. Procedere comunque?`)) return;
     }
@@ -20029,6 +20137,7 @@ function openMini(){
 }
 function miniShuffle(){
   MINI.round++;
+  MINI.revealed = false;
   const points = getPoints('miniPoints','miniPointsMan');
   const ball = Math.floor(Math.random()*3); // quale bussolotto (identici) nasconde la pallina
   const stepMs = +$('miniSpeed').value;
@@ -20045,11 +20154,21 @@ function miniShuffle(){
   $('miniMsg').textContent = '👀 Occhio alla pallina...';
   pjSend({type:'miniAnim', plan:MINI.plan});
   runCupAnim($('miniStage'), MINI.plan, ()=>{
-    G.ref.update({ 'mini/phase':'vote' });
-    pjSend({type:'mini', phase:'vote'});
+    const durationMs = +$('miniDuration').value*1000;
+    const voteEndAt = serverNow()+durationMs;
+    MINI.voteEndAt = voteEndAt; MINI.durationMs = durationMs;
+    G.ref.update({ 'mini/phase':'vote', 'mini/voteEndAt':voteEndAt, 'mini/durationMs':durationMs });
+    pjSend({type:'mini', phase:'vote', voteEndAt, durationMs});
     $('miniMsg').textContent = '🗳 VOTAZIONE APERTA — A, B o C dal telefono!';
     $('miniBtnReveal').style.display='';
     $('miniCounts').style.display='flex';
+    $('miniTimerWrapHost').style.display='';
+    clearInterval(MINI.timerInt);
+    MINI.timerInt = setInterval(()=>{
+      const left = Math.max(0, voteEndAt-serverNow());
+      $('miniTimerBarHost').style.width = (left/durationMs*100)+'%';
+      if (left<=0){ clearInterval(MINI.timerInt); miniReveal(); }
+    }, 100);
     G.ref.child('mini/votes').on('value', s=>{
       const v = s.val()||{}; const c = {A:0,B:0,C:0};
       Object.values(v).forEach(x=>{ if(c[x]!==undefined) c[x]++; });
@@ -20058,6 +20177,8 @@ function miniShuffle(){
   });
 }
 function miniReveal(){
+  if (MINI.revealed) return; MINI.revealed = true;
+  clearInterval(MINI.timerInt); $('miniTimerWrapHost').style.display='none';
   $('miniBtnReveal').style.display='none';
   G.ref.child('mini/votes').off();
   const win = computeWin(MINI.plan);
@@ -20695,6 +20816,13 @@ function pjRouteInner(m){
       $('pjSmMsg').textContent = 'OGNUNO PUNTA E GIOCA LA PROPRIA MANO DAL TELEFONO...';
       $('smSettePj').style.display='none'; $('smResultsPj').innerHTML='';
       $('smDealerHandPj').innerHTML=''; $('smDealerTotalPj').textContent='';
+      $('pjSmTimerWrap').style.display='';
+      clearInterval(window._pjSmInt);
+      window._pjSmInt = setInterval(()=>{
+        const left = Math.max(0, m.endAt-serverNow());
+        $('pjSmTimerBar').style.width = (left/m.durationMs*100)+'%';
+        if (left<=0) clearInterval(window._pjSmInt);
+      }, 100);
     }
     else if (m.type==='smSette') {
       $('smSettePj').style.display='block';
@@ -20703,6 +20831,7 @@ function pjRouteInner(m){
       setTimeout(()=>{ $('smSettePj').style.display='none'; }, 4000);
     }
     else if (m.type==='smDealerReveal') {
+      clearInterval(window._pjSmInt); $('pjSmTimerWrap').style.display='none';
       $('pjSmMsg').textContent = 'COSA HA IL BANCO...';
       const dh = m.dealerHand;
       $('smDealerHandPj').innerHTML = dh.cards.map(c=>smCardHTML(c,false)).join('');
@@ -20726,8 +20855,16 @@ function pjRouteInner(m){
       $('pjScopaMsg').textContent = 'OGNUNO GIOCA LA PROPRIA MANO SUL TELEFONO...';
       $('pjScopaTableRow').innerHTML = (m.tableCards||[]).map(c=>smCardHTML(c,false)).join('');
       $('pjScopaRanking').innerHTML='';
+      $('pjScopaTimerWrap').style.display='';
+      clearInterval(window._pjScopaInt);
+      window._pjScopaInt = setInterval(()=>{
+        const left = Math.max(0, m.endAt-serverNow());
+        $('pjScopaTimerBar').style.width = (left/m.durationMs*100)+'%';
+        if (left<=0) clearInterval(window._pjScopaInt);
+      }, 100);
     }
     else if (m.type==='scopaResult') {
+      clearInterval(window._pjScopaInt); $('pjScopaTimerWrap').style.display='none';
       showScreen('scrPjScopa');
       $('pjScopaMsg').textContent = 'QUESTE ERANO LE CARTE A TERRA — ECCO CHI HA VINTO!';
       $('pjScopaTableRow').innerHTML = (m.tableCards||[]).map(c=>smCardHTML(c,false)).join('');
@@ -21097,6 +21234,17 @@ function pjRouteInner(m){
       $('pjMiniMsg').textContent = m.phase==='vote' ? '🗳 VOTATE DAL TELEFONO: A, B O C!' : 'PRONTI COL TELECOMANDO...';
       showScreen('scrPjMini');
       if (m.phase!=='vote') resetStage($('pjMiniStage'));
+      clearInterval(window._pjMiniInt);
+      if (m.phase==='vote' && m.voteEndAt){
+        $('pjMiniTimerWrap').style.display='';
+        window._pjMiniInt = setInterval(()=>{
+          const left = Math.max(0, m.voteEndAt-serverNow());
+          $('pjMiniTimerBar').style.width = (left/m.durationMs*100)+'%';
+          if (left<=0) clearInterval(window._pjMiniInt);
+        }, 100);
+      } else {
+        $('pjMiniTimerWrap').style.display='none';
+      }
     }
     else if (m.type==='miniAnim') {
       $('pjMiniCounts').innerHTML='';
@@ -21105,6 +21253,7 @@ function pjRouteInner(m){
       runCupAnim($('pjMiniStage'), m.plan, ()=>{ $('pjMiniMsg').textContent = '🗳 VOTATE DAL TELEFONO: A, B O C!'; });
     }
     else if (m.type==='miniReveal') {
+      clearInterval(window._pjMiniInt); $('pjMiniTimerWrap').style.display='none';
       revealStage($('pjMiniStage'), m.win);
       $('pjMiniMsg').textContent = `🏆 ERA SOTTO IL ${m.win}! +${m.points} PUNTI`;
       $('pjMiniCounts').innerHTML = `<div class="vc">A · ${m.counts.A}</div><div class="vc">B · ${m.counts.B}</div><div class="vc">C · ${m.counts.C}</div>`;
@@ -21315,8 +21464,15 @@ function pjRouteInner(m){
       showScreen('scrPjSupertris');
       $('pjStMsg').textContent = '🎰 SI GRATTA!';
       $('pjStWinners').innerHTML='';
+      clearInterval(window._pjStInt);
+      window._pjStInt = setInterval(()=>{
+        const left = Math.max(0, m.endAt-serverNow());
+        $('pjStTimerBar').style.width = (left/m.durationMs*100)+'%';
+        if (left<=0) clearInterval(window._pjStInt);
+      }, 100);
     }
     else if (m.type==='stResult') {
+      clearInterval(window._pjStInt);
       const winners = m.winners||[];
       $('pjStWinners').innerHTML = winners.length
         ? winners.map(w=>`<div class="leadRow"><span class="pos">🏆</span> ${esc(w.name)} <span class="pts">${w.mode==='points' ? '+'+w.prize+' pt' : esc(String(w.prize))}</span></div>`).join('')
