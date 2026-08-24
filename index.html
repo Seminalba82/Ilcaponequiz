@@ -1838,7 +1838,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.37</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.38</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -5148,13 +5148,19 @@ body.suspense-on #pfRank{ display:none !important; }
       <div class="grow"><div class="label">Punti pieni in palio (a chi lo attraversa subito)</div><select id="bridgePoints"></select></div>
       <div><div class="label">O scrivili</div><input type="number" id="bridgePointsMan" class="ptsManual" placeholder="—" min="1"></div>
     </div>
+    <div class="label mt">Numero di tacche</div>
+    <select id="bridgeSteps">
+      <option value="10">10 tacche</option>
+      <option value="15">15 tacche</option>
+      <option value="20" selected>20 tacche</option>
+    </select>
     <div class="label mt">Tempo a disposizione</div>
     <select id="bridgeDuration">
       <option value="1">1 minuto</option>
       <option value="2" selected>2 minuti</option>
       <option value="3">3 minuti</option>
     </select>
-    <div class="byline mt" style="opacity:.75">🌉 Ogni giocatore vede un ponte di 20 tacche, ciascuna con una tavoletta a sinistra e una a destra: una sola delle due è quella giusta. Sbagliando, la tavoletta si colora di rosso e si torna alla partenza — il tempo però non si ferma mai. I punti scendono più tempo si impiega: chi attraversa subito il ponte prende il massimo, chi ci mette di più prende sempre meno.</div>
+    <div class="byline mt" style="opacity:.75">🌉 Ogni giocatore vede un ponte con tante tacche quante scelte sopra, ciascuna con una tavoletta a sinistra e una a destra: una sola delle due è quella giusta. Sbagliando, la tavoletta si colora di rosso e si torna alla partenza — il tempo però non si ferma mai. I punti scendono più tempo si impiega: chi attraversa subito il ponte prende il massimo, chi ci mette di più prende sempre meno.</div>
     <button class="btn mg mt" style="width:100%" onclick="bridgeStart()">🌉 SI PARTE!</button>
   </div>
   <div id="bridgeLive" style="display:none; width:100%" class="center">
@@ -5936,7 +5942,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1337; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1338; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -10251,11 +10257,12 @@ function showPlayerPonteSospeso(g){
   $('bridgepName').textContent = P.name;
   $('bridgepScore').textContent = (((g.players||{})[P.id]||{}).score||0)+' pt';
   showScreen('scrPlayPonteSospeso');
-  if (m.phase!=='active') return;
+  clearInterval(P.bridgeInt);
+  if (m.phase!=='active'){ P.bridgeSig = null; return; }
   const sig = 'act:'+m.roundId;
   if (P.bridgeSig !== sig){
     P.bridgeSig = sig; P.bridgeResolved = false; P.bridgeBusy = false; P.bridgeRow = 0;
-    P.bridgeNRows = 20; P.bridgePath = bridgeGeneratePath(P.bridgeNRows);
+    P.bridgeNRows = m.nRows || 20; P.bridgePath = bridgeGeneratePath(P.bridgeNRows);
     P.bridgeMaxPoints = m.maxPoints; P.bridgeEndAt = m.endAt; P.bridgeDurationMs = m.durationMs;
     $('bridgeStatus').textContent = '🌉 SCEGLI LA TAVOLETTA GIUSTA!';
     $('bridgeStepCount').textContent = `Tacca 1 di ${P.bridgeNRows}`;
@@ -10263,8 +10270,8 @@ function showPlayerPonteSospeso(g){
     bridgeRenderTrack(arena, P.bridgeNRows, P.bridgeRow, P.bridgePath);
     setTimeout(()=> bridgeScrollToCurrent(arena, P.bridgeRow), 50);
   }
-  clearInterval(P.bridgeInt);
   P.bridgeInt = setInterval(()=>{
+    if (P.bridgeSig !== sig) { clearInterval(P.bridgeInt); return; }
     const left = Math.max(0, (m.endAt||0) - serverNow());
     $('bridgepTimerBar').style.width = (left/(m.durationMs||1)*100)+'%';
     if (left<=0){
@@ -17205,15 +17212,16 @@ function bridgeStart(){
   const maxPoints = getPoints('bridgePoints','bridgePointsMan');
   const durationMin = +($('bridgeDuration').value||2);
   const durationMs = durationMin*60*1000;
+  const nRows = +($('bridgeSteps').value||20);
   const endAt = serverNow()+durationMs;
   const roundId = serverNow();
   BRIDGE = { credited:{} };
-  G.ref.update({ status:'pontesospeso', pontesospeso:{ phase:'active', maxPoints, durationMs, endAt, roundId } });
+  G.ref.update({ status:'pontesospeso', pontesospeso:{ phase:'active', maxPoints, durationMs, endAt, roundId, nRows } });
   G.ref.child('pontesospeso/results').remove();
   $('bridgeSetup').style.display='none'; $('bridgeLive').style.display='block';
   $('bridgeMsg').textContent = `🌉 SI ATTRAVERSA IL PONTE! Fino a ${maxPoints} punti in palio`;
   $('bridgeCount').textContent=''; $('bridgeResultsLive').innerHTML='';
-  pjSend({type:'bridgeActive', endAt, durationMs});
+  pjSend({type:'bridgeActive', endAt, durationMs, nRows});
   clearInterval(BRIDGE.timerInt);
   BRIDGE.timerInt = setInterval(()=>{
     const left = Math.max(0, endAt-serverNow());
@@ -21805,7 +21813,7 @@ function pjRouteInner(m){
       showScreen('scrPjPonteSospeso');
       $('pjBridgeMsg').textContent = 'SCEGLIETE LE TAVOLETTE GIUSTE PER ATTRAVERSARE IL PONTE!';
       $('pjBridgeResults').innerHTML='';
-      bridgeSetupDecorative($('pjBridgeArena'), 20);
+      bridgeSetupDecorative($('pjBridgeArena'), m.nRows||20);
       clearInterval(window._pjBridgeInt);
       window._pjBridgeInt = setInterval(()=>{
         const left = Math.max(0, m.endAt - serverNow());
