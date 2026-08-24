@@ -1838,7 +1838,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.38</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.39</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -5942,7 +5942,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1338; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1339; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -10263,7 +10263,11 @@ function showPlayerPonteSospeso(g){
   if (P.bridgeSig !== sig){
     P.bridgeSig = sig; P.bridgeResolved = false; P.bridgeBusy = false; P.bridgeRow = 0;
     P.bridgeNRows = m.nRows || 20; P.bridgePath = bridgeGeneratePath(P.bridgeNRows);
-    P.bridgeMaxPoints = m.maxPoints; P.bridgeEndAt = m.endAt; P.bridgeDurationMs = m.durationMs;
+    P.bridgeMaxPoints = m.maxPoints; P.bridgeDurationMs = m.durationMs;
+    // scadenza calcolata SUL TELEFONO stesso da questo momento, non sull'orario assoluto
+    // della regia: così un orologio di dispositivo non sincronizzato non fa scadere il
+    // tempo subito. m.endAt resta solo come riferimento informativo, non viene usato qui.
+    P.bridgeLocalEndAt = Date.now() + (m.durationMs||0);
     $('bridgeStatus').textContent = '🌉 SCEGLI LA TAVOLETTA GIUSTA!';
     $('bridgeStepCount').textContent = `Tacca 1 di ${P.bridgeNRows}`;
     const arena = $('bridgeArena'); arena.classList.remove('complete');
@@ -10272,7 +10276,7 @@ function showPlayerPonteSospeso(g){
   }
   P.bridgeInt = setInterval(()=>{
     if (P.bridgeSig !== sig) { clearInterval(P.bridgeInt); return; }
-    const left = Math.max(0, (m.endAt||0) - serverNow());
+    const left = Math.max(0, P.bridgeLocalEndAt - Date.now());
     $('bridgepTimerBar').style.width = (left/(m.durationMs||1)*100)+'%';
     if (left<=0){
       clearInterval(P.bridgeInt);
@@ -21815,8 +21819,9 @@ function pjRouteInner(m){
       $('pjBridgeResults').innerHTML='';
       bridgeSetupDecorative($('pjBridgeArena'), m.nRows||20);
       clearInterval(window._pjBridgeInt);
+      const pjBridgeLocalEndAt = Date.now() + (m.durationMs||0);
       window._pjBridgeInt = setInterval(()=>{
-        const left = Math.max(0, m.endAt - serverNow());
+        const left = Math.max(0, pjBridgeLocalEndAt - Date.now());
         $('pjBridgeTimerBar').style.width = (left/m.durationMs*100)+'%';
         if (left<=0) clearInterval(window._pjBridgeInt);
       }, 100);
