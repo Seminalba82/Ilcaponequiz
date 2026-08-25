@@ -1862,7 +1862,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.42</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.43</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -5207,7 +5207,7 @@ body.suspense-on #pfRank{ display:none !important; }
 
 <!-- ==================== REGIA: UN PANINO ==================== -->
 <div class="screen" id="scrPanino">
-  <div class="brand"><div class="t1" style="font-size:clamp(18px,3.4vw,32px)">🥪 UN PANINO</div></div>
+  <div class="brand"><div class="t1" style="font-size:clamp(16px,3vw,28px)">🥪 UN PANINO AL CAMIONCINO</div></div>
   <div class="panel mt" style="max-width:480px" id="paninoSetup">
     <div class="row">
       <div class="grow"><div class="label">Punti pieni in palio (a chi ricostruisce tutto giusto)</div><select id="paninoPoints"></select></div>
@@ -5225,9 +5225,12 @@ body.suspense-on #pfRank{ display:none !important; }
     </select>
     <div class="label mt">Tempo per guardare il panino</div>
     <select id="paninoShow">
-      <option value="1">1 secondo</option>
-      <option value="2" selected>2 secondi</option>
+      <option value="2">2 secondi</option>
       <option value="3">3 secondi</option>
+      <option value="4">4 secondi</option>
+      <option value="5" selected>5 secondi</option>
+      <option value="6">6 secondi</option>
+      <option value="7">7 secondi</option>
     </select>
     <div class="label mt">Tempo per ricostruirlo</div>
     <select id="paninoDuration">
@@ -5244,13 +5247,14 @@ body.suspense-on #pfRank{ display:none !important; }
     <div class="timerWrap mt" style="max-width:420px"><div class="timerBar" id="paninoTimerBarHost"></div></div>
     <div class="byline" id="paninoCount"></div>
     <div class="lead mt" id="paninoResultsLive" style="max-width:500px; width:100%"></div>
+    <button class="btn cy mt" id="paninoBtnAgain" onclick="openPanino()" style="display:none">🔁 Un'altra manche</button>
   </div>
   <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
 
 <!-- ==================== PROIETTORE: UN PANINO ==================== -->
 <div class="screen" id="scrPjPanino">
-  <div class="brand"><div class="t1" style="font-size:clamp(22px,3.6vw,40px)">🥪 UN PANINO</div></div>
+  <div class="brand"><div class="t1" style="font-size:clamp(18px,3vw,34px)">🥪 UN PANINO AL CAMIONCINO</div></div>
   <div class="miniMsg" id="pjPaninoMsg">GUARDA BENE IL TUO PANINO... POI RICOSTRUISCILO!</div>
   <div class="timerWrap mt" style="max-width:460px"><div class="timerBar" id="pjPaninoTimerBar"></div></div>
   <div class="byline mt" style="max-width:460px; text-align:center">Ogni giocatore ha un panino diverso sul proprio telefono: qui non c'è nulla da copiare, solo il tempo che passa!</div>
@@ -6034,7 +6038,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1342; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1343; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -6952,7 +6956,7 @@ function saveQuiz(andPlay){
   if (!curQuiz.questions.length) return alert('Aggiungi almeno una domanda!');
   curQuiz.title = t;
   if (curQuiz._idx>=0) quizzes[curQuiz._idx] = JSON.parse(JSON.stringify(curQuiz));
-  else { quizzes.push(JSON.parse(JSON.stringify(curQuiz))); curQuiz._idx = quizzes.length-1; }
+  else { quizzes.unshift(JSON.parse(JSON.stringify(curQuiz))); curQuiz._idx = 0; }
   persist();
   if (confirm('✔ Quiz salvato! Vuoi anche fare subito un backup di tutti i tuoi dati (utile per non perderli mai)?')) backupAllQuizzes();
   if (andPlay) playQuiz(curQuiz._idx); else { loadQuizList(); showScreen('scrHome'); }
@@ -17530,6 +17534,7 @@ function paninoStart(){
   $('paninoSetup').style.display='none'; $('paninoLive').style.display='block';
   $('paninoMsg').textContent = `🥪 SI GUARDA E SI RICOSTRUISCE! Fino a ${maxPoints} punti in palio`;
   $('paninoCount').textContent=''; $('paninoResultsLive').innerHTML='';
+  $('paninoBtnAgain').style.display='none';
   pjSend({type:'paninoActive', strati, ingN, showMs, durationMs});
   clearInterval(PANINO.timerInt);
   const totalMs = showMs+durationMs;
@@ -17537,7 +17542,7 @@ function paninoStart(){
   PANINO.timerInt = setInterval(()=>{
     const left = Math.max(0, endAt-serverNow());
     $('paninoTimerBarHost').style.width = (left/totalMs*100)+'%';
-    if (left<=0) clearInterval(PANINO.timerInt);
+    if (left<=0){ clearInterval(PANINO.timerInt); $('paninoBtnAgain').style.display=''; }
   }, 100);
   G.ref.child('panino/results').on('child_added', snap=>{
     const pid = snap.key, r = snap.val();
@@ -19959,7 +19964,7 @@ const GIOCHI_CATALOGO = [
   {k:'merc', l:'📣 Mercatista per un Giorno'},
   {k:'morra', l:'✊✋✌️ Morra Cinese'},
   {k:'pontesospeso', l:'🌉 Il Ponte Sospeso'},
-  {k:'panino', l:'🥪 Un Panino'},
+  {k:'panino', l:'🥪 Un Panino al Camioncino'},
   {k:'punto', l:'🏁 Il Punto della Situazione'},
   {k:'dado', l:'🎲 Il Dado del Destino'},
   {k:'asta', l:'🔨 Asta'},
@@ -19997,7 +20002,7 @@ function modalGamesSkill(){
     gk('mini', `<button class="btn mg gameBtn" onclick="openMini()">🥃 Bussolotti</button>`),
     gk('tamb', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#e8b45a,#8a4a12); color:#3a2000; box-shadow:0 7px 0 #4a2400,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(232,180,90,.4)" onclick="openTamb()">🥁 I Tamburini</button>`),
     gk('pontesospeso', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#8a6030,#4a3319); color:#fff; box-shadow:0 7px 0 #2a1c0d,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(138,96,48,.4)" onclick="openPonteSospeso()">🌉 Il Ponte Sospeso</button>`),
-    gk('panino', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#e8c15a,#c17a1e); color:#3a2000; box-shadow:0 7px 0 #6b3f0a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(232,193,90,.4)" onclick="openPanino()">🥪 Un Panino</button>`),
+    gk('panino', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#e8c15a,#c17a1e); color:#3a2000; box-shadow:0 7px 0 #6b3f0a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(232,193,90,.4)" onclick="openPanino()">🥪 Un Panino al Camioncino</button>`),
     gk('punto', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#3de0ff,#0b6f8a); color:#00272e; box-shadow:0 7px 0 #003a44,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(61,224,255,.4)" onclick="openPunto()">🏁 Il Punto della Situazione</button>`),
     gk('idr', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#7a8a9a,#3a4550); color:#fff; box-shadow:0 7px 0 #1a2028,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(122,138,154,.4)" onclick="openIdr()">🔧 L'Idraulico</button>`),
     gk('cassaforte', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#8a8f96,#3a3c40); color:#fff; box-shadow:0 7px 0 #1a1c1e,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(138,143,150,.35)" onclick="openCassaforte()">🔐 La Cassaforte</button>`),
