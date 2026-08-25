@@ -1862,7 +1862,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.41</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.42</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -6034,7 +6034,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1341; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1342; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -10501,38 +10501,42 @@ function showPlayerPanino(g){
   $('paninopName').textContent = P.name;
   $('paninopScore').textContent = (((g.players||{})[P.id]||{}).score||0)+' pt';
   showScreen('scrPlayPanino');
-  clearInterval(P.paninoInt); clearTimeout(P.paninoShowTimeout);
-  if (m.phase!=='active'){ P.paninoSig = null; return; }
-  const sig = 'act:'+m.roundId;
-  if (P.paninoSig !== sig){
-    P.paninoSig = sig; P.paninoResolved = false; P.paninoMaxPoints = m.maxPoints; P.paninoPhase = 'show';
-    const built = paninoBuildRecipe(m.strati||1, m.ingN||5);
-    P.paninoSeq = built.seq;
-    P.paninoTray = paninoBuildTray(built.seq, built.chosen, built.decoys);
-    P.paninoSlots = built.seq.map(()=>null);
-    $('paninoShowBadge').style.display='block';
-    $('paninoShowBadge').textContent = '👀 MEMORIZZA IL PANINO!';
-    $('paninopTimerWrap').style.display='none';
-    $('paninoTray').innerHTML='';
-    $('paninoStatus').textContent=''; $('paninoSub').textContent='';
-    paninoRenderStack(P.paninoSeq);
-    const showMs = m.showMs||2000;
-    P.paninoShowTimeout = setTimeout(()=>{
-      if (P.paninoSig !== sig) return;
-      P.paninoPhase = 'build';
-      P.paninoLocalEndAt = Date.now() + (m.durationMs||0);
-      $('paninoShowBadge').style.display='none';
-      $('paninopTimerWrap').style.display='block';
-      $('paninoStatus').textContent = "🥪 RICOSTRUISCI IL PANINO, NELL'ORDINE GIUSTO!";
-      paninoRenderSlots(); paninoRenderTray();
-      P.paninoInt = setInterval(()=>{
-        if (P.paninoSig !== sig) { clearInterval(P.paninoInt); return; }
-        const left = Math.max(0, P.paninoLocalEndAt - Date.now());
-        $('paninopTimerBar').style.width = (left/(m.durationMs||1)*100)+'%';
-        if (left<=0) paninoTimeout();
-      }, 100);
-    }, showMs);
+  if (m.phase!=='active'){
+    clearInterval(P.paninoInt); clearTimeout(P.paninoShowTimeout);
+    P.paninoSig = null; return;
   }
+  const sig = 'act:'+m.roundId;
+  if (P.paninoSig === sig) return; // stesso round già in corso: NON toccare i timer già avviati, altrimenti
+                                     // la schermata "memorizza" (o il conto alla rovescia) rischia di restare
+                                     // bloccata per sempre ad ogni aggiornamento dello stato di gioco condiviso
+  clearInterval(P.paninoInt); clearTimeout(P.paninoShowTimeout);
+  P.paninoSig = sig; P.paninoResolved = false; P.paninoMaxPoints = m.maxPoints; P.paninoPhase = 'show';
+  const built = paninoBuildRecipe(m.strati||1, m.ingN||5);
+  P.paninoSeq = built.seq;
+  P.paninoTray = paninoBuildTray(built.seq, built.chosen, built.decoys);
+  P.paninoSlots = built.seq.map(()=>null);
+  $('paninoShowBadge').style.display='block';
+  $('paninoShowBadge').textContent = '👀 MEMORIZZA IL PANINO!';
+  $('paninopTimerWrap').style.display='none';
+  $('paninoTray').innerHTML='';
+  $('paninoStatus').textContent=''; $('paninoSub').textContent='';
+  paninoRenderStack(P.paninoSeq);
+  const showMs = m.showMs||2000;
+  P.paninoShowTimeout = setTimeout(()=>{
+    if (P.paninoSig !== sig) return;
+    P.paninoPhase = 'build';
+    P.paninoLocalEndAt = Date.now() + (m.durationMs||0);
+    $('paninoShowBadge').style.display='none';
+    $('paninopTimerWrap').style.display='block';
+    $('paninoStatus').textContent = "🥪 RICOSTRUISCI IL PANINO, NELL'ORDINE GIUSTO!";
+    paninoRenderSlots(); paninoRenderTray();
+    P.paninoInt = setInterval(()=>{
+      if (P.paninoSig !== sig) { clearInterval(P.paninoInt); return; }
+      const left = Math.max(0, P.paninoLocalEndAt - Date.now());
+      $('paninopTimerBar').style.width = (left/(m.durationMs||1)*100)+'%';
+      if (left<=0) paninoTimeout();
+    }, 100);
+  }, showMs);
 }
 /* ================================================================
    TROVA LE DIFFERENZE — telefono
