@@ -922,6 +922,30 @@ body.barOn.barCollapsed .screen.active{padding-bottom:70px;}
 @keyframes bridgeCompleteGlow{0%,100%{filter:brightness(1);} 50%{filter:brightness(1.35);}}
 .bridgeStatus{font-family:'Bungee'; font-size:clamp(14px,3.8vw,18px); text-align:center; margin-top:10px; color:#fff;}
 .bridgeStepCount{font-family:'Outfit'; font-weight:700; font-size:13px; color:#ffc93c; text-align:center; margin-top:3px; opacity:.85;}
+/* ===== UN PANINO ===== */
+.panWrap{width:100%; max-width:380px; margin:12px auto;}
+.panStack{display:flex; flex-direction:column; gap:4px; align-items:center; width:100%;}
+.panSlice{width:100%; max-width:280px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center;
+  gap:8px; font-size:22px; font-weight:800; font-family:'Outfit'; position:relative;
+  background:linear-gradient(180deg,#2a2438,#1a1626); border:2px solid rgba(255,201,60,.25); color:#fff;
+  box-shadow:0 3px 6px rgba(0,0,0,.4);}
+.panSlice.bread{background:linear-gradient(180deg,#e8b45a,#c17a1e); border-color:#8a4a12; color:#3a2000; box-shadow:0 3px 8px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.3);}
+.panSlice.filled{animation:panPop .3s ease;}
+.panSlice.empty{background:repeating-linear-gradient(45deg, rgba(255,255,255,.03) 0 8px, rgba(255,255,255,.06) 8px 16px);
+  border:2px dashed rgba(255,255,255,.25); color:rgba(255,255,255,.25); font-size:13px; cursor:pointer;}
+.panSlice.empty.next{border-color:var(--gold); box-shadow:0 0 12px rgba(255,201,60,.5); animation:bridgePulse 1s ease infinite;}
+@keyframes panPop{0%{transform:scale(.7);} 60%{transform:scale(1.08);} 100%{transform:scale(1);}}
+.panTray{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; width:100%; max-width:380px; margin:14px auto 0;}
+.panPiece{width:64px; height:56px; border-radius:12px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:1px; font-size:24px; cursor:pointer; background:linear-gradient(180deg,#3a3450,#241f34); border:2px solid rgba(255,255,255,.15);
+  box-shadow:0 3px 5px rgba(0,0,0,.4); transition:transform .1s;}
+.panPiece .lbl{font-size:8px; font-family:'Outfit'; font-weight:700; color:rgba(255,255,255,.6); text-transform:uppercase;}
+.panPiece:active{transform:scale(.92);}
+.panPiece.used{opacity:0; pointer-events:none; transform:scale(.5);}
+.panPiece.bread{background:linear-gradient(180deg,#e8b45a,#c17a1e); border-color:#8a4a12;}
+.panStatus{font-family:'Bungee'; font-size:clamp(14px,3.8vw,18px); text-align:center; margin-top:10px; color:#fff;}
+.panSub{font-family:'Outfit'; font-weight:700; font-size:13px; color:#ffc93c; text-align:center; margin-top:3px; opacity:.85;}
+.panShowBadge{font-family:'Bungee'; font-size:13px; color:var(--gold); text-align:center; margin-bottom:8px; letter-spacing:1px;}
 /* ===== MANUALE D'USO (integrato nel gioco) ===== */
 .manualWrap{max-width:820px; width:100%; margin:0 auto;}
 .manualTopBar{position:sticky; top:0; z-index:5; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;
@@ -1838,7 +1862,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.40</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.41</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -5181,6 +5205,74 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="lead mt" id="pjBridgeResults" style="max-width:600px; width:100%"></div>
 </div>
 
+<!-- ==================== REGIA: UN PANINO ==================== -->
+<div class="screen" id="scrPanino">
+  <div class="brand"><div class="t1" style="font-size:clamp(18px,3.4vw,32px)">🥪 UN PANINO</div></div>
+  <div class="panel mt" style="max-width:480px" id="paninoSetup">
+    <div class="row">
+      <div class="grow"><div class="label">Punti pieni in palio (a chi ricostruisce tutto giusto)</div><select id="paninoPoints"></select></div>
+      <div><div class="label">O scrivili</div><input type="number" id="paninoPointsMan" class="ptsManual" placeholder="—" min="1"></div>
+    </div>
+    <div class="label mt">Difficoltà</div>
+    <select id="paninoStrati">
+      <option value="1" selected>Panino singolo (pane, ingredienti, pane)</option>
+      <option value="2">Panino doppio (pane, ingredienti, pane, ingredienti, pane)</option>
+    </select>
+    <div class="label mt">Ingredienti per strato</div>
+    <select id="paninoIngN">
+      <option value="5" selected>5 ingredienti</option>
+      <option value="6">6 ingredienti</option>
+    </select>
+    <div class="label mt">Tempo per guardare il panino</div>
+    <select id="paninoShow">
+      <option value="1">1 secondo</option>
+      <option value="2" selected>2 secondi</option>
+      <option value="3">3 secondi</option>
+    </select>
+    <div class="label mt">Tempo per ricostruirlo</div>
+    <select id="paninoDuration">
+      <option value="20">20 secondi</option>
+      <option value="30" selected>30 secondi</option>
+      <option value="45">45 secondi</option>
+      <option value="60">1 minuto</option>
+    </select>
+    <div class="byline mt" style="opacity:.75">🥪 Ogni giocatore vede il proprio panino (diverso da quello degli altri, per evitare copiature) per pochi secondi, poi deve ricomporlo nell'ordine esatto scegliendo i pezzi giusti da un vassoio che contiene anche ingredienti estranei, fuori posto apposta per confondere. I punti scendono in proporzione a quanti pezzi vengono piazzati nella posizione corretta.</div>
+    <button class="btn mg mt" style="width:100%" onclick="paninoStart()">🥪 CHE PANINO! (via)</button>
+  </div>
+  <div id="paninoLive" style="display:none; width:100%" class="center">
+    <div class="miniMsg" id="paninoMsg"></div>
+    <div class="timerWrap mt" style="max-width:420px"><div class="timerBar" id="paninoTimerBarHost"></div></div>
+    <div class="byline" id="paninoCount"></div>
+    <div class="lead mt" id="paninoResultsLive" style="max-width:500px; width:100%"></div>
+  </div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
+</div>
+
+<!-- ==================== PROIETTORE: UN PANINO ==================== -->
+<div class="screen" id="scrPjPanino">
+  <div class="brand"><div class="t1" style="font-size:clamp(22px,3.6vw,40px)">🥪 UN PANINO</div></div>
+  <div class="miniMsg" id="pjPaninoMsg">GUARDA BENE IL TUO PANINO... POI RICOSTRUISCILO!</div>
+  <div class="timerWrap mt" style="max-width:460px"><div class="timerBar" id="pjPaninoTimerBar"></div></div>
+  <div class="byline mt" style="max-width:460px; text-align:center">Ogni giocatore ha un panino diverso sul proprio telefono: qui non c'è nulla da copiare, solo il tempo che passa!</div>
+  <div class="lead mt" id="pjPaninoResults" style="max-width:600px; width:100%"></div>
+</div>
+
+<!-- ==================== TELEFONO: UN PANINO ==================== -->
+<div class="screen" id="scrPlayPanino" style="align-items:center; justify-content:center">
+  <div class="row" style="width:100%; justify-content:space-between">
+    <div class="pill" id="paninopName" style="color:var(--gold)"></div>
+    <div class="pill" id="paninopScore"></div>
+  </div>
+  <div class="timerWrap mt" style="max-width:280px" id="paninopTimerWrap"><div class="timerBar" id="paninopTimerBar"></div></div>
+  <div class="panShowBadge" id="paninoShowBadge" style="display:none"></div>
+  <div class="panWrap">
+    <div class="panStack" id="paninoStackView"></div>
+  </div>
+  <div class="panTray" id="paninoTray"></div>
+  <div class="panStatus" id="paninoStatus"></div>
+  <div class="panSub" id="paninoSub"></div>
+</div>
+
 <!-- ==================== PLAYER: IL PONTE SOSPESO ==================== -->
 <div class="screen" id="scrPlayPonteSospeso" style="align-items:center; justify-content:center">
   <div class="row" style="width:100%; justify-content:space-between">
@@ -5866,7 +5958,7 @@ body.suspense-on #pfRank{ display:none !important; }
 /* ================================================================
    📋 ELENCO MINIGIOCHI — aggiornare questa lista ogni volta che se ne
    aggiunge uno nuovo (serve ad Alberto per la documentazione delle licenze).
-   Ultimo aggiornamento: v13.26 — 54 minigiochi totali.
+   Ultimo aggiornamento: v13.41 — 55 minigiochi totali.
    ================================================================
    1.  🥃 Bussolotti
    2.  🎲 Pari o Dispari
@@ -5942,7 +6034,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1340; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1341; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -8000,6 +8092,7 @@ function listenGame(){
     else if (g.status==='scossa') showPlayerScossa(g);
     else if (g.status==='slotmachine') showPlayerSlotMachine(g);
     else if (g.status==='pontesospeso') showPlayerPonteSospeso(g);
+    else if (g.status==='panino') showPlayerPanino(g);
     else if (g.status==='finddiff') showPlayerFindDiff(g);
     else if (g.status==='maggioranza') showPlayerMaj(g);
     else if (g.status==='goldenticket') showPlayerGold(g);
@@ -10288,6 +10381,158 @@ function showPlayerPonteSospeso(g){
       }
     }
   }, 100);
+}
+/* ================================================================
+   UN PANINO — telefono
+================================================================ */
+const PANINO_ING = [
+  {e:'🥬',n:'lattuga'}, {e:'🍅',n:'pomodoro'}, {e:'🧀',n:'formaggio'}, {e:'🥓',n:'pancetta'},
+  {e:'🍖',n:'carne'}, {e:'🥚',n:'uovo'}, {e:'🥒',n:'cetriolo'}, {e:'🧅',n:'cipolla'},
+  {e:'🍄',n:'funghi'}, {e:'🥑',n:'avocado'}, {e:'🫒',n:'olive'}, {e:'🥩',n:'bistecca'},
+  {e:'🌭',n:'wurstel'}, {e:'🍤',n:'gamberi'}, {e:'🌶️',n:'piccante'}, {e:'🫑',n:'peperone'},
+  {e:'🍍',n:'ananas'}, {e:'🥕',n:'carote'}, {e:'🍌',n:'banana'}, {e:'🥝',n:'kiwi'}
+];
+function paninoShuffle(arr){
+  const a = arr.slice();
+  for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+function paninoBuildRecipe(strati, ingN){
+  const pool = paninoShuffle(PANINO_ING);
+  const totalIng = strati*ingN;
+  const chosen = pool.slice(0, totalIng);
+  const decoys = pool.slice(totalIng, totalIng+4);
+  const seq = ['bread'];
+  let idx = 0;
+  for (let s=0; s<strati; s++){
+    for (let i=0;i<ingN;i++){ seq.push(chosen[idx].n); idx++; }
+    seq.push('bread');
+  }
+  return { seq, chosen, decoys };
+}
+function paninoBuildTray(seq, chosen, decoys){
+  let bid=0;
+  const pieces = seq.map(kind=>{
+    if (kind==='bread'){ bid++; return { id:'b'+bid, kind:'bread', e:'🍞', n:'pane', used:false }; }
+    const ing = chosen.find(c=>c.n===kind);
+    return { id:'i_'+kind, kind, e:ing.e, n:ing.n, used:false };
+  });
+  const decoyPieces = decoys.map(d=> ({ id:'d_'+d.n, kind:'__decoy_'+d.n, e:d.e, n:d.n, used:false }));
+  return paninoShuffle(pieces.concat(decoyPieces));
+}
+function paninoRenderStack(seq){
+  $('paninoStackView').innerHTML = seq.map(kind=>{
+    if (kind==='bread') return `<div class="panSlice bread">🍞 pane</div>`;
+    const ing = PANINO_ING.find(i=>i.n===kind);
+    return `<div class="panSlice">${ing.e} ${esc(kind)}</div>`;
+  }).join('');
+}
+function paninoRenderSlots(){
+  const nextIdx = P.paninoSlots.findIndex(x=>x===null);
+  let lastFilledIdx = -1;
+  for (let i=0;i<P.paninoSlots.length;i++) if (P.paninoSlots[i]) lastFilledIdx=i;
+  $('paninoStackView').innerHTML = P.paninoSlots.map((val,i)=>{
+    if (val){
+      const isBread = val.kind==='bread';
+      const undoable = i===lastFilledIdx && !P.paninoResolved;
+      return `<div class="panSlice ${isBread?'bread':''} filled" ${undoable?'onclick="paninoUndo()" style="cursor:pointer"':''}>${val.e} ${esc(val.n)}</div>`;
+    }
+    return `<div class="panSlice empty ${i===nextIdx?'next':''}">${i+1}</div>`;
+  }).join('');
+}
+function paninoRenderTray(){
+  $('paninoTray').innerHTML = P.paninoTray.map(p=>{
+    const isBread = p.kind==='bread';
+    return `<div class="panPiece ${isBread?'bread':''} ${p.used?'used':''}" onclick="paninoPick('${p.id}')">
+      <div>${p.e}</div><div class="lbl">${esc(p.n)}</div>
+    </div>`;
+  }).join('');
+}
+function paninoPick(pieceId){
+  if (P.paninoResolved || P.paninoPhase!=='build') return;
+  const piece = P.paninoTray.find(p=>p.id===pieceId);
+  if (!piece || piece.used) return;
+  const nextIdx = P.paninoSlots.findIndex(x=>x===null);
+  if (nextIdx===-1) return;
+  piece.used = true;
+  P.paninoSlots[nextIdx] = piece;
+  paninoRenderSlots(); paninoRenderTray();
+  if (P.paninoSlots.every(x=>x!==null)) paninoResolve();
+}
+function paninoUndo(){
+  if (P.paninoResolved || P.paninoPhase!=='build') return;
+  let lastFilledIdx=-1;
+  for (let i=0;i<P.paninoSlots.length;i++) if (P.paninoSlots[i]) lastFilledIdx=i;
+  if (lastFilledIdx===-1) return;
+  const piece = P.paninoSlots[lastFilledIdx];
+  piece.used = false;
+  P.paninoSlots[lastFilledIdx] = null;
+  paninoRenderSlots(); paninoRenderTray();
+}
+function paninoScoreNow(){
+  let correct = 0;
+  for (let i=0;i<P.paninoSeq.length;i++){ if (P.paninoSlots[i] && P.paninoSlots[i].kind===P.paninoSeq[i]) correct++; }
+  const total = P.paninoSeq.length;
+  const pts = Math.max(0, Math.round(P.paninoMaxPoints * correct/total));
+  return { correct, total, pts };
+}
+function paninoResolve(){
+  if (P.paninoResolved) return; P.paninoResolved = true;
+  clearInterval(P.paninoInt);
+  const { correct, total, pts } = paninoScoreNow();
+  telWinFanfare(); if (correct===total) confetti();
+  if (navigator.vibrate) navigator.vibrate(correct===total?[80,50,80,50,150]:[60]);
+  document.querySelectorAll('#paninoTray .panPiece').forEach(el=> el.onclick=null);
+  $('paninoStatus').textContent = correct===total ? `🎉 PANINO ATTRAVERSATO! +${pts} PUNTI!` : `🥪 Panino finito: ${correct}/${total} giusti`;
+  $('paninoSub').textContent = correct===total ? '' : `+${pts} punti`;
+  P.ref.child('panino/results/'+P.id).set({ pts, completed:(correct===total), correct, total });
+}
+function paninoTimeout(){
+  if (P.paninoResolved) return; P.paninoResolved = true;
+  clearInterval(P.paninoInt);
+  const { correct, total, pts } = paninoScoreNow();
+  document.querySelectorAll('#paninoTray .panPiece').forEach(el=> el.onclick=null);
+  $('paninoStatus').textContent = '⏱ TEMPO SCADUTO!';
+  $('paninoSub').textContent = `Ricostruito ${correct}/${total}: +${pts} punti`;
+  P.ref.child('panino/results/'+P.id).set({ pts, completed:false, correct, total });
+}
+function showPlayerPanino(g){
+  const m = g.panino||{};
+  $('paninopName').textContent = P.name;
+  $('paninopScore').textContent = (((g.players||{})[P.id]||{}).score||0)+' pt';
+  showScreen('scrPlayPanino');
+  clearInterval(P.paninoInt); clearTimeout(P.paninoShowTimeout);
+  if (m.phase!=='active'){ P.paninoSig = null; return; }
+  const sig = 'act:'+m.roundId;
+  if (P.paninoSig !== sig){
+    P.paninoSig = sig; P.paninoResolved = false; P.paninoMaxPoints = m.maxPoints; P.paninoPhase = 'show';
+    const built = paninoBuildRecipe(m.strati||1, m.ingN||5);
+    P.paninoSeq = built.seq;
+    P.paninoTray = paninoBuildTray(built.seq, built.chosen, built.decoys);
+    P.paninoSlots = built.seq.map(()=>null);
+    $('paninoShowBadge').style.display='block';
+    $('paninoShowBadge').textContent = '👀 MEMORIZZA IL PANINO!';
+    $('paninopTimerWrap').style.display='none';
+    $('paninoTray').innerHTML='';
+    $('paninoStatus').textContent=''; $('paninoSub').textContent='';
+    paninoRenderStack(P.paninoSeq);
+    const showMs = m.showMs||2000;
+    P.paninoShowTimeout = setTimeout(()=>{
+      if (P.paninoSig !== sig) return;
+      P.paninoPhase = 'build';
+      P.paninoLocalEndAt = Date.now() + (m.durationMs||0);
+      $('paninoShowBadge').style.display='none';
+      $('paninopTimerWrap').style.display='block';
+      $('paninoStatus').textContent = "🥪 RICOSTRUISCI IL PANINO, NELL'ORDINE GIUSTO!";
+      paninoRenderSlots(); paninoRenderTray();
+      P.paninoInt = setInterval(()=>{
+        if (P.paninoSig !== sig) { clearInterval(P.paninoInt); return; }
+        const left = Math.max(0, P.paninoLocalEndAt - Date.now());
+        $('paninopTimerBar').style.width = (left/(m.durationMs||1)*100)+'%';
+        if (left<=0) paninoTimeout();
+      }, 100);
+    }, showMs);
+  }
 }
 /* ================================================================
    TROVA LE DIFFERENZE — telefono
@@ -17252,6 +17497,64 @@ function bridgeStart(){
 }
 
 /* ================================================================
+   UN PANINO — regia
+================================================================ */
+let PANINO = {};
+function openPanino(){
+  if (!isGameEnabled('panino')) return alert('⚠️ Questo minigioco non è compreso nella licenza attiva. Contatta Alberto per sbloccarlo.');
+  if (!G) return alert('Avvia prima una partita!');
+  cancelLiveQuestion(); closeModal(); clearInterval((PANINO||{}).timerInt);
+  G.ref.child('panino/results').off();
+  G.ref.update({ status:'panino', panino:{ phase:'idle' } });
+  PANINO = {};
+  $('paninoSetup').style.display='block'; $('paninoLive').style.display='none';
+  if (!$('paninoPoints').innerHTML){
+    $('paninoPoints').innerHTML = Array.from({length:20},(_,k)=>`<option value="${(k+1)*100}" ${k===4?'selected':''}>${(k+1)*100} punti</option>`).join('');
+  }
+  showScreen('scrPanino');
+}
+function paninoStart(){
+  const maxPoints = getPoints('paninoPoints','paninoPointsMan');
+  const strati = +($('paninoStrati').value||1);
+  const ingN = +($('paninoIngN').value||5);
+  const showMs = (+($('paninoShow').value||2))*1000;
+  const durationMs = (+($('paninoDuration').value||30))*1000;
+  const roundId = serverNow();
+  PANINO = { credited:{} };
+  G.ref.update({ status:'panino', panino:{ phase:'active', maxPoints, strati, ingN, showMs, durationMs, roundId } });
+  G.ref.child('panino/results').remove();
+  $('paninoSetup').style.display='none'; $('paninoLive').style.display='block';
+  $('paninoMsg').textContent = `🥪 SI GUARDA E SI RICOSTRUISCE! Fino a ${maxPoints} punti in palio`;
+  $('paninoCount').textContent=''; $('paninoResultsLive').innerHTML='';
+  pjSend({type:'paninoActive', strati, ingN, showMs, durationMs});
+  clearInterval(PANINO.timerInt);
+  const totalMs = showMs+durationMs;
+  const endAt = serverNow()+totalMs;
+  PANINO.timerInt = setInterval(()=>{
+    const left = Math.max(0, endAt-serverNow());
+    $('paninoTimerBarHost').style.width = (left/totalMs*100)+'%';
+    if (left<=0) clearInterval(PANINO.timerInt);
+  }, 100);
+  G.ref.child('panino/results').on('child_added', snap=>{
+    const pid = snap.key, r = snap.val();
+    if (!r || PANINO.credited[pid]) return;
+    PANINO.credited[pid] = true;
+    if (r.pts>0) applyScoreDelta(pid, r.pts);
+  });
+  G.ref.child('panino/results').on('value', s=>{
+    const results = s.val()||{};
+    const entries = Object.entries(results);
+    $('paninoCount').textContent = `Concluso (finito o tempo scaduto): ${entries.length}`;
+    G.ref.child('players').once('value').then(ps=>{
+      const pl = ps.val()||{};
+      $('paninoResultsLive').innerHTML = entries.map(([pid,r])=>
+        `<div class="leadRow"><span class="pos">${r.completed?'🏆':'⏱'}</span> ${esc((pl[pid]||{}).name||'?')} <span class="pts">${r.pts>0?'+'+r.pts:'0'} (${r.correct}/${r.total})</span></div>`).join('')
+        || '<div class="byline">Nessuno ha ancora concluso...</div>';
+    });
+  });
+}
+
+/* ================================================================
    ROULETTE — regia
 ================================================================ */
 let RW = {};
@@ -19652,6 +19955,7 @@ const GIOCHI_CATALOGO = [
   {k:'merc', l:'📣 Mercatista per un Giorno'},
   {k:'morra', l:'✊✋✌️ Morra Cinese'},
   {k:'pontesospeso', l:'🌉 Il Ponte Sospeso'},
+  {k:'panino', l:'🥪 Un Panino'},
   {k:'punto', l:'🏁 Il Punto della Situazione'},
   {k:'dado', l:'🎲 Il Dado del Destino'},
   {k:'asta', l:'🔨 Asta'},
@@ -19689,6 +19993,7 @@ function modalGamesSkill(){
     gk('mini', `<button class="btn mg gameBtn" onclick="openMini()">🥃 Bussolotti</button>`),
     gk('tamb', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#e8b45a,#8a4a12); color:#3a2000; box-shadow:0 7px 0 #4a2400,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(232,180,90,.4)" onclick="openTamb()">🥁 I Tamburini</button>`),
     gk('pontesospeso', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#8a6030,#4a3319); color:#fff; box-shadow:0 7px 0 #2a1c0d,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(138,96,48,.4)" onclick="openPonteSospeso()">🌉 Il Ponte Sospeso</button>`),
+    gk('panino', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#e8c15a,#c17a1e); color:#3a2000; box-shadow:0 7px 0 #6b3f0a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(232,193,90,.4)" onclick="openPanino()">🥪 Un Panino</button>`),
     gk('punto', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#3de0ff,#0b6f8a); color:#00272e; box-shadow:0 7px 0 #003a44,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(61,224,255,.4)" onclick="openPunto()">🏁 Il Punto della Situazione</button>`),
     gk('idr', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#7a8a9a,#3a4550); color:#fff; box-shadow:0 7px 0 #1a2028,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(122,138,154,.4)" onclick="openIdr()">🔧 L'Idraulico</button>`),
     gk('cassaforte', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#8a8f96,#3a3c40); color:#fff; box-shadow:0 7px 0 #1a1c1e,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(138,143,150,.35)" onclick="openCassaforte()">🔐 La Cassaforte</button>`),
@@ -21824,6 +22129,18 @@ function pjRouteInner(m){
         const left = Math.max(0, pjBridgeLocalEndAt - Date.now());
         $('pjBridgeTimerBar').style.width = (left/m.durationMs*100)+'%';
         if (left<=0) clearInterval(window._pjBridgeInt);
+      }, 100);
+    }
+    else if (m.type==='paninoActive') {
+      showScreen('scrPjPanino');
+      $('pjPaninoMsg').textContent = 'GUARDA BENE IL TUO PANINO... POI RICOSTRUISCILO!';
+      $('pjPaninoResults').innerHTML='';
+      clearInterval(window._pjPaninoInt);
+      const pjPaninoLocalEndAt = Date.now() + (m.showMs||0) + (m.durationMs||0);
+      window._pjPaninoInt = setInterval(()=>{
+        const left = Math.max(0, pjPaninoLocalEndAt - Date.now());
+        $('pjPaninoTimerBar').style.width = (left/((m.showMs||0)+(m.durationMs||1))*100)+'%';
+        if (left<=0) clearInterval(window._pjPaninoInt);
       }, 100);
     }
     else if (m.type==='rwActive') {
