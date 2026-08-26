@@ -1882,7 +1882,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.49</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.51</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -2244,6 +2244,7 @@ body.suspense-on #pfRank{ display:none !important; }
   <button class="hb" id="hbHighlander" onclick="toggleHighlander()" data-tip="Chi sbaglia una domanda viene eliminato: resta in gioco solo chi risponde giusto">💀 Modalità Highlander</button>
   <button class="hb" onclick="modalPoints()" data-tip="Assegna punti, rinomina, gestisci chi ha cambiato telefono e chi è fuori per la Modalità Highlander">👥 Gestisci giocatori</button>
   <button class="hb" onclick="modalClassifiche()" data-tip="Classifica generale, più veloci e podio intermedio da un unico pannello">🏆 Classifiche varie</button>
+  <button class="hb" id="hbSaveCamp" onclick="saveCampionato()" data-tip="Salva la classifica di adesso nel campionato serate (con locale e data di stasera), in qualsiasi momento della partita — non solo alla fine">💾 Salva nel campionato</button>
   <button class="hb" id="hbMsg" onclick="modalPjMsg()" data-tip="Manda un messaggio di testo a comparsa sul videoproiettore">💬 Messaggio → 📺</button>
   <button class="hb" id="hbWa" onclick="modalWaGroup()" data-tip="Mostra QR e link per far entrare i giocatori nel gruppo WhatsApp della serata">📱 Gruppo WhatsApp</button>
   <button class="hb" id="hbPhoto" onclick="modalPjPhoto()" data-tip="Manda una foto a comparsa sul videoproiettore">📷 Pubblica Foto</button>
@@ -6135,7 +6136,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1349; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1351; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -6653,8 +6654,11 @@ function loadQuizList(){
     const d = document.createElement('div'); d.className='qCard';
     d.innerHTML = `<div class="idx">🎩</div>
       <div class="grow"><b>${esc(q.title)}</b><br><small style="color:var(--muted)">${q.questions.length} domande · ${fmtLastUsed(q.lastUsed)}</small></div>
+      <button class="btn small ghost" onclick="moveQuizTop(${i})" ${i===0?'disabled':''} data-tip="Porta questo quiz in cima a tutto l'elenco">⏫</button>
       <button class="btn small ghost" onclick="moveQuiz(${i},-1)" ${i===0?'disabled':''} data-tip="Sposta questo quiz più in alto nell'elenco">▲</button>
       <button class="btn small ghost" onclick="moveQuiz(${i},1)" ${i===quizzes.length-1?'disabled':''} data-tip="Sposta questo quiz più in basso nell'elenco">▼</button>
+      <button class="btn small ghost" onclick="moveQuizBottom(${i})" ${i===quizzes.length-1?'disabled':''} data-tip="Porta questo quiz in fondo a tutto l'elenco">⏬</button>
+      <button class="btn small ghost" onclick="dupQuiz(${i})" data-tip="Crea una copia rinominata di questo quiz, per tenerlo intero e personalizzare/tagliare la copia">⧉ Crea copia</button>
       <button class="btn small cy" onclick="editQuiz(${i})" data-tip="Apri questo quiz nell'editor per modificarlo">✎</button>
       <button class="btn small mg" onclick="playQuiz(${i})" data-tip="Avvia una partita con questo quiz: genera il codice e apre la regia">▶</button>
       <button class="btn small ghost" onclick="delQuiz(${i})" data-tip="Elimina questo quiz per sempre">🗑</button>`;
@@ -6665,6 +6669,23 @@ function moveQuiz(i, dir){
   const j = i+dir;
   if (j<0 || j>=quizzes.length) return;
   [quizzes[i], quizzes[j]] = [quizzes[j], quizzes[i]];
+  persist(); loadQuizList();
+}
+function moveQuizTop(i){
+  if (i<=0) return;
+  const [q] = quizzes.splice(i,1); quizzes.unshift(q);
+  persist(); loadQuizList();
+}
+function moveQuizBottom(i){
+  if (i>=quizzes.length-1) return;
+  const [q] = quizzes.splice(i,1); quizzes.push(q);
+  persist(); loadQuizList();
+}
+function dupQuiz(i){
+  const copy = JSON.parse(JSON.stringify(quizzes[i]));
+  copy.title = 'Copia di ' + quizzes[i].title;
+  delete copy.lastUsed; // la copia non è ancora mai stata giocata
+  quizzes.splice(i+1, 0, copy);
   persist(); loadQuizList();
 }
 function newQuiz(){ curQuiz = { title:'', questions:[] }; curQuiz._idx = -1; $('edTitle').value=''; renderEdQuestions(); showScreen('scrEditor'); }
@@ -7405,6 +7426,7 @@ function actuallyPlayQuiz(i){
   $('lobbyQuizName').textContent = quiz.title;
   $('lobbyCode').textContent = code;
   $('lobbyCampBtn').textContent = '🏆 Campionato: nessuno'; // ogni nuova partita parte senza campionato collegato, finché non lo si sceglie da qui
+  { const b = $('hbSaveCamp'); if (b){ b.textContent = '💾 Salva nel campionato'; b.disabled = false; } } // reset: la partita precedente potrebbe averlo disabilitato
   const url = location.origin + location.pathname + '?g=' + code;
   G.url = url;
   $('qrBox').innerHTML=''; new QRCode($('qrBox'), { text:url, width:210, height:210, colorDark:'#0b0614' });
@@ -7481,6 +7503,7 @@ function resumeGame(){
     G.campionatoName = null; // il nome esatto lo si rivede aprendo "Campionato serate"; il collegamento (la chiave) resta comunque attivo
     G.venueForReport = data.venue || null; G.testMode = !!data.testMode; // ripristino anche questi, salvati all'avvio
     $('lobbyCampBtn').textContent = G.campionato ? '🏆 Campionato: (collegato)' : '🏆 Campionato: nessuno';
+    { const b = $('hbSaveCamp'); if (b){ b.textContent = '💾 Salva nel campionato'; b.disabled = false; } }
     if (!G.report) G.report = { quizTitle: quiz.title, code, startedAt: Date.now(), questions: [], minigames: [], playersSeen: {} };
     const url = location.origin + location.pathname + '?g=' + code;
     G.url = url;
@@ -20565,6 +20588,7 @@ function modalCampionatoDetail(k){
       : '<div class="byline" style="letter-spacing:1px">Nessuna squadra ancora. Si aggiungono da sole quando i giocatori entrano in una partita legata a questo campionato.</div>';
     if (G) html += `<button class="btn small mg mt" style="width:100%" onclick="useCampionatoForSession('${k}','${safeName}')" data-tip="Da questo momento la partita in corso farà punteggio per questo campionato, e i nomi già iscritti saranno protetti dal PIN">✅ Usa questo campionato per la partita in corso</button>`;
     if (teams.length) html += `<button class="btn small cy mt" style="width:100%" onclick="campToProjector('${k}','${safeName}')" data-tip="Mostra la classifica di questo campionato sul videoproiettore">📺 Mostra sul proiettore</button>`;
+    if (Object.keys(camp.serate||{}).length) html += `<button class="btn small lm mt" style="width:100%" onclick="modalFondiClassifiche('${k}','${safeName}')" data-tip="Scegli quali serate registrate includere: solo quelle di un locale, oppure tutte insieme per i campioni dei campioni">🔀 Fondi classifiche delle serate</button>`;
     html += `<button class="btn small ghost mt" style="width:100%" onclick="campDeleteWhole('${k}','${safeName}')" data-tip="Elimina questo intero campionato, comprese tutte le squadre iscritte">🗑 Elimina questo intero campionato</button>`;
     html += `<div class="row mt"><button class="btn small ghost" onclick="modalCampionato()">↩ Torna all'elenco campionati</button></div>`;
     openModal('📁 '+camp.name.toUpperCase(), html);
@@ -20598,6 +20622,57 @@ function campToProjector(k, name){
     closeModal();
   });
 }
+// FONDI CLASSIFICHE: sceglie quali "serate" registrate (ognuna con locale e data) sommare insieme —
+// tutte spuntate di default (classifica di tutti i locali = "campioni dei campioni"), oppure si tolgono
+// le spunte alle serate di locali diversi per ottenere la classifica di un singolo locale.
+function modalFondiClassifiche(k, name){
+  db.ref('caponequiz/campionati/'+k+'/serate').once('value').then(s=>{
+    const serate = Object.entries(s.val()||{}).map(([sk,r])=>({sk,...r})).sort((a,b)=>(b.date||0)-(a.date||0));
+    if (!serate.length) return alert('Nessuna serata ancora registrata in questo campionato.');
+    window._fondiSerateData = serate; window._fondiRanked = null;
+    const rows = serate.map(r=>{
+      const nPlayers = Object.keys(r.scores||{}).length;
+      return `<label style="display:flex; align-items:center; gap:10px; padding:9px 4px; border-bottom:1px solid rgba(157,77,255,.15); cursor:pointer">
+        <input type="checkbox" class="fondiChk" data-sk="${r.sk}" checked style="width:22px; height:22px; accent-color:var(--lime); flex-shrink:0">
+        <span class="grow"><b>${esc(r.venue||'(locale non indicato)')}</b> — ${esc(r.dateStr||'')}<br><small style="color:var(--muted)">${esc(r.quizTitle||'')} · ${nPlayers} giocator${nPlayers===1?'e':'i'}</small></span>
+      </label>`;
+    }).join('');
+    const safeName = esc(name).replace(/'/g,"\\'");
+    const html = `
+      <div class="label" style="text-transform:none; letter-spacing:0">Spuntate tutte per default: lasciale così per la classifica di TUTTE le serate insieme (i "campioni dei campioni"), oppure togli la spunta alle serate di locali diversi per avere la classifica di un singolo locale.</div>
+      <div class="mt" style="max-height:320px; overflow-y:auto">${rows}</div>
+      <button class="btn mg mt" style="width:100%" onclick="calcolaFondiClassifiche('${k}','${safeName}')">🏆 Calcola classifica combinata</button>
+      <div class="mt" id="fondiResult"></div>
+      <div class="row mt"><button class="btn small ghost" onclick="modalCampionatoDetail('${k}')">↩ Torna al campionato</button></div>
+    `;
+    openModal('🔀 FONDI CLASSIFICHE — '+name.toUpperCase(), html);
+  });
+}
+function calcolaFondiClassifiche(k, name){
+  const checked = new Set([...document.querySelectorAll('.fondiChk:checked')].map(c=>c.dataset.sk));
+  const serate = (window._fondiSerateData||[]).filter(r=>checked.has(r.sk));
+  if (!serate.length) return alert('Seleziona almeno una serata.');
+  const totals = {};
+  serate.forEach(r=>{
+    Object.entries(r.scores||{}).forEach(([tk,sc])=>{
+      totals[tk] = totals[tk] || { name: sc.name, total:0, n:0 };
+      totals[tk].total += sc.score||0;
+      totals[tk].n++;
+    });
+  });
+  const ranked = Object.values(totals).sort((a,b)=>b.total-a.total);
+  window._fondiRanked = ranked;
+  const rowsHtml = ranked.map((t,i)=>
+    `<div class="leadRow"><span class="pos">${i+1}°</span> <span class="grow">${esc(t.name)} <small style="color:var(--muted)">(${t.n} serat${t.n===1?'a':'e'})</small></span><span class="pts">${t.total}</span></div>`
+  ).join('');
+  $('fondiResult').innerHTML = `<div class="label mt">Classifica combinata — ${serate.length} serat${serate.length===1?'a selezionata':'e selezionate'}</div>${rowsHtml}
+    <button class="btn cy mt" style="width:100%" onclick="fondiToProjector('${name}')">📺 Mostra questa classifica sul proiettore</button>`;
+}
+function fondiToProjector(name){
+  const rows = (window._fondiRanked||[]).slice(0,15).map((t,i)=>({pos:(i+1)+'°', name:t.name, val:t.total+''}));
+  if (!rows.length) return;
+  sendLeadOverlay({on:true, kind:'camp', title:'🏆 '+name.toUpperCase(), rows});
+}
 // salvataggio a fine serata: se la partita era legata a un campionato, salva lì diretto;
 // altrimenti (partita "libera") chiede in quale campionato salvare, come funzionava prima
 function saveCampionato(){
@@ -20618,10 +20693,13 @@ function saveCampionatoInto(k){
     const players = ps.val()||{};
     const names = Object.values(players).map(p=>p.name);
     if (!names.length) return alert('Nessuna squadra da salvare.');
+    const scoresForSerata = {};
     let done = 0;
+    const totalPlayers = Object.keys(players).length;
     for (const pid in players){
       const p = players[pid];
       const tk = campKey(p.name);
+      scoresForSerata[tk] = { name:p.name, score:p.score||0 };
       db.ref('caponequiz/campionati/'+k+'/teams/'+tk).transaction(cur=>{
         cur = cur || { name:p.name, total:0, serate:0 };
         cur.name = p.name; // aggiorna eventuali correzioni di maiuscole/minuscole, il PIN (se c'è) resta intatto
@@ -20629,11 +20707,23 @@ function saveCampionatoInto(k){
         cur.serate = (cur.serate||0) + 1;
         cur.updated = Date.now();
         return cur;
-      }).then(()=>{ if (++done === Object.keys(players).length) {
+      }).then(()=>{ if (++done === totalPlayers) registraSerata(); });
+    }
+    function registraSerata(){
+      // REGISTRO SERATA del campionato: data, locale e punteggi di stasera, tenuti separati
+      // (oltre al totale cumulato sopra) per poter poi fondere le classifiche a piacere —
+      // solo quelle dello stesso locale, oppure tutte insieme per i "campioni dei campioni".
+      const d = new Date(); const pad = n=>String(n).padStart(2,'0');
+      db.ref('caponequiz/campionati/'+k+'/serate').push({
+        date: Date.now(),
+        dateStr: `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}`,
+        venue: G.venueForReport || '(locale non indicato)',
+        quizTitle: (G.report||{}).quizTitle || (G.quiz||{}).title || '',
+        scores: scoresForSerata
+      }).then(()=>{
         G.campSaved = true;
-        $('btnSaveCamp').textContent = '✔ Salvato nel campionato!';
-        $('btnSaveCamp').disabled = true;
-      }});
+        [$('btnSaveCamp'), $('hbSaveCamp')].forEach(btn=>{ if (btn){ btn.textContent = '✔ Salvato nel campionato!'; btn.disabled = true; } });
+      });
     }
   });
 }
