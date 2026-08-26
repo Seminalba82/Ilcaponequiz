@@ -946,6 +946,22 @@ body.barOn.barCollapsed .screen.active{padding-bottom:70px;}
 .panStatus{font-family:'Bungee'; font-size:clamp(14px,3.8vw,18px); text-align:center; margin-top:10px; color:#fff;}
 .panSub{font-family:'Outfit'; font-weight:700; font-size:13px; color:#ffc93c; text-align:center; margin-top:3px; opacity:.85;}
 .panShowBadge{font-family:'Bungee'; font-size:13px; color:var(--gold); text-align:center; margin-bottom:8px; letter-spacing:1px;}
+/* ===== IL QUADRIFOGLIO ===== */
+.cloverField{display:grid; gap:3px; width:100%; max-width:420px; margin:10px auto 0; padding:8px; border-radius:14px;
+  background:linear-gradient(180deg,#0f3d1a,#0a2a12); border:2px solid rgba(255,255,255,.1); box-shadow:inset 0 0 30px rgba(0,0,0,.4);}
+.cloverField.big{max-width:640px; gap:5px;}
+.cloverTile{aspect-ratio:1/1; cursor:pointer; display:flex; align-items:center; justify-content:center; border-radius:6px;
+  transition:transform .08s; -webkit-tap-highlight-color:transparent;}
+.cloverTile svg{width:82%; height:82%; pointer-events:none; filter:drop-shadow(0 1px 1px rgba(0,0,0,.35));}
+.cloverTile:active{transform:scale(.85);}
+.cloverTile.wrong svg{animation:cloverShake .35s ease;}
+@keyframes cloverShake{ 0%,100%{transform:translateX(0) rotate(0);} 25%{transform:translateX(-3px) rotate(-8deg);} 75%{transform:translateX(3px) rotate(8deg);} }
+.cloverToast{position:fixed; left:50%; top:38%; transform:translate(-50%,-50%) scale(.6); z-index:60; pointer-events:none;
+  font-family:'Bungee'; font-size:clamp(20px,6vw,32px); color:var(--gold); text-shadow:0 3px 0 #6b4a00,0 0 20px rgba(255,201,60,.7);
+  opacity:0; animation:cloverToast .7s ease forwards;}
+@keyframes cloverToast{ 0%{opacity:0; transform:translate(-50%,-50%) scale(.5);} 20%{opacity:1; transform:translate(-50%,-50%) scale(1.15);}
+  30%{transform:translate(-50%,-50%) scale(1);} 80%{opacity:1;} 100%{opacity:0; transform:translate(-50%,-60%) scale(1);} }
+.cloverCount{font-family:'Bungee'; font-size:clamp(14px,3.6vw,18px); text-align:center; margin-top:8px; color:#fff;}
 /* ===== MANUALE D'USO (integrato nel gioco) ===== */
 .manualWrap{max-width:820px; width:100%; margin:0 auto;}
 .manualTopBar{position:sticky; top:0; z-index:5; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;
@@ -1862,7 +1878,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.44</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.45</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -5277,6 +5293,69 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="panSub" id="paninoSub"></div>
 </div>
 
+<!-- ==================== REGIA: IL QUADRIFOGLIO ==================== -->
+<div class="screen" id="scrClover">
+  <div class="brand"><div class="t1" style="font-size:clamp(18px,3.4vw,32px)">🍀 IL QUADRIFOGLIO</div></div>
+  <div class="panel mt" style="max-width:480px" id="cloverSetup">
+    <div class="row">
+      <div class="grow"><div class="label">Punti per ogni quadrifoglio trovato</div><select id="cloverPointsEach"></select></div>
+      <div><div class="label">O scrivili</div><input type="number" id="cloverPointsEachMan" class="ptsManual" placeholder="—" min="1"></div>
+    </div>
+    <div class="label mt">Quadrifogli da trovare</div>
+    <select id="cloverTotal">
+      <option value="3">3 quadrifogli</option>
+      <option value="5" selected>5 quadrifogli</option>
+      <option value="8">8 quadrifogli</option>
+      <option value="10">10 quadrifogli</option>
+    </select>
+    <div class="label mt">Dimensione del campo</div>
+    <select id="cloverSize">
+      <option value="small">Piccolo (più facile trovarli)</option>
+      <option value="medium" selected>Medio</option>
+      <option value="big">Grande (più difficile trovarli)</option>
+    </select>
+    <div class="label mt">Tempo di gioco</div>
+    <select id="cloverDuration">
+      <option value="20">20 secondi</option>
+      <option value="30" selected>30 secondi</option>
+      <option value="45">45 secondi</option>
+      <option value="60">1 minuto</option>
+    </select>
+    <div class="byline mt" style="opacity:.75">🍀 Ogni giocatore ha il proprio campo di trifogli (diverso da quello degli altri), con dentro nascosti i quadrifogli da scovare a colpo d'occhio: hanno una foglia in più, ben visibile se si guarda bene. Ogni volta che un giocatore ne trova uno, tutto il campo si rimescola: i quadrifogli rimasti compaiono sempre in punti nuovi, mai in quello appena trovato.</div>
+    <button class="btn mg mt" style="width:100%" onclick="cloverStart()">🍀 SI PARTE!</button>
+  </div>
+  <div id="cloverLive" style="display:none; width:100%" class="center">
+    <div class="miniMsg" id="cloverMsg"></div>
+    <div class="timerWrap mt" style="max-width:420px"><div class="timerBar" id="cloverTimerBarHost"></div></div>
+    <div class="byline" id="cloverCountHost"></div>
+    <div class="lead mt" id="cloverResultsLive" style="max-width:500px; width:100%"></div>
+    <button class="btn cy mt" id="cloverBtnAgain" onclick="openClover()" style="display:none">🔁 Un'altra manche</button>
+  </div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
+</div>
+
+<!-- ==================== PROIETTORE: IL QUADRIFOGLIO ==================== -->
+<div class="screen" id="scrPjClover">
+  <div class="brand"><div class="t1" style="font-size:clamp(22px,3.6vw,40px)">🍀 IL QUADRIFOGLIO</div></div>
+  <div class="miniMsg" id="pjCloverMsg">TROVA I QUADRIFOGLI NEL TUO CAMPO!</div>
+  <div class="timerWrap mt" style="max-width:460px"><div class="timerBar" id="pjCloverTimerBar"></div></div>
+  <div class="cloverField big" id="pjCloverField"></div>
+  <div class="byline mt" style="max-width:460px; text-align:center">Ogni giocatore cerca nel proprio campo, sul telefono: qui è solo per atmosfera!</div>
+  <div class="lead mt" id="pjCloverResults" style="max-width:600px; width:100%"></div>
+</div>
+
+<!-- ==================== TELEFONO: IL QUADRIFOGLIO ==================== -->
+<div class="screen" id="scrPlayClover" style="align-items:center; justify-content:center">
+  <div class="row" style="width:100%; justify-content:space-between">
+    <div class="pill" id="cloverpName" style="color:var(--gold)"></div>
+    <div class="pill" id="cloverpScore"></div>
+  </div>
+  <div class="timerWrap mt" style="max-width:280px"><div class="timerBar" id="cloverpTimerBar"></div></div>
+  <div class="cloverCount" id="cloverpCount"></div>
+  <div class="cloverField" id="cloverpField"></div>
+  <div class="panStatus" id="cloverpStatus"></div>
+</div>
+
 <!-- ==================== PLAYER: IL PONTE SOSPESO ==================== -->
 <div class="screen" id="scrPlayPonteSospeso" style="align-items:center; justify-content:center">
   <div class="row" style="width:100%; justify-content:space-between">
@@ -5962,7 +6041,7 @@ body.suspense-on #pfRank{ display:none !important; }
 /* ================================================================
    📋 ELENCO MINIGIOCHI — aggiornare questa lista ogni volta che se ne
    aggiunge uno nuovo (serve ad Alberto per la documentazione delle licenze).
-   Ultimo aggiornamento: v13.41 — 55 minigiochi totali.
+   Ultimo aggiornamento: v13.45 — 56 minigiochi totali.
    ================================================================
    1.  🥃 Bussolotti
    2.  🎲 Pari o Dispari
@@ -6038,7 +6117,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1344; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1345; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -8097,6 +8176,7 @@ function listenGame(){
     else if (g.status==='slotmachine') showPlayerSlotMachine(g);
     else if (g.status==='pontesospeso') showPlayerPonteSospeso(g);
     else if (g.status==='panino') showPlayerPanino(g);
+    else if (g.status==='clover') showPlayerClover(g);
     else if (g.status==='finddiff') showPlayerFindDiff(g);
     else if (g.status==='maggioranza') showPlayerMaj(g);
     else if (g.status==='goldenticket') showPlayerGold(g);
@@ -10541,6 +10621,92 @@ function showPlayerPanino(g){
       if (left<=0) paninoTimeout();
     }, 100);
   }, showMs);
+}
+/* ================================================================
+   IL QUADRIFOGLIO — telefono
+================================================================ */
+const CLOVER_SIZES = { small:{cols:6,rows:8}, medium:{cols:7,rows:10}, big:{cols:8,rows:12} };
+function cloverMakeSVG(leaves){
+  const petals = [];
+  for (let i=0;i<leaves;i++){
+    const angle = i*(360/leaves);
+    petals.push(`<ellipse cx="50" cy="28" rx="15" ry="19" transform="rotate(${angle} 50 50)" fill="#3fae4a" stroke="#1f6b28" stroke-width="2"/>`);
+  }
+  return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><line x1="50" y1="66" x2="50" y2="94" stroke="#2e7d32" stroke-width="5" stroke-linecap="round"/>${petals.join('')}</svg>`;
+}
+const CLOVER_SVG_3 = cloverMakeSVG(3);
+const CLOVER_SVG_4 = cloverMakeSVG(4);
+function cloverShuffle(nCells, nQuad, excludeIdx){
+  let idxs = Array.from({length:nCells}, (_,i)=>i);
+  if (excludeIdx!=null) idxs = idxs.filter(i=>i!==excludeIdx);
+  for (let i=idxs.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [idxs[i],idxs[j]]=[idxs[j],idxs[i]]; }
+  const quadSet = new Set(idxs.slice(0, nQuad));
+  return Array.from({length:nCells}, (_,i)=> quadSet.has(i));
+}
+function cloverRenderField(){
+  const el = $('cloverpField');
+  const sz = CLOVER_SIZES[P.cloverSize]||CLOVER_SIZES.medium;
+  el.style.gridTemplateColumns = `repeat(${sz.cols}, 1fr)`;
+  el.innerHTML = P.cloverCells.map((isQuad,i)=>
+    `<div class="cloverTile" data-i="${i}" onclick="cloverPick(${i})">${isQuad?CLOVER_SVG_4:CLOVER_SVG_3}</div>`).join('');
+}
+function cloverToast(text){
+  const d = document.createElement('div');
+  d.className='cloverToast'; d.textContent = text;
+  document.body.appendChild(d);
+  setTimeout(()=> d.remove(), 700);
+}
+function cloverPick(idx){
+  if (P.cloverResolved || P.cloverPhase!=='play') return;
+  if (!P.cloverCells[idx]){
+    const tiles = document.querySelectorAll('#cloverpField .cloverTile');
+    const t = tiles[idx];
+    if (t){ t.classList.add('wrong'); setTimeout(()=> t.classList.remove('wrong'), 350); }
+    return;
+  }
+  P.cloverFound++;
+  cloverToast('+'+P.cloverPointsEach);
+  $('cloverpCount').textContent = `Trovati: ${P.cloverFound} / ${P.cloverTotal}`;
+  if (navigator.vibrate) navigator.vibrate(40);
+  if (P.cloverFound >= P.cloverTotal){ cloverResolveWin(); return; }
+  P.cloverCells = cloverShuffle(P.cloverNCells, P.cloverTotal-P.cloverFound, idx);
+  cloverRenderField();
+}
+function cloverFinalize(completed){
+  if (P.cloverResolved) return; P.cloverResolved = true;
+  clearInterval(P.cloverInt);
+  const pts = P.cloverFound * P.cloverPointsEach;
+  document.querySelectorAll('#cloverpField .cloverTile').forEach(el=> el.onclick=null);
+  $('cloverpStatus').textContent = completed ? `🎉 TUTTI TROVATI! +${pts} PUNTI!` : `⏱ TEMPO SCADUTO! Trovati ${P.cloverFound}/${P.cloverTotal}: +${pts} punti`;
+  if (completed){ telWinFanfare(); confetti(); if (navigator.vibrate) navigator.vibrate([80,50,80,50,150]); }
+  P.ref.child('clover/results/'+P.id).set({ pts, completed, found:P.cloverFound, total:P.cloverTotal });
+}
+function cloverResolveWin(){ cloverFinalize(true); }
+function cloverTimeout(){ cloverFinalize(false); }
+function showPlayerClover(g){
+  const m = g.clover||{};
+  $('cloverpName').textContent = P.name;
+  $('cloverpScore').textContent = (((g.players||{})[P.id]||{}).score||0)+' pt';
+  showScreen('scrPlayClover');
+  if (m.phase!=='active'){ clearInterval(P.cloverInt); P.cloverSig = null; return; }
+  const sig = 'act:'+m.roundId;
+  if (P.cloverSig === sig) return; // stesso round già in corso: non ritoccare nulla di già avviato
+  clearInterval(P.cloverInt);
+  P.cloverSig = sig; P.cloverResolved = false; P.cloverFound = 0;
+  P.cloverPointsEach = m.pointsEach; P.cloverTotal = m.total; P.cloverSize = m.size||'medium';
+  const sz = CLOVER_SIZES[P.cloverSize]||CLOVER_SIZES.medium;
+  P.cloverNCells = sz.cols*sz.rows; P.cloverPhase = 'play';
+  P.cloverCells = cloverShuffle(P.cloverNCells, P.cloverTotal);
+  $('cloverpCount').textContent = `Trovati: 0 / ${P.cloverTotal}`;
+  $('cloverpStatus').textContent = '';
+  cloverRenderField();
+  P.cloverLocalEndAt = Date.now() + (m.durationMs||0);
+  P.cloverInt = setInterval(()=>{
+    if (P.cloverSig !== sig) { clearInterval(P.cloverInt); return; }
+    const left = Math.max(0, P.cloverLocalEndAt - Date.now());
+    $('cloverpTimerBar').style.width = (left/(m.durationMs||1)*100)+'%';
+    if (left<=0) cloverTimeout();
+  }, 100);
 }
 /* ================================================================
    TROVA LE DIFFERENZE — telefono
@@ -17564,6 +17730,63 @@ function paninoStart(){
 }
 
 /* ================================================================
+   IL QUADRIFOGLIO — regia
+================================================================ */
+let CLOVER = {};
+function openClover(){
+  if (!isGameEnabled('clover')) return alert('⚠️ Questo minigioco non è compreso nella licenza attiva. Contatta Alberto per sbloccarlo.');
+  if (!G) return alert('Avvia prima una partita!');
+  cancelLiveQuestion(); closeModal(); clearInterval((CLOVER||{}).timerInt);
+  G.ref.child('clover/results').off();
+  G.ref.update({ status:'clover', clover:{ phase:'idle' } });
+  CLOVER = {};
+  $('cloverSetup').style.display='block'; $('cloverLive').style.display='none';
+  if (!$('cloverPointsEach').innerHTML){
+    $('cloverPointsEach').innerHTML = [10,20,30,50,75,100,150,200].map(v=>`<option value="${v}" ${v===50?'selected':''}>${v} punti</option>`).join('');
+  }
+  showScreen('scrClover');
+}
+function cloverStart(){
+  const pointsEach = getPoints('cloverPointsEach','cloverPointsEachMan');
+  const total = +($('cloverTotal').value||5);
+  const size = $('cloverSize').value||'medium';
+  const durationMs = (+($('cloverDuration').value||30))*1000;
+  const roundId = serverNow();
+  CLOVER = { credited:{} };
+  G.ref.update({ status:'clover', clover:{ phase:'active', pointsEach, total, size, durationMs, roundId } });
+  G.ref.child('clover/results').remove();
+  $('cloverSetup').style.display='none'; $('cloverLive').style.display='block';
+  $('cloverMsg').textContent = `🍀 SI CERCANO I QUADRIFOGLI! ${pointsEach} punti l'uno`;
+  $('cloverCountHost').textContent=''; $('cloverResultsLive').innerHTML='';
+  $('cloverBtnAgain').style.display='none';
+  pjSend({type:'cloverActive', total, size, durationMs});
+  clearInterval(CLOVER.timerInt);
+  const endAt = serverNow()+durationMs;
+  CLOVER.timerInt = setInterval(()=>{
+    const left = Math.max(0, endAt-serverNow());
+    $('cloverTimerBarHost').style.width = (left/durationMs*100)+'%';
+    if (left<=0){ clearInterval(CLOVER.timerInt); $('cloverBtnAgain').style.display=''; }
+  }, 100);
+  G.ref.child('clover/results').on('child_added', snap=>{
+    const pid = snap.key, r = snap.val();
+    if (!r || CLOVER.credited[pid]) return;
+    CLOVER.credited[pid] = true;
+    if (r.pts>0) applyScoreDelta(pid, r.pts);
+  });
+  G.ref.child('clover/results').on('value', s=>{
+    const results = s.val()||{};
+    const entries = Object.entries(results).sort((a,b)=> b[1].pts-a[1].pts);
+    $('cloverCountHost').textContent = `Concluso (tutti trovati o tempo scaduto): ${entries.length}`;
+    G.ref.child('players').once('value').then(ps=>{
+      const pl = ps.val()||{};
+      $('cloverResultsLive').innerHTML = entries.map(([pid,r])=>
+        `<div class="leadRow"><span class="pos">${r.completed?'🏆':'🍀'}</span> ${esc((pl[pid]||{}).name||'?')} <span class="pts">${r.pts>0?'+'+r.pts:'0'} (${r.found}/${r.total})</span></div>`).join('')
+        || '<div class="byline">Nessuno ha ancora concluso...</div>';
+    });
+  });
+}
+
+/* ================================================================
    ROULETTE — regia
 ================================================================ */
 let RW = {};
@@ -19965,6 +20188,7 @@ const GIOCHI_CATALOGO = [
   {k:'morra', l:'✊✋✌️ Morra Cinese'},
   {k:'pontesospeso', l:'🌉 Il Ponte Sospeso'},
   {k:'panino', l:'🥪 Un Panino al Camioncino'},
+  {k:'clover', l:'🍀 Il Quadrifoglio'},
   {k:'punto', l:'🏁 Il Punto della Situazione'},
   {k:'dado', l:'🎲 Il Dado del Destino'},
   {k:'asta', l:'🔨 Asta'},
@@ -20003,6 +20227,7 @@ function modalGamesSkill(){
     gk('tamb', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#e8b45a,#8a4a12); color:#3a2000; box-shadow:0 7px 0 #4a2400,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(232,180,90,.4)" onclick="openTamb()">🥁 I Tamburini</button>`),
     gk('pontesospeso', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#8a6030,#4a3319); color:#fff; box-shadow:0 7px 0 #2a1c0d,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(138,96,48,.4)" onclick="openPonteSospeso()">🌉 Il Ponte Sospeso</button>`),
     gk('panino', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#e8c15a,#c17a1e); color:#3a2000; box-shadow:0 7px 0 #6b3f0a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(232,193,90,.4)" onclick="openPanino()">🥪 Un Panino al Camioncino</button>`),
+    gk('clover', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#3fae4a,#1d5e26); color:#fff; box-shadow:0 7px 0 #0e3512,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(63,174,74,.4)" onclick="openClover()">🍀 Il Quadrifoglio</button>`),
     gk('punto', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#3de0ff,#0b6f8a); color:#00272e; box-shadow:0 7px 0 #003a44,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(61,224,255,.4)" onclick="openPunto()">🏁 Il Punto della Situazione</button>`),
     gk('idr', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#7a8a9a,#3a4550); color:#fff; box-shadow:0 7px 0 #1a2028,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(122,138,154,.4)" onclick="openIdr()">🔧 L'Idraulico</button>`),
     gk('cassaforte', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#8a8f96,#3a3c40); color:#fff; box-shadow:0 7px 0 #1a1c1e,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(138,143,150,.35)" onclick="openCassaforte()">🔐 La Cassaforte</button>`),
@@ -22150,6 +22375,24 @@ function pjRouteInner(m){
         const left = Math.max(0, pjPaninoLocalEndAt - Date.now());
         $('pjPaninoTimerBar').style.width = (left/((m.showMs||0)+(m.durationMs||1))*100)+'%';
         if (left<=0) clearInterval(window._pjPaninoInt);
+      }, 100);
+    }
+    else if (m.type==='cloverActive') {
+      showScreen('scrPjClover');
+      $('pjCloverMsg').textContent = 'TROVA I QUADRIFOGLI NEL TUO CAMPO!';
+      $('pjCloverResults').innerHTML='';
+      const sz = CLOVER_SIZES[m.size||'medium']||CLOVER_SIZES.medium;
+      const nCells = sz.cols*sz.rows;
+      const pjField = $('pjCloverField');
+      pjField.style.gridTemplateColumns = `repeat(${sz.cols}, 1fr)`;
+      const pjCells = cloverShuffle(nCells, m.total||5);
+      pjField.innerHTML = pjCells.map(isQuad=>`<div class="cloverTile" style="cursor:default">${isQuad?CLOVER_SVG_4:CLOVER_SVG_3}</div>`).join('');
+      clearInterval(window._pjCloverInt);
+      const pjCloverLocalEndAt = Date.now() + (m.durationMs||0);
+      window._pjCloverInt = setInterval(()=>{
+        const left = Math.max(0, pjCloverLocalEndAt - Date.now());
+        $('pjCloverTimerBar').style.width = (left/(m.durationMs||1)*100)+'%';
+        if (left<=0) clearInterval(window._pjCloverInt);
       }, 100);
     }
     else if (m.type==='rwActive') {
