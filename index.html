@@ -950,6 +950,7 @@ body.barOn.barCollapsed .screen.active{padding-bottom:70px;}
 .cloverField{display:grid; gap:3px; width:100%; max-width:420px; margin:10px auto 0; padding:8px; border-radius:14px;
   background:linear-gradient(180deg,#0f3d1a,#0a2a12); border:2px solid rgba(255,255,255,.1); box-shadow:inset 0 0 30px rgba(0,0,0,.4);}
 .cloverField.big{max-width:640px; gap:5px;}
+.cloverField.giant{max-width:480px; gap:2px; padding:5px;}
 .cloverTile{aspect-ratio:1/1; cursor:pointer; display:flex; align-items:center; justify-content:center; border-radius:6px;
   transition:transform .08s; -webkit-tap-highlight-color:transparent;}
 .cloverTile svg{width:82%; height:82%; pointer-events:none; filter:drop-shadow(0 1px 1px rgba(0,0,0,.35));}
@@ -959,6 +960,7 @@ body.barOn.barCollapsed .screen.active{padding-bottom:70px;}
 .cloverToast{position:fixed; left:50%; top:38%; transform:translate(-50%,-50%) scale(.6); z-index:60; pointer-events:none;
   font-family:'Bungee'; font-size:clamp(20px,6vw,32px); color:var(--gold); text-shadow:0 3px 0 #6b4a00,0 0 20px rgba(255,201,60,.7);
   opacity:0; animation:cloverToast .7s ease forwards;}
+.cloverToast.bad{color:#ff5a6e; text-shadow:0 3px 0 #6b0a16,0 0 20px rgba(255,46,80,.7);}
 @keyframes cloverToast{ 0%{opacity:0; transform:translate(-50%,-50%) scale(.5);} 20%{opacity:1; transform:translate(-50%,-50%) scale(1.15);}
   30%{transform:translate(-50%,-50%) scale(1);} 80%{opacity:1;} 100%{opacity:0; transform:translate(-50%,-60%) scale(1);} }
 .cloverCount{font-family:'Bungee'; font-size:clamp(14px,3.6vw,18px); text-align:center; margin-top:8px; color:#fff;}
@@ -1878,7 +1880,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.45</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.46</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -5313,6 +5315,16 @@ body.suspense-on #pfRank{ display:none !important; }
       <option value="small">Piccolo (più facile trovarli)</option>
       <option value="medium" selected>Medio</option>
       <option value="big">Grande (più difficile trovarli)</option>
+      <option value="giant">Gigante (difficilissimo, campo enorme)</option>
+    </select>
+    <div class="label mt">Penalità per ogni trifoglio toccato per errore</div>
+    <select id="cloverPenalty">
+      <option value="0" selected>Nessuna penalità</option>
+      <option value="5">-5 punti</option>
+      <option value="10">-10 punti</option>
+      <option value="20">-20 punti</option>
+      <option value="30">-30 punti</option>
+      <option value="50">-50 punti</option>
     </select>
     <div class="label mt">Tempo di gioco</div>
     <select id="cloverDuration">
@@ -5321,7 +5333,7 @@ body.suspense-on #pfRank{ display:none !important; }
       <option value="45">45 secondi</option>
       <option value="60">1 minuto</option>
     </select>
-    <div class="byline mt" style="opacity:.75">🍀 Ogni giocatore ha il proprio campo di trifogli (diverso da quello degli altri), con dentro nascosti i quadrifogli da scovare a colpo d'occhio: hanno una foglia in più, ben visibile se si guarda bene. Ogni volta che un giocatore ne trova uno, tutto il campo si rimescola: i quadrifogli rimasti compaiono sempre in punti nuovi, mai in quello appena trovato.</div>
+    <div class="byline mt" style="opacity:.75">🍀 Ogni giocatore ha il proprio campo di trifogli (diverso da quello degli altri), con dentro nascosti i quadrifogli da scovare a colpo d'occhio: hanno una foglia in più, ben visibile se si guarda bene. Ogni volta che un giocatore ne trova uno, tutto il campo si rimescola: i quadrifogli rimasti compaiono sempre in punti nuovi, mai in quello appena trovato. Se scegli una penalità, ogni trifoglio toccato per errore toglie i punti che hai impostato (il punteggio della manche non scende comunque mai sotto zero).</div>
     <button class="btn mg mt" style="width:100%" onclick="cloverStart()">🍀 SI PARTE!</button>
   </div>
   <div id="cloverLive" style="display:none; width:100%" class="center">
@@ -6117,7 +6129,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1345; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1346; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -10625,7 +10637,7 @@ function showPlayerPanino(g){
 /* ================================================================
    IL QUADRIFOGLIO — telefono
 ================================================================ */
-const CLOVER_SIZES = { small:{cols:6,rows:8}, medium:{cols:7,rows:10}, big:{cols:8,rows:12} };
+const CLOVER_SIZES = { small:{cols:6,rows:8}, medium:{cols:7,rows:10}, big:{cols:8,rows:12}, giant:{cols:10,rows:16} };
 function cloverMakeSVG(leaves){
   const petals = [];
   for (let i=0;i<leaves;i++){
@@ -10647,12 +10659,13 @@ function cloverRenderField(){
   const el = $('cloverpField');
   const sz = CLOVER_SIZES[P.cloverSize]||CLOVER_SIZES.medium;
   el.style.gridTemplateColumns = `repeat(${sz.cols}, 1fr)`;
+  el.classList.toggle('giant', P.cloverSize==='giant');
   el.innerHTML = P.cloverCells.map((isQuad,i)=>
     `<div class="cloverTile" data-i="${i}" onclick="cloverPick(${i})">${isQuad?CLOVER_SVG_4:CLOVER_SVG_3}</div>`).join('');
 }
-function cloverToast(text){
+function cloverToast(text, bad){
   const d = document.createElement('div');
-  d.className='cloverToast'; d.textContent = text;
+  d.className='cloverToast'+(bad?' bad':''); d.textContent = text;
   document.body.appendChild(d);
   setTimeout(()=> d.remove(), 700);
 }
@@ -10662,6 +10675,11 @@ function cloverPick(idx){
     const tiles = document.querySelectorAll('#cloverpField .cloverTile');
     const t = tiles[idx];
     if (t){ t.classList.add('wrong'); setTimeout(()=> t.classList.remove('wrong'), 350); }
+    if (P.cloverPenalty>0){
+      P.cloverWrong++;
+      cloverToast('-'+P.cloverPenalty, true);
+      if (navigator.vibrate) navigator.vibrate(25);
+    }
     return;
   }
   P.cloverFound++;
@@ -10675,11 +10693,12 @@ function cloverPick(idx){
 function cloverFinalize(completed){
   if (P.cloverResolved) return; P.cloverResolved = true;
   clearInterval(P.cloverInt);
-  const pts = P.cloverFound * P.cloverPointsEach;
+  const pts = Math.max(0, P.cloverFound*P.cloverPointsEach - P.cloverWrong*P.cloverPenalty);
   document.querySelectorAll('#cloverpField .cloverTile').forEach(el=> el.onclick=null);
-  $('cloverpStatus').textContent = completed ? `🎉 TUTTI TROVATI! +${pts} PUNTI!` : `⏱ TEMPO SCADUTO! Trovati ${P.cloverFound}/${P.cloverTotal}: +${pts} punti`;
+  const penTxt = P.cloverPenalty>0 ? ` (${P.cloverWrong} sbagliati)` : '';
+  $('cloverpStatus').textContent = completed ? `🎉 TUTTI TROVATI! +${pts} PUNTI!${penTxt}` : `⏱ TEMPO SCADUTO! Trovati ${P.cloverFound}/${P.cloverTotal}: +${pts} punti${penTxt}`;
   if (completed){ telWinFanfare(); confetti(); if (navigator.vibrate) navigator.vibrate([80,50,80,50,150]); }
-  P.ref.child('clover/results/'+P.id).set({ pts, completed, found:P.cloverFound, total:P.cloverTotal });
+  P.ref.child('clover/results/'+P.id).set({ pts, completed, found:P.cloverFound, total:P.cloverTotal, wrong:P.cloverWrong });
 }
 function cloverResolveWin(){ cloverFinalize(true); }
 function cloverTimeout(){ cloverFinalize(false); }
@@ -10692,8 +10711,9 @@ function showPlayerClover(g){
   const sig = 'act:'+m.roundId;
   if (P.cloverSig === sig) return; // stesso round già in corso: non ritoccare nulla di già avviato
   clearInterval(P.cloverInt);
-  P.cloverSig = sig; P.cloverResolved = false; P.cloverFound = 0;
+  P.cloverSig = sig; P.cloverResolved = false; P.cloverFound = 0; P.cloverWrong = 0;
   P.cloverPointsEach = m.pointsEach; P.cloverTotal = m.total; P.cloverSize = m.size||'medium';
+  P.cloverPenalty = m.penalty||0;
   const sz = CLOVER_SIZES[P.cloverSize]||CLOVER_SIZES.medium;
   P.cloverNCells = sz.cols*sz.rows; P.cloverPhase = 'play';
   P.cloverCells = cloverShuffle(P.cloverNCells, P.cloverTotal);
@@ -17750,13 +17770,14 @@ function cloverStart(){
   const pointsEach = getPoints('cloverPointsEach','cloverPointsEachMan');
   const total = +($('cloverTotal').value||5);
   const size = $('cloverSize').value||'medium';
+  const penalty = +($('cloverPenalty').value||0);
   const durationMs = (+($('cloverDuration').value||30))*1000;
   const roundId = serverNow();
   CLOVER = { credited:{} };
-  G.ref.update({ status:'clover', clover:{ phase:'active', pointsEach, total, size, durationMs, roundId } });
+  G.ref.update({ status:'clover', clover:{ phase:'active', pointsEach, total, size, penalty, durationMs, roundId } });
   G.ref.child('clover/results').remove();
   $('cloverSetup').style.display='none'; $('cloverLive').style.display='block';
-  $('cloverMsg').textContent = `🍀 SI CERCANO I QUADRIFOGLI! ${pointsEach} punti l'uno`;
+  $('cloverMsg').textContent = `🍀 SI CERCANO I QUADRIFOGLI! ${pointsEach} punti l'uno` + (penalty>0?`, -${penalty} per errore`:'');
   $('cloverCountHost').textContent=''; $('cloverResultsLive').innerHTML='';
   $('cloverBtnAgain').style.display='none';
   pjSend({type:'cloverActive', total, size, durationMs});
@@ -17780,7 +17801,7 @@ function cloverStart(){
     G.ref.child('players').once('value').then(ps=>{
       const pl = ps.val()||{};
       $('cloverResultsLive').innerHTML = entries.map(([pid,r])=>
-        `<div class="leadRow"><span class="pos">${r.completed?'🏆':'🍀'}</span> ${esc((pl[pid]||{}).name||'?')} <span class="pts">${r.pts>0?'+'+r.pts:'0'} (${r.found}/${r.total})</span></div>`).join('')
+        `<div class="leadRow"><span class="pos">${r.completed?'🏆':'🍀'}</span> ${esc((pl[pid]||{}).name||'?')} <span class="pts">${r.pts>0?'+'+r.pts:'0'} (${r.found}/${r.total}${r.wrong?', '+r.wrong+' err.':''})</span></div>`).join('')
         || '<div class="byline">Nessuno ha ancora concluso...</div>';
     });
   });
