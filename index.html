@@ -1882,7 +1882,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.48</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.49</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -1928,13 +1928,17 @@ body.suspense-on #pfRank{ display:none !important; }
     <div class="label">Nome del quiz</div>
     <input type="text" id="edTitle" placeholder="Es. Serata Anni '90 al Naselli" maxlength="60">
     <div class="label mt">Domande (<span id="edCount">0</span>) — quante ne vuoi, nessun limite</div>
-    <div class="row mtb">
+    <div class="row mtb" style="flex-wrap:wrap">
       <button class="btn lm grow" onclick="openQEditor(-1)" data-tip="Aggiungi una nuova domanda in cima alla scaletta">✚ Aggiungi domanda</button>
+      <button class="btn ghost" onclick="showScreen('scrHome'); loadQuizList()" data-tip="Torna alla home senza avviare la partita">← Indietro</button>
+      <button class="btn ghost" onclick="exportQuiz()" data-tip="Scarica questo quiz come file, per farne un backup o darlo a qualcun altro">⬇ Esporta</button>
+      <button class="btn cy" onclick="saveQuiz()" data-tip="Salva le modifiche su questo dispositivo, senza avviare la partita">💾 Salva</button>
+      <button class="btn mg" onclick="saveQuiz(true)" data-tip="Salva e avvia subito la partita: genera il codice e apre la regia">▶ AVVIA QUIZ</button>
     </div>
     <div id="edQList"></div>
-    <div class="row mt">
+    <div class="row mt" style="flex-wrap:wrap">
+      <button class="btn lm grow" onclick="openQEditor(-1)" data-tip="Aggiungi una nuova domanda in cima alla scaletta">✚ Aggiungi domanda</button>
       <button class="btn ghost" onclick="showScreen('scrHome'); loadQuizList()" data-tip="Torna alla home senza avviare la partita">← Indietro</button>
-      <div class="grow"></div>
       <button class="btn ghost" onclick="exportQuiz()" data-tip="Scarica questo quiz come file, per farne un backup o darlo a qualcun altro">⬇ Esporta</button>
       <button class="btn cy" onclick="saveQuiz()" data-tip="Salva le modifiche su questo dispositivo, senza avviare la partita">💾 Salva</button>
       <button class="btn mg" onclick="saveQuiz(true)" data-tip="Salva e avvia subito la partita: genera il codice e apre la regia">▶ AVVIA QUIZ</button>
@@ -6131,7 +6135,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1348; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1349; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -6710,6 +6714,7 @@ function renderEdQuestions(){
       <div class="grow"><b>${esc(q.text).slice(0,60)||(q.type==='image'?'(immagine di riferimento)':'(senza testo)')}</b><br>${tags}
         <small style="color:var(--muted)"> ${metaLine}</small></div>
       <button class="btn small cy" onclick="openQEditor(${i})" data-tip="Apri e modifica questa domanda">✎</button>
+      <button class="btn small ghost" onclick="dupQ(${i})" data-tip="Duplica questa domanda, per riusarla come base per una simile">⧉</button>
       <button class="btn small ghost" onclick="moveQTop(${i})" data-tip="Porta questa domanda in cima a tutta la scaletta">⏫</button>
       <button class="btn small ghost" onclick="moveQ(${i},-1)" data-tip="Sposta questa domanda di una posizione più su">▲</button>
       <button class="btn small ghost" onclick="moveQ(${i},1)" data-tip="Sposta questa domanda di una posizione più giù">▼</button>
@@ -6737,6 +6742,12 @@ function moveQ(i,dir){ const j=i+dir; if(j<0||j>=curQuiz.questions.length)return
 function moveQTop(i){ if(i<=0)return; const [q]=curQuiz.questions.splice(i,1); curQuiz.questions.unshift(q); renderEdQuestions(); }
 function moveQBottom(i){ if(i>=curQuiz.questions.length-1)return; const [q]=curQuiz.questions.splice(i,1); curQuiz.questions.push(q); renderEdQuestions(); }
 function delQ(i){ curQuiz.questions.splice(i,1); renderEdQuestions(); }
+function dupQ(i){
+  const copy = JSON.parse(JSON.stringify(curQuiz.questions[i]));
+  copy.text = copy.text ? copy.text + ' (copia)' : copy.text;
+  curQuiz.questions.splice(i+1, 0, copy);
+  renderEdQuestions();
+}
 
 /* Valori predefiniti per velocizzare la redazione — modificabili in ogni momento, valgono solo per le domande NUOVE.
    I punti scalano da soli in base alla posizione della domanda nella scaletta: 1-10=300, 11-20=1000, 21+=2000. */
