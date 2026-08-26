@@ -1882,7 +1882,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.51</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.52</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -5902,11 +5902,11 @@ body.suspense-on #pfRank{ display:none !important; }
 <!-- ==================== PLAYER: SIMON ==================== -->
 <div class="screen" id="scrPlaySimon" style="align-items:center; justify-content:center">
   <div class="row" style="width:100%; justify-content:space-between">
-    <div class="pill" id="smpName" style="color:var(--gold)"></div>
-    <div class="pill" id="smpScore"></div>
+    <div class="pill" id="simpName" style="color:var(--gold)"></div>
+    <div class="pill" id="simpScore"></div>
   </div>
-  <div class="timerWrap mt"><div class="timerBar" id="smpTimerBar"></div></div>
-  <div class="byline mt" id="smpStatus">GUARDA E ASCOLTA LA SEQUENZA...</div>
+  <div class="timerWrap mt"><div class="timerBar" id="simpTimerBar"></div></div>
+  <div class="byline mt" id="simpStatus">GUARDA E ASCOLTA LA SEQUENZA...</div>
   <div class="simonWrap"><div class="simonBoard" id="psStage"></div><div class="simonHub">🎩</div></div>
   <div class="seqDots" id="psDots"></div>
   <div class="feedback mt" id="psSent" style="display:none; color:var(--cyan); font-size:22px">SEQUENZA INVIATA! 🎼</div>
@@ -5970,7 +5970,7 @@ body.suspense-on #pfRank{ display:none !important; }
     <div class="pill" id="bslScore"></div>
   </div>
   <div class="miniStage" id="pmStage" style="height:210px"></div>
-  <div class="timerWrap mt" style="max-width:280px; display:none" id="pmTimerWrap"><div class="timerBar" id="pmTimerBar"></div></div>
+  <div class="timerWrap mt" style="max-width:280px; display:none" id="pmTimerWrap"><div class="timerBar" id="bslTimerBar"></div></div>
   <div class="byline mt" id="bslStatus">SOTTO QUALE BUSSOLOTTO È LA PALLINA?</div>
   <div class="remote">
     <button class="rBtn rA" id="pmA" onclick="voteMini('A')">A</button>
@@ -6136,7 +6136,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1351; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1352; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -9924,7 +9924,8 @@ function showPlayerSalumi(g){
   $('salumipName').textContent = P.name;
   $('salumipScore').textContent = (((g.players||{})[P.id]||{}).score||0)+' pt';
   showScreen('scrPlaySalumi');
-  if (m.phase!=='active') return;
+  clearInterval(P.salumiInt);
+  if (m.phase!=='active'){ P.salumiSig = null; return; }
   const sig = 'act:'+m.roundId;
   if (P.salumiSig !== sig){
     P.salumiSig = sig; P.salumiResolved = false;
@@ -9938,9 +9939,10 @@ function showPlayerSalumi(g){
     arena.appendChild(wrap);
     arena.onclick = salumiStop;
     salumiStartMovement(arena, m.shapeType, m.speed);
-    clearInterval(P.salumiInt);
+    P.salumiLocalEndAt = Date.now() + (m.durationMs||0);
     P.salumiInt = setInterval(()=>{
-      const left = Math.max(0, (m.endAt||0) - serverNow());
+      if (P.salumiSig !== sig) { clearInterval(P.salumiInt); return; }
+      const left = Math.max(0, P.salumiLocalEndAt - Date.now());
       $('salumipTimerBar').style.width = (left/(m.durationMs||1)*100)+'%';
       if (left<=0){
         clearInterval(P.salumiInt);
@@ -10034,7 +10036,8 @@ function showPlayerTelefonata(g){
   $('telpName').textContent = P.name;
   $('telpScore').textContent = (((g.players||{})[P.id]||{}).score||0)+' pt';
   showScreen('scrPlayTelefonata');
-  if (m.phase!=='active') return;
+  clearInterval(P.telInt);
+  if (m.phase!=='active'){ P.telSig = null; return; }
   const sig = 'act:'+m.roundId;
   if (P.telSig !== sig){
     P.telSig = sig; P.telResolved = false; P.telDigits = ''; P.telAssignments = m.assignments||{};
@@ -10042,10 +10045,11 @@ function showPlayerTelefonata(g){
     $('telDisplayBox').innerHTML = `<div class="telIdleIcon">☎️</div><div class="telHint">digita un numero e chiama...</div>`;
     $('telCallBtn').disabled = false;
     document.querySelectorAll('.telKey').forEach(k=>k.style.pointerEvents='');
+    P.telLocalEndAt = Date.now() + (m.durationMs||0);
   }
-  clearInterval(P.telInt);
   P.telInt = setInterval(()=>{
-    const left = Math.max(0, (m.endAt||0) - serverNow());
+    if (P.telSig !== sig) { clearInterval(P.telInt); return; }
+    const left = Math.max(0, P.telLocalEndAt - Date.now());
     $('telpTimerBar').style.width = (left/(m.durationMs||1)*100)+'%';
     if (left<=0){
       clearInterval(P.telInt);
@@ -10235,7 +10239,8 @@ function showPlayerScossa(g){
   $('scossapName').textContent = P.name;
   $('scossapScore').textContent = (((g.players||{})[P.id]||{}).score||0)+' pt';
   showScreen('scrPlayScossa');
-  if (m.phase!=='active') return;
+  clearInterval(P.scossaInt);
+  if (m.phase!=='active'){ P.scossaSig = null; return; }
   const sig = 'act:'+m.roundId;
   if (P.scossaSig !== sig){
     P.scossaSig = sig; P.scossaResolved = false; P.scossaMaxProgress = 0;
@@ -10248,10 +10253,11 @@ function showPlayerScossa(g){
     $('scossaStatus').textContent = '👆 TRACCIA IL PERCORSO CON IL DITO, DALLO START ALLA FINE!';
     arena.onpointerdown = (e)=>{ try{arena.setPointerCapture(e.pointerId);}catch(err){} scossaPointerMove(e, arena); };
     arena.onpointermove = (e)=>{ if (e.buttons>0) scossaPointerMove(e, arena); };
+    P.scossaLocalEndAt = Date.now() + (m.durationMs||0);
   }
-  clearInterval(P.scossaInt);
   P.scossaInt = setInterval(()=>{
-    const left = Math.max(0, (m.endAt||0) - serverNow());
+    if (P.scossaSig !== sig) { clearInterval(P.scossaInt); return; }
+    const left = Math.max(0, P.scossaLocalEndAt - Date.now());
     $('scossapTimerBar').style.width = (left/(m.durationMs||1)*100)+'%';
     if (left<=0){
       clearInterval(P.scossaInt);
@@ -10401,7 +10407,8 @@ function showPlayerSlotMachine(g){
   $('slotpName').textContent = P.name;
   $('slotpScore').textContent = (((g.players||{})[P.id]||{}).score||0)+' pt';
   showScreen('scrPlaySlotMachine');
-  if (m.phase!=='active') return;
+  clearInterval(P.slotInt);
+  if (m.phase!=='active'){ P.slotSig = null; return; }
   const sig = 'act:'+m.roundId;
   if (P.slotSig !== sig){
     P.slotSig = sig; P.slotResolved = false; P.slotPullsUsed = 0; P.slotSpinning = false;
@@ -10411,10 +10418,11 @@ function showPlayerSlotMachine(g){
     $('slotStatus').textContent = '🎰 PREMI IL PULSANTE ROSSO!';
     $('slotPullsLeft').textContent = 'Tentativi rimasti: 3';
     $('slotLeverBall').onclick = slotPull;
+    P.slotLocalEndAt = Date.now() + (m.durationMs||0);
   }
-  clearInterval(P.slotInt);
   P.slotInt = setInterval(()=>{
-    const left = Math.max(0, (m.endAt||0) - serverNow());
+    if (P.slotSig !== sig) { clearInterval(P.slotInt); return; }
+    const left = Math.max(0, P.slotLocalEndAt - Date.now());
     $('slotpTimerBar').style.width = (left/(m.durationMs||1)*100)+'%';
     if (left<=0){
       clearInterval(P.slotInt);
@@ -13234,15 +13242,15 @@ function voteVoto(v){
 function showPlayerSimon(g){
   clearInterval(P.timerInt);
   const m = g.simon||{};
-  $('smpName').textContent = P.name;
-  $('smpScore').textContent = (((g.players||{})[P.id]||{}).score||0)+' pt';
+  $('simpName').textContent = P.name;
+  $('simpScore').textContent = (((g.players||{})[P.id]||{}).score||0)+' pt';
   buildSimon($('psStage'), i=> playerSimonTap(i));
   if (m.phase==='show') {
     if (P.simRound !== m.round) { P.simRound = m.round; P.simSeq = []; P.simSent = false; P.simShown = false; P.simLen = (m.seq||[]).length; }
     $('psStage')._wedges.forEach(w=> w.disabled = true);
-    $('smpStatus').textContent = '👀 GUARDA E ASCOLTA LA SEQUENZA...';
+    $('simpStatus').textContent = '👀 GUARDA E ASCOLTA LA SEQUENZA...';
     $('psDots').innerHTML=''; $('psSent').style.display='none';
-    $('smpTimerBar').style.width='100%';
+    $('simpTimerBar').style.width='100%';
     showScreen('scrPlaySimon');
     if (!P.simShown) { P.simShown = true; simonPlaySeq($('psStage'), m.seq||[]); }
   }
@@ -13250,12 +13258,12 @@ function showPlayerSimon(g){
     if (P.simRound !== m.round) { P.simRound = m.round; P.simSeq = []; P.simSent = false; P.simLen = (m.seq||[]).length; }
     P.simLen = (m.seq||[]).length;
     $('psStage')._wedges.forEach(w=> w.disabled = P.simSent);
-    $('smpStatus').textContent = P.simSent ? 'SEQUENZA INVIATA — INCROCIA LE DITA!' : '🎼 TOCCA GLI SPICCHI NELLO STESSO ORDINE ('+P.simSeq.length+'/'+P.simLen+')';
+    $('simpStatus').textContent = P.simSent ? 'SEQUENZA INVIATA — INCROCIA LE DITA!' : '🎼 TOCCA GLI SPICCHI NELLO STESSO ORDINE ('+P.simSeq.length+'/'+P.simLen+')';
     showScreen('scrPlaySimon');
     clearInterval(P.simInt);
     P.simInt = setInterval(()=>{
       const left = Math.max(0, (m.endAt||0) - serverNow());
-      $('smpTimerBar').style.width = (left/10000*100)+'%';
+      $('simpTimerBar').style.width = (left/10000*100)+'%';
       if (left<=0) clearInterval(P.simInt);
     },100);
   }
@@ -13279,13 +13287,13 @@ function playerSimonTap(i){
   simonFlash($('psStage'), i, 240);
   P.simSeq.push(i);
   $('psDots').innerHTML = seqDotsHtml(P.simSeq);
-  $('smpStatus').textContent = '🎼 TOCCA GLI SPICCHI NELLO STESSO ORDINE ('+P.simSeq.length+'/'+P.simLen+')';
+  $('simpStatus').textContent = '🎼 TOCCA GLI SPICCHI NELLO STESSO ORDINE ('+P.simSeq.length+'/'+P.simLen+')';
   if (navigator.vibrate) navigator.vibrate(25);
   if (P.simSeq.length >= P.simLen) {
     P.simSent = true;
     P.ref.child('simon/answers/'+P.id).set({ s: P.simSeq.join(',') });
     $('psSent').style.display='block';
-    $('smpStatus').textContent = 'SEQUENZA INVIATA — INCROCIA LE DITA!';
+    $('simpStatus').textContent = 'SEQUENZA INVIATA — INCROCIA LE DITA!';
     $('psStage')._wedges.forEach(w=> w.disabled = true);
   }
 }
@@ -13354,7 +13362,7 @@ function showPlayerMini(g){
       $('pmTimerWrap').style.display='';
       P.timerInt = setInterval(()=>{
         const left = Math.max(0, m.voteEndAt-serverNow());
-        $('pmTimerBar').style.width = (left/(m.durationMs||1)*100)+'%';
+        $('bslTimerBar').style.width = (left/(m.durationMs||1)*100)+'%';
         if (left<=0) clearInterval(P.timerInt);
       }, 100);
     } else {
