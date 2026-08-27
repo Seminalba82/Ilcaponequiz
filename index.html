@@ -966,6 +966,32 @@ body.barOn.barCollapsed .screen.active{padding-bottom:70px;}
 @keyframes cloverToast{ 0%{opacity:0; transform:translate(-50%,-50%) scale(.5);} 20%{opacity:1; transform:translate(-50%,-50%) scale(1.15);}
   30%{transform:translate(-50%,-50%) scale(1);} 80%{opacity:1;} 100%{opacity:0; transform:translate(-50%,-60%) scale(1);} }
 .cloverCount{font-family:'Bungee'; font-size:clamp(14px,3.6vw,18px); text-align:center; margin-top:8px; color:#fff;}
+/* ===== LA RANA SALTERINA ===== */
+.ranaTrackBig{display:flex; flex-direction:column; gap:9px; width:100%; max-width:900px; margin:14px auto 0;
+  background:linear-gradient(180deg,#0a3d2e,#062418); border:3px solid var(--gold); border-radius:16px; padding:14px;
+  box-shadow:0 0 30px rgba(255,201,60,.2), inset 0 0 40px rgba(0,0,0,.4);}
+.ranaLane{position:relative; height:60px; background:rgba(255,255,255,.05); border-radius:12px; overflow:hidden;}
+.ranaTrackBar{position:absolute; left:0; top:0; bottom:0; background:linear-gradient(90deg, rgba(182,255,46,.28), rgba(182,255,46,.08)); transition:width .35s ease; z-index:1;}
+.ranaFrogBig{position:absolute; top:50%; transform:translateY(-50%); font-size:34px; z-index:3;
+  filter:drop-shadow(0 3px 4px rgba(0,0,0,.5)); transition:left .35s ease;}
+.ranaLane.hop .ranaFrogBig{animation:ranaHopLane .35s ease;}
+@keyframes ranaHopLane{ 0%{transform:translateY(-50%) scale(1);} 40%{transform:translateY(-72%) scale(1.15,.85);} 70%{transform:translateY(-46%) scale(.92,1.08);} 100%{transform:translateY(-50%) scale(1);} }
+.ranaLabel{position:absolute; left:10px; top:5px; z-index:2; font-family:'Outfit',sans-serif; font-weight:800; color:#fff; font-size:13px; text-shadow:0 1px 3px #000;}
+.ranaJumps{position:absolute; right:10px; top:50%; transform:translateY(-50%); z-index:2; font-family:'Bungee'; color:var(--gold); font-size:15px; text-shadow:0 1px 3px #000;}
+.ranaFinishFlag{position:absolute; right:4px; top:0; bottom:0; width:5px; z-index:1;
+  background:repeating-linear-gradient(45deg,#fff 0 6px,#111 6px 12px);}
+.ranaMeWrap{width:100%; max-width:320px; margin:10px auto 0; text-align:center;}
+.ranaMeFrog{font-size:92px; display:inline-block; filter:drop-shadow(0 6px 8px rgba(0,0,0,.5));}
+.ranaMeFrog.hop{animation:ranaHop .35s ease;}
+@keyframes ranaHop{ 0%{transform:translateY(0) scale(1);} 40%{transform:translateY(-24px) scale(1.15,.85);} 70%{transform:translateY(3px) scale(.92,1.08);} 100%{transform:translateY(0) scale(1);} }
+.ranaMeCount{font-family:'Bungee'; font-size:26px; color:var(--gold); margin-top:4px;}
+.ranaMeRank{font-family:'Outfit',sans-serif; font-weight:700; color:#fff; font-size:16px; margin-top:2px;}
+.ranaMicWrap{width:100%; max-width:280px; height:20px; margin:12px auto 0; border-radius:12px; background:rgba(255,255,255,.08);
+  border:2px solid rgba(255,255,255,.15); overflow:hidden;}
+.ranaMicBar{height:100%; width:0%; background:linear-gradient(90deg,#b6ff2e,#ffc93c,#ff3b3b); transition:width .05s linear;}
+.ranaHint{font-family:'Outfit',sans-serif; font-weight:600; font-size:13px; color:var(--muted); text-align:center; margin-top:4px;}
+.ranaWinnerBanner{font-family:'Bungee'; font-size:clamp(16px,4.2vw,22px); color:var(--gold); text-align:center; margin-top:12px;
+  text-shadow:0 2px 0 #6b4a00; display:none;}
 /* ===== MANUALE D'USO (integrato nel gioco) ===== */
 .manualWrap{max-width:820px; width:100%; margin:0 auto;}
 .manualTopBar{position:sticky; top:0; z-index:5; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;
@@ -1882,7 +1908,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.52</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.53</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -5375,6 +5401,61 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="panStatus" id="cloverpStatus"></div>
 </div>
 
+<!-- ==================== REGIA: LA RANA SALTERINA ==================== -->
+<div class="screen" id="scrRana">
+  <div class="brand"><div class="t1" style="font-size:clamp(18px,3.4vw,32px)">🐸 LA RANA SALTERINA</div></div>
+  <div class="panel mt" style="max-width:480px" id="ranaSetup">
+    <div class="label mt">Salti per tagliare il traguardo</div>
+    <select id="ranaJumps">
+      <option value="20">20 salti</option>
+      <option value="30" selected>30 salti</option>
+      <option value="40">40 salti</option>
+    </select>
+    <div class="label mt">Cosa vince chi arriva primo</div>
+    <select id="ranaKind" onchange="ranaToggleKind()">
+      <option value="points" selected>Punti</option>
+      <option value="text">Premio scritto</option>
+    </select>
+    <div class="row">
+      <input type="number" id="ranaPoints" class="grow" placeholder="Punti" value="500">
+      <input type="text" id="ranaText" class="grow" placeholder="Es. Una birra 🍺" style="display:none">
+    </div>
+    <div class="byline mt" style="opacity:.75">🐸 Ogni giocatore fa saltare la propria rana urlando nel microfono del telefono: ogni urlo (non importa come, conta solo il volume) vale un salto in avanti. Niente tempo: vince chi arriva per primo al traguardo. Sul proiettore si vedono in grande le rane in testa alla gara, che si scambiano di posizione mano a mano che vengono raggiunte e superate.</div>
+    <button class="btn mg mt" style="width:100%" onclick="ranaStart()">🐸 SI PARTE!</button>
+  </div>
+  <div id="ranaLive" style="display:none; width:100%" class="center">
+    <div class="miniMsg" id="ranaMsg"></div>
+    <div class="ranaWinnerBanner" id="ranaWinnerBanner"></div>
+    <div class="lead mt" id="ranaResultsLive" style="max-width:500px; width:100%"></div>
+    <button class="btn cy mt" id="ranaBtnAgain" onclick="openRana()" style="display:none">🔁 Un'altra manche</button>
+  </div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
+</div>
+
+<!-- ==================== PROIETTORE: LA RANA SALTERINA ==================== -->
+<div class="screen" id="scrPjRana">
+  <div class="brand"><div class="t1" style="font-size:clamp(22px,3.6vw,40px)">🐸 LA RANA SALTERINA</div></div>
+  <div class="miniMsg" id="pjRanaMsg">URLATE NEL MICROFONO PER FAR SALTARE LA VOSTRA RANA!</div>
+  <div class="ranaWinnerBanner" id="pjRanaWinnerBanner"></div>
+  <div class="ranaTrackBig" id="pjRanaTrack"></div>
+</div>
+
+<!-- ==================== TELEFONO: LA RANA SALTERINA ==================== -->
+<div class="screen" id="scrPlayRana" style="align-items:center; justify-content:center">
+  <div class="row" style="width:100%; justify-content:space-between">
+    <div class="pill" id="ranapName" style="color:var(--gold)"></div>
+    <div class="pill" id="ranapScore"></div>
+  </div>
+  <div class="ranaMeWrap">
+    <div class="ranaMeFrog" id="ranaMeFrog">🐸</div>
+    <div class="ranaMeCount" id="ranaMeCount">0 / 30 salti</div>
+    <div class="ranaMeRank" id="ranaMeRank"></div>
+  </div>
+  <div class="ranaMicWrap"><div class="ranaMicBar" id="ranaMicBar"></div></div>
+  <div class="ranaHint" id="ranaHint">🎤 URLA FORTE PER FAR SALTARE LA RANA!</div>
+  <div class="ranaWinnerBanner" id="ranapWinnerBanner"></div>
+</div>
+
 <!-- ==================== PLAYER: IL PONTE SOSPESO ==================== -->
 <div class="screen" id="scrPlayPonteSospeso" style="align-items:center; justify-content:center">
   <div class="row" style="width:100%; justify-content:space-between">
@@ -6060,7 +6141,7 @@ body.suspense-on #pfRank{ display:none !important; }
 /* ================================================================
    📋 ELENCO MINIGIOCHI — aggiornare questa lista ogni volta che se ne
    aggiunge uno nuovo (serve ad Alberto per la documentazione delle licenze).
-   Ultimo aggiornamento: v13.45 — 56 minigiochi totali.
+   Ultimo aggiornamento: v13.53 — 57 minigiochi totali.
    ================================================================
    1.  🥃 Bussolotti
    2.  🎲 Pari o Dispari
@@ -6136,7 +6217,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1352; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1353; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -8279,6 +8360,7 @@ function listenGame(){
     else if (g.status==='pontesospeso') showPlayerPonteSospeso(g);
     else if (g.status==='panino') showPlayerPanino(g);
     else if (g.status==='clover') showPlayerClover(g);
+    else if (g.status==='rana') showPlayerRana(g);
     else if (g.status==='finddiff') showPlayerFindDiff(g);
     else if (g.status==='maggioranza') showPlayerMaj(g);
     else if (g.status==='goldenticket') showPlayerGold(g);
@@ -10825,6 +10907,113 @@ function showPlayerClover(g){
     $('cloverpTimerBar').style.width = (left/(m.durationMs||1)*100)+'%';
     if (left<=0) cloverTimeout();
   }, 100);
+}
+/* ================================================================
+   LA RANA SALTERINA — microfono e telefono
+   Ogni urlo (non conta il "come", solo il volume) vale un salto: si usa la stessa tecnica
+   di rilevamento del microfono già collaudata in Maledetta Staccionata, ma invece di leggere
+   un livello continuo si cerca un "fronte di salita" del volume (isteresi tra due soglie),
+   così un urlo lungo non viene contato più volte e uno breve non sfugge.
+================================================================ */
+let ranaMicStream=null, ranaAudioCtx=null, ranaAnalyser=null, ranaMicRaf=null, ranaMicLoud=false;
+const RANA_REF_MAX = 165, RANA_CURVE = 1.3, RANA_HIGH = 58, RANA_LOW = 28;
+function ranaPctFromAvg(avg){
+  const ratio = Math.min(1, avg/RANA_REF_MAX);
+  return Math.max(0, Math.min(100, Math.round(100*Math.pow(ratio, RANA_CURVE))));
+}
+function ranaStartMic(onJump, onLevel){
+  if (ranaMicStream) return;
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    onLevel(null);
+    $('ranaHint').textContent = '⚠️ Questo browser non consente l\'uso del microfono qui. Prova con Chrome.';
+    return;
+  }
+  ranaMicLoud = false;
+  navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{
+    ranaMicStream = stream;
+    ranaAudioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    const source = ranaAudioCtx.createMediaStreamSource(stream);
+    ranaAnalyser = ranaAudioCtx.createAnalyser();
+    ranaAnalyser.fftSize = 512;
+    source.connect(ranaAnalyser);
+    const data = new Uint8Array(ranaAnalyser.frequencyBinCount);
+    let smoothed = 0;
+    const loop = ()=>{
+      if (!ranaAnalyser) return;
+      ranaAnalyser.getByteFrequencyData(data);
+      let sum=0; for (let i=0;i<data.length;i++) sum+=data[i];
+      const avg = sum/data.length;
+      smoothed = avg>smoothed ? avg : smoothed*0.6+avg*0.4;
+      const pct = ranaPctFromAvg(smoothed);
+      onLevel(pct);
+      if (!ranaMicLoud && pct>=RANA_HIGH){ ranaMicLoud = true; onJump(); }
+      else if (ranaMicLoud && pct<=RANA_LOW){ ranaMicLoud = false; }
+      ranaMicRaf = requestAnimationFrame(loop);
+    };
+    loop();
+  }).catch(()=>{
+    onLevel(null);
+    $('ranaHint').textContent = '⚠️ Devi consentire il microfono per giocare: ricarica la pagina e accetta il permesso.';
+  });
+}
+function ranaStopMic(){
+  if (ranaMicRaf) cancelAnimationFrame(ranaMicRaf);
+  ranaMicRaf = null;
+  if (ranaMicStream){ ranaMicStream.getTracks().forEach(t=>t.stop()); ranaMicStream=null; }
+  if (ranaAudioCtx){ try{ ranaAudioCtx.close(); }catch(e){} ranaAudioCtx=null; }
+  ranaAnalyser = null; ranaMicLoud = false;
+}
+function ranaOnJump(sig){
+  if (P.ranaSig !== sig || P.ranaFinished) return;
+  P.ranaJumps++;
+  const el = $('ranaMeFrog');
+  el.classList.remove('hop'); void el.offsetWidth; el.classList.add('hop');
+  $('ranaMeCount').textContent = `${P.ranaJumps} / ${P.ranaNeeded} salti`;
+  if (navigator.vibrate) navigator.vibrate(30);
+  P.ref.child('rana/progress/'+P.id).update({ name:P.name, jumps:P.ranaJumps });
+  if (P.ranaJumps >= P.ranaNeeded){
+    P.ranaFinished = true;
+    ranaStopMic();
+    $('ranaHint').style.display = 'none';
+    $('ranaMeCount').textContent = `🏁 ARRIVATA! (${P.ranaJumps}/${P.ranaNeeded})`;
+    P.ref.child('rana/finishCounter').transaction(cur=>(cur||0)+1).then(res=>{
+      if (res.committed && res.snapshot.val()===1){
+        P.ref.child('rana').update({ winnerName:P.name, winnerId:P.id });
+        P.ref.child('rana/results/'+P.id).set({ finished:true, rank:1 });
+      }
+    });
+  }
+}
+function showPlayerRana(g){
+  const m = g.rana||{};
+  $('ranapName').textContent = P.name;
+  $('ranapScore').textContent = (((g.players||{})[P.id]||{}).score||0)+' pt';
+  showScreen('scrPlayRana');
+  if (m.phase!=='active'){ ranaStopMic(); P.ranaSig = null; return; }
+  const sig = 'act:'+m.roundId;
+  if (P.ranaSig !== sig){
+    P.ranaSig = sig; P.ranaJumps = 0; P.ranaFinished = false; P.ranaNeeded = m.jumpsNeeded||30;
+    $('ranaMeCount').textContent = `0 / ${P.ranaNeeded} salti`;
+    $('ranaMeRank').textContent = '';
+    $('ranapWinnerBanner').style.display = 'none';
+    $('ranaHint').style.display = ''; $('ranaHint').textContent = '🎤 URLA FORTE PER FAR SALTARE LA RANA!';
+    $('ranaMicBar').style.width = '0%';
+    ranaStopMic(); // per sicurezza, se fosse rimasto acceso da una manche precedente
+    ranaStartMic(
+      ()=> ranaOnJump(sig),
+      pct=>{ if (pct!=null) $('ranaMicBar').style.width = pct+'%'; }
+    );
+  }
+  // Aggiornamento reattivo della classifica live: avviene ad ogni cambiamento della partita,
+  // anche per i salti degli altri giocatori — non tocca in nessun caso il microfono già avviato.
+  const progress = m.progress||{};
+  const sorted = Object.entries(progress).sort((a,b)=>(b[1].jumps||0)-(a[1].jumps||0));
+  const myRank = sorted.findIndex(([pid])=> pid===P.id) + 1;
+  if (myRank>0) $('ranaMeRank').textContent = `${myRank}° posto su ${sorted.length}`;
+  if (m.winnerId){
+    $('ranapWinnerBanner').style.display = 'block';
+    $('ranapWinnerBanner').textContent = m.winnerId===P.id ? '🏆 HAI VINTO TU!!' : `🏆 HA VINTO ${(m.winnerName||'?').toUpperCase()}!`;
+  }
 }
 /* ================================================================
    TROVA LE DIFFERENZE — telefono
@@ -17906,6 +18095,64 @@ function cloverStart(){
 }
 
 /* ================================================================
+   LA RANA SALTERINA — regia
+================================================================ */
+let RANA = {};
+function openRana(){
+  if (!isGameEnabled('rana')) return alert('⚠️ Questo minigioco non è compreso nella licenza attiva. Contatta Alberto per sbloccarlo.');
+  if (!G) return alert('Avvia prima una partita!');
+  cancelLiveQuestion(); closeModal();
+  G.ref.child('rana/progress').off(); G.ref.child('rana/results').off();
+  G.ref.update({ status:'rana', rana:{ phase:'idle' } });
+  RANA = {};
+  $('ranaSetup').style.display='block'; $('ranaLive').style.display='none';
+  showScreen('scrRana');
+}
+function ranaToggleKind(){
+  const kind = $('ranaKind').value;
+  $('ranaPoints').style.display = kind==='points' ? '' : 'none';
+  $('ranaText').style.display = kind==='text' ? '' : 'none';
+}
+function ranaStart(){
+  const jumpsNeeded = +($('ranaJumps').value||30);
+  const kind = $('ranaKind').value;
+  const prize = kind==='points'
+    ? { kind:'points', points:+$('ranaPoints').value||0 }
+    : { kind:'text', text:$('ranaText').value.trim()||'Premio a sorpresa!' };
+  const roundId = serverNow();
+  RANA = { credited:false };
+  G.ref.update({ status:'rana', rana:{ phase:'active', jumpsNeeded, prize, roundId } });
+  G.ref.child('rana/progress').remove();
+  G.ref.child('rana/results').remove();
+  G.ref.child('rana/finishCounter').remove();
+  $('ranaSetup').style.display='none'; $('ranaLive').style.display='block';
+  const prizeLabel = kind==='points' ? `+${prize.points} punti` : esc(prize.text);
+  $('ranaMsg').textContent = `🐸 URLATE NEL MICROFONO! Traguardo a ${jumpsNeeded} salti — ${prizeLabel} a chi arriva primo`;
+  $('ranaWinnerBanner').style.display='none';
+  $('ranaResultsLive').innerHTML=''; $('ranaBtnAgain').style.display='none';
+  pjSend({type:'ranaActive', jumpsNeeded});
+  G.ref.child('rana/results').on('child_added', snap=>{
+    const pid = snap.key, r = snap.val();
+    if (!r || RANA.credited) return;
+    RANA.credited = true; // un solo vincitore possibile: il primo a tagliare il traguardo
+    G.ref.child('players/'+pid).once('value').then(ps=>{
+      const pname = (ps.val()||{}).name || '?';
+      if (prize.kind==='points') applyScoreDelta(pid, prize.points);
+      $('ranaWinnerBanner').style.display='block';
+      $('ranaWinnerBanner').textContent = `🏆 HA VINTO LA RANA DI ${pname.toUpperCase()}! ${prizeLabel}`;
+      $('ranaBtnAgain').style.display='';
+    });
+  });
+  G.ref.child('rana/progress').on('value', s=>{
+    const progress = s.val()||{};
+    const entries = Object.values(progress).sort((a,b)=>(b.jumps||0)-(a.jumps||0));
+    $('ranaResultsLive').innerHTML = entries.map((p,i)=>
+      `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(p.name||'?')} <span class="pts">${p.jumps||0}/${jumpsNeeded}</span></div>`
+    ).join('') || '<div class="byline">Nessuno ha ancora iniziato a urlare...</div>';
+  });
+}
+
+/* ================================================================
    ROULETTE — regia
 ================================================================ */
 let RW = {};
@@ -20308,6 +20555,7 @@ const GIOCHI_CATALOGO = [
   {k:'pontesospeso', l:'🌉 Il Ponte Sospeso'},
   {k:'panino', l:'🥪 Un Panino al Camioncino'},
   {k:'clover', l:'🍀 Il Quadrifoglio'},
+  {k:'rana', l:'🐸 La Rana Salterina'},
   {k:'punto', l:'🏁 Il Punto della Situazione'},
   {k:'dado', l:'🎲 Il Dado del Destino'},
   {k:'asta', l:'🔨 Asta'},
@@ -20347,6 +20595,7 @@ const SKILL_GAMES = [
   {k:'clover', cls:'', style:'background:linear-gradient(180deg,#3fae4a,#1d5e26); color:#fff; box-shadow:0 7px 0 #0e3512,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(63,174,74,.4)', fn:'openClover', label:`🍀 Il Quadrifoglio`},
   {k:'idr', cls:'', style:'background:linear-gradient(180deg,#7a8a9a,#3a4550); color:#fff; box-shadow:0 7px 0 #1a2028,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(122,138,154,.4)', fn:'openIdr', label:`🔧 L'Idraulico`},
   {k:'cassaforte', cls:'', style:'background:linear-gradient(180deg,#8a8f96,#3a3c40); color:#fff; box-shadow:0 7px 0 #1a1c1e,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(138,143,150,.35)', fn:'openCassaforte', label:`🔐 La Cassaforte`},
+  {k:'rana', cls:'', style:'background:linear-gradient(180deg,#4a9e4f,#1f5a24); color:#fff; box-shadow:0 7px 0 #0e3211,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(74,158,79,.4)', fn:'openRana', label:`🐸 La Rana Salterina`},
   {k:'rdc', cls:'', style:'background:linear-gradient(180deg,#5a3d8a,#2e1a5a); color:#fff; box-shadow:0 7px 0 #180e30,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(46,26,90,.4)', fn:'openRdc', label:`🧮 La Resa dei Conti`},
   {k:'spesa', cls:'', style:'background:linear-gradient(180deg,#e0a83d,#8a5a0b); color:#3a2600; box-shadow:0 7px 0 #4a3300,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(224,168,61,.4)', fn:'openSpesa', label:`🛒 Lista della Spesa`},
   {k:'staccionata', cls:'', style:'background:linear-gradient(180deg,#8a6339,#5c4023); color:#fff; box-shadow:0 7px 0 #3d2a16,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(138,99,57,.4)', fn:'openStaccionata', label:`🪵 Maledetta Staccionata`},
@@ -21120,6 +21369,37 @@ function pjDiag(){
   $('pjDiag').style.display='block';
   $('pjDiag').textContent = `v${(APP_V/10).toFixed(1)} · partita: ${pjDiagState.code} · firebase: ${pjDiagState.fb} · msg ricevuti: ${pjDiagState.msgs} (${pjDiagState.last})`;
 }
+// LA RANA SALTERINA — rendering continuo sul proiettore: a differenza degli altri minigiochi
+// (campo isolato per ogni giocatore), qui c'è UNA gara condivisa dal vivo, quindi il proiettore
+// deve ridisegnare la pista ad ogni salto di chiunque, non solo all'apertura del gioco.
+let pjRanaState = null, pjRanaProgress = {}, pjRanaLastJumps = {};
+function pjRanaRender(){
+  const el = $('pjRanaTrack');
+  if (!el) return;
+  const needed = (pjRanaState||{}).jumpsNeeded || 30;
+  const entries = Object.entries(pjRanaProgress||{}).map(([pid,p])=>({pid,...p}));
+  entries.sort((a,b)=>(b.jumps||0)-(a.jumps||0));
+  const top = entries.slice(0,5);
+  el.innerHTML = top.length ? top.map(p=>{
+    const pct = Math.max(0, Math.min(100, Math.round((p.jumps||0)/needed*100)));
+    const leftPct = Math.min(88, pct); // non far uscire la rana dal bordo destro della corsia
+    const hop = pjRanaLastJumps[p.pid]!=null && (p.jumps||0) > pjRanaLastJumps[p.pid];
+    return `<div class="ranaLane ${hop?'hop':''}">
+      <div class="ranaTrackBar" style="width:${pct}%"></div>
+      <div class="ranaFinishFlag"></div>
+      <div class="ranaFrogBig" style="left:${leftPct}%">🐸</div>
+      <div class="ranaLabel">${esc(p.name||'?')}</div>
+      <div class="ranaJumps">${p.jumps||0}/${needed}</div>
+    </div>`;
+  }).join('') : '<div class="byline" style="color:#fff; text-align:center">In attesa che qualcuno inizi a urlare...</div>';
+  top.forEach(p=> pjRanaLastJumps[p.pid]=p.jumps);
+  const winnerName = (pjRanaState||{}).winnerName;
+  const banner = $('pjRanaWinnerBanner');
+  if (banner){
+    if (winnerName){ banner.style.display='block'; banner.textContent = `🏆 HA VINTO LA RANA DI ${winnerName.toUpperCase()}!`; }
+    else banner.style.display='none';
+  }
+}
 function initProjector(){
   document.body.classList.add('proj');
   showScreen('scrPjWait');
@@ -21141,6 +21421,10 @@ function initProjector(){
     base.child('projLead').on('value', s=>{ pjApplyLead(s.val()||{}); });
     base.child('projMsg').on('value', s=>{ pjApplyMsg(s.val()||{}); });
     base.child('projPhoto').on('value', s=>{ pjApplyPhoto(s.val()||{}); });
+    // LA RANA SALTERINA è una gara condivisa dal vivo (non un campo isolato per giocatore come gli altri
+    // minigiochi): il proiettore deve seguire in continuo l'avanzamento di tutti, non solo un messaggio una tantum.
+    base.child('rana').on('value', s=>{ pjRanaState = s.val()||null; pjRanaRender(); });
+    base.child('rana/progress').on('value', s=>{ pjRanaProgress = s.val()||{}; pjRanaRender(); });
   } else if (!gcode) {
     $('pjWaitMsg').textContent = '⚠️ Manca il codice partita nel link: usa ?proj=1&g=CODICE';
   }
@@ -22601,6 +22885,13 @@ function pjRouteInner(m){
         $('pjCloverTimerBar').style.width = (left/(m.durationMs||1)*100)+'%';
         if (left<=0) clearInterval(window._pjCloverInt);
       }, 100);
+    }
+    else if (m.type==='ranaActive') {
+      showScreen('scrPjRana');
+      $('pjRanaMsg').textContent = 'URLATE NEL MICROFONO PER FAR SALTARE LA VOSTRA RANA!';
+      $('pjRanaWinnerBanner').style.display='none';
+      pjRanaLastJumps = {};
+      pjRanaRender();
     }
     else if (m.type==='rwActive') {
       showScreen('scrPjCasino');
