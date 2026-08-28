@@ -1048,28 +1048,30 @@ body.barOn.barCollapsed .screen.active{padding-bottom:70px;}
 .stendiCard:active:not(.off){transform:scale(.93);}
 .stendiTimerHolder{width:100%; max-width:280px; margin:10px auto 0;}
 .stendiDone{font-family:'Bungee'; font-size:16px; color:#fff; text-align:center; margin-top:10px; display:none;}
-/* ===== PARCHEGGIO PERFETTO ===== */
-.parkLotWrap{width:100%; max-width:400px; margin:12px auto 0;}
-.parkLot{display:grid; grid-template-columns:repeat(10,1fr); gap:2px; aspect-ratio:1/1;
-  background:#2a2a2e; border:5px solid #ffcc33; border-radius:12px; padding:7px;
-  box-shadow:0 0 26px rgba(255,204,51,.25), inset 0 0 34px rgba(0,0,0,.55);}
-.parkCell{border-radius:2px; position:relative; aspect-ratio:1/1;
-  background:repeating-linear-gradient(135deg, #3a3a3f 0 3px, #333338 3px 6px);}
-.parkCell.filled{box-shadow:inset 0 0 0 1px rgba(255,255,255,.25);}
-.parkCell .veic{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:11px; line-height:1;}
+/* ===== PARCHEGGIO PERFETTO (vera simulazione 2D con collisioni) ===== */
+.pk2LotWrap{width:100%; display:flex; justify-content:center; margin:12px auto 0;}
+.pk2Lot{position:relative; background:#2a2a2e; border:5px solid #ffcc33; border-radius:10px; overflow:hidden;
+  background-image:repeating-linear-gradient(0deg, transparent 0 38px, rgba(255,255,255,.08) 38px 40px);
+  box-shadow:0 0 26px rgba(255,204,51,.25), inset 0 0 30px rgba(0,0,0,.55); touch-action:none;}
+.pk2Veh{position:absolute; border-radius:5px; display:flex; align-items:center; justify-content:center;
+  box-shadow:0 3px 6px rgba(0,0,0,.5), inset 0 0 0 1px rgba(255,255,255,.3); cursor:grab; touch-action:none;
+  user-select:none; -webkit-user-select:none;}
+.pk2Veh span{font-size:15px; pointer-events:none;}
+.pk2Ghost{position:fixed; z-index:999; border-radius:5px; display:flex; align-items:center; justify-content:center;
+  pointer-events:none; opacity:.88; box-shadow:0 6px 18px rgba(0,0,0,.6);}
+.pk2Ghost span{font-size:15px; pointer-events:none;}
+.pk2Ghost.ok{outline:3px solid #6fff6f; box-shadow:0 6px 18px rgba(111,255,111,.5);}
+.pk2Ghost.bad{outline:3px solid #ff5a5a; filter:grayscale(.5); box-shadow:0 6px 18px rgba(255,90,90,.5);}
+.pk2TrayWrap{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; width:100%; max-width:520px; margin:12px auto 0;}
+.pk2Chip{display:flex; flex-direction:column; align-items:center; gap:2px; padding:8px 11px; border-radius:12px;
+  background:linear-gradient(180deg,#241f34,#1a1626); border:2px solid rgba(255,255,255,.14); cursor:grab;
+  touch-action:none; user-select:none; -webkit-user-select:none;}
+.pk2Chip .ic{font-size:22px;}
+.pk2Chip .nm{font-family:'Outfit',sans-serif; font-weight:700; font-size:10px; color:#fff;}
+.pk2Chip .dim{font-family:'Outfit',sans-serif; font-weight:600; font-size:9px; color:var(--muted);}
 .parkPct{font-family:'Bungee'; font-size:clamp(22px,6vw,30px); color:var(--gold); text-align:center; margin-top:10px;
   text-shadow:0 2px 0 #6b4a00;}
 .parkPctSub{font-family:'Outfit',sans-serif; font-weight:600; font-size:13px; color:var(--muted); text-align:center; margin-top:-4px;}
-.parkGrid{display:grid; grid-template-columns:repeat(auto-fill, minmax(84px,1fr)); gap:9px; width:100%; max-width:520px; margin:14px auto 0;}
-.parkCard{position:relative; border-radius:14px; padding:10px 6px 8px; text-align:center; cursor:pointer;
-  background:linear-gradient(180deg,#241f34,#1a1626); border:2px solid rgba(255,255,255,.12); transition:transform .1s, border-color .15s;}
-.parkCard .ic{font-size:30px; display:block;}
-.parkCard .nm{font-family:'Outfit',sans-serif; font-weight:700; font-size:10.5px; color:#fff; margin-top:3px; display:block;}
-.parkCard .pc{font-family:'Bungee'; font-size:12px; color:var(--gold); margin-top:2px; display:block;}
-.parkCard.on{border-color:#ffcc33; box-shadow:0 0 14px rgba(255,204,51,.4); background:linear-gradient(180deg,#3a3016,#26200e); cursor:default;}
-.parkCard.on::after{content:'✓'; position:absolute; top:4px; right:6px; color:#ffcc33; font-weight:900; font-size:14px;}
-.parkCard.off{opacity:.32; filter:grayscale(.6); cursor:not-allowed;}
-.parkCard:active:not(.off){transform:scale(.93);}
 .parkTimerHolder{width:100%; max-width:280px; margin:10px auto 0;}
 .parkDone{font-family:'Bungee'; font-size:16px; color:#fff; text-align:center; margin-top:10px; display:none;}
 .ranaMeCount{font-family:'Bungee'; font-size:26px; color:var(--gold); margin-top:4px;}
@@ -1996,7 +1998,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.61</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.62</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -5647,7 +5649,7 @@ body.suspense-on #pfRank{ display:none !important; }
       <input type="number" id="parkP4" class="grow" placeholder="4°" value="100">
       <input type="number" id="parkP5" class="grow" placeholder="5°" value="50">
     </div>
-    <div class="byline mt" style="opacity:.75">🅿️ Ogni giocatore ha lo stesso parcheggio rettangolare e gli stessi mezzi da scegliere: moto, auto, furgoni, camion, ognuno con il proprio ingombro. Si riempie il parcheggio il più possibile senza sforare, e — a differenza di Stendi i Panni — qui lo spazio va riempito su tutta l'area, non su una sola riga. Una volta parcheggiato un mezzo non si può più togliere.</div>
+    <div class="byline mt" style="opacity:.75">🅿️ Ogni giocatore ha lo stesso parcheggio rettangolare e trascina i mezzi con un vero dito/mouse per posizionarli: moto, auto, furgoni, camion, ognuno con l'ingombro reale (un camion occupa molto più spazio di un'auto, un'auto più di una moto). Si può spostare o togliere un mezzo già parcheggiato in qualsiasi momento, semplicemente trascinandolo — vera simulazione con collisioni: due mezzi non possono sovrapporsi.</div>
     <button class="btn mg mt" style="width:100%" onclick="parkStart()">🅿️ SI PARTE!</button>
   </div>
   <div id="parkLive" style="display:none; width:100%" class="center">
@@ -5664,11 +5666,9 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrPjParcheggio">
   <div class="brand"><div class="t1" style="font-size:clamp(20px,3.4vw,36px)">🅿️ PARCHEGGIO PERFETTO!</div></div>
   <div class="miniMsg" id="pjParkMsg">FATE ENTRARE I MEZZI DAL TELEFONO!</div>
-  <div class="ranaHint" style="color:#ffb3b3; font-weight:800; font-size:14px">⚠️ FAI ENTRARE QUANTI PIÙ MEZZI POSSIBILI MA, ATTENZIONE: NON PUOI ANNULLARE LE SCELTE FATTE!!!</div>
+  <div class="ranaHint" style="color:#ffb3b3; font-weight:800; font-size:14px">🅿️ OGNI GIOCATORE TRASCINA I MEZZI SUL PROPRIO TELEFONO PER PARCHEGGIARLI!</div>
   <div class="timerWrap mt" style="max-width:460px"><div class="timerBar" id="pjParkTimerBar"></div></div>
-  <div class="parkLotWrap" style="max-width:340px">
-    <div class="parkLot" id="pjParkLot"></div>
-  </div>
+  <div class="pk2TrayWrap" id="pjParkLot" style="max-width:600px"></div>
   <div class="byline mt" style="max-width:460px; text-align:center">Ogni giocatore parcheggia sul proprio telefono: qui vedete la classifica formarsi in tempo reale.</div>
   <div class="lead mt" id="pjParkResults" style="max-width:600px; width:100%"></div>
 </div>
@@ -5680,13 +5680,13 @@ body.suspense-on #pfRank{ display:none !important; }
     <div class="pill" id="parkpScore"></div>
   </div>
   <div class="parkTimerHolder"><div class="timerBar" id="parkpTimerBar"></div></div>
-  <div class="parkLotWrap">
-    <div class="parkLot" id="parkLot"></div>
+  <div class="pk2LotWrap">
+    <div class="pk2Lot" id="parkLot2D"></div>
   </div>
   <div class="parkPct" id="parkPct">0%</div>
-  <div class="parkPctSub" id="parkPctSub">del parcheggio occupato</div>
-  <div class="ranaHint" style="color:#ffb3b3; font-weight:800">⚠️ FAI ENTRARE QUANTI PIÙ MEZZI POSSIBILI MA, ATTENZIONE: NON PUOI ANNULLARE LE SCELTE FATTE!!!</div>
-  <div class="parkGrid" id="parkGrid"></div>
+  <div class="parkPctSub" id="parkPctSub">del parcheggio occupato — trascina i mezzi per posizionarli o toglierli</div>
+  <div class="ranaHint" style="color:#ffb3b3; font-weight:800">⚠️ FAI ENTRARE QUANTI PIÙ MEZZI POSSIBILI: PUOI SEMPRE SPOSTARLI O TOGLIERLI TRASCINANDOLI!</div>
+  <div class="pk2TrayWrap" id="parkTray2"></div>
   <button class="btn mg mt" id="parkDoneBtn" onclick="parkFinishNow()" style="width:100%; max-width:520px">✅ HO FINITO!</button>
   <div class="parkDone" id="parkDoneMsg"></div>
 </div>
@@ -6452,7 +6452,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1361; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1362; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -11407,73 +11407,144 @@ function showPlayerStendi(g){
    riga: ogni caselletta occupata mostra il mezzo che l'ha "parcheggiata" lì, dando davvero
    l'impressione di un parcheggio che si riempie per tutta la sua area, non solo in lunghezza.
 ================================================================ */
-const PARK_POOL = [
-  {n:'Moto', e:'🏍️', tier:'s'}, {n:'Scooter', e:'🛵', tier:'s'}, {n:'Bici', e:'🚲', tier:'s'}, {n:'Monopattino', e:'🛴', tier:'s'},
-  {n:'Auto', e:'🚗', tier:'m'}, {n:'Taxi', e:'🚕', tier:'m'}, {n:'SUV', e:'🚙', tier:'m'}, {n:'Sportiva', e:'🏎️', tier:'m'}, {n:'Ambulanza', e:'🚑', tier:'m'}, {n:'Volante', e:'🚓', tier:'m'}, {n:'Tuk-tuk', e:'🛺', tier:'m'},
-  {n:'Furgone', e:'🚐', tier:'l'}, {n:'Pulmino', e:'🚌', tier:'l'}, {n:'Pickup', e:'🛻', tier:'l'}, {n:'Pattuglia', e:'🚔', tier:'l'},
-  {n:'Camion', e:'🚛', tier:'xl'}, {n:'Autoarticolato', e:'🚚', tier:'xl'}, {n:'Bus', e:'🚍', tier:'xl'}, {n:'Trattore', e:'🚜', tier:'xl'}, {n:'Autopompa', e:'🚒', tier:'xl'},
+/* ================================================================
+   PARCHEGGIO PERFETTO — vera simulazione 2D con collisioni reali.
+   I mezzi hanno l'ingombro proporzionato a quello vero (in metri, convertito in pixel), il giocatore
+   li trascina liberamente nel parcheggio: si può posizionare, spostare o togliere in ogni momento,
+   basta che due mezzi non si sovrappongano e restino dentro i bordi. Percentuale = area occupata / area totale.
+================================================================ */
+const PK2_TYPES = [
+  { k:'moto',    n:'Moto',    e:'🏍️', wM:0.8, hM:2.2, color:'#7ac9e8' },
+  { k:'auto',    n:'Auto',    e:'🚗', wM:1.8, hM:4.5, color:'#4a90c9' },
+  { k:'furgone', n:'Furgone', e:'🚐', wM:2.0, hM:5.5, color:'#e8a33d' },
+  { k:'camion',  n:'Camion',  e:'🚛', wM:2.5, hM:9.0, color:'#c95a5a' },
 ];
-const PARK_TIER_RANGE = { s:[2,4], m:[5,8], l:[9,13], xl:[14,19] };
-const PARK_COLORS = ['#4a90c9','#e8a33d','#5cb85c','#c95a9e','#7a6ad8','#d8785a','#4ac9b0','#c9b04a','#c95a5a','#5aa8c9'];
-function parkPickItems(n){
-  const pool = PARK_POOL.slice();
-  for (let i=pool.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [pool[i],pool[j]]=[pool[j],pool[i]]; }
-  const chosen = pool.slice(0, Math.min(n, pool.length));
-  return chosen.map((it,idx)=>{
-    const [lo,hi] = PARK_TIER_RANGE[it.tier];
-    const size = lo + Math.floor(Math.random()*(hi-lo+1));
-    return { id:'pv'+idx, n:it.n, e:it.e, size, color: PARK_COLORS[idx % PARK_COLORS.length] };
-  });
+const PK2_WEIGHTS = [['moto',.28],['auto',.42],['furgone',.20],['camion',.10]];
+const PK2_PXM = 22; // pixel per metro
+const PK2_LOT_W_M = 12, PK2_LOT_H_M = 17;
+const PK2_LOT_W = PK2_LOT_W_M*PK2_PXM, PK2_LOT_H = PK2_LOT_H_M*PK2_PXM;
+function pk2WeightedType(){
+  const r = Math.random(); let acc = 0;
+  for (const [k,w] of PK2_WEIGHTS){ acc += w; if (r<=acc) return PK2_TYPES.find(t=>t.k===k); }
+  return PK2_TYPES[0];
 }
-function parkUsedPct(){
-  return P.parkSelected.reduce((s,id)=>{ const it=(P.parkItems||[]).find(x=>x.id===id); return s+(it?it.size:0); }, 0);
+function pk2PickItems(n){
+  const items = [];
+  for (let i=0;i<n;i++){
+    const t = pk2WeightedType();
+    items.push({ id:'v'+i, k:t.k, n:t.n, e:t.e, wM:t.wM, hM:t.hM, w:Math.round(t.wM*PK2_PXM), h:Math.round(t.hM*PK2_PXM), color:t.color });
+  }
+  return items;
 }
-function parkRenderLot(){
-  const lot = $('parkLot');
+function pk2Fits(x, y, w, h, excludeId){
+  if (x<0 || y<0 || x+w>PK2_LOT_W || y+h>PK2_LOT_H) return false;
+  for (const p of P.pk2Placed){
+    if (p.id===excludeId) continue;
+    if (x < p.x+p.w && x+w > p.x && y < p.y+p.h && y+h > p.y) return false;
+  }
+  return true;
+}
+function pk2Pct(){
+  const used = P.pk2Placed.reduce((s,p)=> s+p.w*p.h, 0);
+  return Math.min(100, Math.round(used/(PK2_LOT_W*PK2_LOT_H)*100));
+}
+function pk2RenderLot(){
+  const lot = $('parkLot2D');
   if (!lot) return;
-  let html = '';
-  let filled = 0;
-  P.parkSelected.forEach(id=>{
-    const it = (P.parkItems||[]).find(x=>x.id===id);
-    if (!it) return;
-    for (let i=0;i<it.size;i++){
-      html += `<div class="parkCell filled" style="background:${it.color}"><span class="veic">${it.e}</span></div>`;
-      filled++;
-    }
-  });
-  for (let i=filled; i<100; i++) html += `<div class="parkCell"></div>`;
-  lot.innerHTML = html;
-  $('parkPct').textContent = Math.min(100, filled)+'%';
+  lot.style.width = PK2_LOT_W+'px'; lot.style.height = PK2_LOT_H+'px';
+  lot.innerHTML = P.pk2Placed.map(p=>
+    `<div class="pk2Veh" data-id="${p.id}" style="left:${p.x}px; top:${p.y}px; width:${p.w}px; height:${p.h}px; background:${p.color}"
+       onpointerdown="pk2PointerDownPlaced(event,'${p.id}')"><span>${p.e}</span></div>`
+  ).join('');
 }
-function parkRenderGrid(){
-  const remaining = 100 - parkUsedPct();
-  $('parkGrid').innerHTML = (P.parkItems||[]).map(it=>{
-    const on = P.parkSelected.includes(it.id);
-    const fits = on || it.size <= remaining;
-    return `<div class="parkCard ${on?'on':''} ${fits?'':'off'}" onclick="parkToggle('${it.id}')">
-      <span class="ic">${it.e}</span><span class="nm">${esc(it.n)}</span><span class="pc">${it.size}%</span>
-    </div>`;
-  }).join('');
+function pk2RenderTray(){
+  $('parkTray2').innerHTML = P.pk2Tray.map(it=>
+    `<div class="pk2Chip" data-id="${it.id}" onpointerdown="pk2PointerDownTray(event,'${it.id}')">
+      <span class="ic">${it.e}</span><span class="nm">${esc(it.n)}</span><span class="dim">${it.wM}×${it.hM} m</span>
+    </div>`
+  ).join('');
 }
-function parkToggle(id){
+function pk2RenderPct(){ $('parkPct').textContent = pk2Pct()+'%'; }
+function pk2RenderAll(){ pk2RenderLot(); pk2RenderTray(); pk2RenderPct(); }
+
+let PK2_DRAG = null;
+function pk2BeginDrag(clientX, clientY, veh, existingPlacedId){
   if (P.parkFinished) return;
-  const it = (P.parkItems||[]).find(x=>x.id===id);
-  if (!it) return;
-  if (P.parkSelected.includes(id)) return; // scelta ormai definitiva: non si può togliere dal parcheggio
-  if (parkUsedPct() + it.size > 100) return; // non entra nello spazio rimasto
-  P.parkSelected.push(id);
-  if (navigator.vibrate) navigator.vibrate(20);
-  parkRenderLot(); parkRenderGrid(); parkSubmitProgress();
+  const lot = $('parkLot2D');
+  const lotRect = lot.getBoundingClientRect();
+  const ghost = document.createElement('div');
+  ghost.className = 'pk2Ghost';
+  ghost.style.width = veh.w+'px'; ghost.style.height = veh.h+'px'; ghost.style.background = veh.color;
+  ghost.innerHTML = `<span>${veh.e}</span>`;
+  document.body.appendChild(ghost);
+  PK2_DRAG = { veh, existingPlacedId, ghost, lotRect, w:veh.w, h:veh.h, valid:false, curX:0, curY:0 };
+  pk2UpdateGhost(clientX, clientY);
+  window.addEventListener('pointermove', pk2OnMove);
+  window.addEventListener('pointerup', pk2OnUp, {once:true});
 }
-function parkSubmitProgress(){
+function pk2PointerDownTray(e, itemId){
+  e.preventDefault();
+  const it = P.pk2Tray.find(x=>x.id===itemId);
+  if (!it) return;
+  pk2BeginDrag(e.clientX, e.clientY, it, null);
+}
+function pk2PointerDownPlaced(e, placedId){
+  e.preventDefault();
+  const p = P.pk2Placed.find(x=>x.id===placedId);
+  if (!p) return;
+  pk2BeginDrag(e.clientX, e.clientY, p, placedId);
+}
+function pk2UpdateGhost(clientX, clientY){
+  const d = PK2_DRAG; if (!d) return;
+  d.ghost.style.left = (clientX - d.w/2)+'px'; d.ghost.style.top = (clientY - d.h/2)+'px';
+  const lx = Math.round(clientX - d.lotRect.left - d.w/2);
+  const ly = Math.round(clientY - d.lotRect.top - d.h/2);
+  d.curX = lx; d.curY = ly;
+  d.valid = pk2Fits(lx, ly, d.w, d.h, d.existingPlacedId);
+  d.ghost.classList.toggle('ok', d.valid);
+  d.ghost.classList.toggle('bad', !d.valid);
+}
+function pk2OnMove(e){ pk2UpdateGhost(e.clientX, e.clientY); }
+function pk2OnUp(e){
+  window.removeEventListener('pointermove', pk2OnMove);
+  const d = PK2_DRAG; PK2_DRAG = null;
+  if (!d) return;
+  d.ghost.remove();
+  if (d.valid){
+    if (d.existingPlacedId){
+      const p = P.pk2Placed.find(x=>x.id===d.existingPlacedId);
+      if (p){ p.x = d.curX; p.y = d.curY; }
+    } else {
+      P.pk2Placed.push({ id:'p'+(P.pk2PlacedSeq++), k:d.veh.k, e:d.veh.e, w:d.w, h:d.h, color:d.veh.color, x:d.curX, y:d.curY });
+      P.pk2Tray = P.pk2Tray.filter(x=>x.id!==d.veh.id);
+    }
+    if (navigator.vibrate) navigator.vibrate(15);
+  } else if (d.existingPlacedId){
+    // riposizionamento non valido: se rilasciato ben fuori dal parcheggio, lo tolgo (richiesto: si toglie trascinando)
+    const margin = 30;
+    const outside = d.curX+d.w < -margin || d.curY+d.h < -margin || d.curX > PK2_LOT_W+margin || d.curY > PK2_LOT_H+margin;
+    if (outside){
+      const p = P.pk2Placed.find(x=>x.id===d.existingPlacedId);
+      if (p){
+        P.pk2Placed = P.pk2Placed.filter(x=>x.id!==d.existingPlacedId);
+        const t = PK2_TYPES.find(x=>x.k===p.k);
+        P.pk2Tray.push({ id:'v_re'+Date.now()+Math.random(), k:p.k, n:t.n, e:p.e, wM:t.wM, hM:t.hM, w:p.w, h:p.h, color:p.color });
+      }
+    }
+    // altrimenti: posizione non valida ma dentro l'area -> resta dov'era, nessuna modifica
+  }
+  pk2RenderAll(); pk2SubmitProgress();
+}
+function pk2SubmitProgress(){
   if (!P.ref) return;
-  P.ref.child('parcheggio/results/'+P.id).update({ name:P.name, pct:Math.round(parkUsedPct()), finished:false, updatedAt:Date.now() });
+  P.ref.child('parcheggio/results/'+P.id).update({ name:P.name, pct:pk2Pct(), finished:false, updatedAt:Date.now() });
 }
 function parkFinishNow(){ if (!P.parkFinished) parkLockIn(); }
 function parkLockIn(){
   P.parkFinished = true;
-  const pct = Math.round(parkUsedPct());
-  document.querySelectorAll('#parkGrid .parkCard').forEach(c=> c.onclick=null);
+  const pct = pk2Pct();
+  if (PK2_DRAG){ PK2_DRAG.ghost.remove(); PK2_DRAG = null; window.removeEventListener('pointermove', pk2OnMove); }
+  document.querySelectorAll('.pk2Veh, .pk2Chip').forEach(el=> el.onpointerdown=null);
   $('parkDoneBtn').style.display = 'none';
   $('parkDoneMsg').style.display = 'block';
   $('parkDoneMsg').textContent = `🅿️ PARCHEGGIO CHIUSO! ${pct}% occupato`;
@@ -11487,11 +11558,12 @@ function showPlayerParcheggio(g){
   showScreen('scrPlayParcheggio');
   if (m.phase!=='active'){ clearInterval(P.parkInt); P.parkSig = null; return; }
   const sig = 'act:'+m.roundId;
-  if (P.parkSig === sig) return; // stesso round già in corso: non ritoccare selezioni/timer già avviati
+  if (P.parkSig === sig) return; // stesso round già in corso: non ritoccare parcheggio/timer già avviati
   clearInterval(P.parkInt);
-  P.parkSig = sig; P.parkFinished = false; P.parkSelected = []; P.parkItems = m.items||[];
+  P.parkSig = sig; P.parkFinished = false; P.pk2Placed = []; P.pk2PlacedSeq = 0;
+  P.pk2Tray = (m.items||[]).map(it=>({...it})); // copia locale: ogni giocatore muove la propria, ma il set di partenza è identico per tutti
   $('parkDoneBtn').style.display = ''; $('parkDoneMsg').style.display = 'none';
-  parkRenderLot(); parkRenderGrid();
+  pk2RenderAll();
   P.parkLocalEndAt = Date.now() + (m.durationMs||0);
   P.parkInt = setInterval(()=>{
     if (P.parkSig !== sig) { clearInterval(P.parkInt); return; }
@@ -18719,7 +18791,7 @@ function parkStart(){
   const count = +($('parkCount').value||17);
   const durationMs = (+($('parkDuration').value||45))*1000;
   const prizes = [1,2,3,4,5].map(i=> +($('parkP'+i).value||0));
-  const items = parkPickItems(count);
+  const items = pk2PickItems(count);
   const roundId = serverNow();
   PARK = { finalized:false };
   G.ref.update({ status:'parcheggio', parcheggio:{ phase:'active', items, durationMs, prizes, roundId } });
@@ -22041,17 +22113,13 @@ let pjParkResults = {};
 function pjParkRenderLot(items){
   const lot = $('pjParkLot');
   if (!lot) return;
-  let html = '';
-  let filled = 0;
-  (items||[]).forEach(it=>{
-    for (let i=0;i<it.size;i++){
-      if (filled>=100) return;
-      html += `<div class="parkCell filled" style="background:${it.color}; opacity:.4"><span class="veic">${it.e}</span></div>`;
-      filled++;
-    }
-  });
-  for (let i=filled; i<100; i++) html += `<div class="parkCell"></div>`;
-  lot.innerHTML = html;
+  // Non tento di ricreare la disposizione 2D di ognuno (sarebbe illeggibile con più giocatori):
+  // mostro invece la legenda dei tipi di mezzo offerti, con l'ingombro reale, come riferimento.
+  const seen = {};
+  (items||[]).forEach(it=>{ seen[it.k] = it; });
+  lot.innerHTML = Object.values(seen).map(it=>
+    `<div class="pk2Chip" style="cursor:default"><span class="ic">${it.e}</span><span class="nm">${esc(it.n)}</span><span class="dim">${it.wM}×${it.hM} m</span></div>`
+  ).join('');
 }
 function pjParkRenderResults(){
   const el = $('pjParkResults');
