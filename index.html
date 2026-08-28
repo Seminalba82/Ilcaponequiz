@@ -970,20 +970,63 @@ body.barOn.barCollapsed .screen.active{padding-bottom:70px;}
 .ranaTrackBig{display:flex; flex-direction:column; gap:9px; width:100%; max-width:900px; margin:14px auto 0;
   background:linear-gradient(180deg,#0a3d2e,#062418); border:3px solid var(--gold); border-radius:16px; padding:14px;
   box-shadow:0 0 30px rgba(255,201,60,.2), inset 0 0 40px rgba(0,0,0,.4);}
-.ranaLane{position:relative; height:60px; background:rgba(255,255,255,.05); border-radius:12px; overflow:hidden;}
+.ranaLane{position:relative; height:60px; background:rgba(255,255,255,.05); border-radius:12px;}
 .ranaTrackBar{position:absolute; left:0; top:0; bottom:0; background:linear-gradient(90deg, rgba(182,255,46,.28), rgba(182,255,46,.08)); transition:width .35s ease; z-index:1;}
-.ranaFrogBig{position:absolute; top:50%; transform:translateY(-50%); font-size:34px; z-index:3;
+.ranaLaneShadow{position:absolute; bottom:6px; width:26px; height:8px; border-radius:50%; z-index:2;
+  background:radial-gradient(ellipse, rgba(0,0,0,.55) 0%, transparent 75%); transform:translateX(-50%) scale(1); transition:left .35s ease;}
+.ranaLane.hop .ranaLaneShadow{animation:ranaShadowPulseLane .5s cubic-bezier(.3,0,.5,1);}
+@keyframes ranaShadowPulseLane{
+  0%{transform:translateX(-50%) scale(1); opacity:.7;}
+  45%{transform:translateX(-50%) scale(.35); opacity:.2;}
+  100%{transform:translateX(-50%) scale(1); opacity:.7;}
+}
+.ranaFrogBig{position:absolute; top:50%; transform:translateY(-50%); font-size:34px; z-index:3; transform-origin:bottom center;
   filter:drop-shadow(0 3px 4px rgba(0,0,0,.5)); transition:left .35s ease;}
-.ranaLane.hop .ranaFrogBig{animation:ranaHopLane .35s ease;}
-@keyframes ranaHopLane{ 0%{transform:translateY(-50%) scale(1);} 40%{transform:translateY(-72%) scale(1.15,.85);} 70%{transform:translateY(-46%) scale(.92,1.08);} 100%{transform:translateY(-50%) scale(1);} }
+.ranaLane.hop .ranaFrogBig{animation:ranaHopLane .5s cubic-bezier(.32,0,.55,1);}
+@keyframes ranaHopLane{
+  0%{transform:translateY(-50%) scale(1,1) rotate(0deg);}
+  10%{transform:translateY(-42%) scale(1.2,.78) rotate(-4deg);}
+  38%{transform:translateY(-135%) scale(.87,1.15) rotate(5deg);}
+  60%{transform:translateY(-140%) scale(.88,1.13) rotate(-3deg);}
+  84%{transform:translateY(-44%) scale(1.22,.75) rotate(3deg);}
+  100%{transform:translateY(-50%) scale(1,1) rotate(0deg);}
+}
 .ranaLabel{position:absolute; left:10px; top:5px; z-index:2; font-family:'Outfit',sans-serif; font-weight:800; color:#fff; font-size:13px; text-shadow:0 1px 3px #000;}
 .ranaJumps{position:absolute; right:10px; top:50%; transform:translateY(-50%); z-index:2; font-family:'Bungee'; color:var(--gold); font-size:15px; text-shadow:0 1px 3px #000;}
 .ranaFinishFlag{position:absolute; right:4px; top:0; bottom:0; width:5px; z-index:1;
   background:repeating-linear-gradient(45deg,#fff 0 6px,#111 6px 12px);}
-.ranaMeWrap{width:100%; max-width:320px; margin:10px auto 0; text-align:center;}
-.ranaMeFrog{font-size:92px; display:inline-block; filter:drop-shadow(0 6px 8px rgba(0,0,0,.5));}
-.ranaMeFrog.hop{animation:ranaHop .35s ease;}
-@keyframes ranaHop{ 0%{transform:translateY(0) scale(1);} 40%{transform:translateY(-24px) scale(1.15,.85);} 70%{transform:translateY(3px) scale(.92,1.08);} 100%{transform:translateY(0) scale(1);} }
+.ranaMeWrap{width:100%; max-width:320px; margin:6px auto 0; text-align:center;}
+.ranaStage{position:relative; height:150px; display:flex; align-items:flex-end; justify-content:center; margin-bottom:2px;}
+.ranaMeShadow{position:absolute; bottom:8px; left:50%; width:76px; height:18px; border-radius:50%; z-index:1;
+  background:radial-gradient(ellipse, rgba(0,0,0,.5) 0%, rgba(0,0,0,.2) 60%, transparent 78%);
+  transform:translateX(-50%) scale(1);}
+.ranaMeShadow.jump{animation:ranaShadowPulse .55s cubic-bezier(.3,0,.5,1);}
+@keyframes ranaShadowPulse{
+  0%{transform:translateX(-50%) scale(1); opacity:.65;}
+  45%{transform:translateX(-50%) scale(.4); opacity:.2;}
+  100%{transform:translateX(-50%) scale(1); opacity:.65;}
+}
+.ranaMeFrog{position:relative; font-size:92px; z-index:2; display:inline-block; transform-origin:bottom center;
+  filter:drop-shadow(0 6px 8px rgba(0,0,0,.5));}
+.ranaMeFrog.jump{animation:ranaJumpArc .55s cubic-bezier(.32,0,.55,1);}
+@keyframes ranaJumpArc{
+  0%{transform:translateY(0) scale(1,1) rotate(0deg);}
+  10%{transform:translateY(7px) scale(1.22,.76) rotate(-4deg);}
+  38%{transform:translateY(-78px) scale(.86,1.16) rotate(5deg);}
+  60%{transform:translateY(-82px) scale(.88,1.14) rotate(-3deg);}
+  84%{transform:translateY(5px) scale(1.26,.72) rotate(3deg);}
+  100%{transform:translateY(0) scale(1,1) rotate(0deg);}
+}
+.ranaDust{position:absolute; bottom:10px; left:50%; width:1px; height:1px; z-index:1; pointer-events:none;}
+.ranaDust span{position:absolute; width:9px; height:9px; border-radius:50%; background:radial-gradient(circle, rgba(220,205,170,.95), rgba(220,205,170,0) 70%); left:0; top:0; opacity:0;}
+.ranaDust.jump span:nth-child(1){animation:ranaDust1 .55s ease-out;}
+.ranaDust.jump span:nth-child(2){animation:ranaDust2 .55s ease-out;}
+.ranaDust.jump span:nth-child(3){animation:ranaDust3 .55s ease-out;}
+.ranaDust.jump span:nth-child(4){animation:ranaDust4 .55s ease-out;}
+@keyframes ranaDust1{0%,68%{opacity:0; transform:translate(-3px,0) scale(.3);} 78%{opacity:.9; transform:translate(-10px,-4px) scale(1);} 100%{opacity:0; transform:translate(-34px,-16px) scale(.2);}}
+@keyframes ranaDust2{0%,68%{opacity:0; transform:translate(3px,0) scale(.3);} 78%{opacity:.9; transform:translate(10px,-4px) scale(1);} 100%{opacity:0; transform:translate(34px,-16px) scale(.2);}}
+@keyframes ranaDust3{0%,70%{opacity:0; transform:translate(-1px,0) scale(.3);} 80%{opacity:.85; transform:translate(-4px,-10px) scale(1);} 100%{opacity:0; transform:translate(-14px,-30px) scale(.15);}}
+@keyframes ranaDust4{0%,70%{opacity:0; transform:translate(1px,0) scale(.3);} 80%{opacity:.85; transform:translate(4px,-10px) scale(1);} 100%{opacity:0; transform:translate(14px,-30px) scale(.15);}}
 .ranaMeCount{font-family:'Bungee'; font-size:26px; color:var(--gold); margin-top:4px;}
 .ranaMeRank{font-family:'Outfit',sans-serif; font-weight:700; color:#fff; font-size:16px; margin-top:2px;}
 .ranaMicWrap{width:100%; max-width:280px; height:20px; margin:12px auto 0; border-radius:12px; background:rgba(255,255,255,.08);
@@ -1908,7 +1951,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.56</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.57</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -5448,7 +5491,11 @@ body.suspense-on #pfRank{ display:none !important; }
     <div class="pill" id="ranapScore"></div>
   </div>
   <div class="ranaMeWrap">
-    <div class="ranaMeFrog" id="ranaMeFrog">🐸</div>
+    <div class="ranaStage">
+      <div class="ranaMeShadow" id="ranaMeShadow"></div>
+      <div class="ranaMeFrog" id="ranaMeFrog">🐸</div>
+      <div class="ranaDust" id="ranaDust"><span></span><span></span><span></span><span></span></div>
+    </div>
     <div class="ranaMeCount" id="ranaMeCount">0 / 30 salti</div>
     <div class="ranaMeRank" id="ranaMeRank"></div>
   </div>
@@ -6218,7 +6265,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1356; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1357; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -11021,10 +11068,12 @@ function ranaStopMic(){
 function ranaOnJump(sig){
   if (P.ranaSig !== sig || P.ranaFinished) return;
   P.ranaJumps++;
-  const el = $('ranaMeFrog');
-  el.classList.remove('hop'); void el.offsetWidth; el.classList.add('hop');
+  const frog = $('ranaMeFrog'), shadow = $('ranaMeShadow'), dust = $('ranaDust');
+  frog.classList.remove('jump'); void frog.offsetWidth; frog.classList.add('jump');
+  shadow.classList.remove('jump'); void shadow.offsetWidth; shadow.classList.add('jump');
+  dust.classList.remove('jump'); void dust.offsetWidth; dust.classList.add('jump');
   $('ranaMeCount').textContent = `${P.ranaJumps} / ${P.ranaNeeded} salti`;
-  if (navigator.vibrate) navigator.vibrate(30);
+  if (navigator.vibrate) navigator.vibrate(35);
   P.ref.child('rana/progress/'+P.id).update({ name:P.name, jumps:P.ranaJumps });
   if (P.ranaJumps >= P.ranaNeeded){
     P.ranaFinished = true;
@@ -11035,6 +11084,7 @@ function ranaOnJump(sig){
       if (res.committed && res.snapshot.val()===1){
         P.ref.child('rana').update({ winnerName:P.name, winnerId:P.id });
         P.ref.child('rana/results/'+P.id).set({ finished:true, rank:1 });
+        if (navigator.vibrate) navigator.vibrate([60,40,60,40,120]);
       }
     });
   }
@@ -21442,6 +21492,7 @@ function pjRanaRender(){
     return `<div class="ranaLane ${hop?'hop':''}">
       <div class="ranaTrackBar" style="width:${pct}%"></div>
       <div class="ranaFinishFlag"></div>
+      <div class="ranaLaneShadow" style="left:${leftPct}%"></div>
       <div class="ranaFrogBig" style="left:${leftPct}%">🐸</div>
       <div class="ranaLabel">${esc(p.name||'?')}</div>
       <div class="ranaJumps">${p.jumps||0}/${needed}</div>
