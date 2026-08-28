@@ -1027,6 +1027,27 @@ body.barOn.barCollapsed .screen.active{padding-bottom:70px;}
 @keyframes ranaDust2{0%,68%{opacity:0; transform:translate(3px,0) scale(.3);} 78%{opacity:.9; transform:translate(10px,-4px) scale(1);} 100%{opacity:0; transform:translate(34px,-16px) scale(.2);}}
 @keyframes ranaDust3{0%,70%{opacity:0; transform:translate(-1px,0) scale(.3);} 80%{opacity:.85; transform:translate(-4px,-10px) scale(1);} 100%{opacity:0; transform:translate(-14px,-30px) scale(.15);}}
 @keyframes ranaDust4{0%,70%{opacity:0; transform:translate(1px,0) scale(.3);} 80%{opacity:.85; transform:translate(4px,-10px) scale(1);} 100%{opacity:0; transform:translate(14px,-30px) scale(.15);}}
+/* ===== STENDI I PANNI ===== */
+.stendiLineWrap{width:100%; max-width:520px; margin:14px auto 0;}
+.stendiPole{position:relative; height:14px; border-radius:8px; background:linear-gradient(180deg,#8a6a3a,#5a4322);
+  box-shadow:0 2px 0 rgba(0,0,0,.4), inset 0 1px 2px rgba(255,255,255,.25); display:flex; overflow:hidden;}
+.stendiSeg{height:100%; display:flex; align-items:center; justify-content:center; font-size:15px;
+  border-right:2px solid rgba(0,0,0,.25); flex-shrink:0; transition:width .3s ease;}
+.stendiPct{font-family:'Bungee'; font-size:clamp(22px,6vw,30px); color:var(--gold); text-align:center; margin-top:10px;
+  text-shadow:0 2px 0 #6b4a00;}
+.stendiPctSub{font-family:'Outfit',sans-serif; font-weight:600; font-size:13px; color:var(--muted); text-align:center; margin-top:-4px;}
+.stendiGrid{display:grid; grid-template-columns:repeat(auto-fill, minmax(84px,1fr)); gap:9px; width:100%; max-width:520px; margin:14px auto 0;}
+.stendiCard{position:relative; border-radius:14px; padding:10px 6px 8px; text-align:center; cursor:pointer;
+  background:linear-gradient(180deg,#241f34,#1a1626); border:2px solid rgba(255,255,255,.12); transition:transform .1s, border-color .15s;}
+.stendiCard .ic{font-size:30px; display:block;}
+.stendiCard .nm{font-family:'Outfit',sans-serif; font-weight:700; font-size:10.5px; color:#fff; margin-top:3px; display:block;}
+.stendiCard .pc{font-family:'Bungee'; font-size:12px; color:var(--gold); margin-top:2px; display:block;}
+.stendiCard.on{border-color:var(--lime); box-shadow:0 0 14px rgba(182,255,46,.4); background:linear-gradient(180deg,#2a3a1c,#1a2612);}
+.stendiCard.on::after{content:'✓'; position:absolute; top:4px; right:6px; color:var(--lime); font-weight:900; font-size:14px;}
+.stendiCard.off{opacity:.32; filter:grayscale(.6); cursor:not-allowed;}
+.stendiCard:active:not(.off){transform:scale(.93);}
+.stendiTimerHolder{width:100%; max-width:280px; margin:10px auto 0;}
+.stendiDone{font-family:'Bungee'; font-size:16px; color:#fff; text-align:center; margin-top:10px; display:none;}
 .ranaMeCount{font-family:'Bungee'; font-size:26px; color:var(--gold); margin-top:4px;}
 .ranaMeRank{font-family:'Outfit',sans-serif; font-weight:700; color:#fff; font-size:16px; margin-top:2px;}
 .ranaMicWrap{width:100%; max-width:280px; height:20px; margin:12px auto 0; border-radius:12px; background:rgba(255,255,255,.08);
@@ -1951,7 +1972,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.57</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.58</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -5504,6 +5525,75 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="ranaWinnerBanner" id="ranapWinnerBanner"></div>
 </div>
 
+<!-- ==================== REGIA: STENDI I PANNI ==================== -->
+<div class="screen" id="scrStendi">
+  <div class="brand"><div class="t1" style="font-size:clamp(18px,3.4vw,32px)">🧺 STENDI I PANNI</div></div>
+  <div class="panel mt" style="max-width:480px" id="stendiSetup">
+    <div class="label mt">Quanti vestiti offrire lungo la cordina</div>
+    <select id="stendiCount">
+      <option value="10">10 vestiti</option>
+      <option value="12" selected>12 vestiti</option>
+      <option value="15">15 vestiti</option>
+    </select>
+    <div class="label mt">Tempo per decidere</div>
+    <select id="stendiDuration">
+      <option value="30">30 secondi</option>
+      <option value="45" selected>45 secondi</option>
+      <option value="60">1 minuto</option>
+      <option value="90">90 secondi</option>
+    </select>
+    <div class="label mt">Punti per la classifica finale (1°-5°)</div>
+    <div class="row">
+      <input type="number" id="stendiP1" class="grow" placeholder="1°" value="500">
+      <input type="number" id="stendiP2" class="grow" placeholder="2°" value="300">
+      <input type="number" id="stendiP3" class="grow" placeholder="3°" value="200">
+    </div>
+    <div class="row mt">
+      <input type="number" id="stendiP4" class="grow" placeholder="4°" value="100">
+      <input type="number" id="stendiP5" class="grow" placeholder="5°" value="50">
+    </div>
+    <div class="byline mt" style="opacity:.75">🧺 Ogni giocatore ha la stessa cordina e gli stessi vestiti da scegliere: ognuno decide quali stendere per riempirla il più possibile, senza sforare. Alla fine vince chi si avvicina di più al 100% — i primi cinque classificati prendono i punti impostati qui sopra.</div>
+    <button class="btn mg mt" style="width:100%" onclick="stendiStart()">🧺 SI PARTE!</button>
+  </div>
+  <div id="stendiLive" style="display:none; width:100%" class="center">
+    <div class="miniMsg" id="stendiMsg"></div>
+    <div class="timerWrap mt" style="max-width:420px"><div class="timerBar" id="stendiTimerBarHost"></div></div>
+    <div class="byline" id="stendiCountHost"></div>
+    <div class="lead mt" id="stendiResultsLive" style="max-width:500px; width:100%"></div>
+    <button class="btn cy mt" id="stendiBtnAgain" onclick="openStendi()" style="display:none">🔁 Un'altra manche</button>
+  </div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
+</div>
+
+<!-- ==================== PROIETTORE: STENDI I PANNI ==================== -->
+<div class="screen" id="scrPjStendi">
+  <div class="brand"><div class="t1" style="font-size:clamp(22px,3.6vw,40px)">🧺 STENDI I PANNI</div></div>
+  <div class="miniMsg" id="pjStendiMsg">SCEGLIETE I VESTITI DA STENDERE SUL TELEFONO!</div>
+  <div class="timerWrap mt" style="max-width:460px"><div class="timerBar" id="pjStendiTimerBar"></div></div>
+  <div class="stendiLineWrap" style="max-width:700px">
+    <div class="stendiPole" id="pjStendiPole"></div>
+  </div>
+  <div class="byline mt" style="max-width:460px; text-align:center">Ogni giocatore stende la propria cordina sul telefono: qui vedete la classifica formarsi in tempo reale.</div>
+  <div class="lead mt" id="pjStendiResults" style="max-width:600px; width:100%"></div>
+</div>
+
+<!-- ==================== TELEFONO: STENDI I PANNI ==================== -->
+<div class="screen" id="scrPlayStendi" style="align-items:center; justify-content:center">
+  <div class="row" style="width:100%; justify-content:space-between">
+    <div class="pill" id="stendipName" style="color:var(--gold)"></div>
+    <div class="pill" id="stendipScore"></div>
+  </div>
+  <div class="stendiTimerHolder"><div class="timerBar" id="stendipTimerBar"></div></div>
+  <div class="stendiLineWrap">
+    <div class="stendiPole" id="stendiPole"></div>
+  </div>
+  <div class="stendiPct" id="stendiPct">0%</div>
+  <div class="stendiPctSub" id="stendiPctSub">della cordina riempita</div>
+  <div class="stendiGrid" id="stendiGrid"></div>
+  <button class="btn mg mt" id="stendiDoneBtn" onclick="stendiFinishNow()" style="width:100%; max-width:520px">✅ HO FINITO!</button>
+  <div class="stendiDone" id="stendiDoneMsg"></div>
+</div>
+
 <!-- ==================== PLAYER: IL PONTE SOSPESO ==================== -->
 <div class="screen" id="scrPlayPonteSospeso" style="align-items:center; justify-content:center">
   <div class="row" style="width:100%; justify-content:space-between">
@@ -6189,7 +6279,7 @@ body.suspense-on #pfRank{ display:none !important; }
 /* ================================================================
    📋 ELENCO MINIGIOCHI — aggiornare questa lista ogni volta che se ne
    aggiunge uno nuovo (serve ad Alberto per la documentazione delle licenze).
-   Ultimo aggiornamento: v13.53 — 57 minigiochi totali.
+   Ultimo aggiornamento: v13.58 — 58 minigiochi totali.
    ================================================================
    1.  🥃 Bussolotti
    2.  🎲 Pari o Dispari
@@ -6265,7 +6355,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1357; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1358; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -8460,6 +8550,7 @@ function listenGame(){
     else if (g.status==='panino') showPlayerPanino(g);
     else if (g.status==='clover') showPlayerClover(g);
     else if (g.status==='rana') showPlayerRana(g);
+    else if (g.status==='stendi') showPlayerStendi(g);
     else if (g.status==='finddiff') showPlayerFindDiff(g);
     else if (g.status==='maggioranza') showPlayerMaj(g);
     else if (g.status==='goldenticket') showPlayerGold(g);
@@ -11119,6 +11210,98 @@ function showPlayerRana(g){
     $('ranapWinnerBanner').style.display = 'block';
     $('ranapWinnerBanner').textContent = m.winnerId===P.id ? '🏆 HAI VINTO TU!!' : `🏆 HA VINTO ${(m.winnerName||'?').toUpperCase()}!`;
   }
+}
+/* ================================================================
+   STENDI I PANNI — generazione vestiti (condivisa regia/telefono/proiettore) e telefono
+================================================================ */
+const STENDI_POOL = [
+  {n:'Calzini', e:'🧦', tier:'s'}, {n:'Guanti', e:'🧤', tier:'s'}, {n:'Slip', e:'🩲', tier:'s'}, {n:'Cappellino', e:'🧢', tier:'s'},
+  {n:'Maglietta', e:'👕', tier:'m'}, {n:'Pantaloncini', e:'🩳', tier:'m'}, {n:'Sciarpa', e:'🧣', tier:'m'}, {n:'Camicia', e:'👔', tier:'m'}, {n:'Canottiera', e:'🎽', tier:'m'}, {n:'Costume', e:'🩱', tier:'m'},
+  {n:'Pantaloni', e:'👖', tier:'l'}, {n:'Vestito', e:'👗', tier:'l'}, {n:'Giacca', e:'🧥', tier:'l'}, {n:'Lenzuolo', e:'🛏️', tier:'l'}, {n:'Asciugamano', e:'🧺', tier:'l'}, {n:'Vestaglia', e:'👘', tier:'l'},
+];
+const STENDI_TIER_RANGE = { s:[5,8], m:[8,13], l:[13,19] };
+const STENDI_COLORS = ['#ff9fb2','#ffd27a','#9fe6b0','#8fd8ff','#c9a8ff','#ffb37a','#9fffe0','#ffe08a','#ff8fa8','#b8ff9f'];
+function stendiPickItems(n){
+  const pool = STENDI_POOL.slice();
+  for (let i=pool.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [pool[i],pool[j]]=[pool[j],pool[i]]; }
+  const chosen = pool.slice(0, Math.min(n, pool.length));
+  return chosen.map((it,idx)=>{
+    const [lo,hi] = STENDI_TIER_RANGE[it.tier];
+    const size = lo + Math.floor(Math.random()*(hi-lo+1));
+    return { id:'it'+idx, n:it.n, e:it.e, size, color: STENDI_COLORS[idx % STENDI_COLORS.length] };
+  });
+}
+function stendiUsedPct(){
+  return P.stendiSelected.reduce((s,id)=>{ const it=(P.stendiItems||[]).find(x=>x.id===id); return s+(it?it.size:0); }, 0);
+}
+function stendiRenderLine(){
+  const pole = $('stendiPole');
+  if (!pole) return;
+  pole.innerHTML = P.stendiSelected.map(id=>{
+    const it = (P.stendiItems||[]).find(x=>x.id===id);
+    if (!it) return '';
+    return `<div class="stendiSeg" style="width:${it.size}%; background:${it.color}">${it.e}</div>`;
+  }).join('');
+  const pct = Math.min(100, Math.round(stendiUsedPct()));
+  $('stendiPct').textContent = pct+'%';
+}
+function stendiRenderGrid(){
+  const remaining = 100 - stendiUsedPct();
+  $('stendiGrid').innerHTML = (P.stendiItems||[]).map(it=>{
+    const on = P.stendiSelected.includes(it.id);
+    const fits = on || it.size <= remaining;
+    return `<div class="stendiCard ${on?'on':''} ${fits?'':'off'}" onclick="stendiToggle('${it.id}')">
+      <span class="ic">${it.e}</span><span class="nm">${esc(it.n)}</span><span class="pc">${it.size}%</span>
+    </div>`;
+  }).join('');
+}
+function stendiToggle(id){
+  if (P.stendiFinished) return;
+  const it = (P.stendiItems||[]).find(x=>x.id===id);
+  if (!it) return;
+  const idx = P.stendiSelected.indexOf(id);
+  if (idx>=0){ P.stendiSelected.splice(idx,1); }
+  else {
+    if (stendiUsedPct() + it.size > 100) return; // non entra nella cordina rimasta libera
+    P.stendiSelected.push(id);
+    if (navigator.vibrate) navigator.vibrate(20);
+  }
+  stendiRenderLine(); stendiRenderGrid(); stendiSubmitProgress();
+}
+function stendiSubmitProgress(){
+  if (!P.ref) return;
+  P.ref.child('stendi/results/'+P.id).update({ name:P.name, pct:Math.round(stendiUsedPct()), finished:false, updatedAt:Date.now() });
+}
+function stendiFinishNow(){ if (!P.stendiFinished) stendiLockIn(); }
+function stendiLockIn(){
+  P.stendiFinished = true;
+  const pct = Math.round(stendiUsedPct());
+  document.querySelectorAll('#stendiGrid .stendiCard').forEach(c=> c.onclick=null);
+  $('stendiDoneBtn').style.display = 'none';
+  $('stendiDoneMsg').style.display = 'block';
+  $('stendiDoneMsg').textContent = `🧺 CORDINA STESA! ${pct}% riempita`;
+  if (navigator.vibrate) navigator.vibrate([40,30,40]);
+  P.ref.child('stendi/results/'+P.id).set({ name:P.name, pct, finished:true, lockedAt:Date.now() });
+}
+function showPlayerStendi(g){
+  const m = g.stendi||{};
+  $('stendipName').textContent = P.name;
+  $('stendipScore').textContent = (((g.players||{})[P.id]||{}).score||0)+' pt';
+  showScreen('scrPlayStendi');
+  if (m.phase!=='active'){ clearInterval(P.stendiInt); P.stendiSig = null; return; }
+  const sig = 'act:'+m.roundId;
+  if (P.stendiSig === sig) return; // stesso round già in corso: non ritoccare selezioni/timer già avviati
+  clearInterval(P.stendiInt);
+  P.stendiSig = sig; P.stendiFinished = false; P.stendiSelected = []; P.stendiItems = m.items||[];
+  $('stendiDoneBtn').style.display = ''; $('stendiDoneMsg').style.display = 'none';
+  stendiRenderLine(); stendiRenderGrid();
+  P.stendiLocalEndAt = Date.now() + (m.durationMs||0);
+  P.stendiInt = setInterval(()=>{
+    if (P.stendiSig !== sig) { clearInterval(P.stendiInt); return; }
+    const left = Math.max(0, P.stendiLocalEndAt - Date.now());
+    $('stendipTimerBar').style.width = (left/(m.durationMs||1)*100)+'%';
+    if (left<=0){ clearInterval(P.stendiInt); if (!P.stendiFinished) stendiLockIn(); }
+  }, 100);
 }
 /* ================================================================
    TROVA LE DIFFERENZE — telefono
@@ -18258,6 +18441,70 @@ function ranaStart(){
 }
 
 /* ================================================================
+   STENDI I PANNI — regia
+================================================================ */
+let STENDI = {};
+function openStendi(){
+  if (!isGameEnabled('stendi')) return alert('⚠️ Questo minigioco non è compreso nella licenza attiva. Contatta Alberto per sbloccarlo.');
+  if (!G) return alert('Avvia prima una partita!');
+  cancelLiveQuestion(); closeModal(); clearInterval((STENDI||{}).timerInt);
+  G.ref.child('stendi/results').off();
+  G.ref.update({ status:'stendi', stendi:{ phase:'idle' } });
+  STENDI = {};
+  $('stendiSetup').style.display='block'; $('stendiLive').style.display='none';
+  showScreen('scrStendi');
+}
+function stendiStart(){
+  const count = +($('stendiCount').value||12);
+  const durationMs = (+($('stendiDuration').value||45))*1000;
+  const prizes = [1,2,3,4,5].map(i=> +($('stendiP'+i).value||0));
+  const items = stendiPickItems(count);
+  const roundId = serverNow();
+  STENDI = { finalized:false };
+  G.ref.update({ status:'stendi', stendi:{ phase:'active', items, durationMs, prizes, roundId } });
+  G.ref.child('stendi/results').remove();
+  $('stendiSetup').style.display='none'; $('stendiLive').style.display='block';
+  $('stendiMsg').textContent = `🧺 SI STENDE! ${count} vestiti sulla cordina — ${prizes[0]} punti al primo`;
+  $('stendiCountHost').textContent=''; $('stendiResultsLive').innerHTML=''; $('stendiBtnAgain').style.display='none';
+  pjSend({type:'stendiActive', items, durationMs});
+  clearInterval(STENDI.timerInt);
+  const endAt = serverNow()+durationMs;
+  STENDI.timerInt = setInterval(()=>{
+    const left = Math.max(0, endAt-serverNow());
+    $('stendiTimerBarHost').style.width = (left/durationMs*100)+'%';
+    if (left<=0){ clearInterval(STENDI.timerInt); setTimeout(()=> stendiFinalize(prizes), 900); }
+  }, 100);
+  G.ref.child('stendi/results').on('value', s=>{
+    const results = s.val()||{};
+    const entries = Object.values(results).sort((a,b)=>(b.pct||0)-(a.pct||0));
+    $('stendiCountHost').textContent = `Cordine stese: ${entries.filter(e=>e.finished).length} · in corso: ${entries.filter(e=>!e.finished).length}`;
+    $('stendiResultsLive').innerHTML = entries.map((p,i)=>
+      `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(p.name||'?')} <span class="pts">${p.pct||0}%${p.finished?' ✓':''}</span></div>`
+    ).join('') || '<div class="byline">Nessuno ha ancora scelto un vestito...</div>';
+  });
+}
+function stendiFinalize(prizes){
+  if (STENDI.finalized) return; STENDI.finalized = true;
+  G.ref.child('stendi/results').once('value').then(s=>{
+    const results = s.val()||{};
+    const entries = Object.entries(results).map(([pid,r])=>({pid,...r}));
+    // ordino per percentuale (chi ha riempito di più vince); a parità, chi ha steso la cordina prima
+    entries.sort((a,b)=> (b.pct||0)-(a.pct||0) || (a.lockedAt||Infinity)-(b.lockedAt||Infinity));
+    const top5 = entries.slice(0,5);
+    top5.forEach((e,i)=>{ const pts = prizes[i]||0; if (pts>0) applyScoreDelta(e.pid, pts); });
+    G.ref.child('players').once('value').then(ps=>{
+      const pl = ps.val()||{};
+      $('stendiResultsLive').innerHTML = top5.map((e,i)=>
+        `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc((pl[e.pid]||{}).name||e.name||'?')} <span class="pts">${e.pct||0}% · +${prizes[i]||0}</span></div>`
+      ).join('') || '<div class="byline">Nessuno ha steso nulla questa manche.</div>';
+      $('stendiMsg').textContent = '🏁 CORDINE STESE! Classifica finale qui sotto:';
+      $('stendiCountHost').textContent = '';
+      $('stendiBtnAgain').style.display='';
+    });
+  });
+}
+
+/* ================================================================
    ROULETTE — regia
 ================================================================ */
 let RW = {};
@@ -20646,6 +20893,7 @@ const GIOCHI_CATALOGO = [
   {k:'pagliuzza', l:'🌾 La Pagliuzza'},
   {k:'supertris', l:'💎 SUPERTRIS'},
   {k:'rdc', l:'🧮 La Resa dei Conti'},
+  {k:'stendi', l:'🧺 Stendi i Panni'},
   {k:'spesa', l:'🛒 Lista della Spesa'},
   {k:'mastermind', l:'🎯 Mastermind'},
   {k:'bomba', l:'💣 Bomba a Orologeria'},
@@ -20714,6 +20962,7 @@ const SKILL_GAMES = [
   {k:'scopa', cls:'', style:'background:linear-gradient(180deg,#1a7a3a,#0a3a1a); color:#fff; box-shadow:0 7px 0 #052610,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(26,122,58,.4)', fn:'openScopa', label:`🧹 Scopa e Vinci`},
   {k:'tfiscale', cls:'', style:'background:linear-gradient(180deg,#6fe08f,#2e9c4f); color:#fff; box-shadow:0 7px 0 #1a5c2e,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(46,156,79,.35)', fn:'openTFiscale', label:`💶 Sei Troppo Fiscale!`},
   {k:'simon', cls:'lm', style:'', fn:'openSimon', label:`🎨 Simon`},
+  {k:'stendi', cls:'', style:'background:linear-gradient(180deg,#4a90c9,#1e4d73); color:#fff; box-shadow:0 7px 0 #0e2a3f,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(74,144,201,.4)', fn:'openStendi', label:`🧺 Stendi i Panni`},
   {k:'taptap', cls:'mg', style:'', fn:'openTapTap', label:`👆 Tap Tap`},
   {k:'memo', cls:'lm', style:'', fn:'openMemo', label:`🔍 Trova la Carta`},
   {k:'wordsearch', cls:'cy', style:'', fn:'openWordSearch', label:`🔤 Trova la Parola`},
@@ -21506,6 +21755,23 @@ function pjRanaRender(){
     else banner.style.display='none';
   }
 }
+// STENDI I PANNI — rendering continuo sul proiettore: la cordina decorativa si mostra una volta
+// all'attivazione (pjStendiRenderPole), ma la classifica in basso si aggiorna in tempo reale ad ogni
+// tocco di qualunque giocatore, quindi serve un listener persistente come per La Rana Salterina.
+let pjStendiResults = {};
+function pjStendiRenderPole(items){
+  const pole = $('pjStendiPole');
+  if (!pole) return;
+  pole.innerHTML = (items||[]).map(it=> `<div class="stendiSeg" style="width:${it.size}%; background:${it.color}; opacity:.4">${it.e}</div>`).join('');
+}
+function pjStendiRenderResults(){
+  const el = $('pjStendiResults');
+  if (!el) return;
+  const entries = Object.values(pjStendiResults||{}).sort((a,b)=>(b.pct||0)-(a.pct||0));
+  el.innerHTML = entries.map((p,i)=>
+    `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(p.name||'?')} <span class="pts">${p.pct||0}%${p.finished?' ✓':''}</span></div>`
+  ).join('') || '<div class="byline" style="color:#fff; text-align:center">Nessuno ha ancora scelto un vestito...</div>';
+}
 function initProjector(){
   document.body.classList.add('proj');
   showScreen('scrPjWait');
@@ -21531,6 +21797,7 @@ function initProjector(){
     // minigiochi): il proiettore deve seguire in continuo l'avanzamento di tutti, non solo un messaggio una tantum.
     base.child('rana').on('value', s=>{ pjRanaState = s.val()||null; pjRanaRender(); });
     base.child('rana/progress').on('value', s=>{ pjRanaProgress = s.val()||{}; pjRanaRender(); });
+    base.child('stendi/results').on('value', s=>{ pjStendiResults = s.val()||{}; pjStendiRenderResults(); });
   } else if (!gcode) {
     $('pjWaitMsg').textContent = '⚠️ Manca il codice partita nel link: usa ?proj=1&g=CODICE';
   }
@@ -22998,6 +23265,18 @@ function pjRouteInner(m){
       $('pjRanaWinnerBanner').style.display='none';
       pjRanaLastJumps = {};
       pjRanaRender();
+    }
+    else if (m.type==='stendiActive') {
+      showScreen('scrPjStendi');
+      $('pjStendiMsg').textContent = 'SCEGLIETE I VESTITI DA STENDERE SUL TELEFONO!';
+      pjStendiRenderPole(m.items);
+      clearInterval(window._pjStendiInt);
+      const pjStendiLocalEndAt = Date.now() + (m.durationMs||0);
+      window._pjStendiInt = setInterval(()=>{
+        const left = Math.max(0, pjStendiLocalEndAt - Date.now());
+        $('pjStendiTimerBar').style.width = (left/(m.durationMs||1)*100)+'%';
+        if (left<=0) clearInterval(window._pjStendiInt);
+      }, 100);
     }
     else if (m.type==='rwActive') {
       showScreen('scrPjCasino');
