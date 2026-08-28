@@ -1908,7 +1908,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.53</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.56</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -1924,6 +1924,7 @@ body.suspense-on #pfRank{ display:none !important; }
     <button class="btn mg" onclick="newQuiz()" data-tip="Crea un quiz nuovo da zero, con la sua scaletta di domande">✚ Crea nuovo quiz</button>
     <button class="btn cy" onclick="importQuiz()" data-tip="Carica un quiz da un file salvato in precedenza (esportato da qui o ricevuto da qualcun altro)">⬆ Importa quiz</button>
     <button class="btn lm" onclick="modalCampionato()" data-tip="Tieni più campionati distinti, uno per locale, ognuno con le sue squadre protette da PIN">🏆 Campionato serate</button>
+    <button class="btn lm" onclick="modalStorico()" data-tip="Vedi tutte le serate registrate per questa licenza, e aggiungine a mano anche quelle di prima di questa funzione">📍 Storico locali/serate</button>
     <button class="btn" onclick="modalMerge()" data-tip="Unisce due dei tuoi quiz salvati in uno solo">🔀 Fondi quiz</button>
     <button class="btn ghost" onclick="backupAllQuizzes()" data-tip="Scarica un file con tutti i tuoi quiz salvati, per non perderli mai">💾 Backup di tutti i quiz</button>
     <button class="btn ghost" onclick="openManualeUso()" data-tip="Apre il manuale d'uso generale del quiz, sempre aggiornato all'ultima versione">📖 Manuale d'Uso</button>
@@ -6217,7 +6218,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1353; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1356; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -7420,6 +7421,55 @@ function confirmVenueAndPlay(codice, quizIndex, isTest){
   closeModal();
   actuallyPlayQuiz(quizIndex);
 }
+// STORICO LOCALI/SERATE — vista indipendente, richiamabile dalla home senza dover avviare un quiz.
+// Permette anche di aggiungere a mano le serate giocate prima che questa funzione esistesse.
+function modalStorico(){
+  const codice = localStorage.getItem('capone_licenza_codice');
+  if (!codice) return alert('Nessuna licenza verificata ancora su questo dispositivo: avvia prima un quiz una volta, poi questa funzione sarà disponibile.');
+  db.ref('licenze/'+codice+'/serate').once('value').then(s=>{
+    const serateObj = s.val()||{};
+    const serate = Object.entries(serateObj).map(([sk,r])=>({sk,...r})).sort((a,b)=>(b.date||0)-(a.date||0));
+    const rows = serate.map(r=>`<div class="leadRow">
+      <span class="pos">📍</span>
+      <span class="grow"><b>${esc(r.venue||'?')}</b> — ${esc(r.dateStr||'')}<br><small style="color:var(--muted)">${esc(r.quizTitle||'')}${r.manual?' · inserita a mano':''}</small></span>
+      <button class="btn small ghost" onclick="storicoDelete('${codice}','${r.sk}')" data-tip="Rimuovi questa voce dallo storico">🗑</button>
+    </div>`).join('') || '<div class="byline">Nessuna serata registrata ancora.</div>';
+    const today = new Date().toISOString().slice(0,10);
+    const html = `
+      <div class="label" style="text-transform:none; letter-spacing:0">Qui trovi tutte le serate registrate per questa licenza. Puoi aggiungerne a mano anche di passate, precedenti all'introduzione di questa funzione automatica.</div>
+      <div class="panel mt" style="padding:14px">
+        <div class="label">Aggiungi una serata a mano</div>
+        <input type="date" id="storicoDate" value="${today}" style="width:100%; padding:10px; margin:6px 0; border-radius:10px; border:1px solid rgba(255,255,255,.2); background:rgba(255,255,255,.05); color:#fff;">
+        <input type="text" id="storicoVenue" placeholder="Locale/evento (es. La Gabbia di Matti)" style="width:100%; padding:10px; margin:6px 0; border-radius:10px; border:1px solid rgba(255,255,255,.2); background:rgba(255,255,255,.05); color:#fff;">
+        <input type="text" id="storicoQuiz" placeholder="Quiz giocato (facoltativo)" style="width:100%; padding:10px; margin:6px 0; border-radius:10px; border:1px solid rgba(255,255,255,.2); background:rgba(255,255,255,.05); color:#fff;">
+        <button class="btn mg mt" style="width:100%" onclick="storicoAddManual('${codice}')">➕ Aggiungi allo storico</button>
+      </div>
+      <div class="label mt">Serate registrate (${serate.length})</div>
+      <div style="max-height:320px; overflow-y:auto">${rows}</div>
+    `;
+    openModal('📍 STORICO LOCALI/SERATE', html);
+  });
+}
+function storicoAddManual(codice){
+  const dateVal = ($('storicoDate')||{}).value;
+  const venue = (($('storicoVenue')||{}).value||'').trim();
+  const quizTitle = (($('storicoQuiz')||{}).value||'').trim();
+  if (!dateVal) return alert('Scegli una data.');
+  if (!venue) return alert('Scrivi il nome del locale.');
+  const [y,mo,d] = dateVal.split('-').map(Number);
+  const dt = new Date(y, mo-1, d, 12, 0, 0); // mezzogiorno: evita sfasamenti di un giorno per via del fuso orario
+  const pad = n=>String(n).padStart(2,'0');
+  db.ref('licenze/'+codice+'/serate').push({
+    date: dt.getTime(),
+    dateStr: `${pad(d)}/${pad(mo)}/${y}`,
+    venue, quizTitle,
+    manual: true
+  }).then(()=> modalStorico());
+}
+function storicoDelete(codice, sk){
+  if (!confirm('Rimuovere questa voce dallo storico?')) return;
+  db.ref('licenze/'+codice+'/serate/'+sk).remove().then(()=> modalStorico());
+}
 
 function getDeviceId(){
   let id = localStorage.getItem('capone_device_id');
@@ -7493,9 +7543,28 @@ function actuallyPlayQuiz(i){
   G = { code, quiz, qi:-1, played:new Set(), ref: db.ref('caponequiz/games/'+code) };
   G.venueForReport = pendingVenueName; G.testMode = pendingTestMode;
   pendingVenueName = null; pendingTestMode = false; // consumati subito: non devono restare validi per la prossima partita
+  // REGISTRO SERATA per la licenza: data, locale e titolo del quiz, per accorgersi di eventuali ripetizioni.
+  // Scritto SUBITO all'avvio (non più a fine quiz): così restano nello storico anche le serate chiuse
+  // anzitempo senza mai premere "Termina quiz" — es. un podio intermedio seguito dalla chiusura della regia.
+  // Salto la registrazione solo se questa era una semplice PROVA tecnica, o se il locale non è stato indicato.
+  if (!G.testMode && G.venueForReport){
+    try{
+      const codiceLic = localStorage.getItem('capone_licenza_codice');
+      if (codiceLic){
+        const d = new Date();
+        const pad = n=>String(n).padStart(2,'0');
+        db.ref('licenze/'+codiceLic+'/serate').push({
+          date: Date.now(),
+          dateStr: `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}`,
+          quizTitle: quiz.title,
+          venue: G.venueForReport
+        });
+      }
+    }catch(e){ console.warn('Registrazione serata non riuscita:', e); }
+  }
   G.dataSnapshotAtStart = captureLocalDataSnapshot();
-  // REGISTRO SERATA: si arricchisce da solo durante il gioco (giocatori, minigiochi, domande/risposte)
-  // e viene scritto in automatico a fine quiz, senza bisogno di alcun pulsante — vedi endQuiz() e reportSave().
+  // REGISTRO SERATA (report giocatori/domande): si arricchisce da solo durante il gioco (giocatori, minigiochi,
+  // domande/risposte) e viene scritto in automatico a fine quiz, senza bisogno di alcun pulsante — vedi endQuiz() e reportSave().
   G.report = { quizTitle: quiz.title, code, startedAt: Date.now(), questions: [], minigames: [], playersSeen: {} };
   try{ localStorage.setItem('capone_last_game', code); localStorage.setItem('capone_last_quiz_idx', i); }catch(e){}
   suspenseMode = true; $('hbSuspense').classList.add('on');
@@ -8058,23 +8127,6 @@ function endQuiz(){
   // dell'utente — se aspettassimo anche solo la risposta di una richiesta a Firebase, per quanto
   // veloce, rischieremmo che passi troppo tempo e che il download venga bloccato in silenzio.
   if (G && G.report) reportSave(G.report.playersSeen);
-  // REGISTRO SERATA per la licenza: data, locale e quiz giocato, per accorgersi di eventuali ripetizioni.
-  // Salto la registrazione se questa era una semplice PROVA tecnica (G.testMode) o se il locale non è stato indicato.
-  if (G && !G.testMode && G.venueForReport){
-    try{
-      const codiceLic = localStorage.getItem('capone_licenza_codice');
-      if (codiceLic){
-        const d = new Date();
-        const pad = n=>String(n).padStart(2,'0');
-        db.ref('licenze/'+codiceLic+'/serate').push({
-          date: Date.now(),
-          dateStr: `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}`,
-          quizTitle: (G.report||{}).quizTitle || '',
-          venue: G.venueForReport
-        });
-      }
-    }catch(e){ console.warn('Registrazione serata non riuscita:', e); }
-  }
   sendLeadOverlay({on:false}); // sempre incondizionato: leadOv.on (variabile locale) può restare disallineato da un ricaricamento della pagina di regia, lasciando la sovrapposizione accesa sui telefoni senza che l'host se ne accorga
   G.ref.child('players').once('value').then(ps=>{
     const players = ps.val()||{};
@@ -10916,7 +10968,10 @@ function showPlayerClover(g){
    così un urlo lungo non viene contato più volte e uno breve non sfugge.
 ================================================================ */
 let ranaMicStream=null, ranaAudioCtx=null, ranaAnalyser=null, ranaMicRaf=null, ranaMicLoud=false;
-const RANA_REF_MAX = 165, RANA_CURVE = 1.3, RANA_HIGH = 58, RANA_LOW = 28;
+// Taratura MOLTO più permissiva rispetto a Mercatista/Staccionata: lì serve un urlo a piena potenza
+// (una tantum), qui invece serve poter urlare ripetutamente e con facilità per far saltare la rana
+// tante volte di fila — basta alzare un po' la voce, non serve urlare a squarciagola ogni volta.
+const RANA_REF_MAX = 85, RANA_CURVE = 1.0, RANA_HIGH = 34, RANA_LOW = 14;
 function ranaPctFromAvg(avg){
   const ratio = Math.min(1, avg/RANA_REF_MAX);
   return Math.max(0, Math.min(100, Math.round(100*Math.pow(ratio, RANA_CURVE))));
@@ -10943,7 +10998,7 @@ function ranaStartMic(onJump, onLevel){
       ranaAnalyser.getByteFrequencyData(data);
       let sum=0; for (let i=0;i<data.length;i++) sum+=data[i];
       const avg = sum/data.length;
-      smoothed = avg>smoothed ? avg : smoothed*0.6+avg*0.4;
+      smoothed = avg>smoothed ? avg : smoothed*0.45+avg*0.55;
       const pct = ranaPctFromAvg(smoothed);
       onLevel(pct);
       if (!ranaMicLoud && pct>=RANA_HIGH){ ranaMicLoud = true; onJump(); }
