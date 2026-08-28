@@ -1996,7 +1996,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.60</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.61</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -6452,7 +6452,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1360; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1361; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -7746,7 +7746,9 @@ function verificaCodiceEAvvia(codice, silente){
     }
 
     const finalizza = ()=>{
-      window.CAPONE_MINIGIOCHI_ABILITATI = lic.minigiochi_abilitati || {};
+      window.CAPONE_MINIGIOCHI_ABILITATI = lic.minigiochi_abilitati; // NON sostituire con {} se manca: altrimenti isGameEnabled()
+      // lo tratterebbe come "oggetto vuoto" (verità) invece che "non configurato" (falsità), bloccando tutti i giochi
+      // invece di permetterli tutti come da comportamento previsto per una licenza non ancora configurata.
       localStorage.setItem('capone_licenza_codice', codice);
       if(!silente) closeLicenseModal();
       promptVenue(codice, pendingQuizIndex);
