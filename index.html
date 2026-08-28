@@ -1063,12 +1063,33 @@ body.barOn.barCollapsed .screen.active{padding-bottom:70px;}
 .pk2Ghost.ok{outline:3px solid #6fff6f; box-shadow:0 6px 18px rgba(111,255,111,.5);}
 .pk2Ghost.bad{outline:3px solid #ff5a5a; filter:grayscale(.5); box-shadow:0 6px 18px rgba(255,90,90,.5);}
 .pk2TrayWrap{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; width:100%; max-width:520px; margin:12px auto 0;}
-.pk2Chip{display:flex; flex-direction:column; align-items:center; gap:2px; padding:8px 11px; border-radius:12px;
-  background:linear-gradient(180deg,#241f34,#1a1626); border:2px solid rgba(255,255,255,.14); cursor:grab;
-  touch-action:none; user-select:none; -webkit-user-select:none;}
-.pk2Chip .ic{font-size:22px;}
-.pk2Chip .nm{font-family:'Outfit',sans-serif; font-weight:700; font-size:10px; color:#fff;}
-.pk2Chip .dim{font-family:'Outfit',sans-serif; font-weight:600; font-size:9px; color:var(--muted);}
+.pk2Chip{display:flex; flex-direction:column; align-items:center; gap:1px; padding:5px 7px; border-radius:9px;
+  background:linear-gradient(180deg,#241f34,#1a1626); border:1.5px solid rgba(255,255,255,.14); position:relative;}
+.pk2ChipBody{display:flex; flex-direction:column; align-items:center; cursor:grab; touch-action:none; user-select:none; -webkit-user-select:none;}
+.pk2Chip .ic{font-size:16px;}
+.pk2Chip .nm{font-family:'Outfit',sans-serif; font-weight:700; font-size:8px; color:#fff;}
+.pk2Chip .dim{font-family:'Outfit',sans-serif; font-weight:600; font-size:7.5px; color:var(--muted);}
+.pk2RotBtn{margin-top:2px; width:100%; border:none; border-radius:6px; background:rgba(255,255,255,.12); color:#fff;
+  font-size:11px; padding:1px 0; cursor:pointer;}
+/* ===== POKER ===== */
+.pkrHandWrap{display:flex; gap:6px; justify-content:center; flex-wrap:wrap; width:100%; max-width:520px; margin:12px auto 0;}
+.pkrCard{position:relative; width:56px; height:80px; border-radius:8px; background:#fff; box-shadow:0 4px 8px rgba(0,0,0,.5);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; transition:transform .12s;
+  border:3px solid transparent;}
+.pkrCard .rk{font-family:'Outfit',sans-serif; font-weight:800; font-size:20px; line-height:1;}
+.pkrCard .st{font-size:22px; line-height:1; margin-top:2px;}
+.pkrCard.red .rk, .pkrCard.red .st{color:#d21b3c;}
+.pkrCard.black .rk, .pkrCard.black .st{color:#1a1a1e;}
+.pkrCard.held{border-color:var(--lime); transform:translateY(-10px); box-shadow:0 0 14px rgba(182,255,46,.5);}
+.pkrCard .tag{position:absolute; top:-9px; left:50%; transform:translateX(-50%); background:var(--lime); color:#0b2e00;
+  font-family:'Bungee'; font-size:9px; padding:1px 6px; border-radius:8px; display:none;}
+.pkrCard.held .tag{display:block;}
+.pkrBetRow{display:flex; gap:8px; align-items:center; justify-content:center; flex-wrap:wrap; margin-top:12px;}
+.pkrBetBtn{border:none; border-radius:10px; padding:8px 14px; font-family:'Outfit',sans-serif; font-weight:800; cursor:pointer;
+  background:rgba(255,255,255,.1); color:#fff;}
+.pkrBetVal{font-family:'Bungee'; font-size:24px; color:var(--gold); min-width:90px; text-align:center;}
+.pkrHandName{font-family:'Bungee'; font-size:clamp(16px,4.5vw,22px); color:var(--gold); text-align:center; margin-top:12px;}
+.pkrResult{font-family:'Bungee'; font-size:18px; text-align:center; margin-top:6px;}
 .parkPct{font-family:'Bungee'; font-size:clamp(22px,6vw,30px); color:var(--gold); text-align:center; margin-top:10px;
   text-shadow:0 2px 0 #6b4a00;}
 .parkPctSub{font-family:'Outfit',sans-serif; font-weight:600; font-size:13px; color:var(--muted); text-align:center; margin-top:-4px;}
@@ -1998,7 +2019,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.62</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.63</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -5635,9 +5656,10 @@ body.suspense-on #pfRank{ display:none !important; }
     <div class="label mt">Tempo per decidere</div>
     <select id="parkDuration">
       <option value="30">30 secondi</option>
-      <option value="45" selected>45 secondi</option>
+      <option value="45">45 secondi</option>
       <option value="60">1 minuto</option>
       <option value="90">90 secondi</option>
+      <option value="120" selected>2 minuti</option>
     </select>
     <div class="label mt">Punti per la classifica finale (1°-5°)</div>
     <div class="row">
@@ -5689,6 +5711,78 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="pk2TrayWrap" id="parkTray2"></div>
   <button class="btn mg mt" id="parkDoneBtn" onclick="parkFinishNow()" style="width:100%; max-width:520px">✅ HO FINITO!</button>
   <div class="parkDone" id="parkDoneMsg"></div>
+</div>
+
+<!-- ==================== REGIA: POKER ==================== -->
+<div class="screen" id="scrPoker">
+  <div class="brand"><div class="t1" style="font-size:clamp(18px,3.4vw,32px)">🃏 POKER</div></div>
+  <div class="panel mt" style="max-width:480px" id="pokerSetup">
+    <div class="label mt">Puntata minima / massima</div>
+    <div class="row">
+      <input type="number" id="pokerBetMin" class="grow" value="100">
+      <input type="number" id="pokerBetMax" class="grow" value="3000">
+    </div>
+    <div class="label mt">Tempo per giocare la mano</div>
+    <select id="pokerDuration">
+      <option value="45">45 secondi</option>
+      <option value="60" selected>1 minuto</option>
+      <option value="90">90 secondi</option>
+      <option value="120">2 minuti</option>
+    </select>
+    <div class="label mt">Moltiplicatori di vincita (× la puntata) per combinazione</div>
+    <div class="row"><span class="grow byline">Coppia</span><input type="number" id="pokerMpair" style="width:70px" value="1"></div>
+    <div class="row mt"><span class="grow byline">Doppia coppia</span><input type="number" id="pokerM2pair" style="width:70px" value="2"></div>
+    <div class="row mt"><span class="grow byline">Tris</span><input type="number" id="pokerMtris" style="width:70px" value="3"></div>
+    <div class="row mt"><span class="grow byline">Scala</span><input type="number" id="pokerMstraight" style="width:70px" value="4"></div>
+    <div class="row mt"><span class="grow byline">Colore</span><input type="number" id="pokerMflush" style="width:70px" value="6"></div>
+    <div class="row mt"><span class="grow byline">Full</span><input type="number" id="pokerMfull" style="width:70px" value="9"></div>
+    <div class="row mt"><span class="grow byline">Poker</span><input type="number" id="pokerMpoker" style="width:70px" value="25"></div>
+    <div class="row mt"><span class="grow byline">Scala colore</span><input type="number" id="pokerMsf" style="width:70px" value="50"></div>
+    <div class="row mt"><span class="grow byline">Scala reale</span><input type="number" id="pokerMroyal" style="width:70px" value="250"></div>
+    <div class="byline mt" style="opacity:.75">🃏 Ogni giocatore riceve 5 carte, piazza la puntata che vuole nel range impostato, poi cambia da 0 a 4 carte. Chi fa almeno coppia vince la puntata moltiplicata come sopra; senza nessuna combinazione, perde la puntata. Non c'è un banco: ogni giocatore gioca per sé.</div>
+    <button class="btn mg mt" style="width:100%" onclick="pokerStart()">🃏 SI PARTE!</button>
+  </div>
+  <div id="pokerLive" style="display:none; width:100%" class="center">
+    <div class="miniMsg" id="pokerMsg"></div>
+    <div class="timerWrap mt" style="max-width:420px"><div class="timerBar" id="pokerTimerBarHost"></div></div>
+    <div class="byline" id="pokerCountHost"></div>
+    <div class="lead mt" id="pokerResultsLive" style="max-width:500px; width:100%"></div>
+    <button class="btn cy mt" id="pokerBtnAgain" onclick="openPoker()" style="display:none">🔁 Un'altra manche</button>
+  </div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
+</div>
+
+<!-- ==================== PROIETTORE: POKER ==================== -->
+<div class="screen" id="scrPjPoker">
+  <div class="brand"><div class="t1" style="font-size:clamp(22px,3.6vw,40px)">🃏 POKER</div></div>
+  <div class="miniMsg" id="pjPokerMsg">PIAZZATE LA PUNTATA E GIOCATE LA MANO DAL TELEFONO!</div>
+  <div class="timerWrap mt" style="max-width:460px"><div class="timerBar" id="pjPokerTimerBar"></div></div>
+  <div class="byline mt" style="max-width:460px; text-align:center">Ogni giocatore gioca la propria mano sul telefono: qui vedete la classifica delle vincite in tempo reale.</div>
+  <div class="lead mt" id="pjPokerResults" style="max-width:600px; width:100%"></div>
+</div>
+
+<!-- ==================== TELEFONO: POKER ==================== -->
+<div class="screen" id="scrPlayPoker" style="align-items:center; justify-content:center">
+  <div class="row" style="width:100%; justify-content:space-between">
+    <div class="pill" id="pokerpName" style="color:var(--gold)"></div>
+    <div class="pill" id="pokerpScore"></div>
+  </div>
+  <div class="timerWrap mt" style="max-width:280px"><div class="timerBar" id="pokerpTimerBar"></div></div>
+  <div class="pkrHandWrap" id="pokerHandEl"></div>
+  <div class="pkrHandName" id="pokerHandName"></div>
+  <div id="pokerBetPhase">
+    <div class="pkrBetRow">
+      <button class="pkrBetBtn" onclick="pokerBetStep(-1)">−</button>
+      <div class="pkrBetVal" id="pokerBetVal">100</div>
+      <button class="pkrBetBtn" onclick="pokerBetStep(1)">+</button>
+    </div>
+    <button class="btn mg mt" style="width:100%" onclick="pokerConfirmBet()">💰 PUNTA E VEDI LE CARTE</button>
+  </div>
+  <div id="pokerDrawPhase" style="display:none; text-align:center">
+    <div class="ranaHint">Tocca le carte da TENERE (le altre verranno cambiate)</div>
+    <button class="btn mg mt" style="width:100%; max-width:400px" onclick="pokerDoExchange()">🔄 CAMBIA LE CARTE NON TENUTE</button>
+  </div>
+  <div class="pkrResult" id="pokerResultMsg" style="display:none"></div>
 </div>
 
 <!-- ==================== PLAYER: IL PONTE SOSPESO ==================== -->
@@ -6452,7 +6546,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1362; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1363; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -8651,6 +8745,7 @@ function listenGame(){
     else if (g.status==='rana') showPlayerRana(g);
     else if (g.status==='stendi') showPlayerStendi(g);
     else if (g.status==='parcheggio') showPlayerParcheggio(g);
+    else if (g.status==='poker') showPlayerPoker(g);
     else if (g.status==='finddiff') showPlayerFindDiff(g);
     else if (g.status==='maggioranza') showPlayerMaj(g);
     else if (g.status==='goldenticket') showPlayerGold(g);
@@ -11420,7 +11515,7 @@ const PK2_TYPES = [
   { k:'camion',  n:'Camion',  e:'🚛', wM:2.5, hM:9.0, color:'#c95a5a' },
 ];
 const PK2_WEIGHTS = [['moto',.28],['auto',.42],['furgone',.20],['camion',.10]];
-const PK2_PXM = 22; // pixel per metro
+const PK2_PXM = 16; // pixel per metro (rimpicciolito apposta: si vede tutto senza scorrere su e giù)
 const PK2_LOT_W_M = 12, PK2_LOT_H_M = 17;
 const PK2_LOT_W = PK2_LOT_W_M*PK2_PXM, PK2_LOT_H = PK2_LOT_H_M*PK2_PXM;
 function pk2WeightedType(){
@@ -11428,11 +11523,20 @@ function pk2WeightedType(){
   for (const [k,w] of PK2_WEIGHTS){ acc += w; if (r<=acc) return PK2_TYPES.find(t=>t.k===k); }
   return PK2_TYPES[0];
 }
+// Calcola le dimensioni in pixel di un mezzo tenendo conto della sua rotazione attuale
+// (orizzontale/verticale): ruotato, larghezza e lunghezza reali si scambiano.
+function pk2Dim(it){
+  const wpx = Math.round(it.wM*PK2_PXM), hpx = Math.round(it.hM*PK2_PXM);
+  return it.rot ? { w:hpx, h:wpx } : { w:wpx, h:hpx };
+}
+function pk2ApplyDim(it){ const d = pk2Dim(it); it.w = d.w; it.h = d.h; }
 function pk2PickItems(n){
   const items = [];
   for (let i=0;i<n;i++){
     const t = pk2WeightedType();
-    items.push({ id:'v'+i, k:t.k, n:t.n, e:t.e, wM:t.wM, hM:t.hM, w:Math.round(t.wM*PK2_PXM), h:Math.round(t.hM*PK2_PXM), color:t.color });
+    const it = { id:'v'+i, k:t.k, n:t.n, e:t.e, wM:t.wM, hM:t.hM, rot:false, color:t.color };
+    pk2ApplyDim(it);
+    items.push(it);
   }
   return items;
 }
@@ -11458,11 +11562,33 @@ function pk2RenderLot(){
   ).join('');
 }
 function pk2RenderTray(){
-  $('parkTray2').innerHTML = P.pk2Tray.map(it=>
-    `<div class="pk2Chip" data-id="${it.id}" onpointerdown="pk2PointerDownTray(event,'${it.id}')">
-      <span class="ic">${it.e}</span><span class="nm">${esc(it.n)}</span><span class="dim">${it.wM}×${it.hM} m</span>
-    </div>`
-  ).join('');
+  $('parkTray2').innerHTML = P.pk2Tray.map(it=>{
+    const dw = it.rot ? it.hM : it.wM, dh = it.rot ? it.wM : it.hM;
+    return `<div class="pk2Chip">
+      <div class="pk2ChipBody" data-id="${it.id}" onpointerdown="pk2PointerDownTray(event,'${it.id}')">
+        <span class="ic">${it.e}</span><span class="nm">${esc(it.n)}</span><span class="dim">${dw}×${dh} m</span>
+      </div>
+      <button class="pk2RotBtn" onclick="pk2ToggleTrayRot('${it.id}')" data-tip="Ruota il mezzo prima di trascinarlo">↻</button>
+    </div>`;
+  }).join('');
+}
+function pk2ToggleTrayRot(id){
+  const it = P.pk2Tray.find(x=>x.id===id);
+  if (!it) return;
+  it.rot = !it.rot;
+  pk2ApplyDim(it);
+  pk2RenderTray();
+}
+function pk2TryRotatePlaced(id){
+  const p = P.pk2Placed.find(x=>x.id===id);
+  if (!p) return;
+  const cx = p.x + p.w/2, cy = p.y + p.h/2;
+  const cand = pk2Dim({ wM:p.wM, hM:p.hM, rot: !p.rot });
+  const newX = Math.round(cx - cand.w/2), newY = Math.round(cy - cand.h/2);
+  if (pk2Fits(newX, newY, cand.w, cand.h, id)){
+    p.rot = !p.rot; p.x = newX; p.y = newY; p.w = cand.w; p.h = cand.h;
+    if (navigator.vibrate) navigator.vibrate(15);
+  } else if (navigator.vibrate) navigator.vibrate(50); // "non ci sta ruotato qui": nessun cambiamento
 }
 function pk2RenderPct(){ $('parkPct').textContent = pk2Pct()+'%'; }
 function pk2RenderAll(){ pk2RenderLot(); pk2RenderTray(); pk2RenderPct(); }
@@ -11477,7 +11603,7 @@ function pk2BeginDrag(clientX, clientY, veh, existingPlacedId){
   ghost.style.width = veh.w+'px'; ghost.style.height = veh.h+'px'; ghost.style.background = veh.color;
   ghost.innerHTML = `<span>${veh.e}</span>`;
   document.body.appendChild(ghost);
-  PK2_DRAG = { veh, existingPlacedId, ghost, lotRect, w:veh.w, h:veh.h, valid:false, curX:0, curY:0 };
+  PK2_DRAG = { veh, existingPlacedId, ghost, lotRect, w:veh.w, h:veh.h, valid:false, curX:0, curY:0, startX:clientX, startY:clientY, moved:false };
   pk2UpdateGhost(clientX, clientY);
   window.addEventListener('pointermove', pk2OnMove);
   window.addEventListener('pointerup', pk2OnUp, {once:true});
@@ -11504,18 +11630,28 @@ function pk2UpdateGhost(clientX, clientY){
   d.ghost.classList.toggle('ok', d.valid);
   d.ghost.classList.toggle('bad', !d.valid);
 }
-function pk2OnMove(e){ pk2UpdateGhost(e.clientX, e.clientY); }
+function pk2OnMove(e){
+  const d = PK2_DRAG; if (!d) return;
+  if (Math.hypot(e.clientX-d.startX, e.clientY-d.startY) > 6) d.moved = true;
+  pk2UpdateGhost(e.clientX, e.clientY);
+}
 function pk2OnUp(e){
   window.removeEventListener('pointermove', pk2OnMove);
   const d = PK2_DRAG; PK2_DRAG = null;
   if (!d) return;
   d.ghost.remove();
+  if (d.existingPlacedId && !d.moved){
+    // semplice tocco (nessun trascinamento reale): ruota il mezzo sul posto invece di riposizionarlo
+    pk2TryRotatePlaced(d.existingPlacedId);
+    pk2RenderAll(); pk2SubmitProgress();
+    return;
+  }
   if (d.valid){
     if (d.existingPlacedId){
       const p = P.pk2Placed.find(x=>x.id===d.existingPlacedId);
       if (p){ p.x = d.curX; p.y = d.curY; }
     } else {
-      P.pk2Placed.push({ id:'p'+(P.pk2PlacedSeq++), k:d.veh.k, e:d.veh.e, w:d.w, h:d.h, color:d.veh.color, x:d.curX, y:d.curY });
+      P.pk2Placed.push({ id:'p'+(P.pk2PlacedSeq++), k:d.veh.k, e:d.veh.e, wM:d.veh.wM, hM:d.veh.hM, rot:d.veh.rot, w:d.w, h:d.h, color:d.veh.color, x:d.curX, y:d.curY });
       P.pk2Tray = P.pk2Tray.filter(x=>x.id!==d.veh.id);
     }
     if (navigator.vibrate) navigator.vibrate(15);
@@ -11528,7 +11664,7 @@ function pk2OnUp(e){
       if (p){
         P.pk2Placed = P.pk2Placed.filter(x=>x.id!==d.existingPlacedId);
         const t = PK2_TYPES.find(x=>x.k===p.k);
-        P.pk2Tray.push({ id:'v_re'+Date.now()+Math.random(), k:p.k, n:t.n, e:p.e, wM:t.wM, hM:t.hM, w:p.w, h:p.h, color:p.color });
+        P.pk2Tray.push({ id:'v_re'+Date.now()+Math.random(), k:p.k, n:t.n, e:p.e, wM:t.wM, hM:t.hM, rot:p.rot, w:p.w, h:p.h, color:p.color });
       }
     }
     // altrimenti: posizione non valida ma dentro l'area -> resta dov'era, nessuna modifica
@@ -11570,6 +11706,123 @@ function showPlayerParcheggio(g){
     const left = Math.max(0, P.parkLocalEndAt - Date.now());
     $('parkpTimerBar').style.width = (left/(m.durationMs||1)*100)+'%';
     if (left<=0){ clearInterval(P.parkInt); if (!P.parkFinished) parkLockIn(); }
+  }, 100);
+}
+/* ================================================================
+   POKER — mazzo, valutazione mani e telefono
+================================================================ */
+const PKR_SUITS = ['S','H','D','C'];
+const PKR_SUIT_SYM = { S:'♠', H:'♥', D:'♦', C:'♣' };
+function pkrFreshDeck(){
+  const d = [];
+  for (const s of PKR_SUITS) for (let r=2; r<=14; r++) d.push({r,s});
+  for (let i=d.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [d[i],d[j]]=[d[j],d[i]]; }
+  return d;
+}
+function pkrRankLabel(r){ return r===14?'A':r===13?'K':r===12?'Q':r===11?'J':String(r); }
+// Valuta una mano di 5 carte e restituisce {key, label} secondo le combinazioni classiche del poker.
+function pkrEvaluate(cards){
+  const ranks = cards.map(c=>c.r).sort((a,b)=>a-b);
+  const suits = cards.map(c=>c.s);
+  const isFlush = suits.every(s=>s===suits[0]);
+  let isStraight = ranks.every((r,i)=> i===0 || r===ranks[i-1]+1);
+  // asso basso: A-2-3-4-5
+  if (!isStraight && ranks.join(',')==='2,3,4,5,14') isStraight = true;
+  const counts = {};
+  ranks.forEach(r=> counts[r]=(counts[r]||0)+1);
+  const groups = Object.values(counts).sort((a,b)=>b-a); // es. [4,1] [3,2] [3,1,1] [2,2,1] [2,1,1,1] [1,1,1,1,1]
+  const isRoyal = isStraight && isFlush && ranks[0]===10;
+  if (isRoyal) return { key:'royal', label:'🏆 SCALA REALE!' };
+  if (isStraight && isFlush) return { key:'straightflush', label:'🌈 SCALA COLORE!' };
+  if (groups[0]===4) return { key:'poker', label:'💣 POKER!' };
+  if (groups[0]===3 && groups[1]===2) return { key:'full', label:'🏠 FULL!' };
+  if (isFlush) return { key:'flush', label:'🎨 COLORE!' };
+  if (isStraight) return { key:'straight', label:'📶 SCALA!' };
+  if (groups[0]===3) return { key:'tris', label:'🎯 TRIS!' };
+  if (groups[0]===2 && groups[1]===2) return { key:'twopair', label:'👯 DOPPIA COPPIA!' };
+  if (groups[0]===2) return { key:'pair', label:'👫 COPPIA!' };
+  return { key:'high', label:'😐 CARTA ALTA (nessuna combinazione)' };
+}
+function pkrRenderHand(){
+  $('pokerHandEl').innerHTML = P.pokerHand.map((c,i)=>{
+    const red = c.s==='H'||c.s==='D';
+    const held = P.pokerHeld[i];
+    const clickable = P.pokerPhase==='draw' ? `onclick="pokerToggleHold(${i})"` : '';
+    return `<div class="pkrCard ${red?'red':'black'} ${held?'held':''}" ${clickable}>
+      <div class="tag">TENUTA</div><div class="rk">${pkrRankLabel(c.r)}</div><div class="st">${PKR_SUIT_SYM[c.s]}</div>
+    </div>`;
+  }).join('');
+}
+function pokerToggleHold(i){
+  if (P.pokerPhase!=='draw') return;
+  P.pokerHeld[i] = !P.pokerHeld[i];
+  pkrRenderHand();
+}
+function pokerBetStep(dir){
+  const step = Math.max(1, Math.round((P.pokerBetMax-P.pokerBetMin)/20));
+  P.pokerBet = Math.max(P.pokerBetMin, Math.min(P.pokerBetMax, P.pokerBet + dir*step));
+  $('pokerBetVal').textContent = P.pokerBet;
+}
+function pokerConfirmBet(){
+  if (P.pokerPhase!=='bet') return;
+  P.pokerPhase = 'draw';
+  $('pokerBetPhase').style.display = 'none';
+  $('pokerDrawPhase').style.display = '';
+  pkrRenderHand();
+}
+function pokerDoExchange(){
+  if (P.pokerPhase!=='draw') return;
+  P.pokerPhase = 'done';
+  for (let i=0;i<5;i++){ if (!P.pokerHeld[i]) P.pokerHand[i] = P.pokerDeck.pop(); }
+  pokerResolve();
+}
+function pokerResolve(){
+  if (P.pokerResolved) return; P.pokerResolved = true;
+  clearInterval(P.pokerInt);
+  $('pokerDrawPhase').style.display = 'none';
+  pkrRenderHand();
+  const ev = pkrEvaluate(P.pokerHand);
+  const mult = P.pokerMult[ev.key] || 0;
+  const win = mult>0;
+  const pts = win ? P.pokerBet*mult : -P.pokerBet;
+  $('pokerHandName').textContent = ev.label;
+  $('pokerResultMsg').style.display = 'block';
+  $('pokerResultMsg').style.color = win ? 'var(--lime)' : '#ff5a5a';
+  $('pokerResultMsg').textContent = win ? `HAI VINTO! +${pts} PUNTI` : `NIENTE DA FARE: ${pts} PUNTI`;
+  if (navigator.vibrate) navigator.vibrate(win ? [40,30,40,30,80] : 50);
+  P.ref.child('poker/results/'+P.id).set({ name:P.name, pts, hand:ev.label, lockedAt:Date.now() });
+}
+function showPlayerPoker(g){
+  const m = g.poker||{};
+  $('pokerpName').textContent = P.name;
+  $('pokerpScore').textContent = (((g.players||{})[P.id]||{}).score||0)+' pt';
+  showScreen('scrPlayPoker');
+  if (m.phase!=='active'){ clearInterval(P.pokerInt); P.pokerSig = null; return; }
+  const sig = 'act:'+m.roundId;
+  if (P.pokerSig === sig) return; // stesso round già in corso: non ritoccare mano/timer già avviati
+  clearInterval(P.pokerInt);
+  P.pokerSig = sig; P.pokerResolved = false; P.pokerPhase = 'bet';
+  P.pokerBetMin = m.betMin||100; P.pokerBetMax = m.betMax||3000; P.pokerBet = P.pokerBetMin;
+  P.pokerMult = m.mult||{};
+  P.pokerDeck = pkrFreshDeck();
+  P.pokerHand = [P.pokerDeck.pop(),P.pokerDeck.pop(),P.pokerDeck.pop(),P.pokerDeck.pop(),P.pokerDeck.pop()];
+  P.pokerHeld = [false,false,false,false,false];
+  $('pokerBetPhase').style.display=''; $('pokerDrawPhase').style.display='none';
+  $('pokerResultMsg').style.display='none'; $('pokerHandName').textContent='';
+  $('pokerBetVal').textContent = P.pokerBet;
+  pkrRenderHand();
+  P.pokerLocalEndAt = Date.now() + (m.durationMs||0);
+  P.pokerInt = setInterval(()=>{
+    if (P.pokerSig !== sig) { clearInterval(P.pokerInt); return; }
+    const left = Math.max(0, P.pokerLocalEndAt - Date.now());
+    $('pokerpTimerBar').style.width = (left/(m.durationMs||1)*100)+'%';
+    if (left<=0){
+      clearInterval(P.pokerInt);
+      if (!P.pokerResolved){
+        if (P.pokerPhase==='bet') pokerConfirmBet();
+        if (P.pokerPhase==='draw') pokerDoExchange();
+      }
+    }
   }, 100);
 }
 /* ================================================================
@@ -18838,6 +19091,60 @@ function parkFinalize(prizes){
 }
 
 /* ================================================================
+   POKER — regia
+================================================================ */
+let POKER = {};
+function openPoker(){
+  if (!isGameEnabled('poker')) return alert('⚠️ Questo minigioco non è compreso nella licenza attiva. Contatta Alberto per sbloccarlo.');
+  if (!G) return alert('Avvia prima una partita!');
+  cancelLiveQuestion(); closeModal(); clearInterval((POKER||{}).timerInt);
+  G.ref.child('poker/results').off();
+  G.ref.update({ status:'poker', poker:{ phase:'idle' } });
+  POKER = {};
+  $('pokerSetup').style.display='block'; $('pokerLive').style.display='none';
+  showScreen('scrPoker');
+}
+function pokerStart(){
+  const betMin = +($('pokerBetMin').value||100);
+  const betMax = +($('pokerBetMax').value||3000);
+  const durationMs = (+($('pokerDuration').value||60))*1000;
+  const mult = {
+    pair:+($('pokerMpair').value||0), twopair:+($('pokerM2pair').value||0), tris:+($('pokerMtris').value||0),
+    straight:+($('pokerMstraight').value||0), flush:+($('pokerMflush').value||0), full:+($('pokerMfull').value||0),
+    poker:+($('pokerMpoker').value||0), straightflush:+($('pokerMsf').value||0), royal:+($('pokerMroyal').value||0),
+  };
+  const roundId = serverNow();
+  POKER = { credited:{} };
+  G.ref.update({ status:'poker', poker:{ phase:'active', betMin, betMax, mult, durationMs, roundId } });
+  G.ref.child('poker/results').remove();
+  $('pokerSetup').style.display='none'; $('pokerLive').style.display='block';
+  $('pokerMsg').textContent = `🃏 SI GIOCA! Puntate da ${betMin} a ${betMax} punti`;
+  $('pokerCountHost').textContent=''; $('pokerResultsLive').innerHTML=''; $('pokerBtnAgain').style.display='none';
+  pjSend({type:'pokerActive', durationMs});
+  clearInterval(POKER.timerInt);
+  const endAt = serverNow()+durationMs;
+  POKER.timerInt = setInterval(()=>{
+    const left = Math.max(0, endAt-serverNow());
+    $('pokerTimerBarHost').style.width = (left/durationMs*100)+'%';
+    if (left<=0){ clearInterval(POKER.timerInt); setTimeout(()=> $('pokerBtnAgain').style.display='', 1200); }
+  }, 100);
+  G.ref.child('poker/results').on('child_added', snap=>{
+    const pid = snap.key, r = snap.val();
+    if (!r || POKER.credited[pid]) return;
+    POKER.credited[pid] = true;
+    applyScoreDelta(pid, r.pts||0);
+  });
+  G.ref.child('poker/results').on('value', s=>{
+    const results = s.val()||{};
+    const entries = Object.values(results).sort((a,b)=>(b.pts||0)-(a.pts||0));
+    $('pokerCountHost').textContent = `Mani giocate: ${entries.length}`;
+    $('pokerResultsLive').innerHTML = entries.map(p=>
+      `<div class="leadRow"><span class="pos">${p.pts>=0?'🟢':'🔴'}</span> ${esc(p.name||'?')} <span class="pts">${p.pts>=0?'+':''}${p.pts||0} <small style="opacity:.7">${esc(p.hand||'')}</small></span></div>`
+    ).join('') || '<div class="byline">Nessuno ha ancora giocato la sua mano...</div>';
+  });
+}
+
+/* ================================================================
    ROULETTE — regia
 ================================================================ */
 let RW = {};
@@ -21228,6 +21535,7 @@ const GIOCHI_CATALOGO = [
   {k:'rdc', l:'🧮 La Resa dei Conti'},
   {k:'stendi', l:'🧺 Stendi i Panni'},
   {k:'parcheggio', l:'🅿️ Parcheggio Perfetto!'},
+  {k:'poker', l:'🃏 Poker'},
   {k:'spesa', l:'🛒 Lista della Spesa'},
   {k:'mastermind', l:'🎯 Mastermind'},
   {k:'bomba', l:'💣 Bomba a Orologeria'},
@@ -21291,6 +21599,7 @@ const SKILL_GAMES = [
   {k:'merc', cls:'', style:'background:linear-gradient(180deg,#ff5d7a,#8a0f2e); color:#fff; box-shadow:0 7px 0 #5a0018,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,93,122,.4)', fn:'openMerc', label:`📣 Mercatista per un Giorno`},
   {k:'shapes', cls:'', style:'background:linear-gradient(180deg,#c2183d,#ff8a3c); color:#fff; box-shadow:0 7px 0 #6b0e21,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(194,24,61,.4)', fn:'openShapes', label:`👁 Occhio alle Forme`},
   {k:'parcheggio', cls:'', style:'background:linear-gradient(180deg,#3a3a3f,#1a1a1e); color:#ffcc33; box-shadow:0 7px 0 #0a0a0c,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(58,58,63,.5)', fn:'openParcheggio', label:`🅿️ Parcheggio Perfetto!`},
+  {k:'poker', cls:'', style:'background:linear-gradient(180deg,#0f6b3a,#083a1f); color:#fff; box-shadow:0 7px 0 #041d0f,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(15,107,58,.4)', fn:'openPoker', label:`🃏 Poker`},
   {k:'swiss', cls:'cy', style:'', fn:'openSwiss', label:`⌚ Precisione Svizzera`},
   {k:'puzzle', cls:'mg', style:'', fn:'openPuzzle', label:`🧩 Puzzle`},
   {k:'salumi', cls:'', style:'background:linear-gradient(180deg,#c99a2e,#6f2f22); color:#fff; box-shadow:0 7px 0 #3d1a10,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(201,154,46,.4)', fn:'openSalumi', label:`🔪 Salumi e Formaggi`},
@@ -22156,6 +22465,14 @@ function initProjector(){
     base.child('rana/progress').on('value', s=>{ pjRanaProgress = s.val()||{}; pjRanaRender(); });
     base.child('stendi/results').on('value', s=>{ pjStendiResults = s.val()||{}; pjStendiRenderResults(); });
     base.child('parcheggio/results').on('value', s=>{ pjParkResults = s.val()||{}; pjParkRenderResults(); });
+    base.child('poker/results').on('value', s=>{
+      const results = s.val()||{};
+      const entries = Object.values(results).sort((a,b)=>(b.pts||0)-(a.pts||0));
+      const el = $('pjPokerResults');
+      if (el) el.innerHTML = entries.map(p=>
+        `<div class="leadRow"><span class="pos">${p.pts>=0?'🟢':'🔴'}</span> ${esc(p.name||'?')} <span class="pts">${p.pts>=0?'+':''}${p.pts||0}</span></div>`
+      ).join('') || '<div class="byline" style="color:#fff; text-align:center">Nessuno ha ancora giocato la sua mano...</div>';
+    });
   } else if (!gcode) {
     $('pjWaitMsg').textContent = '⚠️ Manca il codice partita nel link: usa ?proj=1&g=CODICE';
   }
@@ -23646,6 +23963,18 @@ function pjRouteInner(m){
         const left = Math.max(0, pjParkLocalEndAt - Date.now());
         $('pjParkTimerBar').style.width = (left/(m.durationMs||1)*100)+'%';
         if (left<=0) clearInterval(window._pjParkInt);
+      }, 100);
+    }
+    else if (m.type==='pokerActive') {
+      showScreen('scrPjPoker');
+      $('pjPokerMsg').textContent = 'PIAZZATE LA PUNTATA E GIOCATE LA MANO DAL TELEFONO!';
+      $('pjPokerResults').innerHTML = '';
+      clearInterval(window._pjPokerInt);
+      const pjPokerLocalEndAt = Date.now() + (m.durationMs||0);
+      window._pjPokerInt = setInterval(()=>{
+        const left = Math.max(0, pjPokerLocalEndAt - Date.now());
+        $('pjPokerTimerBar').style.width = (left/(m.durationMs||1)*100)+'%';
+        if (left<=0) clearInterval(window._pjPokerInt);
       }, 100);
     }
     else if (m.type==='rwActive') {
