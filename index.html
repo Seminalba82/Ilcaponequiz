@@ -1048,6 +1048,30 @@ body.barOn.barCollapsed .screen.active{padding-bottom:70px;}
 .stendiCard:active:not(.off){transform:scale(.93);}
 .stendiTimerHolder{width:100%; max-width:280px; margin:10px auto 0;}
 .stendiDone{font-family:'Bungee'; font-size:16px; color:#fff; text-align:center; margin-top:10px; display:none;}
+/* ===== PARCHEGGIO PERFETTO ===== */
+.parkLotWrap{width:100%; max-width:400px; margin:12px auto 0;}
+.parkLot{display:grid; grid-template-columns:repeat(10,1fr); gap:2px; aspect-ratio:1/1;
+  background:#2a2a2e; border:5px solid #ffcc33; border-radius:12px; padding:7px;
+  box-shadow:0 0 26px rgba(255,204,51,.25), inset 0 0 34px rgba(0,0,0,.55);}
+.parkCell{border-radius:2px; position:relative; aspect-ratio:1/1;
+  background:repeating-linear-gradient(135deg, #3a3a3f 0 3px, #333338 3px 6px);}
+.parkCell.filled{box-shadow:inset 0 0 0 1px rgba(255,255,255,.25);}
+.parkCell .veic{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:11px; line-height:1;}
+.parkPct{font-family:'Bungee'; font-size:clamp(22px,6vw,30px); color:var(--gold); text-align:center; margin-top:10px;
+  text-shadow:0 2px 0 #6b4a00;}
+.parkPctSub{font-family:'Outfit',sans-serif; font-weight:600; font-size:13px; color:var(--muted); text-align:center; margin-top:-4px;}
+.parkGrid{display:grid; grid-template-columns:repeat(auto-fill, minmax(84px,1fr)); gap:9px; width:100%; max-width:520px; margin:14px auto 0;}
+.parkCard{position:relative; border-radius:14px; padding:10px 6px 8px; text-align:center; cursor:pointer;
+  background:linear-gradient(180deg,#241f34,#1a1626); border:2px solid rgba(255,255,255,.12); transition:transform .1s, border-color .15s;}
+.parkCard .ic{font-size:30px; display:block;}
+.parkCard .nm{font-family:'Outfit',sans-serif; font-weight:700; font-size:10.5px; color:#fff; margin-top:3px; display:block;}
+.parkCard .pc{font-family:'Bungee'; font-size:12px; color:var(--gold); margin-top:2px; display:block;}
+.parkCard.on{border-color:#ffcc33; box-shadow:0 0 14px rgba(255,204,51,.4); background:linear-gradient(180deg,#3a3016,#26200e); cursor:default;}
+.parkCard.on::after{content:'✓'; position:absolute; top:4px; right:6px; color:#ffcc33; font-weight:900; font-size:14px;}
+.parkCard.off{opacity:.32; filter:grayscale(.6); cursor:not-allowed;}
+.parkCard:active:not(.off){transform:scale(.93);}
+.parkTimerHolder{width:100%; max-width:280px; margin:10px auto 0;}
+.parkDone{font-family:'Bungee'; font-size:16px; color:#fff; text-align:center; margin-top:10px; display:none;}
 .ranaMeCount{font-family:'Bungee'; font-size:26px; color:var(--gold); margin-top:4px;}
 .ranaMeRank{font-family:'Outfit',sans-serif; font-weight:700; color:#fff; font-size:16px; margin-top:2px;}
 .ranaMicWrap{width:100%; max-width:280px; height:20px; margin:12px auto 0; border-radius:12px; background:rgba(255,255,255,.08);
@@ -1972,7 +1996,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.59</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.60</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -5596,6 +5620,77 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="stendiDone" id="stendiDoneMsg"></div>
 </div>
 
+<!-- ==================== REGIA: PARCHEGGIO PERFETTO ==================== -->
+<div class="screen" id="scrParcheggio">
+  <div class="brand"><div class="t1" style="font-size:clamp(18px,3.4vw,32px)">🅿️ PARCHEGGIO PERFETTO!</div></div>
+  <div class="panel mt" style="max-width:480px" id="parkSetup">
+    <div class="label mt">Quanti mezzi offrire per il parcheggio</div>
+    <select id="parkCount">
+      <option value="15">15 mezzi</option>
+      <option value="17" selected>17 mezzi</option>
+      <option value="20">20 mezzi</option>
+    </select>
+    <div class="label mt">Tempo per decidere</div>
+    <select id="parkDuration">
+      <option value="30">30 secondi</option>
+      <option value="45" selected>45 secondi</option>
+      <option value="60">1 minuto</option>
+      <option value="90">90 secondi</option>
+    </select>
+    <div class="label mt">Punti per la classifica finale (1°-5°)</div>
+    <div class="row">
+      <input type="number" id="parkP1" class="grow" placeholder="1°" value="500">
+      <input type="number" id="parkP2" class="grow" placeholder="2°" value="300">
+      <input type="number" id="parkP3" class="grow" placeholder="3°" value="200">
+    </div>
+    <div class="row mt">
+      <input type="number" id="parkP4" class="grow" placeholder="4°" value="100">
+      <input type="number" id="parkP5" class="grow" placeholder="5°" value="50">
+    </div>
+    <div class="byline mt" style="opacity:.75">🅿️ Ogni giocatore ha lo stesso parcheggio rettangolare e gli stessi mezzi da scegliere: moto, auto, furgoni, camion, ognuno con il proprio ingombro. Si riempie il parcheggio il più possibile senza sforare, e — a differenza di Stendi i Panni — qui lo spazio va riempito su tutta l'area, non su una sola riga. Una volta parcheggiato un mezzo non si può più togliere.</div>
+    <button class="btn mg mt" style="width:100%" onclick="parkStart()">🅿️ SI PARTE!</button>
+  </div>
+  <div id="parkLive" style="display:none; width:100%" class="center">
+    <div class="miniMsg" id="parkMsg"></div>
+    <div class="timerWrap mt" style="max-width:420px"><div class="timerBar" id="parkTimerBarHost"></div></div>
+    <div class="byline" id="parkCountHost"></div>
+    <div class="lead mt" id="parkResultsLive" style="max-width:500px; width:100%"></div>
+    <button class="btn cy mt" id="parkBtnAgain" onclick="openParcheggio()" style="display:none">🔁 Un'altra manche</button>
+  </div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
+</div>
+
+<!-- ==================== PROIETTORE: PARCHEGGIO PERFETTO ==================== -->
+<div class="screen" id="scrPjParcheggio">
+  <div class="brand"><div class="t1" style="font-size:clamp(20px,3.4vw,36px)">🅿️ PARCHEGGIO PERFETTO!</div></div>
+  <div class="miniMsg" id="pjParkMsg">FATE ENTRARE I MEZZI DAL TELEFONO!</div>
+  <div class="ranaHint" style="color:#ffb3b3; font-weight:800; font-size:14px">⚠️ FAI ENTRARE QUANTI PIÙ MEZZI POSSIBILI MA, ATTENZIONE: NON PUOI ANNULLARE LE SCELTE FATTE!!!</div>
+  <div class="timerWrap mt" style="max-width:460px"><div class="timerBar" id="pjParkTimerBar"></div></div>
+  <div class="parkLotWrap" style="max-width:340px">
+    <div class="parkLot" id="pjParkLot"></div>
+  </div>
+  <div class="byline mt" style="max-width:460px; text-align:center">Ogni giocatore parcheggia sul proprio telefono: qui vedete la classifica formarsi in tempo reale.</div>
+  <div class="lead mt" id="pjParkResults" style="max-width:600px; width:100%"></div>
+</div>
+
+<!-- ==================== TELEFONO: PARCHEGGIO PERFETTO ==================== -->
+<div class="screen" id="scrPlayParcheggio" style="align-items:center; justify-content:center">
+  <div class="row" style="width:100%; justify-content:space-between">
+    <div class="pill" id="parkpName" style="color:var(--gold)"></div>
+    <div class="pill" id="parkpScore"></div>
+  </div>
+  <div class="parkTimerHolder"><div class="timerBar" id="parkpTimerBar"></div></div>
+  <div class="parkLotWrap">
+    <div class="parkLot" id="parkLot"></div>
+  </div>
+  <div class="parkPct" id="parkPct">0%</div>
+  <div class="parkPctSub" id="parkPctSub">del parcheggio occupato</div>
+  <div class="ranaHint" style="color:#ffb3b3; font-weight:800">⚠️ FAI ENTRARE QUANTI PIÙ MEZZI POSSIBILI MA, ATTENZIONE: NON PUOI ANNULLARE LE SCELTE FATTE!!!</div>
+  <div class="parkGrid" id="parkGrid"></div>
+  <button class="btn mg mt" id="parkDoneBtn" onclick="parkFinishNow()" style="width:100%; max-width:520px">✅ HO FINITO!</button>
+  <div class="parkDone" id="parkDoneMsg"></div>
+</div>
+
 <!-- ==================== PLAYER: IL PONTE SOSPESO ==================== -->
 <div class="screen" id="scrPlayPonteSospeso" style="align-items:center; justify-content:center">
   <div class="row" style="width:100%; justify-content:space-between">
@@ -6281,7 +6376,7 @@ body.suspense-on #pfRank{ display:none !important; }
 /* ================================================================
    📋 ELENCO MINIGIOCHI — aggiornare questa lista ogni volta che se ne
    aggiunge uno nuovo (serve ad Alberto per la documentazione delle licenze).
-   Ultimo aggiornamento: v13.58 — 58 minigiochi totali.
+   Ultimo aggiornamento: v13.60 — 59 minigiochi totali.
    ================================================================
    1.  🥃 Bussolotti
    2.  🎲 Pari o Dispari
@@ -6357,7 +6452,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1359; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1360; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -8553,6 +8648,7 @@ function listenGame(){
     else if (g.status==='clover') showPlayerClover(g);
     else if (g.status==='rana') showPlayerRana(g);
     else if (g.status==='stendi') showPlayerStendi(g);
+    else if (g.status==='parcheggio') showPlayerParcheggio(g);
     else if (g.status==='finddiff') showPlayerFindDiff(g);
     else if (g.status==='maggioranza') showPlayerMaj(g);
     else if (g.status==='goldenticket') showPlayerGold(g);
@@ -11300,6 +11396,106 @@ function showPlayerStendi(g){
     const left = Math.max(0, P.stendiLocalEndAt - Date.now());
     $('stendipTimerBar').style.width = (left/(m.durationMs||1)*100)+'%';
     if (left<=0){ clearInterval(P.stendiInt); if (!P.stendiFinished) stendiLockIn(); }
+  }, 100);
+}
+/* ================================================================
+   PARCHEGGIO PERFETTO — generazione mezzi e telefono
+   Stesso motore di Stendi i Panni (percentuali, scelta irreversibile, spareggio per chi completa
+   prima), ma l'area si riempie su una griglia 10×10 (100 casellette = 100%) invece che su una sola
+   riga: ogni caselletta occupata mostra il mezzo che l'ha "parcheggiata" lì, dando davvero
+   l'impressione di un parcheggio che si riempie per tutta la sua area, non solo in lunghezza.
+================================================================ */
+const PARK_POOL = [
+  {n:'Moto', e:'🏍️', tier:'s'}, {n:'Scooter', e:'🛵', tier:'s'}, {n:'Bici', e:'🚲', tier:'s'}, {n:'Monopattino', e:'🛴', tier:'s'},
+  {n:'Auto', e:'🚗', tier:'m'}, {n:'Taxi', e:'🚕', tier:'m'}, {n:'SUV', e:'🚙', tier:'m'}, {n:'Sportiva', e:'🏎️', tier:'m'}, {n:'Ambulanza', e:'🚑', tier:'m'}, {n:'Volante', e:'🚓', tier:'m'}, {n:'Tuk-tuk', e:'🛺', tier:'m'},
+  {n:'Furgone', e:'🚐', tier:'l'}, {n:'Pulmino', e:'🚌', tier:'l'}, {n:'Pickup', e:'🛻', tier:'l'}, {n:'Pattuglia', e:'🚔', tier:'l'},
+  {n:'Camion', e:'🚛', tier:'xl'}, {n:'Autoarticolato', e:'🚚', tier:'xl'}, {n:'Bus', e:'🚍', tier:'xl'}, {n:'Trattore', e:'🚜', tier:'xl'}, {n:'Autopompa', e:'🚒', tier:'xl'},
+];
+const PARK_TIER_RANGE = { s:[2,4], m:[5,8], l:[9,13], xl:[14,19] };
+const PARK_COLORS = ['#4a90c9','#e8a33d','#5cb85c','#c95a9e','#7a6ad8','#d8785a','#4ac9b0','#c9b04a','#c95a5a','#5aa8c9'];
+function parkPickItems(n){
+  const pool = PARK_POOL.slice();
+  for (let i=pool.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [pool[i],pool[j]]=[pool[j],pool[i]]; }
+  const chosen = pool.slice(0, Math.min(n, pool.length));
+  return chosen.map((it,idx)=>{
+    const [lo,hi] = PARK_TIER_RANGE[it.tier];
+    const size = lo + Math.floor(Math.random()*(hi-lo+1));
+    return { id:'pv'+idx, n:it.n, e:it.e, size, color: PARK_COLORS[idx % PARK_COLORS.length] };
+  });
+}
+function parkUsedPct(){
+  return P.parkSelected.reduce((s,id)=>{ const it=(P.parkItems||[]).find(x=>x.id===id); return s+(it?it.size:0); }, 0);
+}
+function parkRenderLot(){
+  const lot = $('parkLot');
+  if (!lot) return;
+  let html = '';
+  let filled = 0;
+  P.parkSelected.forEach(id=>{
+    const it = (P.parkItems||[]).find(x=>x.id===id);
+    if (!it) return;
+    for (let i=0;i<it.size;i++){
+      html += `<div class="parkCell filled" style="background:${it.color}"><span class="veic">${it.e}</span></div>`;
+      filled++;
+    }
+  });
+  for (let i=filled; i<100; i++) html += `<div class="parkCell"></div>`;
+  lot.innerHTML = html;
+  $('parkPct').textContent = Math.min(100, filled)+'%';
+}
+function parkRenderGrid(){
+  const remaining = 100 - parkUsedPct();
+  $('parkGrid').innerHTML = (P.parkItems||[]).map(it=>{
+    const on = P.parkSelected.includes(it.id);
+    const fits = on || it.size <= remaining;
+    return `<div class="parkCard ${on?'on':''} ${fits?'':'off'}" onclick="parkToggle('${it.id}')">
+      <span class="ic">${it.e}</span><span class="nm">${esc(it.n)}</span><span class="pc">${it.size}%</span>
+    </div>`;
+  }).join('');
+}
+function parkToggle(id){
+  if (P.parkFinished) return;
+  const it = (P.parkItems||[]).find(x=>x.id===id);
+  if (!it) return;
+  if (P.parkSelected.includes(id)) return; // scelta ormai definitiva: non si può togliere dal parcheggio
+  if (parkUsedPct() + it.size > 100) return; // non entra nello spazio rimasto
+  P.parkSelected.push(id);
+  if (navigator.vibrate) navigator.vibrate(20);
+  parkRenderLot(); parkRenderGrid(); parkSubmitProgress();
+}
+function parkSubmitProgress(){
+  if (!P.ref) return;
+  P.ref.child('parcheggio/results/'+P.id).update({ name:P.name, pct:Math.round(parkUsedPct()), finished:false, updatedAt:Date.now() });
+}
+function parkFinishNow(){ if (!P.parkFinished) parkLockIn(); }
+function parkLockIn(){
+  P.parkFinished = true;
+  const pct = Math.round(parkUsedPct());
+  document.querySelectorAll('#parkGrid .parkCard').forEach(c=> c.onclick=null);
+  $('parkDoneBtn').style.display = 'none';
+  $('parkDoneMsg').style.display = 'block';
+  $('parkDoneMsg').textContent = `🅿️ PARCHEGGIO CHIUSO! ${pct}% occupato`;
+  if (navigator.vibrate) navigator.vibrate([40,30,40]);
+  P.ref.child('parcheggio/results/'+P.id).set({ name:P.name, pct, finished:true, lockedAt:Date.now() });
+}
+function showPlayerParcheggio(g){
+  const m = g.parcheggio||{};
+  $('parkpName').textContent = P.name;
+  $('parkpScore').textContent = (((g.players||{})[P.id]||{}).score||0)+' pt';
+  showScreen('scrPlayParcheggio');
+  if (m.phase!=='active'){ clearInterval(P.parkInt); P.parkSig = null; return; }
+  const sig = 'act:'+m.roundId;
+  if (P.parkSig === sig) return; // stesso round già in corso: non ritoccare selezioni/timer già avviati
+  clearInterval(P.parkInt);
+  P.parkSig = sig; P.parkFinished = false; P.parkSelected = []; P.parkItems = m.items||[];
+  $('parkDoneBtn').style.display = ''; $('parkDoneMsg').style.display = 'none';
+  parkRenderLot(); parkRenderGrid();
+  P.parkLocalEndAt = Date.now() + (m.durationMs||0);
+  P.parkInt = setInterval(()=>{
+    if (P.parkSig !== sig) { clearInterval(P.parkInt); return; }
+    const left = Math.max(0, P.parkLocalEndAt - Date.now());
+    $('parkpTimerBar').style.width = (left/(m.durationMs||1)*100)+'%';
+    if (left<=0){ clearInterval(P.parkInt); if (!P.parkFinished) parkLockIn(); }
   }, 100);
 }
 /* ================================================================
@@ -18504,6 +18700,70 @@ function stendiFinalize(prizes){
 }
 
 /* ================================================================
+   PARCHEGGIO PERFETTO — regia
+================================================================ */
+let PARK = {};
+function openParcheggio(){
+  if (!isGameEnabled('parcheggio')) return alert('⚠️ Questo minigioco non è compreso nella licenza attiva. Contatta Alberto per sbloccarlo.');
+  if (!G) return alert('Avvia prima una partita!');
+  cancelLiveQuestion(); closeModal(); clearInterval((PARK||{}).timerInt);
+  G.ref.child('parcheggio/results').off();
+  G.ref.update({ status:'parcheggio', parcheggio:{ phase:'idle' } });
+  PARK = {};
+  $('parkSetup').style.display='block'; $('parkLive').style.display='none';
+  showScreen('scrParcheggio');
+}
+function parkStart(){
+  const count = +($('parkCount').value||17);
+  const durationMs = (+($('parkDuration').value||45))*1000;
+  const prizes = [1,2,3,4,5].map(i=> +($('parkP'+i).value||0));
+  const items = parkPickItems(count);
+  const roundId = serverNow();
+  PARK = { finalized:false };
+  G.ref.update({ status:'parcheggio', parcheggio:{ phase:'active', items, durationMs, prizes, roundId } });
+  G.ref.child('parcheggio/results').remove();
+  $('parkSetup').style.display='none'; $('parkLive').style.display='block';
+  $('parkMsg').textContent = `🅿️ SI PARCHEGGIA! ${count} mezzi a disposizione — ${prizes[0]} punti al 1°`;
+  $('parkCountHost').textContent=''; $('parkResultsLive').innerHTML=''; $('parkBtnAgain').style.display='none';
+  pjSend({type:'parkActive', items, durationMs});
+  clearInterval(PARK.timerInt);
+  const endAt = serverNow()+durationMs;
+  PARK.timerInt = setInterval(()=>{
+    const left = Math.max(0, endAt-serverNow());
+    $('parkTimerBarHost').style.width = (left/durationMs*100)+'%';
+    if (left<=0){ clearInterval(PARK.timerInt); setTimeout(()=> parkFinalize(prizes), 900); }
+  }, 100);
+  G.ref.child('parcheggio/results').on('value', s=>{
+    const results = s.val()||{};
+    const entries = Object.values(results).sort((a,b)=>(b.pct||0)-(a.pct||0));
+    $('parkCountHost').textContent = `Parcheggi chiusi: ${entries.filter(e=>e.finished).length} · in corso: ${entries.filter(e=>!e.finished).length}`;
+    $('parkResultsLive').innerHTML = entries.map((p,i)=>
+      `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(p.name||'?')} <span class="pts">${p.pct||0}%${p.finished?' ✓':''}</span></div>`
+    ).join('') || '<div class="byline">Nessuno ha ancora fatto entrare un mezzo...</div>';
+  });
+}
+function parkFinalize(prizes){
+  if (PARK.finalized) return; PARK.finalized = true;
+  G.ref.child('parcheggio/results').once('value').then(s=>{
+    const results = s.val()||{};
+    const entries = Object.entries(results).map(([pid,r])=>({pid,...r}));
+    // ordino per percentuale (chi ha riempito di più vince); a parità, chi ha chiuso il parcheggio prima
+    entries.sort((a,b)=> (b.pct||0)-(a.pct||0) || (a.lockedAt||Infinity)-(b.lockedAt||Infinity));
+    const top5 = entries.slice(0,5);
+    top5.forEach((e,i)=>{ const pts = prizes[i]||0; if (pts>0) applyScoreDelta(e.pid, pts); });
+    G.ref.child('players').once('value').then(ps=>{
+      const pl = ps.val()||{};
+      $('parkResultsLive').innerHTML = top5.map((e,i)=>
+        `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc((pl[e.pid]||{}).name||e.name||'?')} <span class="pts">${e.pct||0}% · +${prizes[i]||0}</span></div>`
+      ).join('') || '<div class="byline">Nessuno ha parcheggiato nulla questa manche.</div>';
+      $('parkMsg').textContent = '🏁 PARCHEGGI CHIUSI! Classifica finale qui sotto:';
+      $('parkCountHost').textContent = '';
+      $('parkBtnAgain').style.display='';
+    });
+  });
+}
+
+/* ================================================================
    ROULETTE — regia
 ================================================================ */
 let RW = {};
@@ -20893,6 +21153,7 @@ const GIOCHI_CATALOGO = [
   {k:'supertris', l:'💎 SUPERTRIS'},
   {k:'rdc', l:'🧮 La Resa dei Conti'},
   {k:'stendi', l:'🧺 Stendi i Panni'},
+  {k:'parcheggio', l:'🅿️ Parcheggio Perfetto!'},
   {k:'spesa', l:'🛒 Lista della Spesa'},
   {k:'mastermind', l:'🎯 Mastermind'},
   {k:'bomba', l:'💣 Bomba a Orologeria'},
@@ -20955,6 +21216,7 @@ const SKILL_GAMES = [
   {k:'memocoppie', cls:'', style:'', fn:'openMemoCoppie', label:`🃏 Memo le Coppie`},
   {k:'merc', cls:'', style:'background:linear-gradient(180deg,#ff5d7a,#8a0f2e); color:#fff; box-shadow:0 7px 0 #5a0018,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,93,122,.4)', fn:'openMerc', label:`📣 Mercatista per un Giorno`},
   {k:'shapes', cls:'', style:'background:linear-gradient(180deg,#c2183d,#ff8a3c); color:#fff; box-shadow:0 7px 0 #6b0e21,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(194,24,61,.4)', fn:'openShapes', label:`👁 Occhio alle Forme`},
+  {k:'parcheggio', cls:'', style:'background:linear-gradient(180deg,#3a3a3f,#1a1a1e); color:#ffcc33; box-shadow:0 7px 0 #0a0a0c,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(58,58,63,.5)', fn:'openParcheggio', label:`🅿️ Parcheggio Perfetto!`},
   {k:'swiss', cls:'cy', style:'', fn:'openSwiss', label:`⌚ Precisione Svizzera`},
   {k:'puzzle', cls:'mg', style:'', fn:'openPuzzle', label:`🧩 Puzzle`},
   {k:'salumi', cls:'', style:'background:linear-gradient(180deg,#c99a2e,#6f2f22); color:#fff; box-shadow:0 7px 0 #3d1a10,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(201,154,46,.4)', fn:'openSalumi', label:`🔪 Salumi e Formaggi`},
@@ -21771,6 +22033,32 @@ function pjStendiRenderResults(){
     `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(p.name||'?')} <span class="pts">${p.pct||0}%${p.finished?' ✓':''}</span></div>`
   ).join('') || '<div class="byline" style="color:#fff; text-align:center">Nessuno ha ancora scelto un vestito...</div>';
 }
+// PARCHEGGIO PERFETTO — rendering continuo sul proiettore, stesso principio di Stendi i Panni:
+// il parcheggio decorativo si mostra una volta all'attivazione, la classifica si aggiorna in tempo reale.
+let pjParkResults = {};
+function pjParkRenderLot(items){
+  const lot = $('pjParkLot');
+  if (!lot) return;
+  let html = '';
+  let filled = 0;
+  (items||[]).forEach(it=>{
+    for (let i=0;i<it.size;i++){
+      if (filled>=100) return;
+      html += `<div class="parkCell filled" style="background:${it.color}; opacity:.4"><span class="veic">${it.e}</span></div>`;
+      filled++;
+    }
+  });
+  for (let i=filled; i<100; i++) html += `<div class="parkCell"></div>`;
+  lot.innerHTML = html;
+}
+function pjParkRenderResults(){
+  const el = $('pjParkResults');
+  if (!el) return;
+  const entries = Object.values(pjParkResults||{}).sort((a,b)=>(b.pct||0)-(a.pct||0));
+  el.innerHTML = entries.map((p,i)=>
+    `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(p.name||'?')} <span class="pts">${p.pct||0}%${p.finished?' ✓':''}</span></div>`
+  ).join('') || '<div class="byline" style="color:#fff; text-align:center">Nessuno ha ancora fatto entrare un mezzo...</div>';
+}
 function initProjector(){
   document.body.classList.add('proj');
   showScreen('scrPjWait');
@@ -21797,6 +22085,7 @@ function initProjector(){
     base.child('rana').on('value', s=>{ pjRanaState = s.val()||null; pjRanaRender(); });
     base.child('rana/progress').on('value', s=>{ pjRanaProgress = s.val()||{}; pjRanaRender(); });
     base.child('stendi/results').on('value', s=>{ pjStendiResults = s.val()||{}; pjStendiRenderResults(); });
+    base.child('parcheggio/results').on('value', s=>{ pjParkResults = s.val()||{}; pjParkRenderResults(); });
   } else if (!gcode) {
     $('pjWaitMsg').textContent = '⚠️ Manca il codice partita nel link: usa ?proj=1&g=CODICE';
   }
@@ -23275,6 +23564,18 @@ function pjRouteInner(m){
         const left = Math.max(0, pjStendiLocalEndAt - Date.now());
         $('pjStendiTimerBar').style.width = (left/(m.durationMs||1)*100)+'%';
         if (left<=0) clearInterval(window._pjStendiInt);
+      }, 100);
+    }
+    else if (m.type==='parkActive') {
+      showScreen('scrPjParcheggio');
+      $('pjParkMsg').textContent = 'FATE ENTRARE I MEZZI DAL TELEFONO!';
+      pjParkRenderLot(m.items);
+      clearInterval(window._pjParkInt);
+      const pjParkLocalEndAt = Date.now() + (m.durationMs||0);
+      window._pjParkInt = setInterval(()=>{
+        const left = Math.max(0, pjParkLocalEndAt - Date.now());
+        $('pjParkTimerBar').style.width = (left/(m.durationMs||1)*100)+'%';
+        if (left<=0) clearInterval(window._pjParkInt);
       }, 100);
     }
     else if (m.type==='rwActive') {
