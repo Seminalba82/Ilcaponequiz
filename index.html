@@ -2023,7 +2023,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.66</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.67</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -6551,7 +6551,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1366; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1367; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -8021,6 +8021,23 @@ function toggleHostBar(){
   const c = $('hostBar').classList.toggle('collapsed');
   document.body.classList.toggle('barCollapsed', c);
   $('hbToggle').textContent = c ? '🎛 REGIA ▴' : '🎛 REGIA ▾';
+  repositionFixedBarsAboveHostBar();
+}
+// Le barre fisse in basso (podio, "prossima domanda") devono restare SOPRA alla barra regia,
+// mai sovrapposte: altrimenti coprono il pulsante "🎛 REGIA" e non si riesce più a riaprirla.
+// Ricalcolo l'altezza vera della barra regia (cambia se è aperta/chiusa) e sposto le altre di conseguenza.
+function repositionFixedBarsAboveHostBar(){
+  const hostBar = $('hostBar');
+  const hostH = (hostBar && hostBar.classList.contains('on')) ? hostBar.offsetHeight : 0;
+  [['hrNextBar','scrHostReveal'], ['podRevealBar','scrPodium']].forEach(([barId,screenId])=>{
+    const bar = $(barId);
+    if (!bar) return;
+    bar.style.bottom = hostH+'px';
+    if (bar.style.display !== 'none' && bar.style.display !== ''){
+      const scr = $(screenId);
+      if (scr) scr.style.paddingBottom = (hostH + bar.offsetHeight + 20)+'px';
+    }
+  });
 }
 function abortGame(){ $('hostBar').classList.remove('on'); document.body.classList.remove('barOn'); if(G){ G.ref.off(); G.ref.remove(); G=null; } location.href = location.pathname; }
 function startQuiz(){
@@ -8328,7 +8345,7 @@ function showReveal(q, correctText, players, pending, results, stats){
     lead: leadArr.map(p=>({name:p.name, score:p.score||0}))});
   $('btnNext').textContent = (G.qi+1 >= G.quiz.questions.length) ? '🏆 PODIO FINALE' : '▶ Prossima domanda';
   showScreen('scrHostReveal');
-  $('hrNextBar').style.display = 'flex';
+  $('hrNextBar').style.display = 'flex'; repositionFixedBarsAboveHostBar();
 }
 function renderLead(box, players, meId){
   const arr = Object.entries(players).map(([id,p])=>({id,...p})).sort((a,b)=>(b.score||0)-(a.score||0));
@@ -8357,6 +8374,7 @@ function podiumUpdateBtn(){
   if (!btn) return;
   if (podStage >= POD_LABELS.length) { if (bar) bar.style.display='none'; return; }
   if (bar) bar.style.display='flex';
+  repositionFixedBarsAboveHostBar();
   btn.style.display=''; btn.textContent = POD_LABELS[podStage];
 }
 function podiumRevealNext(){
@@ -22389,7 +22407,7 @@ function backToQuiz(title){
       suspense: suspenseMode,
       lead: arr.map(p=>({name:p.name, score:p.score||0}))});
     showScreen('scrHostReveal');
-    $('hrNextBar').style.display = 'flex';
+    $('hrNextBar').style.display = 'flex'; repositionFixedBarsAboveHostBar();
   });
 }
 
