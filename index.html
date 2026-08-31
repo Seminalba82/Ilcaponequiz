@@ -2055,7 +2055,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.70</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.72</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -2075,6 +2075,7 @@ body.suspense-on #pfRank{ display:none !important; }
     <button class="btn" onclick="modalMerge()" data-tip="Unisce due dei tuoi quiz salvati in uno solo">🔀 Fondi quiz</button>
     <button class="btn ghost" onclick="backupAllQuizzes()" data-tip="Scarica un file con tutti i tuoi quiz salvati, per non perderli mai">💾 Backup di tutti i quiz</button>
     <button class="btn ghost" onclick="openManualeUso()" data-tip="Apre il manuale d'uso generale del quiz, sempre aggiornato all'ultima versione">📖 Manuale d'Uso</button>
+    <button class="btn ghost" onclick="logoutLicenza()" data-tip="Esce dalla chiave di licenza salvata su questo dispositivo (telefono, PC o tablet), per poterne inserire un'altra">🔑 Cambia licenza</button>
   </div>
   <div class="byline" style="text-transform:none; max-width:520px; text-align:center">I tuoi quiz sono salvati solo su questo dispositivo/browser. Scarica ogni tanto un backup completo, così non li perdi mai — anche se cancelli i dati di navigazione.</div>
   <div class="panel mtb" style="max-width:640px">
@@ -6707,7 +6708,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1370; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1372; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -7859,6 +7860,20 @@ function playQuiz(i){
   }
 }
 
+// Esce dalla chiave di licenza salvata su questo dispositivo (telefono, PC o tablet): utile se il codice
+// salvato è sbagliato, appartiene a qualcun altro, o è stata cancellata per errore dalla gestione licenze
+// pur restando "ricordata" qui in locale. Non avvia nessun quiz: serve solo a poterne inserire uno nuovo.
+function logoutLicenza(){
+  const current = localStorage.getItem('capone_licenza_codice');
+  const msg = current
+    ? `Vuoi davvero uscire dalla licenza "${current}" su questo dispositivo? Potrai subito inserirne un'altra.\n\nAttenzione: la vecchia chiave di sblocco resterà comunque inutilizzabile finché Alberto non la sblocca.`
+    : 'Vuoi inserire (o cambiare) la licenza su questo dispositivo?';
+  if (!confirm(msg)) return;
+  localStorage.removeItem('capone_licenza_codice');
+  window.CAPONE_MINIGIOCHI_ABILITATI = null;
+  pendingQuizIndex = -1; // non sto avviando nessun quiz: sto solo cambiando la licenza collegata a questo dispositivo
+  showLicenseModal();
+}
 function showLicenseModal(){
   const html = `
     <div class="row mt" style="justify-content:center">
@@ -8003,12 +8018,11 @@ function verificaCodiceEAvvia(codice, silente){
     }
 
     const finalizza = ()=>{
-      window.CAPONE_MINIGIOCHI_ABILITATI = lic.minigiochi_abilitati; // NON sostituire con {} se manca: altrimenti isGameEnabled()
-      // lo tratterebbe come "oggetto vuoto" (verità) invece che "non configurato" (falsità), bloccando tutti i giochi
-      // invece di permetterli tutti come da comportamento previsto per una licenza non ancora configurata.
+      window.CAPONE_MINIGIOCHI_ABILITATI = lic.minigiochi_abilitati; // se manca, isGameEnabled() blocca tutto: nessun gioco è mai concesso senza abilitazione esplicita
       localStorage.setItem('capone_licenza_codice', codice);
       if(!silente) closeLicenseModal();
-      promptVenue(codice, pendingQuizIndex);
+      if (pendingQuizIndex >= 0) promptVenue(codice, pendingQuizIndex);
+      else alert('✅ Licenza collegata a questo dispositivo: '+codice);
     };
 
     if(!lic.device_bloccato){
