@@ -1110,6 +1110,22 @@ body.barOn.barCollapsed .screen.active{padding-bottom:70px;}
   font-family:'Bungee'; font-size:22px; color:#fff; background:linear-gradient(180deg,#a3111c,#3a0508);
   box-shadow:0 8px 0 #1c0203, 0 12px 24px rgba(0,0,0,.5); -webkit-tap-highlight-color:transparent;}
 .f1GoBtn:active{transform:translateY(6px); box-shadow:0 2px 0 #1c0203;}
+/* ===== M'AMA NON M'AMA ===== */
+.margWrap{position:relative; width:260px; height:260px; margin:16px auto 0;}
+.margCenter{position:absolute; left:50%; top:50%; width:54px; height:54px; margin:-27px 0 0 -27px; border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, #ffe066, #d9a300); box-shadow:0 4px 10px rgba(0,0,0,.4), inset 0 0 8px rgba(0,0,0,.25); z-index:3;}
+.margPetal{position:absolute; left:50%; top:50%; width:26px; height:78px; margin:-39px 0 0 -13px;
+  background:linear-gradient(180deg,#fff,#f0e9ff); border-radius:50% 50% 45% 45%/60% 60% 40% 40%;
+  box-shadow:0 2px 4px rgba(0,0,0,.25); transform-origin:50% 100%; cursor:pointer; transition:opacity .25s, transform .25s; z-index:2;}
+.margPetal.gone{opacity:0; transform-origin:50% 100%; pointer-events:none;}
+.margToast{position:fixed; left:50%; top:38%; transform:translate(-50%,-50%) scale(.6); z-index:60; pointer-events:none;
+  font-family:'Bungee'; font-size:clamp(20px,6vw,28px); text-align:center; opacity:0; animation:margToastAnim .8s ease forwards;}
+.margToast.yes{color:#ff6fa8; text-shadow:0 3px 0 #6b0a3a,0 0 20px rgba(255,111,168,.7);}
+.margToast.no{color:#9db4ff; text-shadow:0 3px 0 #1a2a6b,0 0 20px rgba(157,180,255,.6);}
+@keyframes margToastAnim{0%{opacity:0; transform:translate(-50%,-50%) scale(.5);} 25%{opacity:1; transform:translate(-50%,-50%) scale(1.1);}
+  35%{transform:translate(-50%,-50%) scale(1);} 80%{opacity:1;} 100%{opacity:0; transform:translate(-50%,-62%) scale(1);}}
+.margCount{font-family:'Outfit',sans-serif; font-weight:700; color:var(--muted); text-align:center; margin-top:6px; font-size:14px;}
+.margResult{font-family:'Bungee'; font-size:clamp(18px,5vw,26px); text-align:center; margin-top:14px; display:none;}
 .parkPct{font-family:'Bungee'; font-size:clamp(22px,6vw,30px); color:var(--gold); text-align:center; margin-top:10px;
   text-shadow:0 2px 0 #6b4a00;}
 .parkPctSub{font-family:'Outfit',sans-serif; font-weight:600; font-size:13px; color:var(--muted); text-align:center; margin-top:-4px;}
@@ -2039,7 +2055,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.68</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.69</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -2087,7 +2103,7 @@ body.suspense-on #pfRank{ display:none !important; }
     <input type="text" id="edTitle" placeholder="Es. Serata Anni '90 al Naselli" maxlength="60">
     <div class="label mt">Domande (<span id="edCount">0</span>) — quante ne vuoi, nessun limite</div>
     <div class="row mtb" style="flex-wrap:wrap">
-      <button class="btn lm grow" onclick="openQEditor(-1)" data-tip="Aggiungi una nuova domanda in cima alla scaletta">✚ Aggiungi domanda</button>
+      <button class="btn lm grow" onclick="openQEditor(-1)" data-tip="Aggiungi una nuova domanda in fondo alla scaletta">✚ Aggiungi domanda</button>
       <button class="btn ghost" onclick="showScreen('scrHome'); loadQuizList()" data-tip="Torna alla home senza avviare la partita">← Indietro</button>
       <button class="btn ghost" onclick="exportQuiz()" data-tip="Scarica questo quiz come file, per farne un backup o darlo a qualcun altro">⬇ Esporta</button>
       <button class="btn cy" onclick="saveQuiz()" data-tip="Salva le modifiche su questo dispositivo, senza avviare la partita">💾 Salva</button>
@@ -2095,7 +2111,7 @@ body.suspense-on #pfRank{ display:none !important; }
     </div>
     <div id="edQList"></div>
     <div class="row mt" style="flex-wrap:wrap">
-      <button class="btn lm grow" onclick="openQEditor(-1)" data-tip="Aggiungi una nuova domanda in cima alla scaletta">✚ Aggiungi domanda</button>
+      <button class="btn lm grow" onclick="openQEditor(-1)" data-tip="Aggiungi una nuova domanda in fondo alla scaletta">✚ Aggiungi domanda</button>
       <button class="btn ghost" onclick="showScreen('scrHome'); loadQuizList()" data-tip="Torna alla home senza avviare la partita">← Indietro</button>
       <button class="btn ghost" onclick="exportQuiz()" data-tip="Scarica questo quiz come file, per farne un backup o darlo a qualcun altro">⬇ Esporta</button>
       <button class="btn cy" onclick="saveQuiz()" data-tip="Salva le modifiche su questo dispositivo, senza avviare la partita">💾 Salva</button>
@@ -5868,6 +5884,68 @@ body.suspense-on #pfRank{ display:none !important; }
   <button class="f1GoBtn" id="f1GoBtn" onclick="f1Press()">🏁 VIA!</button>
 </div>
 
+<!-- ==================== REGIA: M'AMA NON M'AMA ==================== -->
+<div class="screen" id="scrMarg">
+  <div class="brand"><div class="t1" style="font-size:clamp(18px,3.4vw,32px)">🌼 M'AMA NON M'AMA</div></div>
+  <div class="panel mt" style="max-width:480px" id="margSetup">
+    <div class="label mt">Probabilità di vincita</div>
+    <select id="margProb">
+      <option value="10">1 su 10 (10%)</option>
+      <option value="20">1 su 5 (20%)</option>
+      <option value="25" selected>1 su 4 (25%)</option>
+      <option value="33">1 su 3 (33%)</option>
+      <option value="50">1 su 2 (50%)</option>
+    </select>
+    <div class="label mt">Tempo per sfogliare la margherita</div>
+    <select id="margDuration">
+      <option value="45">45 secondi</option>
+      <option value="60" selected>1 minuto</option>
+      <option value="90">90 secondi</option>
+    </select>
+    <div class="label mt">Quanti premi diversi (chi vince ne riceve uno a caso tra questi)</div>
+    <select id="margNumPrizes" onchange="margRenderPrizeRows()">
+      <option value="1">1 premio</option>
+      <option value="2">2 premi</option>
+      <option value="3" selected>3 premi</option>
+      <option value="4">4 premi</option>
+      <option value="5">5 premi</option>
+    </select>
+    <div id="margPrizeRows"></div>
+    <div class="byline mt" style="opacity:.75">🌼 Ogni giocatore ha la propria margherita (tra 23 e 26 petali) e la sfoglia toccando i petali uno alla volta: m'ama, non m'ama, m'ama... Se l'ULTIMO petalo è "m'ama", il giocatore vince e riceve a caso uno dei premi impostati qui sopra. Se è "non m'ama", niente da fare — proprio come un gratta e vinci.</div>
+    <button class="btn mg mt" style="width:100%" onclick="margStart()">🌼 SI SFOGLIA!</button>
+  </div>
+  <div id="margLive" style="display:none; width:100%" class="center">
+    <div class="miniMsg" id="margMsg"></div>
+    <div class="timerWrap mt" style="max-width:420px"><div class="timerBar" id="margTimerBarHost"></div></div>
+    <div class="byline" id="margCountHost"></div>
+    <div class="lead mt" id="margResultsLive" style="max-width:500px; width:100%"></div>
+    <button class="btn cy mt" id="margBtnAgain" onclick="openMarg()" style="display:none">🔁 Un'altra manche</button>
+  </div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
+</div>
+
+<!-- ==================== PROIETTORE: M'AMA NON M'AMA ==================== -->
+<div class="screen" id="scrPjMarg">
+  <div class="brand"><div class="t1" style="font-size:clamp(22px,3.6vw,40px)">🌼 M'AMA NON M'AMA</div></div>
+  <div class="miniMsg">TOGLI I PETALI E SCOPRI SE HAI VINTO!</div>
+  <div class="margWrap" id="pjMargFlower" style="width:340px; height:340px; transform:scale(1.3)"></div>
+  <div class="timerWrap mt" style="max-width:460px"><div class="timerBar" id="pjMargTimerBar"></div></div>
+  <div class="byline mt" style="max-width:460px; text-align:center">Ogni giocatore sfoglia la propria margherita sul telefono: qui vedete la classifica formarsi in tempo reale.</div>
+  <div class="lead mt" id="pjMargResults" style="max-width:600px; width:100%"></div>
+</div>
+
+<!-- ==================== TELEFONO: M'AMA NON M'AMA ==================== -->
+<div class="screen" id="scrPlayMarg" style="align-items:center; justify-content:center">
+  <div class="row" style="width:100%; justify-content:space-between">
+    <div class="pill" id="margpName" style="color:var(--gold)"></div>
+    <div class="pill" id="margpScore"></div>
+  </div>
+  <div class="timerWrap mt" style="max-width:280px"><div class="timerBar" id="margpTimerBar"></div></div>
+  <div class="margWrap" id="margFlower"></div>
+  <div class="margCount" id="margCount">Tocca un petalo alla volta!</div>
+  <div class="margResult" id="margResultMsg"></div>
+</div>
+
 <!-- ==================== PLAYER: IL PONTE SOSPESO ==================== -->
 <div class="screen" id="scrPlayPonteSospeso" style="align-items:center; justify-content:center">
   <div class="row" style="width:100%; justify-content:space-between">
@@ -6629,7 +6707,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1368; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1369; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -7269,12 +7347,12 @@ function dupQ(i){
    I punti scalano da soli in base alla posizione della domanda nella scaletta: 1-10=300, 11-20=1000, 21+=2000. */
 const QE_DEFAULT_TIMER = { mult:15, open:20, wordsearch:40, anagram:30 };
 const QE_PEN_WRONG_PCT = 200/300, QE_PEN_NONE_PCT = 150/300; // 66,7% e 50%, le stesse proporzioni di riferimento
-function qeDefaultPointsForPosition(pos){ return pos<=10 ? 300 : (pos<=20 ? 1000 : 2000); }
+function qeDefaultPointsForPosition(pos){ return pos*100; }
 let qePctWrong = QE_PEN_WRONG_PCT;
 let qePctNone = QE_PEN_NONE_PCT;
 function openQEditor(i){
   curQIdx = i;
-  const posDefault = qeDefaultPointsForPosition(i>=0 ? i+1 : 1);
+  const posDefault = qeDefaultPointsForPosition(i>=0 ? i+1 : curQuiz.questions.length+1);
   const q = i>=0 ? curQuiz.questions[i] : { text:'', type:'mult', media:{kind:'none'}, opts:['','','',''], corrects:[0], accepted:'',
     points:posDefault, timer:QE_DEFAULT_TIMER.mult, penWrong:Math.round(posDefault*QE_PEN_WRONG_PCT/10)*10, penNone:Math.round(posDefault*QE_PEN_NONE_PCT/10)*10,
     hint:0, wsWord:'', wsClue:'', wsSize:10, scramble:'' };
@@ -7538,15 +7616,15 @@ function qeBuildQuestion(){
 }
 function saveQuestion(){
   const q = qeBuildQuestion(); if (!q) return;
-  if (curQIdx>=0) curQuiz.questions[curQIdx]=q; else curQuiz.questions.unshift(q);
+  if (curQIdx>=0) curQuiz.questions[curQIdx]=q; else curQuiz.questions.push(q);
   renderEdQuestions(); showScreen('scrEditor');
 }
 /* Salva la domanda corrente e passa a quella precedente/successiva SENZA uscire dall'editor */
 function qeGoto(dir){
   const q = qeBuildQuestion(); if (!q) return;
   const wasNew = curQIdx < 0;
-  if (curQIdx>=0) curQuiz.questions[curQIdx]=q; else curQuiz.questions.unshift(q);
-  const fromIdx = wasNew ? 0 : curQIdx;
+  if (curQIdx>=0) curQuiz.questions[curQIdx]=q; else curQuiz.questions.push(q);
+  const fromIdx = wasNew ? curQuiz.questions.length-1 : curQIdx;
   const target = fromIdx + dir;
   if (target < 0 || target >= curQuiz.questions.length) { renderEdQuestions(); return; } // ai bordi: resta qui, ma salva comunque
   openQEditor(target);
@@ -8851,6 +8929,7 @@ function listenGame(){
     else if (g.status==='parcheggio') showPlayerParcheggio(g);
     else if (g.status==='poker') showPlayerPoker(g);
     else if (g.status==='f1') showPlayerF1(g);
+    else if (g.status==='marg') showPlayerMarg(g);
     else if (g.status==='finddiff') showPlayerFindDiff(g);
     else if (g.status==='maggioranza') showPlayerMaj(g);
     else if (g.status==='goldenticket') showPlayerGold(g);
@@ -12013,6 +12092,92 @@ function showPlayerF1(g){
   P.f1MaxPoints = m.maxPoints||500; P.f1Decay = m.decayMs||2000; P.f1EarlyPen = m.earlyPen||200;
   $('f1GoBtn').disabled = false; $('f1GoBtn').style.opacity = '1';
   f1ScheduleLights(sig, m.redStepMs||700, m.greenDelayMs||1500);
+}
+/* ================================================================
+   M'AMA NON M'AMA — telefono
+   L'esito è deciso dal numero di petali (dispari = vince, pari = perde), scelto secondo la
+   probabilità impostata dalla regia: proprio come un vero gratta e vinci, dove l'esito è già
+   scritto prima ancora di iniziare a grattare, e il gioco è scoprirlo pian piano.
+================================================================ */
+function margRenderFlower(el, total, prefix){
+  if (!el) return;
+  let html = '<div class="margCenter"></div>';
+  for (let i=0;i<total;i++){
+    const angle = (360/total)*i;
+    const click = prefix==='marg' ? ` onclick="margPluck(${i})"` : '';
+    html += `<div class="margPetal" id="${prefix}p${i}" style="transform:rotate(${angle}deg)"${click}></div>`;
+  }
+  el.innerHTML = html;
+}
+function margToast(isMama){
+  const d = document.createElement('div');
+  d.className = 'margToast '+(isMama?'yes':'no');
+  d.textContent = isMama ? "M'AMA 💗" : "NON M'AMA 💔";
+  document.body.appendChild(d);
+  setTimeout(()=> d.remove(), 800);
+}
+function margPluck(idx){
+  if (P.margResolved) return;
+  const petalEl = document.getElementById('margp'+idx);
+  if (!petalEl || petalEl.classList.contains('gone')) return;
+  petalEl.classList.add('gone');
+  P.margPlucked++;
+  const isMama = (P.margPlucked % 2 === 1);
+  margToast(isMama);
+  if (navigator.vibrate) navigator.vibrate(15);
+  $('margCount').textContent = `Petali rimasti: ${P.margTotal - P.margPlucked}`;
+  if (P.margPlucked >= P.margTotal) margResolve(isMama);
+}
+function margResolve(lastIsMama){
+  P.margResolved = true;
+  clearInterval(P.margInt);
+  const win = lastIsMama;
+  let prize = null, pts = 0;
+  if (win && P.margPrizes.length){
+    prize = P.margPrizes[Math.floor(Math.random()*P.margPrizes.length)];
+    pts = prize.kind==='points' ? prize.points : 0;
+  }
+  $('margResultMsg').style.display = 'block';
+  if (win){
+    $('margResultMsg').style.color = 'var(--lime)';
+    $('margResultMsg').textContent = prize.kind==='points' ? `💗 M'AMA! HAI VINTO +${pts} PUNTI!` : `💗 M'AMA! HAI VINTO: ${prize.text}`;
+    if (navigator.vibrate) navigator.vibrate([50,30,50,30,100]);
+  } else {
+    $('margResultMsg').style.color = '#9db4ff';
+    $('margResultMsg').textContent = "💔 NON M'AMA... Niente da fare questa volta.";
+  }
+  P.ref.child('marg/results/'+P.id).set({ name:P.name, win, pts, prizeText: (prize&&prize.kind==='text')?prize.text:null, lockedAt:Date.now() });
+}
+function showPlayerMarg(g){
+  const m = g.marg||{};
+  $('margpName').textContent = P.name;
+  $('margpScore').textContent = (((g.players||{})[P.id]||{}).score||0)+' pt';
+  showScreen('scrPlayMarg');
+  if (m.phase!=='active'){ clearInterval(P.margInt); P.margSig = null; return; }
+  const sig = 'act:'+m.roundId;
+  if (P.margSig === sig) return; // stessa manche già in corso: non ritoccare la margherita già mostrata
+  clearInterval(P.margInt);
+  P.margSig = sig; P.margResolved = false; P.margPlucked = 0;
+  const willWin = Math.random()*100 < (m.winProb||25);
+  const oddOptions = [23,25], evenOptions = [24,26];
+  P.margTotal = willWin ? oddOptions[Math.floor(Math.random()*2)] : evenOptions[Math.floor(Math.random()*2)];
+  P.margPrizes = m.prizes||[];
+  $('margResultMsg').style.display = 'none';
+  $('margCount').textContent = `Petali rimasti: ${P.margTotal}`;
+  margRenderFlower($('margFlower'), P.margTotal, 'marg');
+  P.margLocalEndAt = Date.now() + (m.durationMs||0);
+  P.margInt = setInterval(()=>{
+    if (P.margSig !== sig) { clearInterval(P.margInt); return; }
+    const left = Math.max(0, P.margLocalEndAt - Date.now());
+    $('margpTimerBar').style.width = (left/(m.durationMs||1)*100)+'%';
+    if (left<=0 && !P.margResolved){
+      clearInterval(P.margInt);
+      P.margResolved = true;
+      $('margResultMsg').style.display='block'; $('margResultMsg').style.color='#9db4ff';
+      $('margResultMsg').textContent = '⏱ TEMPO SCADUTO...';
+      P.ref.child('marg/results/'+P.id).set({ name:P.name, win:false, pts:0, timeout:true, lockedAt:Date.now() });
+    }
+  }, 100);
 }
 /* ================================================================
    TROVA LE DIFFERENZE — telefono
@@ -19415,6 +19580,88 @@ function f1Finalize(lastPen){
 }
 
 /* ================================================================
+   M'AMA NON M'AMA — regia
+================================================================ */
+let MARG = {};
+function openMarg(){
+  if (!isGameEnabled('marg')) return alert('⚠️ Questo minigioco non è compreso nella licenza attiva. Contatta Alberto per sbloccarlo.');
+  if (!G) return alert('Avvia prima una partita!');
+  cancelLiveQuestion(); closeModal(); clearInterval((MARG||{}).timerInt);
+  G.ref.child('marg/results').off();
+  G.ref.update({ status:'marg', marg:{ phase:'idle' } });
+  MARG = {};
+  $('margSetup').style.display='block'; $('margLive').style.display='none';
+  margRenderPrizeRows();
+  showScreen('scrMarg');
+}
+function margRenderPrizeRows(){
+  const n = +$('margNumPrizes').value;
+  const box = $('margPrizeRows');
+  const prev = box._vals || [];
+  box.innerHTML = Array.from({length:n},(_,i)=>{
+    const p = prev[i] || { kind:'points', points:300, text:'' };
+    return `<div class="gtPrizeRow">
+      <span style="font-family:'Bungee'; color:var(--gold); width:20px">${i+1})</span>
+      <select id="margKind${i}" onchange="margToggleKind(${i})">
+        <option value="points" ${p.kind==='points'?'selected':''}>Punti</option>
+        <option value="text" ${p.kind==='text'?'selected':''}>Premio scritto</option>
+      </select>
+      <input type="number" id="margPoints${i}" class="grow" placeholder="Punti" value="${p.points||300}" style="${p.kind==='text'?'display:none':''}">
+      <input type="text" id="margText${i}" class="grow" placeholder="Es. Un caffè ☕" value="${esc(p.text||'')}" style="${p.kind==='points'?'display:none':''}">
+    </div>`;
+  }).join('');
+}
+function margToggleKind(i){
+  const kind = $('margKind'+i).value;
+  $('margPoints'+i).style.display = kind==='points' ? '' : 'none';
+  $('margText'+i).style.display = kind==='text' ? '' : 'none';
+}
+function margCollectPrizes(){
+  const n = +$('margNumPrizes').value;
+  const prizes = [];
+  for (let i=0;i<n;i++){
+    const kind = $('margKind'+i).value;
+    if (kind==='points') prizes.push({ kind:'points', points:+$('margPoints'+i).value||0 });
+    else prizes.push({ kind:'text', text:$('margText'+i).value.trim()||'Premio a sorpresa!' });
+  }
+  return prizes;
+}
+function margStart(){
+  const winProb = +($('margProb').value||25);
+  const durationMs = (+($('margDuration').value||60))*1000;
+  const prizes = margCollectPrizes();
+  const roundId = serverNow();
+  MARG = { credited:{} };
+  G.ref.update({ status:'marg', marg:{ phase:'active', winProb, durationMs, prizes, roundId } });
+  G.ref.child('marg/results').remove();
+  $('margSetup').style.display='none'; $('margLive').style.display='block';
+  $('margMsg').textContent = `🌼 SI SFOGLIA! Probabilità di vincita: ${winProb}%`;
+  $('margCountHost').textContent=''; $('margResultsLive').innerHTML=''; $('margBtnAgain').style.display='none';
+  pjSend({type:'margActive', durationMs});
+  clearInterval(MARG.timerInt);
+  const endAt = serverNow()+durationMs;
+  MARG.timerInt = setInterval(()=>{
+    const left = Math.max(0, endAt-serverNow());
+    $('margTimerBarHost').style.width = (left/durationMs*100)+'%';
+    if (left<=0){ clearInterval(MARG.timerInt); setTimeout(()=> $('margBtnAgain').style.display='', 800); }
+  }, 100);
+  G.ref.child('marg/results').on('child_added', snap=>{
+    const pid = snap.key, r = snap.val();
+    if (!r || MARG.credited[pid]) return;
+    MARG.credited[pid] = true;
+    if (r.pts>0) applyScoreDelta(pid, r.pts);
+  });
+  G.ref.child('marg/results').on('value', s=>{
+    const results = s.val()||{};
+    const entries = Object.values(results);
+    $('margCountHost').textContent = `Concluso: ${entries.length}`;
+    $('margResultsLive').innerHTML = entries.map(p=>
+      `<div class="leadRow"><span class="pos">${p.win?'💗':'💔'}</span> ${esc(p.name||'?')} <span class="pts">${p.win ? (p.pts>0?'+'+p.pts+' pt':(p.prizeText||'premio')) : 'niente'}</span></div>`
+    ).join('') || '<div class="byline">Nessuno ha ancora finito di sfogliare...</div>';
+  });
+}
+
+/* ================================================================
    ROULETTE — regia
 ================================================================ */
 let RW = {};
@@ -21817,6 +22064,7 @@ const GIOCHI_CATALOGO = [
   {k:'casino', l:'🎰 Roulette (Casinò)'},
   {k:'tamb', l:'🥁 I Tamburini'},
   {k:'merc', l:'📣 Mercatista per un Giorno'},
+  {k:'marg', l:"🌼 M'ama non m'ama"},
   {k:'morra', l:'✊✋✌️ Morra Cinese'},
   {k:'pontesospeso', l:'🌉 Il Ponte Sospeso'},
   {k:'panino', l:'🥪 Un Panino al Camioncino'},
@@ -21902,6 +22150,7 @@ const LUCK_GAMES = [
   {k:'ruota', cls:'cy', style:'', fn:'openRuota', label:`🎡 La Ruota Gira per Tutti`},
   {k:'scossa', cls:'', style:'background:linear-gradient(180deg,#ffe93d,#8a5a0b); color:#2e2400; box-shadow:0 7px 0 #4a3300,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,233,61,.4)', fn:'openScossa', label:`⚡ La Scossa`},
   {k:'wheels', cls:'', style:'', fn:'openWheels', label:`🎡 Le Ruote della Fortuna`},
+  {k:'marg', cls:'', style:'background:linear-gradient(180deg,#ff9fc4,#c43a72); color:#fff; box-shadow:0 7px 0 #6b0a35,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,159,196,.4)', fn:'openMarg', label:`🌼 M'ama non m'ama`},
   {k:'morra', cls:'', style:'background:linear-gradient(180deg,#7a5cff,#2e0f8a); color:#fff; box-shadow:0 7px 0 #180a5c,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(122,92,255,.4)', fn:'openMorra', label:`✊✋✌️ Morra Cinese`},
   {k:'dice', cls:'cy', style:'', fn:'openDice', label:`🎲 Pari o Dispari`},
   {k:'patata', cls:'', style:'background:linear-gradient(180deg,#ff5d3d,#8a1a0b); color:#fff; box-shadow:0 7px 0 #4a0a00,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,93,61,.4)', fn:'openPatata', label:`💣 Patata Bollente`},
@@ -22756,6 +23005,14 @@ function initProjector(){
       if (el) el.innerHTML = entries.map(p=>
         `<div class="leadRow"><span class="pos">${p.jumped?'🚩':'🏁'}</span> ${esc(p.name||'?')} <span class="pts">${p.pts>=0?'+':''}${p.pts||0}${p.reactionMs!=null?' · '+(p.reactionMs/1000).toFixed(3)+'s':''}</span></div>`
       ).join('') || '<div class="byline" style="color:#fff; text-align:center">Nessuno ha ancora schiacciato...</div>';
+    });
+    base.child('marg/results').on('value', s=>{
+      const results = s.val()||{};
+      const entries = Object.values(results);
+      const el = $('pjMargResults');
+      if (el) el.innerHTML = entries.map(p=>
+        `<div class="leadRow"><span class="pos">${p.win?'💗':'💔'}</span> ${esc(p.name||'?')} <span class="pts">${p.win ? (p.pts>0?'+'+p.pts+' pt':(p.prizeText||'premio')) : 'niente'}</span></div>`
+      ).join('') || '<div class="byline" style="color:#fff; text-align:center">Nessuno ha ancora finito di sfogliare...</div>';
     });
   } else if (!gcode) {
     $('pjWaitMsg').textContent = '⚠️ Manca il codice partita nel link: usa ?proj=1&g=CODICE';
@@ -24275,6 +24532,18 @@ function pjRouteInner(m){
         lamps.forEach(l=> l.classList.remove('red')); lamps.forEach(l=> l.classList.add('green'));
         $('pjF1Status').textContent = '🟢 VIA!!!'; $('pjF1Status').className='f1Status go';
       }, 3*redStepMs + greenDelayMs));
+    }
+    else if (m.type==='margActive') {
+      showScreen('scrPjMarg');
+      margRenderFlower($('pjMargFlower'), 24, 'pj');
+      $('pjMargResults').innerHTML = '';
+      clearInterval(window._pjMargInt);
+      const pjMargLocalEndAt = Date.now() + (m.durationMs||0);
+      window._pjMargInt = setInterval(()=>{
+        const left = Math.max(0, pjMargLocalEndAt - Date.now());
+        $('pjMargTimerBar').style.width = (left/(m.durationMs||1)*100)+'%';
+        if (left<=0) clearInterval(window._pjMargInt);
+      }, 100);
     }
     else if (m.type==='rwActive') {
       showScreen('scrPjCasino');
