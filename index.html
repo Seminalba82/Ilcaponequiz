@@ -1126,6 +1126,33 @@ body.barOn.barCollapsed .screen.active{padding-bottom:70px;}
   35%{transform:translate(-50%,-50%) scale(1);} 80%{opacity:1;} 100%{opacity:0; transform:translate(-50%,-62%) scale(1);}}
 .margCount{font-family:'Outfit',sans-serif; font-weight:700; color:var(--muted); text-align:center; margin-top:6px; font-size:14px;}
 .margResult{font-family:'Bungee'; font-size:clamp(18px,5vw,26px); text-align:center; margin-top:14px; display:none;}
+/* ===== CHAT DI GRUPPO ===== */
+.chatLog{width:100%; max-width:640px; margin:12px auto; flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:8px;
+  padding:10px; background:rgba(0,0,0,.25); border-radius:14px; min-height:200px; max-height:52vh;}
+.chatMsg{max-width:82%; padding:8px 12px; border-radius:14px; position:relative; word-wrap:break-word; box-shadow:0 3px 8px rgba(0,0,0,.35);}
+.chatMsg.mine{align-self:flex-end; border-bottom-right-radius:4px;}
+.chatMsg.theirs{align-self:flex-start; border-bottom-left-radius:4px;}
+.chatMsg.host{align-self:center; border-radius:10px; border:2px solid var(--gold); background:rgba(255,201,60,.12)!important;}
+.chatMsg .cName{font-family:'Outfit',sans-serif; font-weight:800; font-size:12px; margin-bottom:2px; opacity:.95;}
+.chatMsg .cText{font-family:'Outfit',sans-serif; font-weight:600; font-size:14.5px; color:#fff; line-height:1.35;}
+.chatMsg .cMeta{font-family:'Outfit',sans-serif; font-weight:600; font-size:9.5px; color:rgba(255,255,255,.75); margin-top:3px; text-align:right;}
+.chatMsg .cPriv{display:inline-block; font-family:'Bungee'; font-size:8.5px; letter-spacing:.5px; color:#1a1a1e;
+  background:var(--gold); padding:1px 6px; border-radius:8px; margin-bottom:3px;}
+.chatMsg .cDel{position:absolute; top:-8px; right:-8px; width:22px; height:22px; border-radius:50%; background:#c4183d;
+  color:#fff; border:2px solid #1a1a1e; font-size:12px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center;}
+.chatInputRow{display:flex; gap:8px; width:100%; max-width:640px; margin:0 auto; align-items:center; flex-wrap:wrap;}
+.chatToSel{flex:0 0 auto; max-width:130px; font-size:13px; padding:8px 6px;}
+.chatTextInput{flex:1; min-width:120px; padding:12px 14px; border-radius:14px; border:2px solid rgba(255,255,255,.2);
+  background:rgba(255,255,255,.06); color:#fff; font-family:'Outfit',sans-serif; font-size:15px;}
+.chatSendBtn{flex:0 0 auto; border:none; border-radius:14px; padding:12px 18px; font-family:'Bungee'; font-size:14px;
+  color:#0b2e00; background:linear-gradient(180deg,#c8ff6a,#7fca2e); cursor:pointer; box-shadow:0 4px 0 #3a6b0a;}
+.chatSendBtn:active{transform:translateY(3px); box-shadow:0 1px 0 #3a6b0a;}
+.pjChatLog{width:100%; max-width:820px; margin:10px auto; max-height:60vh; overflow-y:auto; display:flex; flex-direction:column; gap:10px; padding:14px;}
+.pjChatMsg{max-width:75%; padding:12px 18px; border-radius:18px; box-shadow:0 4px 10px rgba(0,0,0,.4);}
+.pjChatMsg.host{align-self:center; border:3px solid var(--gold); background:rgba(255,201,60,.15)!important;}
+.pjChatMsg .cName{font-family:'Outfit',sans-serif; font-weight:800; font-size:16px; margin-bottom:2px;}
+.pjChatMsg .cText{font-family:'Outfit',sans-serif; font-weight:700; font-size:20px; color:#fff; line-height:1.3;}
+.pjChatMsg .cMeta{font-family:'Outfit',sans-serif; font-weight:600; font-size:12px; color:rgba(255,255,255,.75); margin-top:4px; text-align:right;}
 .parkPct{font-family:'Bungee'; font-size:clamp(22px,6vw,30px); color:var(--gold); text-align:center; margin-top:10px;
   text-shadow:0 2px 0 #6b4a00;}
 .parkPctSub{font-family:'Outfit',sans-serif; font-weight:600; font-size:13px; color:var(--muted); text-align:center; margin-top:-4px;}
@@ -2055,7 +2082,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.74</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.75</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -5939,6 +5966,59 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="margResult" id="margResultMsg"></div>
 </div>
 
+<!-- ==================== REGIA: CHAT ==================== -->
+<div class="screen" id="scrChat">
+  <div class="brand"><div class="t1" style="font-size:clamp(18px,3.4vw,32px)">💬 CHAT DI GRUPPO</div></div>
+  <div class="panel mt" style="max-width:480px" id="chatSetup">
+    <div class="label mt">Durata della chat</div>
+    <select id="chatDuration">
+      <option value="0" selected>Tempo libero (nessun limite)</option>
+      <option value="60">1 minuto</option>
+      <option value="120">2 minuti</option>
+      <option value="180">3 minuti</option>
+      <option value="300">5 minuti</option>
+      <option value="600">10 minuti</option>
+    </select>
+    <div class="byline mt" style="opacity:.75">💬 Tutti i giocatori potranno scrivere nella chat di gruppo (visibile su tutti gli smartphone e sul proiettore) oppure mandare un messaggio personale a un altro giocatore, visibile solo a lui. Puoi scrivere anche tu, in gruppo o a una persona precisa, e puoi eliminare in ogni momento un messaggio scritto da chiunque. Con un tempo impostato, puoi anche farla diventare una gara a chi risponde per ultimo!</div>
+    <button class="btn mg mt" style="width:100%" onclick="chatStart()">💬 AVVIA CHAT</button>
+  </div>
+  <div id="chatLive" style="display:none; width:100%; flex:1; display:flex; flex-direction:column; align-items:center">
+    <div class="miniMsg" id="chatHostMsg" style="font-size:14px">CHAT ATTIVA</div>
+    <div class="timerWrap mt" id="chatHostTimerWrap" style="max-width:420px; display:none"><div class="timerBar" id="chatTimerBarHost"></div></div>
+    <div class="chatLog" id="chatLogHost"></div>
+    <div class="chatInputRow mt">
+      <select class="chatToSel" id="chatToHost"><option value="">📢 A: Tutti</option></select>
+      <input type="text" class="chatTextInput" id="chatInputHost" placeholder="Scrivi come REGIA..." onkeydown="if(event.key==='Enter') chatSendHost()">
+      <button class="chatSendBtn" onclick="chatSendHost()">➤</button>
+    </div>
+    <button class="btn ghost mt" onclick="chatEnd()">⏹ Termina chat</button>
+  </div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe la chat e torna alle domande del quiz">↩ Torna al quiz</button></div>
+</div>
+
+<!-- ==================== PROIETTORE: CHAT ==================== -->
+<div class="screen" id="scrPjChat">
+  <div class="brand"><div class="t1" style="font-size:clamp(22px,3.6vw,40px)">💬 CHAT DI GRUPPO</div></div>
+  <div class="miniMsg" id="pjChatMsg">SCRIVETE DAL VOSTRO SMARTPHONE!</div>
+  <div class="timerWrap mt" id="pjChatTimerWrap" style="max-width:460px; display:none"><div class="timerBar" id="pjChatTimerBar"></div></div>
+  <div class="pjChatLog" id="pjChatLog"></div>
+</div>
+
+<!-- ==================== TELEFONO: CHAT ==================== -->
+<div class="screen" id="scrPlayChat" style="align-items:center; justify-content:flex-start; padding-top:14px">
+  <div class="row" style="width:100%; justify-content:space-between">
+    <div class="pill" id="chatpName" style="color:var(--gold)"></div>
+    <div class="pill" id="chatpScore"></div>
+  </div>
+  <div class="timerWrap mt" id="chatpTimerWrap" style="max-width:280px; display:none"><div class="timerBar" id="chatpTimerBar"></div></div>
+  <div class="chatLog" id="chatLogP"></div>
+  <div class="chatInputRow mt">
+    <select class="chatToSel" id="chatToP"><option value="">📢 A: Tutti</option></select>
+    <input type="text" class="chatTextInput" id="chatInputP" placeholder="Scrivi un messaggio..." onkeydown="if(event.key==='Enter') chatSendP()">
+    <button class="chatSendBtn" onclick="chatSendP()">➤</button>
+  </div>
+</div>
+
 <!-- ==================== PLAYER: IL PONTE SOSPESO ==================== -->
 <div class="screen" id="scrPlayPonteSospeso" style="align-items:center; justify-content:center">
   <div class="row" style="width:100%; justify-content:space-between">
@@ -6700,7 +6780,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1374; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1375; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -8905,6 +8985,7 @@ function listenGame(){
     else if (g.status==='dice') showPlayerDice(g);
     else if (g.status==='simon') showPlayerSimon(g);
     else if (g.status==='voto') showPlayerVoto(g);
+    else if (g.status==='chat') showPlayerChat(g);
     else if (g.status==='wheels') showPlayerWheels(g);
     else if (g.status==='hilo') showPlayerHiLo(g);
     else if (g.status==='swiss') showPlayerSwiss(g);
@@ -12194,6 +12275,86 @@ function showPlayerMarg(g){
       P.ref.child('marg/results/'+P.id).set({ name:P.name, win:false, pts:0, timeout:true, lockedAt:Date.now() });
     }
   }, 100);
+}
+/* ================================================================
+   CHAT DI GRUPPO — funzioni condivise (regia/telefono/proiettore) e telefono
+================================================================ */
+const CHAT_PALETTE = ['#ff6b81','#4ecdc4','#ffd93d','#a685ff','#6bcb77','#ff9f5a','#5ac8fa','#ff5d8f','#7fdbff','#c86dd7'];
+function chatColorFor(id){
+  let h=0; for (let i=0;i<String(id).length;i++) h=(h*31+String(id).charCodeAt(i))>>>0;
+  return CHAT_PALETTE[h % CHAT_PALETTE.length];
+}
+function chatFmtTime(ts){
+  const d = new Date(ts||Date.now());
+  const pad = n=>String(n).padStart(2,'0');
+  return pad(d.getHours())+':'+pad(d.getMinutes());
+}
+function chatRenderToSelect(selEl, players, myId){
+  if (!selEl) return;
+  const prev = selEl.value;
+  let html = '<option value="">📢 A: Tutti</option>';
+  Object.entries(players||{}).forEach(([pid,p])=>{
+    if (pid===myId) return;
+    html += `<option value="${pid}">${esc(p.name)}</option>`;
+  });
+  selEl.innerHTML = html;
+  if ([...selEl.options].some(o=>o.value===prev)) selEl.value = prev;
+}
+function chatRenderLogPlayer(msgs, myId){
+  const arr = Object.entries(msgs||{}).map(([id,m])=>({id,...m})).sort((a,b)=>a.ts-b.ts);
+  const visible = arr.filter(m=> !m.to || m.to===myId || m.from===myId || m.fromHost);
+  const el = $('chatLogP');
+  el.innerHTML = visible.map(m=>{
+    const isHost = !!m.fromHost;
+    const isMine = m.from===myId;
+    const cls = isHost ? 'host' : (isMine?'mine':'theirs');
+    const bg = isHost ? '' : `background:${chatColorFor(m.from)}`;
+    const privTag = m.to ? `<div class="cPriv">PRIVATO${m.toName?' a '+esc(m.toName):''}</div>` : '';
+    return `<div class="chatMsg ${cls}" style="${bg}">
+      ${privTag}
+      <div class="cName">${isHost?'🎩 REGIA':esc(m.fromName||'?')}</div>
+      <div class="cText">${esc(m.text)}</div>
+      <div class="cMeta">${chatFmtTime(m.ts)}</div>
+    </div>`;
+  }).join('') || '<div class="byline" style="text-align:center; opacity:.6">Nessun messaggio ancora... scrivi tu il primo!</div>';
+  el.scrollTop = el.scrollHeight;
+}
+function chatSendP(){
+  const input = $('chatInputP');
+  const text = input.value.trim();
+  if (!text || !P.ref) return;
+  const to = $('chatToP').value || null;
+  const toName = to ? ($('chatToP').selectedOptions[0]||{}).textContent : null;
+  const msgId = 'm'+Date.now()+Math.floor(Math.random()*1000);
+  P.ref.child('chat/messages/'+msgId).set({ from:P.id, fromName:P.name, to: to||null, toName: toName||null, text, ts: Date.now() });
+  input.value = '';
+}
+function showPlayerChat(g){
+  const m = g.chat||{};
+  $('chatpName').textContent = P.name;
+  $('chatpScore').textContent = (((g.players||{})[P.id]||{}).score||0)+' pt';
+  showScreen('scrPlayChat');
+  if (m.phase!=='active'){ clearInterval(P.chatInt); P.chatSig = null; return; }
+  chatRenderToSelect($('chatToP'), g.players, P.id);
+  chatRenderLogPlayer(m.messages, P.id);
+  if (m.durationMs){
+    $('chatpTimerWrap').style.display = '';
+    const sig = 'act:'+m.roundId;
+    if (P.chatSig !== sig){
+      P.chatSig = sig;
+      clearInterval(P.chatInt);
+      P.chatLocalEndAt = Date.now() + m.durationMs;
+      P.chatInt = setInterval(()=>{
+        if (P.chatSig !== sig) { clearInterval(P.chatInt); return; }
+        const left = Math.max(0, P.chatLocalEndAt - Date.now());
+        $('chatpTimerBar').style.width = (left/m.durationMs*100)+'%';
+        if (left<=0) clearInterval(P.chatInt);
+      }, 200);
+    }
+  } else {
+    $('chatpTimerWrap').style.display = 'none';
+    clearInterval(P.chatInt); P.chatSig = null;
+  }
 }
 /* ================================================================
    TROVA LE DIFFERENZE — telefono
@@ -19690,6 +19851,86 @@ function margStart(){
 }
 
 /* ================================================================
+   CHAT DI GRUPPO — regia
+================================================================ */
+let CHAT = {};
+function openChat(){
+  if (!G) return alert('Avvia prima una partita!');
+  cancelLiveQuestion(); closeModal(); clearInterval((CHAT||{}).timerInt);
+  G.ref.child('chat/messages').off();
+  G.ref.update({ status:'chat', chat:{ phase:'idle' } });
+  CHAT = {};
+  $('chatSetup').style.display='block'; $('chatLive').style.display='none';
+  showScreen('scrChat');
+}
+function chatStart(){
+  const durSec = +($('chatDuration').value||0);
+  const durationMs = durSec>0 ? durSec*1000 : null;
+  const roundId = serverNow();
+  CHAT = {};
+  G.ref.child('chat/messages').remove();
+  G.ref.update({ status:'chat', chat:{ phase:'active', durationMs, roundId } });
+  $('chatSetup').style.display='none'; $('chatLive').style.display='flex';
+  $('chatHostMsg').textContent = durationMs ? '⏱ CHAT A TEMPO ATTIVA! Chi risponde per ultimo... vince?' : '💬 CHAT LIBERA ATTIVA!';
+  $('chatHostTimerWrap').style.display = durationMs ? '' : 'none';
+  $('chatLogHost').innerHTML = '';
+  $('chatInputHost').value = '';
+  pjSend({type:'chatActive', durationMs});
+  clearInterval(CHAT.timerInt);
+  if (durationMs){
+    const endAt = serverNow()+durationMs;
+    CHAT.timerInt = setInterval(()=>{
+      const left = Math.max(0, endAt-serverNow());
+      $('chatTimerBarHost').style.width = (left/durationMs*100)+'%';
+      if (left<=0) clearInterval(CHAT.timerInt);
+    }, 200);
+  }
+  G.ref.child('chat/messages').off();
+  G.ref.child('chat/messages').on('value', s=>{
+    const msgs = s.val()||{};
+    chatRenderLogHost(msgs);
+    G.ref.child('players').once('value').then(ps=> chatRenderToSelect($('chatToHost'), ps.val()||{}, null));
+  });
+}
+function chatRenderLogHost(msgs){
+  const arr = Object.entries(msgs||{}).map(([id,m])=>({id,...m})).sort((a,b)=>a.ts-b.ts);
+  const el = $('chatLogHost');
+  el.innerHTML = arr.map(m=>{
+    const isHost = !!m.fromHost;
+    const bg = isHost ? '' : `background:${chatColorFor(m.from)}`;
+    const privTag = m.to ? `<div class="cPriv">PRIVATO: ${esc(m.fromName||'?')} → ${esc(m.toName||'?')}</div>` : '';
+    return `<div class="chatMsg ${isHost?'host':'theirs'}" style="${bg}; align-self:center; max-width:92%">
+      <span class="cDel" onclick="chatDelete('${m.id}')" data-tip="Elimina questo messaggio">✕</span>
+      ${privTag}
+      <div class="cName">${isHost?'🎩 REGIA':esc(m.fromName||'?')}</div>
+      <div class="cText">${esc(m.text)}</div>
+      <div class="cMeta">${chatFmtTime(m.ts)}</div>
+    </div>`;
+  }).join('') || '<div class="byline" style="text-align:center; opacity:.6">Nessun messaggio ancora...</div>';
+  el.scrollTop = el.scrollHeight;
+}
+function chatSendHost(){
+  const input = $('chatInputHost');
+  const text = input.value.trim();
+  if (!text || !G) return;
+  const to = $('chatToHost').value || null;
+  const toName = to ? ($('chatToHost').selectedOptions[0]||{}).textContent : null;
+  const msgId = 'm'+Date.now()+Math.floor(Math.random()*1000);
+  G.ref.child('chat/messages/'+msgId).set({ from:'host', fromName:'Regia', fromHost:true, to: to||null, toName: toName||null, text, ts: Date.now() });
+  input.value = '';
+}
+function chatDelete(msgId){
+  if (!G) return;
+  G.ref.child('chat/messages/'+msgId).remove();
+}
+function chatEnd(){
+  if (!G) return;
+  clearInterval(CHAT.timerInt);
+  G.ref.child('chat').update({ phase:'idle' });
+  $('chatSetup').style.display='block'; $('chatLive').style.display='none';
+}
+
+/* ================================================================
    ROULETTE — regia
 ================================================================ */
 let RW = {};
@@ -22230,6 +22471,7 @@ function modalModules(){
     <div style="display:flex; flex-direction:column; gap:10px">
       <button class="btn gameBtn" onclick="openVoto()">🌡 Votometro</button>
       <button class="btn cy gameBtn" onclick="openTimer()">⏱ Timer</button>
+      <button class="btn gameBtn" style="background:linear-gradient(180deg,#4ecdc4,#1a7d76); color:#fff; box-shadow:0 7px 0 #0d3f3b,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(78,205,196,.4)" onclick="openChat()">💬 Chat</button>
       <button class="btn lm gameBtn" onclick="openGrad()">📊 Classifica di Gradimento</button>
       ${gk('asta', `<button class="btn gameBtn" style="background:linear-gradient(180deg,#d4a63a,#5c3e0a); color:#fff; box-shadow:0 7px 0 #2e1f05,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(212,166,58,.45)" onclick="openAsta()">🔨 Asta</button>`)}
     </div>`);
@@ -22990,6 +23232,22 @@ function pjParkRenderResults(){
     `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(p.name||'?')} <span class="pts">${p.pct||0}%${p.finished?' ✓':''}</span></div>`
   ).join('') || '<div class="byline" style="color:#fff; text-align:center">Nessuno ha ancora fatto entrare un mezzo...</div>';
 }
+function chatRenderLogProjector(msgs){
+  const el = $('pjChatLog');
+  if (!el) return;
+  const arr = Object.entries(msgs||{}).map(([id,m])=>({id,...m})).sort((a,b)=>a.ts-b.ts);
+  const group = arr.filter(m=> !m.to); // sul proiettore, come uno spettacolo pubblico, si vedono solo i messaggi di gruppo: mai quelli privati
+  el.innerHTML = group.map(m=>{
+    const isHost = !!m.fromHost;
+    const bg = isHost ? '' : `background:${chatColorFor(m.from)}`;
+    return `<div class="pjChatMsg ${isHost?'host':''}" style="${bg}">
+      <div class="cName">${isHost?'🎩 REGIA':esc(m.fromName||'?')}</div>
+      <div class="cText">${esc(m.text)}</div>
+      <div class="cMeta">${chatFmtTime(m.ts)}</div>
+    </div>`;
+  }).join('') || '<div class="byline" style="color:#fff; text-align:center">In attesa dei primi messaggi...</div>';
+  el.scrollTop = el.scrollHeight;
+}
 function initProjector(){
   document.body.classList.add('proj');
   showScreen('scrPjWait');
@@ -23017,6 +23275,7 @@ function initProjector(){
     base.child('rana/progress').on('value', s=>{ pjRanaProgress = s.val()||{}; pjRanaRender(); });
     base.child('stendi/results').on('value', s=>{ pjStendiResults = s.val()||{}; pjStendiRenderResults(); });
     base.child('parcheggio/results').on('value', s=>{ pjParkResults = s.val()||{}; pjParkRenderResults(); });
+    base.child('chat/messages').on('value', s=>{ chatRenderLogProjector(s.val()||{}); });
     base.child('poker/results').on('value', s=>{
       const results = s.val()||{};
       const entries = Object.values(results).sort((a,b)=>(b.pts||0)-(a.pts||0));
@@ -24574,6 +24833,20 @@ function pjRouteInner(m){
         $('pjMargTimerBar').style.width = (left/(m.durationMs||1)*100)+'%';
         if (left<=0) clearInterval(window._pjMargInt);
       }, 100);
+    }
+    else if (m.type==='chatActive') {
+      showScreen('scrPjChat');
+      $('pjChatMsg').textContent = 'SCRIVETE DAL VOSTRO SMARTPHONE!';
+      $('pjChatTimerWrap').style.display = m.durationMs ? '' : 'none';
+      clearInterval(window._pjChatInt);
+      if (m.durationMs){
+        const pjChatLocalEndAt = Date.now() + m.durationMs;
+        window._pjChatInt = setInterval(()=>{
+          const left = Math.max(0, pjChatLocalEndAt - Date.now());
+          $('pjChatTimerBar').style.width = (left/m.durationMs*100)+'%';
+          if (left<=0) clearInterval(window._pjChatInt);
+        }, 200);
+      }
     }
     else if (m.type==='rwActive') {
       showScreen('scrPjCasino');
