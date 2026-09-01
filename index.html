@@ -1153,6 +1153,13 @@ body.barOn.barCollapsed .screen.active{padding-bottom:70px;}
 .pjChatMsg .cName{font-family:'Outfit',sans-serif; font-weight:800; font-size:16px; margin-bottom:2px;}
 .pjChatMsg .cText{font-family:'Outfit',sans-serif; font-weight:700; font-size:20px; color:#fff; line-height:1.3;}
 .pjChatMsg .cMeta{font-family:'Outfit',sans-serif; font-weight:600; font-size:12px; color:rgba(255,255,255,.75); margin-top:4px; text-align:right;}
+.chatLastMinuteBanner{position:fixed; left:50%; top:18%; transform:translate(-50%,-50%); z-index:70;
+  background:linear-gradient(180deg,#ff2d4a,#8a0018); color:#fff; font-family:'Bungee'; font-size:clamp(16px,5.5vw,26px);
+  padding:16px 26px; border-radius:16px; box-shadow:0 10px 30px rgba(255,45,74,.6), 0 0 0 4px rgba(255,255,255,.15);
+  text-align:center; animation:chatLastMinutePulse 1s ease-in-out infinite, chatLastMinuteFade 2.6s ease forwards;
+  pointer-events:none; max-width:88vw;}
+@keyframes chatLastMinutePulse{0%,100%{transform:translate(-50%,-50%) scale(1);} 50%{transform:translate(-50%,-50%) scale(1.06);}}
+@keyframes chatLastMinuteFade{0%{opacity:0;} 10%{opacity:1;} 85%{opacity:1;} 100%{opacity:0;}}
 .parkPct{font-family:'Bungee'; font-size:clamp(22px,6vw,30px); color:var(--gold); text-align:center; margin-top:10px;
   text-shadow:0 2px 0 #6b4a00;}
 .parkPctSub{font-family:'Outfit',sans-serif; font-weight:600; font-size:13px; color:var(--muted); text-align:center; margin-top:-4px;}
@@ -2082,7 +2089,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.75</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.77</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -5978,13 +5985,29 @@ body.suspense-on #pfRank{ display:none !important; }
       <option value="180">3 minuti</option>
       <option value="300">5 minuti</option>
       <option value="600">10 minuti</option>
+      <option value="1200">20 minuti</option>
+      <option value="1800">30 minuti</option>
+      <option value="2400">40 minuti</option>
+      <option value="3000">50 minuti</option>
+      <option value="3600">60 minuti</option>
     </select>
-    <div class="byline mt" style="opacity:.75">💬 Tutti i giocatori potranno scrivere nella chat di gruppo (visibile su tutti gli smartphone e sul proiettore) oppure mandare un messaggio personale a un altro giocatore, visibile solo a lui. Puoi scrivere anche tu, in gruppo o a una persona precisa, e puoi eliminare in ogni momento un messaggio scritto da chiunque. Con un tempo impostato, puoi anche farla diventare una gara a chi risponde per ultimo!</div>
+    <div class="byline mt" style="opacity:.75">💬 Tutti i giocatori potranno scrivere nella chat di gruppo (visibile su tutti gli smartphone e sul proiettore), mandare un messaggio personale a un altro giocatore, oppure scrivere in privato direttamente a te. Puoi scrivere anche tu, in gruppo o a una persona precisa, e puoi eliminare in ogni momento un messaggio scritto da chiunque. Con un tempo impostato, puoi anche farla diventare una gara a chi risponde per ultimo — e allungarlo quando vuoi, anche a chat già avviata.</div>
     <button class="btn mg mt" style="width:100%" onclick="chatStart()">💬 AVVIA CHAT</button>
   </div>
   <div id="chatLive" style="display:none; width:100%; flex:1; display:flex; flex-direction:column; align-items:center">
     <div class="miniMsg" id="chatHostMsg" style="font-size:14px">CHAT ATTIVA</div>
-    <div class="timerWrap mt" id="chatHostTimerWrap" style="max-width:420px; display:none"><div class="timerBar" id="chatTimerBarHost"></div></div>
+    <div id="chatHostTimerWrap" style="display:none; text-align:center; margin-top:6px">
+      <div class="f1Status" id="chatHostCountdown" style="margin-top:0">--:--</div>
+      <div class="row mt" style="justify-content:center; gap:6px">
+        <select id="chatAddMinutes" style="width:auto">
+          <option value="5">5 min</option>
+          <option value="10" selected>10 min</option>
+          <option value="15">15 min</option>
+          <option value="30">30 min</option>
+        </select>
+        <button class="btn cy" onclick="chatAddTime(+$('chatAddMinutes').value)" data-tip="Allunga il tempo della chat, anche mentre è già in corso">➕ AGGIUNGI TEMPO ALLA CHAT</button>
+      </div>
+    </div>
     <div class="chatLog" id="chatLogHost"></div>
     <div class="chatInputRow mt">
       <select class="chatToSel" id="chatToHost"><option value="">📢 A: Tutti</option></select>
@@ -5992,6 +6015,7 @@ body.suspense-on #pfRank{ display:none !important; }
       <button class="chatSendBtn" onclick="chatSendHost()">➤</button>
     </div>
     <button class="btn ghost mt" onclick="chatEnd()">⏹ Termina chat</button>
+    <button class="btn cy" onclick="chatSaveTranscript()" data-tip="Salva subito un file con tutti i messaggi, orari e mittenti, così come sono in questo momento">💾 Salva chat</button>
   </div>
   <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe la chat e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
@@ -6000,7 +6024,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrPjChat">
   <div class="brand"><div class="t1" style="font-size:clamp(22px,3.6vw,40px)">💬 CHAT DI GRUPPO</div></div>
   <div class="miniMsg" id="pjChatMsg">SCRIVETE DAL VOSTRO SMARTPHONE!</div>
-  <div class="timerWrap mt" id="pjChatTimerWrap" style="max-width:460px; display:none"><div class="timerBar" id="pjChatTimerBar"></div></div>
+  <div class="f1Status" id="pjChatCountdown" style="display:none"></div>
   <div class="pjChatLog" id="pjChatLog"></div>
 </div>
 
@@ -6010,10 +6034,10 @@ body.suspense-on #pfRank{ display:none !important; }
     <div class="pill" id="chatpName" style="color:var(--gold)"></div>
     <div class="pill" id="chatpScore"></div>
   </div>
-  <div class="timerWrap mt" id="chatpTimerWrap" style="max-width:280px; display:none"><div class="timerBar" id="chatpTimerBar"></div></div>
+  <div class="f1Status" id="chatpCountdown" style="display:none; font-size:16px; margin-top:6px"></div>
   <div class="chatLog" id="chatLogP"></div>
   <div class="chatInputRow mt">
-    <select class="chatToSel" id="chatToP"><option value="">📢 A: Tutti</option></select>
+    <select class="chatToSel" id="chatToP"><option value="">📢 A: Tutti</option><option value="host">🎩 Regia</option></select>
     <input type="text" class="chatTextInput" id="chatInputP" placeholder="Scrivi un messaggio..." onkeydown="if(event.key==='Enter') chatSendP()">
     <button class="chatSendBtn" onclick="chatSendP()">➤</button>
   </div>
@@ -6780,7 +6804,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1375; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1377; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -12289,10 +12313,11 @@ function chatFmtTime(ts){
   const pad = n=>String(n).padStart(2,'0');
   return pad(d.getHours())+':'+pad(d.getMinutes());
 }
-function chatRenderToSelect(selEl, players, myId){
+function chatRenderToSelect(selEl, players, myId, includeHostOption){
   if (!selEl) return;
   const prev = selEl.value;
   let html = '<option value="">📢 A: Tutti</option>';
+  if (includeHostOption) html += '<option value="host">🎩 Regia</option>';
   Object.entries(players||{}).forEach(([pid,p])=>{
     if (pid===myId) return;
     html += `<option value="${pid}">${esc(p.name)}</option>`;
@@ -12329,30 +12354,55 @@ function chatSendP(){
   P.ref.child('chat/messages/'+msgId).set({ from:P.id, fromName:P.name, to: to||null, toName: toName||null, text, ts: Date.now() });
   input.value = '';
 }
+function chatFmtCountdown(ms){
+  const total = Math.max(0, Math.ceil(ms/1000));
+  const mm = Math.floor(total/60), ss = total%60;
+  return String(mm).padStart(2,'0')+':'+String(ss).padStart(2,'0');
+}
+function chatFmtFullDateTime(ts){
+  const d = new Date(ts);
+  const pad = n=>String(n).padStart(2,'0');
+  return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+// Avviso "ultimo minuto": un cartello rosso pulsante per un paio di secondi, più la vibrazione sul telefono
+// (che semplicemente non fa nulla sui dispositivi senza motorino, come un PC o il proiettore — innocuo).
+function chatFireLastMinuteWarning(vibrate){
+  const d = document.createElement('div');
+  d.className = 'chatLastMinuteBanner';
+  d.textContent = '⏰ ULTIMO MINUTO IN CHAT!';
+  document.body.appendChild(d);
+  setTimeout(()=> d.remove(), 2700);
+  if (vibrate && navigator.vibrate) navigator.vibrate([300,150,300,150,300]);
+}
 function showPlayerChat(g){
   const m = g.chat||{};
   $('chatpName').textContent = P.name;
   $('chatpScore').textContent = (((g.players||{})[P.id]||{}).score||0)+' pt';
   showScreen('scrPlayChat');
-  if (m.phase!=='active'){ clearInterval(P.chatInt); P.chatSig = null; return; }
-  chatRenderToSelect($('chatToP'), g.players, P.id);
+  if (m.phase!=='active'){ clearInterval(P.chatInt); P.chatSig = null; $('chatpCountdown').style.display='none'; return; }
+  chatRenderToSelect($('chatToP'), g.players, P.id, true);
   chatRenderLogPlayer(m.messages, P.id);
-  if (m.durationMs){
-    $('chatpTimerWrap').style.display = '';
+  // orario di fine sincronizzato col server: se la regia allunga il tempo, il nuovo valore arriva qui
+  // alla prossima istantanea, e il conto alla rovescia già in corso lo recepisce subito, senza bisogno di riavviarlo.
+  P.chatEndAt = m.endAt || null;
+  if (P.chatEndAt){
+    $('chatpCountdown').style.display = '';
     const sig = 'act:'+m.roundId;
     if (P.chatSig !== sig){
       P.chatSig = sig;
       clearInterval(P.chatInt);
-      P.chatLocalEndAt = Date.now() + m.durationMs;
       P.chatInt = setInterval(()=>{
         if (P.chatSig !== sig) { clearInterval(P.chatInt); return; }
-        const left = Math.max(0, P.chatLocalEndAt - Date.now());
-        $('chatpTimerBar').style.width = (left/m.durationMs*100)+'%';
-        if (left<=0) clearInterval(P.chatInt);
-      }, 200);
+        if (!P.chatEndAt){ $('chatpCountdown').style.display='none'; clearInterval(P.chatInt); return; }
+        const left = P.chatEndAt - serverNow();
+        $('chatpCountdown').textContent = left>0 ? ('⏱ '+chatFmtCountdown(left)) : '⏱ TEMPO SCADUTO';
+        $('chatpCountdown').style.color = (left>0 && left<=60000) ? '#ff3b5c' : '';
+        if (left>60000) P.chatLastMinFired = false;
+        else if (left>0 && left<=60000 && !P.chatLastMinFired){ P.chatLastMinFired = true; chatFireLastMinuteWarning(true); }
+      }, 500);
     }
   } else {
-    $('chatpTimerWrap').style.display = 'none';
+    $('chatpCountdown').style.display = 'none';
     clearInterval(P.chatInt); P.chatSig = null;
   }
 }
@@ -19857,7 +19907,7 @@ let CHAT = {};
 function openChat(){
   if (!G) return alert('Avvia prima una partita!');
   cancelLiveQuestion(); closeModal(); clearInterval((CHAT||{}).timerInt);
-  G.ref.child('chat/messages').off();
+  G.ref.child('chat/messages').off(); G.ref.child('chat').off();
   G.ref.update({ status:'chat', chat:{ phase:'idle' } });
   CHAT = {};
   $('chatSetup').style.display='block'; $('chatLive').style.display='none';
@@ -19865,31 +19915,82 @@ function openChat(){
 }
 function chatStart(){
   const durSec = +($('chatDuration').value||0);
-  const durationMs = durSec>0 ? durSec*1000 : null;
   const roundId = serverNow();
-  CHAT = {};
+  const endAt = durSec>0 ? serverNow()+durSec*1000 : null;
+  CHAT = { messages:{}, startedAt: Date.now() };
   G.ref.child('chat/messages').remove();
-  G.ref.update({ status:'chat', chat:{ phase:'active', durationMs, roundId } });
+  G.ref.update({ status:'chat', chat:{ phase:'active', endAt, roundId } });
   $('chatSetup').style.display='none'; $('chatLive').style.display='flex';
-  $('chatHostMsg').textContent = durationMs ? '⏱ CHAT A TEMPO ATTIVA! Chi risponde per ultimo... vince?' : '💬 CHAT LIBERA ATTIVA!';
-  $('chatHostTimerWrap').style.display = durationMs ? '' : 'none';
+  $('chatHostMsg').textContent = endAt ? '⏱ CHAT A TEMPO ATTIVA! Chi risponde per ultimo... vince?' : '💬 CHAT LIBERA ATTIVA!';
+  $('chatHostTimerWrap').style.display = endAt ? '' : 'none';
   $('chatLogHost').innerHTML = '';
   $('chatInputHost').value = '';
-  pjSend({type:'chatActive', durationMs});
+  pjSend({type:'chatActive'});
+  CHAT.endAt = endAt;
   clearInterval(CHAT.timerInt);
-  if (durationMs){
-    const endAt = serverNow()+durationMs;
-    CHAT.timerInt = setInterval(()=>{
-      const left = Math.max(0, endAt-serverNow());
-      $('chatTimerBarHost').style.width = (left/durationMs*100)+'%';
-      if (left<=0) clearInterval(CHAT.timerInt);
-    }, 200);
-  }
+  CHAT.timerInt = setInterval(()=>{
+    if (!CHAT.endAt){ $('chatHostTimerWrap').style.display='none'; return; }
+    const left = CHAT.endAt - serverNow();
+    $('chatHostCountdown').textContent = left>0 ? ('⏱ '+chatFmtCountdown(left)) : '⏱ TEMPO SCADUTO';
+    $('chatHostCountdown').style.color = (left>0 && left<=60000) ? '#ff3b5c' : '';
+    if (left>60000) CHAT.lastMinFired = false;
+    else if (left>0 && left<=60000 && !CHAT.lastMinFired){ CHAT.lastMinFired = true; chatFireLastMinuteWarning(false); }
+  }, 500);
+  G.ref.child('chat').off();
+  G.ref.child('chat').on('value', s=>{
+    const cur = s.val()||{};
+    CHAT.endAt = cur.endAt || null;
+    $('chatHostTimerWrap').style.display = CHAT.endAt ? '' : 'none';
+  });
   G.ref.child('chat/messages').off();
   G.ref.child('chat/messages').on('value', s=>{
     const msgs = s.val()||{};
+    CHAT.messages = msgs;
     chatRenderLogHost(msgs);
     G.ref.child('players').once('value').then(ps=> chatRenderToSelect($('chatToHost'), ps.val()||{}, null));
+  });
+}
+// Salva subito un file di testo con tutti i messaggi presenti in quel momento: orario completo, mittente,
+// destinatario (gruppo o privato) e testo. Si può usare in qualunque momento, non solo a fine chat.
+function chatSaveTranscript(){
+  if (!G) return;
+  const arr = Object.values(CHAT.messages||{}).sort((a,b)=>a.ts-b.ts);
+  const dt = new Date();
+  const pad = n=>String(n).padStart(2,'0');
+  const stamp = `${dt.getFullYear()}-${pad(dt.getMonth()+1)}-${pad(dt.getDate())}_${pad(dt.getHours())}${pad(dt.getMinutes())}`;
+  let text = `IL CAPONE QUIZ 3.0 — TRASCRIZIONE CHAT\n`;
+  text += `Codice partita: ${G.code||'-'}\n`;
+  if (G.venueForReport) text += `Locale/serata: ${G.venueForReport}\n`;
+  text += `Chat avviata il: ${CHAT.startedAt ? chatFmtFullDateTime(CHAT.startedAt) : '-'}\n`;
+  text += `Salvataggio effettuato il: ${chatFmtFullDateTime(Date.now())}\n`;
+  text += `Messaggi totali: ${arr.length}\n`;
+  text += `${'='.repeat(56)}\n\n`;
+  if (!arr.length) text += '(nessun messaggio scritto finora)\n';
+  arr.forEach(m=>{
+    const isHost = !!m.fromHost;
+    const who = isHost ? 'REGIA' : (m.fromName||'?');
+    const dest = m.to ? ` → PRIVATO a ${m.toName||'?'}` : ' → gruppo';
+    text += `[${chatFmtFullDateTime(m.ts)}] ${who}${dest}: ${m.text}\n`;
+  });
+  const blob = new Blob([text], {type:'text/plain;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `CaponeQuiz_Chat_${G.code||'partita'}_${stamp}.txt`; a.style.display='none';
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{ document.body.removeChild(a); URL.revokeObjectURL(url); }, 1500);
+  $('chatHostMsg').textContent = '💾 Chat salvata!';
+}
+// Allunga il tempo della chat anche a manche già avviata: se il tempo era scaduto o la chat era a tempo
+// libero, riparte da adesso; altrimenti si somma a quanto resta ancora sul countdown in corso.
+function chatAddTime(minutes){
+  if (!G || !minutes) return;
+  const addMs = minutes*60000;
+  G.ref.child('chat/endAt').once('value').then(s=>{
+    const cur = s.val();
+    const base = (cur && cur>serverNow()) ? cur : serverNow();
+    const newEndAt = base + addMs;
+    G.ref.child('chat/endAt').set(newEndAt);
+    $('chatHostMsg').textContent = `⏱ Aggiunti ${minutes} minuti alla chat!`;
   });
 }
 function chatRenderLogHost(msgs){
@@ -19926,6 +20027,7 @@ function chatDelete(msgId){
 function chatEnd(){
   if (!G) return;
   clearInterval(CHAT.timerInt);
+  G.ref.child('chat').off();
   G.ref.child('chat').update({ phase:'idle' });
   $('chatSetup').style.display='block'; $('chatLive').style.display='none';
 }
@@ -23276,6 +23378,25 @@ function initProjector(){
     base.child('stendi/results').on('value', s=>{ pjStendiResults = s.val()||{}; pjStendiRenderResults(); });
     base.child('parcheggio/results').on('value', s=>{ pjParkResults = s.val()||{}; pjParkRenderResults(); });
     base.child('chat/messages').on('value', s=>{ chatRenderLogProjector(s.val()||{}); });
+    base.child('chat').on('value', s=>{
+      const cur = s.val()||{};
+      window._pjChatEndAt = cur.endAt || null;
+      window._pjChatRoundId = cur.roundId || null;
+      const el = $('pjChatCountdown');
+      if (!el) return;
+      if (!window._pjChatEndAt){ el.style.display='none'; clearInterval(window._pjChatInt); window._pjChatInt=null; return; }
+      el.style.display = '';
+      if (!window._pjChatInt){
+        window._pjChatInt = setInterval(()=>{
+          if (!window._pjChatEndAt){ clearInterval(window._pjChatInt); window._pjChatInt=null; return; }
+          const left = window._pjChatEndAt - serverNow();
+          el.textContent = left>0 ? ('⏱ '+chatFmtCountdown(left)) : '⏱ TEMPO SCADUTO';
+          el.style.color = (left>0 && left<=60000) ? '#ff3b5c' : '';
+          if (left>60000) window._pjChatLastMinFired = false;
+          else if (left>0 && left<=60000 && !window._pjChatLastMinFired){ window._pjChatLastMinFired = true; chatFireLastMinuteWarning(false); }
+        }, 500);
+      }
+    });
     base.child('poker/results').on('value', s=>{
       const results = s.val()||{};
       const entries = Object.values(results).sort((a,b)=>(b.pts||0)-(a.pts||0));
@@ -24837,16 +24958,8 @@ function pjRouteInner(m){
     else if (m.type==='chatActive') {
       showScreen('scrPjChat');
       $('pjChatMsg').textContent = 'SCRIVETE DAL VOSTRO SMARTPHONE!';
-      $('pjChatTimerWrap').style.display = m.durationMs ? '' : 'none';
-      clearInterval(window._pjChatInt);
-      if (m.durationMs){
-        const pjChatLocalEndAt = Date.now() + m.durationMs;
-        window._pjChatInt = setInterval(()=>{
-          const left = Math.max(0, pjChatLocalEndAt - Date.now());
-          $('pjChatTimerBar').style.width = (left/m.durationMs*100)+'%';
-          if (left<=0) clearInterval(window._pjChatInt);
-        }, 200);
-      }
+      // il conto alla rovescia arriva dal listener continuo su 'chat' (vedi initProjector): qui basta
+      // solo passare alla schermata giusta, così l'estensione del tempo in diretta si vede da sola.
     }
     else if (m.type==='rwActive') {
       showScreen('scrPjCasino');
