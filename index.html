@@ -1160,6 +1160,15 @@ body.barOn.barCollapsed .screen.active{padding-bottom:70px;}
   pointer-events:none; max-width:88vw;}
 @keyframes chatLastMinutePulse{0%,100%{transform:translate(-50%,-50%) scale(1);} 50%{transform:translate(-50%,-50%) scale(1.06);}}
 @keyframes chatLastMinuteFade{0%{opacity:0;} 10%{opacity:1;} 85%{opacity:1;} 100%{opacity:0;}}
+/* ===== FILTRO GIOCHI (Abilità/Fortuna + sottocategorie) ===== */
+.gfFilterBox{width:100%; padding:10px 6px; border-bottom:2px solid rgba(255,255,255,.12); margin-bottom:10px;}
+.gfRow{display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-top:6px;}
+.gfRow:first-child{margin-top:0;}
+.gfChk{display:inline-flex; align-items:center; gap:5px; font-family:'Outfit',sans-serif; font-weight:700; font-size:12px;
+  color:#fff; background:rgba(255,255,255,.08); border:1.5px solid rgba(255,255,255,.18); border-radius:20px;
+  padding:6px 12px; cursor:pointer; user-select:none;}
+.gfChk input{accent-color:var(--gold); width:14px; height:14px; cursor:pointer;}
+.gfChk.gfTypeSkill{border-color:var(--cyan);} .gfChk.gfTypeLuck{border-color:var(--gold);}
 .parkPct{font-family:'Bungee'; font-size:clamp(22px,6vw,30px); color:var(--gold); text-align:center; margin-top:10px;
   text-shadow:0 2px 0 #6b4a00;}
 .parkPctSub{font-family:'Outfit',sans-serif; font-weight:600; font-size:13px; color:var(--muted); text-align:center; margin-top:-4px;}
@@ -2089,7 +2098,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.77</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.78</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -6804,7 +6813,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1377; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1378; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -7061,8 +7070,8 @@ function modalClassifiche(){
    che restano esattamente come prima (stesse liste, stessa licenza), solo un tocco più in profondità. */
 function modalGiochi(){
   openModal('🎮 GIOCHI', `
-    <button class="btn ghost" style="width:100%; border-color:var(--cyan); color:var(--cyan)" onclick="modalGamesSkill()" data-tip="Apre l'elenco dei minigiochi di abilità (puzzle, memoria, calcolo...)">🧠 ABILITÀ</button>
-    <button class="btn ghost mt" style="width:100%; border-color:var(--gold); color:var(--gold)" onclick="modalGamesLuck()" data-tip="Apre l'elenco dei minigiochi di fortuna (ruote, carte, estrazioni...)">🍀 FORTUNA</button>`);
+    <button class="btn ghost" style="width:100%; border-color:var(--cyan); color:var(--cyan)" onclick="openGamesFilterModal('skill')" data-tip="Apre l'elenco dei minigiochi di abilità, con filtro per sottocategoria">🧠 ABILITÀ</button>
+    <button class="btn ghost mt" style="width:100%; border-color:var(--gold); color:var(--gold)" onclick="openGamesFilterModal('luck')" data-tip="Apre l'elenco dei minigiochi di fortuna, con filtro per sottocategoria">🍀 FORTUNA</button>`);
 }
 function modalProjector(){
   const previewOn = $('projPreview').classList.contains('on');
@@ -22473,68 +22482,68 @@ function gk(key, html){
   return isGameEnabled(key) ? html : '';
 }
 const SKILL_GAMES = [
-  {k:'settemezzo', cls:'', style:'background:linear-gradient(180deg,#1a5c34,#0d3a20); color:#fff; box-shadow:0 7px 0 #082614,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(26,92,52,.4)', fn:'openSetteMezzo', label:`🎴 7 e 1/2`},
-  {k:'anagram', cls:'', style:'', fn:'openAnagram', label:`🔤➰ Anagramma`},
-  {k:'mini', cls:'mg', style:'', fn:'openMini', label:`🥃 Bussolotti`},
-  {k:'f1', cls:'', style:'background:linear-gradient(180deg,#a3111c,#3a0508); color:#fff; box-shadow:0 7px 0 #1c0203,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(163,17,28,.4)', fn:'openF1', label:`🏎️ Formula Uno`},
-  {k:'tamb', cls:'', style:'background:linear-gradient(180deg,#e8b45a,#8a4a12); color:#3a2000; box-shadow:0 7px 0 #4a2400,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(232,180,90,.4)', fn:'openTamb', label:`🥁 I Tamburini`},
-  {k:'pontesospeso', cls:'', style:'background:linear-gradient(180deg,#8a6030,#4a3319); color:#fff; box-shadow:0 7px 0 #2a1c0d,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(138,96,48,.4)', fn:'openPonteSospeso', label:`🌉 Il Ponte Sospeso`},
-  {k:'punto', cls:'', style:'background:linear-gradient(180deg,#3de0ff,#0b6f8a); color:#00272e; box-shadow:0 7px 0 #003a44,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(61,224,255,.4)', fn:'openPunto', label:`🏁 Il Punto della Situazione`},
-  {k:'clover', cls:'', style:'background:linear-gradient(180deg,#3fae4a,#1d5e26); color:#fff; box-shadow:0 7px 0 #0e3512,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(63,174,74,.4)', fn:'openClover', label:`🍀 Il Quadrifoglio`},
-  {k:'idr', cls:'', style:'background:linear-gradient(180deg,#7a8a9a,#3a4550); color:#fff; box-shadow:0 7px 0 #1a2028,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(122,138,154,.4)', fn:'openIdr', label:`🔧 L'Idraulico`},
-  {k:'cassaforte', cls:'', style:'background:linear-gradient(180deg,#8a8f96,#3a3c40); color:#fff; box-shadow:0 7px 0 #1a1c1e,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(138,143,150,.35)', fn:'openCassaforte', label:`🔐 La Cassaforte`},
-  {k:'rana', cls:'', style:'background:linear-gradient(180deg,#4a9e4f,#1f5a24); color:#fff; box-shadow:0 7px 0 #0e3211,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(74,158,79,.4)', fn:'openRana', label:`🐸 La Rana Salterina`},
-  {k:'rdc', cls:'', style:'background:linear-gradient(180deg,#5a3d8a,#2e1a5a); color:#fff; box-shadow:0 7px 0 #180e30,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(46,26,90,.4)', fn:'openRdc', label:`🧮 La Resa dei Conti`},
-  {k:'spesa', cls:'', style:'background:linear-gradient(180deg,#e0a83d,#8a5a0b); color:#3a2600; box-shadow:0 7px 0 #4a3300,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(224,168,61,.4)', fn:'openSpesa', label:`🛒 Lista della Spesa`},
-  {k:'staccionata', cls:'', style:'background:linear-gradient(180deg,#8a6339,#5c4023); color:#fff; box-shadow:0 7px 0 #3d2a16,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(138,99,57,.4)', fn:'openStaccionata', label:`🪵 Maledetta Staccionata`},
-  {k:'mastermind', cls:'', style:'background:linear-gradient(180deg,#4a4a4a,#222); color:#fff; box-shadow:0 7px 0 #0a0a0a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(0,0,0,.4)', fn:'openMastermind', label:`🎯 Mastermind`},
-  {k:'memocoppie', cls:'', style:'', fn:'openMemoCoppie', label:`🃏 Memo le Coppie`},
-  {k:'merc', cls:'', style:'background:linear-gradient(180deg,#ff5d7a,#8a0f2e); color:#fff; box-shadow:0 7px 0 #5a0018,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,93,122,.4)', fn:'openMerc', label:`📣 Mercatista per un Giorno`},
-  {k:'shapes', cls:'', style:'background:linear-gradient(180deg,#c2183d,#ff8a3c); color:#fff; box-shadow:0 7px 0 #6b0e21,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(194,24,61,.4)', fn:'openShapes', label:`👁 Occhio alle Forme`},
-  {k:'parcheggio', cls:'', style:'background:linear-gradient(180deg,#3a3a3f,#1a1a1e); color:#ffcc33; box-shadow:0 7px 0 #0a0a0c,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(58,58,63,.5)', fn:'openParcheggio', label:`🅿️ Parcheggio Perfetto!`},
-  {k:'poker', cls:'', style:'background:linear-gradient(180deg,#0f6b3a,#083a1f); color:#fff; box-shadow:0 7px 0 #041d0f,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(15,107,58,.4)', fn:'openPoker', label:`🃏 Poker`},
-  {k:'swiss', cls:'cy', style:'', fn:'openSwiss', label:`⌚ Precisione Svizzera`},
-  {k:'puzzle', cls:'mg', style:'', fn:'openPuzzle', label:`🧩 Puzzle`},
-  {k:'salumi', cls:'', style:'background:linear-gradient(180deg,#c99a2e,#6f2f22); color:#fff; box-shadow:0 7px 0 #3d1a10,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(201,154,46,.4)', fn:'openSalumi', label:`🔪 Salumi e Formaggi`},
-  {k:'scopa', cls:'', style:'background:linear-gradient(180deg,#1a7a3a,#0a3a1a); color:#fff; box-shadow:0 7px 0 #052610,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(26,122,58,.4)', fn:'openScopa', label:`🧹 Scopa e Vinci`},
-  {k:'tfiscale', cls:'', style:'background:linear-gradient(180deg,#6fe08f,#2e9c4f); color:#fff; box-shadow:0 7px 0 #1a5c2e,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(46,156,79,.35)', fn:'openTFiscale', label:`💶 Sei Troppo Fiscale!`},
-  {k:'simon', cls:'lm', style:'', fn:'openSimon', label:`🎨 Simon`},
-  {k:'stendi', cls:'', style:'background:linear-gradient(180deg,#4a90c9,#1e4d73); color:#fff; box-shadow:0 7px 0 #0e2a3f,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(74,144,201,.4)', fn:'openStendi', label:`🧺 Stendi i Panni`},
-  {k:'taptap', cls:'mg', style:'', fn:'openTapTap', label:`👆 Tap Tap`},
-  {k:'memo', cls:'lm', style:'', fn:'openMemo', label:`🔍 Trova la Carta`},
-  {k:'wordsearch', cls:'cy', style:'', fn:'openWordSearch', label:`🔤 Trova la Parola`},
-  {k:'finddiff', cls:'', style:'background:linear-gradient(180deg,#4a2fb8,#9d4dff); color:#fff; box-shadow:0 7px 0 #2a1866,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(157,77,255,.4)', fn:'openFindDiff', label:`🔍 Trova le Differenze`},
-  {k:'panino', cls:'', style:'background:linear-gradient(180deg,#e8c15a,#c17a1e); color:#3a2000; box-shadow:0 7px 0 #6b3f0a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(232,193,90,.4)', fn:'openPanino', label:`🥪 Un Panino al Camioncino`},
-  {k:'xox', cls:'', style:'background:linear-gradient(180deg,#5ec8ff,#0b6fb8); color:#fff; box-shadow:0 7px 0 #063a5c,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(94,200,255,.4)', fn:'openXox', label:`❌⭕ XOX`},
-  {k:'zanzare', cls:'', style:'background:linear-gradient(180deg,#4a6b2a,#26380f); color:#fff; box-shadow:0 7px 0 #16220a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(74,107,42,.4)', fn:'openZanzare', label:`🦟 Zanzare`},
+  {k:'settemezzo', cats:['Carte'], cls:'', style:'background:linear-gradient(180deg,#1a5c34,#0d3a20); color:#fff; box-shadow:0 7px 0 #082614,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(26,92,52,.4)', fn:'openSetteMezzo', label:`🎴 7 e 1/2`},
+  {k:'anagram', cats:['Logica'], cls:'', style:'', fn:'openAnagram', label:`🔤➰ Anagramma`},
+  {k:'mini', cats:["Colpo d'Occhio"], cls:'mg', style:'', fn:'openMini', label:`🥃 Bussolotti`},
+  {k:'f1', cats:['Dita Veloci'], cls:'', style:'background:linear-gradient(180deg,#a3111c,#3a0508); color:#fff; box-shadow:0 7px 0 #1c0203,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(163,17,28,.4)', fn:'openF1', label:`🏎️ Formula Uno`},
+  {k:'tamb', cats:['Dita Veloci'], cls:'', style:'background:linear-gradient(180deg,#e8b45a,#8a4a12); color:#3a2000; box-shadow:0 7px 0 #4a2400,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(232,180,90,.4)', fn:'openTamb', label:`🥁 I Tamburini`},
+  {k:'pontesospeso', cats:['Logica'], cls:'', style:'background:linear-gradient(180deg,#8a6030,#4a3319); color:#fff; box-shadow:0 7px 0 #2a1c0d,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(138,96,48,.4)', fn:'openPonteSospeso', label:`🌉 Il Ponte Sospeso`},
+  {k:'punto', cats:['Logica'], cls:'', style:'background:linear-gradient(180deg,#3de0ff,#0b6f8a); color:#00272e; box-shadow:0 7px 0 #003a44,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(61,224,255,.4)', fn:'openPunto', label:`🏁 Il Punto della Situazione`},
+  {k:'clover', cats:["Colpo d'Occhio"], cls:'', style:'background:linear-gradient(180deg,#3fae4a,#1d5e26); color:#fff; box-shadow:0 7px 0 #0e3512,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(63,174,74,.4)', fn:'openClover', label:`🍀 Il Quadrifoglio`},
+  {k:'idr', cats:['Logica'], cls:'', style:'background:linear-gradient(180deg,#7a8a9a,#3a4550); color:#fff; box-shadow:0 7px 0 #1a2028,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(122,138,154,.4)', fn:'openIdr', label:`🔧 L'Idraulico`},
+  {k:'cassaforte', cats:['Logica'], cls:'', style:'background:linear-gradient(180deg,#8a8f96,#3a3c40); color:#fff; box-shadow:0 7px 0 #1a1c1e,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(138,143,150,.35)', fn:'openCassaforte', label:`🔐 La Cassaforte`},
+  {k:'rana', cats:['Si Grida'], cls:'', style:'background:linear-gradient(180deg,#4a9e4f,#1f5a24); color:#fff; box-shadow:0 7px 0 #0e3211,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(74,158,79,.4)', fn:'openRana', label:`🐸 La Rana Salterina`},
+  {k:'rdc', cats:['Logica'], cls:'', style:'background:linear-gradient(180deg,#5a3d8a,#2e1a5a); color:#fff; box-shadow:0 7px 0 #180e30,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(46,26,90,.4)', fn:'openRdc', label:`🧮 La Resa dei Conti`},
+  {k:'spesa', cats:["Colpo d'Occhio"], cls:'', style:'background:linear-gradient(180deg,#e0a83d,#8a5a0b); color:#3a2600; box-shadow:0 7px 0 #4a3300,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(224,168,61,.4)', fn:'openSpesa', label:`🛒 Lista della Spesa`},
+  {k:'staccionata', cats:['Si Grida'], cls:'', style:'background:linear-gradient(180deg,#8a6339,#5c4023); color:#fff; box-shadow:0 7px 0 #3d2a16,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(138,99,57,.4)', fn:'openStaccionata', label:`🪵 Maledetta Staccionata`},
+  {k:'mastermind', cats:['Logica'], cls:'', style:'background:linear-gradient(180deg,#4a4a4a,#222); color:#fff; box-shadow:0 7px 0 #0a0a0a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(0,0,0,.4)', fn:'openMastermind', label:`🎯 Mastermind`},
+  {k:'memocoppie', cats:["Colpo d'Occhio"], cls:'', style:'', fn:'openMemoCoppie', label:`🃏 Memo le Coppie`},
+  {k:'merc', cats:['Si Grida'], cls:'', style:'background:linear-gradient(180deg,#ff5d7a,#8a0f2e); color:#fff; box-shadow:0 7px 0 #5a0018,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,93,122,.4)', fn:'openMerc', label:`📣 Mercatista per un Giorno`},
+  {k:'shapes', cats:['Dita Veloci'], cls:'', style:'background:linear-gradient(180deg,#c2183d,#ff8a3c); color:#fff; box-shadow:0 7px 0 #6b0e21,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(194,24,61,.4)', fn:'openShapes', label:`👁 Occhio alle Forme`},
+  {k:'parcheggio', cats:['Logica'], cls:'', style:'background:linear-gradient(180deg,#3a3a3f,#1a1a1e); color:#ffcc33; box-shadow:0 7px 0 #0a0a0c,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(58,58,63,.5)', fn:'openParcheggio', label:`🅿️ Parcheggio Perfetto!`},
+  {k:'poker', cats:['Carte'], cls:'', style:'background:linear-gradient(180deg,#0f6b3a,#083a1f); color:#fff; box-shadow:0 7px 0 #041d0f,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(15,107,58,.4)', fn:'openPoker', label:`🃏 Poker`},
+  {k:'swiss', cats:['Dita Veloci'], cls:'cy', style:'', fn:'openSwiss', label:`⌚ Precisione Svizzera`},
+  {k:'puzzle', cats:['Logica'], cls:'mg', style:'', fn:'openPuzzle', label:`🧩 Puzzle`},
+  {k:'salumi', cats:['Dita Veloci'], cls:'', style:'background:linear-gradient(180deg,#c99a2e,#6f2f22); color:#fff; box-shadow:0 7px 0 #3d1a10,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(201,154,46,.4)', fn:'openSalumi', label:`🔪 Salumi e Formaggi`},
+  {k:'scopa', cats:['Carte'], cls:'', style:'background:linear-gradient(180deg,#1a7a3a,#0a3a1a); color:#fff; box-shadow:0 7px 0 #052610,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(26,122,58,.4)', fn:'openScopa', label:`🧹 Scopa e Vinci`},
+  {k:'tfiscale', cats:['Logica'], cls:'', style:'background:linear-gradient(180deg,#6fe08f,#2e9c4f); color:#fff; box-shadow:0 7px 0 #1a5c2e,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(46,156,79,.35)', fn:'openTFiscale', label:`💶 Sei Troppo Fiscale!`},
+  {k:'simon', cats:["Colpo d'Occhio"], cls:'lm', style:'', fn:'openSimon', label:`🎨 Simon`},
+  {k:'stendi', cats:['Logica'], cls:'', style:'background:linear-gradient(180deg,#4a90c9,#1e4d73); color:#fff; box-shadow:0 7px 0 #0e2a3f,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(74,144,201,.4)', fn:'openStendi', label:`🧺 Stendi i Panni`},
+  {k:'taptap', cats:['Dita Veloci'], cls:'mg', style:'', fn:'openTapTap', label:`👆 Tap Tap`},
+  {k:'memo', cats:['Carte',"Colpo d'Occhio"], cls:'lm', style:'', fn:'openMemo', label:`🔍 Trova la Carta`},
+  {k:'wordsearch', cats:["Colpo d'Occhio"], cls:'cy', style:'', fn:'openWordSearch', label:`🔤 Trova la Parola`},
+  {k:'finddiff', cats:["Colpo d'Occhio"], cls:'', style:'background:linear-gradient(180deg,#4a2fb8,#9d4dff); color:#fff; box-shadow:0 7px 0 #2a1866,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(157,77,255,.4)', fn:'openFindDiff', label:`🔍 Trova le Differenze`},
+  {k:'panino', cats:["Colpo d'Occhio"], cls:'', style:'background:linear-gradient(180deg,#e8c15a,#c17a1e); color:#3a2000; box-shadow:0 7px 0 #6b3f0a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(232,193,90,.4)', fn:'openPanino', label:`🥪 Un Panino al Camioncino`},
+  {k:'xox', cats:['Logica'], cls:'', style:'background:linear-gradient(180deg,#5ec8ff,#0b6fb8); color:#fff; box-shadow:0 7px 0 #063a5c,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(94,200,255,.4)', fn:'openXox', label:`❌⭕ XOX`},
+  {k:'zanzare', cats:['Dita Veloci'], cls:'', style:'background:linear-gradient(180deg,#4a6b2a,#26380f); color:#fff; box-shadow:0 7px 0 #16220a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(74,107,42,.4)', fn:'openZanzare', label:`🦟 Zanzare`},
 ];
 const LUCK_GAMES = [
-  {k:'bingocarte', cls:'', style:'background:linear-gradient(180deg,#7a1414,#3d0a0a); color:#fff; box-shadow:0 7px 0 #260505,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(122,20,20,.4)', fn:'openBingo', label:`🎴 Bingo con le Carte`},
-  {k:'bomba', cls:'', style:'background:linear-gradient(180deg,#8a2020,#4a1010); color:#fff; box-shadow:0 7px 0 #2a0a0a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(138,32,32,.4)', fn:'openBomba', label:`💣 Bomba a Orologeria`},
-  {k:'hilo', cls:'lm', style:'', fn:'openHiLo', label:`🃏 Carta Alta, Carta Bassa`},
-  {k:'cards', cls:'mg', style:'', fn:'openCards', label:`🎴 Carta Rossa, Carta Nera`},
-  {k:'cenerentola', cls:'', style:'background:linear-gradient(180deg,#c9a0ff,var(--viola)); color:#fff; box-shadow:0 7px 0 #5a2a9c,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(157,77,255,.35)', fn:'openCenerentola', label:`👠 Cenerentola de Noi Artri`},
-  {k:'gold', cls:'', style:'background:linear-gradient(180deg,#ffcf3d,#8a5a00); color:#3a2600; box-shadow:0 7px 0 #4a2f00,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,207,61,.4)', fn:'openGold', label:`🎫 Il Biglietto d'Oro`},
-  {k:'dado', cls:'', style:'background:linear-gradient(180deg,#ffe93d,#8a6f0b); color:#2e2400; box-shadow:0 7px 0 #4a3a00,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,233,61,.4)', fn:'openDado', label:`🎲 Il Dado del Destino`},
-  {k:'pacchi', cls:'', style:'background:linear-gradient(180deg,#d9ac6e,#8a6428); color:#fff; box-shadow:0 7px 0 #5a3d18,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(138,100,40,.35)', fn:'openPacchi', label:`📦 Il Gioco dei Pacchi`},
-  {k:'seed', cls:'', style:'', fn:'openSeed', label:`🃏 Il Seme Vincente`},
-  {k:'maj', cls:'', style:'background:linear-gradient(180deg,#189a4a,#0b6fb8); color:#fff; box-shadow:0 7px 0 #0a3a1e,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(24,154,74,.4)', fn:'openMaj', label:`🗳️ La Maggioranza Vince`},
-  {k:'pagliuzza', cls:'', style:'background:linear-gradient(180deg,#8a6428,#5a3d18); color:#ffe9a8; box-shadow:0 7px 0 #2e1e0a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(90,61,24,.4)', fn:'openPagliuzza', label:`🌾 La Pagliuzza`},
-  {k:'ruota', cls:'cy', style:'', fn:'openRuota', label:`🎡 La Ruota Gira per Tutti`},
-  {k:'scossa', cls:'', style:'background:linear-gradient(180deg,#ffe93d,#8a5a0b); color:#2e2400; box-shadow:0 7px 0 #4a3300,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,233,61,.4)', fn:'openScossa', label:`⚡ La Scossa`},
-  {k:'wheels', cls:'', style:'', fn:'openWheels', label:`🎡 Le Ruote della Fortuna`},
-  {k:'marg', cls:'', style:'background:linear-gradient(180deg,#ff9fc4,#c43a72); color:#fff; box-shadow:0 7px 0 #6b0a35,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,159,196,.4)', fn:'openMarg', label:`🌼 M'ama non m'ama`},
-  {k:'morra', cls:'', style:'background:linear-gradient(180deg,#7a5cff,#2e0f8a); color:#fff; box-shadow:0 7px 0 #180a5c,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(122,92,255,.4)', fn:'openMorra', label:`✊✋✌️ Morra Cinese`},
-  {k:'dice', cls:'cy', style:'', fn:'openDice', label:`🎲 Pari o Dispari`},
-  {k:'patata', cls:'', style:'background:linear-gradient(180deg,#ff5d3d,#8a1a0b); color:#fff; box-shadow:0 7px 0 #4a0a00,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,93,61,.4)', fn:'openPatata', label:`💣 Patata Bollente`},
-  {k:'horses', cls:'mg', style:'', fn:'openHorses', label:`🐎 Pubbliche Offese`},
-  {k:'casino', cls:'', style:'background:linear-gradient(180deg,#a3111c,#1a1108); color:#fff; box-shadow:0 7px 0 #3a0508,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(163,17,28,.4)', fn:'openCasino', label:`🎰 Roulette (Casinò)`},
-  {k:'roulette', cls:'', style:'background:linear-gradient(180deg,#a85838,#6b3018); color:#ffe9a8; box-shadow:0 7px 0 #3a1a0c,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(107,48,24,.4)', fn:'openRoulette', label:`🤠 Roulette Russa`},
-  {k:'slotmachine', cls:'', style:'background:linear-gradient(180deg,#ff2e9a,#5a1030); color:#fff; box-shadow:0 7px 0 #3a0a20,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,46,154,.4)', fn:'openSlotMachine', label:`🎰 Slot Machine`},
-  {k:'supertris', cls:'', style:'background:linear-gradient(180deg,#2d8a4e,#0d4020); color:#ffe042; box-shadow:0 7px 0 #072410,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(13,64,32,.4)', fn:'openSupertris', label:`💎 SUPERTRIS`},
-  {k:'toc', cls:'cy', style:'', fn:'openToc', label:`🪙 Testa o Croce`},
-  {k:'tombola', cls:'lm', style:'', fn:'openTombola', label:`🎱 Tombola`},
-  {k:'telefonata', cls:'', style:'background:linear-gradient(180deg,#42e07a,#159944); color:#fff; box-shadow:0 7px 0 #0d5c26,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(66,224,122,.4)', fn:'openTelefonata', label:`☎️ Una Telefonata che ti Premia`},
+  {k:'bingocarte', cats:['Carte'], cls:'', style:'background:linear-gradient(180deg,#7a1414,#3d0a0a); color:#fff; box-shadow:0 7px 0 #260505,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(122,20,20,.4)', fn:'openBingo', label:`🎴 Bingo con le Carte`},
+  {k:'bomba', cats:['Scelta Fortunata'], cls:'', style:'background:linear-gradient(180deg,#8a2020,#4a1010); color:#fff; box-shadow:0 7px 0 #2a0a0a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(138,32,32,.4)', fn:'openBomba', label:`💣 Bomba a Orologeria`},
+  {k:'hilo', cats:['Carte'], cls:'lm', style:'', fn:'openHiLo', label:`🃏 Carta Alta, Carta Bassa`},
+  {k:'cards', cats:['Carte'], cls:'mg', style:'', fn:'openCards', label:`🎴 Carta Rossa, Carta Nera`},
+  {k:'cenerentola', cats:['Scelta Fortunata'], cls:'', style:'background:linear-gradient(180deg,#c9a0ff,var(--viola)); color:#fff; box-shadow:0 7px 0 #5a2a9c,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(157,77,255,.35)', fn:'openCenerentola', label:`👠 Cenerentola de Noi Artri`},
+  {k:'gold', cats:['Estrazione Casuale'], cls:'', style:'background:linear-gradient(180deg,#ffcf3d,#8a5a00); color:#3a2600; box-shadow:0 7px 0 #4a2f00,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,207,61,.4)', fn:'openGold', label:`🎫 Il Biglietto d'Oro`},
+  {k:'dado', cats:['Estrazione Casuale'], cls:'', style:'background:linear-gradient(180deg,#ffe93d,#8a6f0b); color:#2e2400; box-shadow:0 7px 0 #4a3a00,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,233,61,.4)', fn:'openDado', label:`🎲 Il Dado del Destino`},
+  {k:'pacchi', cats:['Scelta Fortunata'], cls:'', style:'background:linear-gradient(180deg,#d9ac6e,#8a6428); color:#fff; box-shadow:0 7px 0 #5a3d18,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(138,100,40,.35)', fn:'openPacchi', label:`📦 Il Gioco dei Pacchi`},
+  {k:'seed', cats:['Carte'], cls:'', style:'', fn:'openSeed', label:`🃏 Il Seme Vincente`},
+  {k:'maj', cats:['Scelta Fortunata'], cls:'', style:'background:linear-gradient(180deg,#189a4a,#0b6fb8); color:#fff; box-shadow:0 7px 0 #0a3a1e,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(24,154,74,.4)', fn:'openMaj', label:`🗳️ La Maggioranza Vince`},
+  {k:'pagliuzza', cats:['Scelta Fortunata'], cls:'', style:'background:linear-gradient(180deg,#8a6428,#5a3d18); color:#ffe9a8; box-shadow:0 7px 0 #2e1e0a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(90,61,24,.4)', fn:'openPagliuzza', label:`🌾 La Pagliuzza`},
+  {k:'ruota', cats:['Estrazione Casuale'], cls:'cy', style:'', fn:'openRuota', label:`🎡 La Ruota Gira per Tutti`},
+  {k:'scossa', cats:['Estrazione Casuale'], cls:'', style:'background:linear-gradient(180deg,#ffe93d,#8a5a0b); color:#2e2400; box-shadow:0 7px 0 #4a3300,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,233,61,.4)', fn:'openScossa', label:`⚡ La Scossa`},
+  {k:'wheels', cats:['Scelta Fortunata'], cls:'', style:'', fn:'openWheels', label:`🎡 Le Ruote della Fortuna`},
+  {k:'marg', cats:['Estrazione Casuale'], cls:'', style:'background:linear-gradient(180deg,#ff9fc4,#c43a72); color:#fff; box-shadow:0 7px 0 #6b0a35,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,159,196,.4)', fn:'openMarg', label:`🌼 M'ama non m'ama`},
+  {k:'morra', cats:['Scelta Fortunata'], cls:'', style:'background:linear-gradient(180deg,#7a5cff,#2e0f8a); color:#fff; box-shadow:0 7px 0 #180a5c,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(122,92,255,.4)', fn:'openMorra', label:`✊✋✌️ Morra Cinese`},
+  {k:'dice', cats:['Scelta Fortunata'], cls:'cy', style:'', fn:'openDice', label:`🎲 Pari o Dispari`},
+  {k:'patata', cats:['Estrazione Casuale'], cls:'', style:'background:linear-gradient(180deg,#ff5d3d,#8a1a0b); color:#fff; box-shadow:0 7px 0 #4a0a00,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,93,61,.4)', fn:'openPatata', label:`💣 Patata Bollente`},
+  {k:'horses', cats:['Si Grida'], cls:'mg', style:'', fn:'openHorses', label:`🐎 Pubbliche Offese`},
+  {k:'casino', cats:['Scelta Fortunata'], cls:'', style:'background:linear-gradient(180deg,#a3111c,#1a1108); color:#fff; box-shadow:0 7px 0 #3a0508,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(163,17,28,.4)', fn:'openCasino', label:`🎰 Roulette (Casinò)`},
+  {k:'roulette', cats:['Scelta Fortunata'], cls:'', style:'background:linear-gradient(180deg,#a85838,#6b3018); color:#ffe9a8; box-shadow:0 7px 0 #3a1a0c,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(107,48,24,.4)', fn:'openRoulette', label:`🤠 Roulette Russa`},
+  {k:'slotmachine', cats:['Estrazione Casuale'], cls:'', style:'background:linear-gradient(180deg,#ff2e9a,#5a1030); color:#fff; box-shadow:0 7px 0 #3a0a20,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,46,154,.4)', fn:'openSlotMachine', label:`🎰 Slot Machine`},
+  {k:'supertris', cats:['Estrazione Casuale'], cls:'', style:'background:linear-gradient(180deg,#2d8a4e,#0d4020); color:#ffe042; box-shadow:0 7px 0 #072410,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(13,64,32,.4)', fn:'openSupertris', label:`💎 SUPERTRIS`},
+  {k:'toc', cats:['Scelta Fortunata'], cls:'cy', style:'', fn:'openToc', label:`🪙 Testa o Croce`},
+  {k:'tombola', cats:['Estrazione Casuale'], cls:'lm', style:'', fn:'openTombola', label:`🎱 Tombola`},
+  {k:'telefonata', cats:['Estrazione Casuale'], cls:'', style:'background:linear-gradient(180deg,#42e07a,#159944); color:#fff; box-shadow:0 7px 0 #0d5c26,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(66,224,122,.4)', fn:'openTelefonata', label:`☎️ Una Telefonata che ti Premia`},
 ];
 function trackAndOpenGame(key, fnName){
   if (fbOK && db){ try{ db.ref('quiz_usage_counters/'+key).transaction(c=>(c||0)+1); }catch(e){} }
@@ -22546,25 +22555,47 @@ function renderGameBtn(g, counters){
   const styleAttr = g.style ? ` style="${g.style}"` : '';
   return `<button class="btn ${g.cls} gameBtn"${styleAttr} onclick="trackAndOpenGame('${g.k}','${g.fn}')">${g.label} ${badge}</button>`;
 }
-function modalGamesSkill(){
+const GAME_SUBCATS = ["Carte","Colpo d'Occhio","Dita Veloci","Estrazione Casuale","Logica","Scelta Fortunata","Si Grida"];
+let GF = { types:new Set(), cats:new Set(), counters:{} };
+// Toglie l'emoji/simboli iniziali dall'etichetta per un ordinamento alfabetico vero (altrimenti l'emoji
+// vincerebbe sempre l'ordinamento, mescolando tutto).
+function gfLabelSort(label){ return label.replace(/^[^\p{L}\p{N}]+/u, '').toLocaleUpperCase('it'); }
+function openGamesFilterModal(initialType){
   syncGiochiCatalogo();
-  const render = (counters)=>{
-    const btns = SKILL_GAMES.filter(g=>isGameEnabled(g.k)).map(g=>renderGameBtn(g, counters)).join('');
-    const msgVuoto = btns ? '' : '<div class="byline" style="letter-spacing:1px">Nessun gioco di abilità abilitato per questa licenza.</div>';
-    openModal('🧠 GIOCHI DI ABILITÀ', `<div style="display:flex; flex-direction:column; gap:10px">${btns}</div>${msgVuoto}`);
-  };
+  GF.types = new Set(initialType ? [initialType] : []);
+  GF.cats = new Set();
+  const render = (counters)=>{ GF.counters = counters; gfRenderModal(); };
   if (fbOK && db) db.ref('quiz_usage_counters').once('value').then(s=> render(s.val()||{})).catch(()=> render({}));
   else render({});
 }
-function modalGamesLuck(){
-  syncGiochiCatalogo();
-  const render = (counters)=>{
-    const btns = LUCK_GAMES.filter(g=>isGameEnabled(g.k)).map(g=>renderGameBtn(g, counters)).join('');
-    const msgVuoto = btns ? '' : '<div class="byline" style="letter-spacing:1px">Nessun gioco di fortuna abilitato per questa licenza.</div>';
-    openModal('🍀 GIOCHI DI FORTUNA', `<div style="display:flex; flex-direction:column; gap:10px">${btns}</div>${msgVuoto}`);
-  };
-  if (fbOK && db) db.ref('quiz_usage_counters').once('value').then(s=> render(s.val()||{})).catch(()=> render({}));
-  else render({});
+function gfToggleType(t, checked){ if (checked) GF.types.add(t); else GF.types.delete(t); gfRenderModal(); }
+function gfToggleCat(c, checked){ if (checked) GF.cats.add(c); else GF.cats.delete(c); gfRenderModal(); }
+function gfRenderModal(){
+  const tChk = t => GF.types.has(t) ? 'checked' : '';
+  const cChk = c => GF.cats.has(c) ? 'checked' : '';
+  const filterHtml = `
+    <div class="gfFilterBox">
+      <div class="gfRow">
+        <label class="gfChk gfTypeSkill"><input type="checkbox" ${tChk('skill')} onchange="gfToggleType('skill',this.checked)"> 🧠 Abilità</label>
+        <label class="gfChk gfTypeLuck"><input type="checkbox" ${tChk('luck')} onchange="gfToggleType('luck',this.checked)"> 🍀 Fortuna</label>
+      </div>
+      <div class="gfRow">
+        ${GAME_SUBCATS.map(c=>`<label class="gfChk"><input type="checkbox" ${cChk(c)} onchange="gfToggleCat('${c}',this.checked)"> ${esc(c)}</label>`).join('')}
+      </div>
+    </div>`;
+  let pool = [];
+  if (GF.types.size===0) pool = [...SKILL_GAMES, ...LUCK_GAMES];
+  else {
+    if (GF.types.has('skill')) pool = pool.concat(SKILL_GAMES);
+    if (GF.types.has('luck')) pool = pool.concat(LUCK_GAMES);
+  }
+  let filtered = pool.filter(g=>isGameEnabled(g.k));
+  if (GF.cats.size) filtered = filtered.filter(g=> (g.cats||[]).some(c=> GF.cats.has(c)));
+  filtered = filtered.slice().sort((a,b)=> gfLabelSort(a.label).localeCompare(gfLabelSort(b.label), 'it'));
+  const btns = filtered.map(g=>renderGameBtn(g, GF.counters)).join('');
+  const msgVuoto = btns ? '' : '<div class="byline" style="letter-spacing:1px; text-align:center">Nessun gioco trovato con questo filtro.</div>';
+  const title = GF.types.size===1 ? (GF.types.has('skill') ? '🧠 GIOCHI DI ABILITÀ' : '🍀 GIOCHI DI FORTUNA') : '🎮 TUTTI I GIOCHI';
+  openModal(title, filterHtml + `<div style="display:flex; flex-direction:column; gap:10px; margin-top:12px">${btns}</div>${msgVuoto}`);
 }
 
 function modalModules(){
