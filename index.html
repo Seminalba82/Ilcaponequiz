@@ -1169,6 +1169,10 @@ body.barOn.barCollapsed .screen.active{padding-bottom:70px;}
   padding:6px 12px; cursor:pointer; user-select:none;}
 .gfChk input{accent-color:var(--gold); width:14px; height:14px; cursor:pointer;}
 .gfChk.gfTypeSkill{border-color:var(--cyan);} .gfChk.gfTypeLuck{border-color:var(--gold);}
+.pjChatQrCorner{position:absolute; top:22px; right:22px; z-index:5; display:flex; flex-direction:column; align-items:center; gap:6px;}
+.pjChatQrBox{background:#fff; padding:10px; border-radius:14px; box-shadow:0 0 26px rgba(0,240,255,.55), 0 6px 18px rgba(0,0,0,.4);}
+.pjChatQrLabel{font-family:'Bungee'; font-size:12px; color:var(--cyan); text-align:center; text-shadow:0 2px 0 rgba(0,0,0,.5);}
+@media (max-width:700px){ .pjChatQrCorner{position:static; margin:10px auto 0;} .pjChatQrBox img, .pjChatQrBox canvas{width:110px!important; height:110px!important;} }
 .parkPct{font-family:'Bungee'; font-size:clamp(22px,6vw,30px); color:var(--gold); text-align:center; margin-top:10px;
   text-shadow:0 2px 0 #6b4a00;}
 .parkPctSub{font-family:'Outfit',sans-serif; font-weight:600; font-size:13px; color:var(--muted); text-align:center; margin-top:-4px;}
@@ -2098,7 +2102,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.79</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.81</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -6034,6 +6038,10 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="brand"><div class="t1" style="font-size:clamp(22px,3.6vw,40px)">💬 CHAT DI GRUPPO</div></div>
   <div class="miniMsg" id="pjChatMsg">SCRIVETE DAL VOSTRO SMARTPHONE!</div>
   <div class="f1Status" id="pjChatCountdown" style="display:none"></div>
+  <div class="pjChatQrCorner" id="pjChatQrCorner" style="display:none">
+    <div class="pjChatQrBox" id="pjChatQrBox"></div>
+    <div class="pjChatQrLabel">📱 ENTRA A GIOCARE</div>
+  </div>
   <div class="pjChatLog" id="pjChatLog"></div>
 </div>
 
@@ -6813,7 +6821,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1379; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1381; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -19933,7 +19941,7 @@ function chatStart(){
   $('chatHostTimerWrap').style.display = endAt ? '' : 'none';
   $('chatLogHost').innerHTML = '';
   $('chatInputHost').value = '';
-  pjSend({type:'chatActive'});
+  pjSend({type:'chatActive', url:G.url});
   CHAT.endAt = endAt;
   clearInterval(CHAT.timerInt);
   CHAT.timerInt = setInterval(()=>{
@@ -24990,6 +24998,18 @@ function pjRouteInner(m){
       $('pjChatMsg').textContent = 'SCRIVETE DAL VOSTRO SMARTPHONE!';
       // il conto alla rovescia arriva dal listener continuo su 'chat' (vedi initProjector): qui basta
       // solo passare alla schermata giusta, così l'estensione del tempo in diretta si vede da sola.
+      // QR fisso nell'angolo, NON a schermo intero: deve restare leggibile insieme ai messaggi della chat,
+      // non sostituirli come fa l'overlay generico usato altrove nel quiz.
+      if (m.url){
+        $('pjChatQrCorner').style.display = 'flex';
+        if (window._pjChatQrUrl !== m.url){
+          $('pjChatQrBox').innerHTML = '';
+          new QRCode($('pjChatQrBox'), { text:m.url, width:160, height:160, colorDark:'#0b0614' });
+          window._pjChatQrUrl = m.url;
+        }
+      } else {
+        $('pjChatQrCorner').style.display = 'none';
+      }
     }
     else if (m.type==='rwActive') {
       showScreen('scrPjCasino');
