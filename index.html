@@ -2098,7 +2098,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.78</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.79</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -2467,7 +2467,7 @@ body.suspense-on #pfRank{ display:none !important; }
   <button class="hb" id="hbWa" onclick="modalWaGroup()" data-tip="Mostra QR e link per far entrare i giocatori nel gruppo WhatsApp della serata">📱 Gruppo WhatsApp</button>
   <button class="hb" id="hbPhoto" onclick="modalPjPhoto()" data-tip="Manda una foto a comparsa sul videoproiettore">📷 Pubblica Foto</button>
   <button class="hb" onclick="modalQuestions()" data-tip="Salta direttamente a una domanda specifica della scaletta, saltando le altre">📋 Scelta domanda</button>
-  <button class="hb" onclick="modalGiochi()" style="border-color:var(--cyan); color:var(--cyan)" data-tip="Apre i minigiochi di Abilità e di Fortuna da un unico pannello">🎮 Giochi</button>
+  <button class="hb" onclick="modalGiochi()" style="border-color:var(--cyan); color:var(--cyan)" data-tip="Apre l'elenco dei minigiochi con filtro per Abilità/Fortuna e sottocategoria">🎮 Giochi</button>
   <button class="hb" onclick="modalModules()" style="border-color:#d4a63a; color:#d4a63a" data-tip="Apre gli strumenti extra: Votometro, Timer, Classifica di Gradimento, Asta">🧩 MODULI</button>
   <button class="hb" onclick="modalProjector()" data-tip="Apre finestra proiettore, QR e anteprima da un unico pannello">📺 Proiettore</button>
   <button class="hb" onclick="modalEntryLink()" data-tip="Mostra il link e il codice partita da dare ai giocatori per entrare">🔗 Link ingresso</button>
@@ -6813,7 +6813,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1378; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1379; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -7066,12 +7066,11 @@ function modalClassifiche(){
     <button class="btn ${fastOn?'lm':'ghost'} mt" style="width:100%" onclick="toggleLeadOverlay('fast'); modalClassifiche();" data-tip="Mostra o nasconde sul proiettore chi ha risposto più veloce all'ultima domanda">⚡ Più veloci → 📺 ${fastOn?'— ATTIVA ✓':''}</button>
     <button class="btn mg mt" style="width:100%" onclick="closeModal(); openInterimPodium();" data-tip="Mostra un podio intermedio con i primi classificati fin qui, senza terminare la partita">🏆 Podio intermedio</button>`);
 }
-/* Pannello unico che raccoglie le due sessioni di minigiochi: da qui si sceglie ABILITÀ o FORTUNA,
-   che restano esattamente come prima (stesse liste, stessa licenza), solo un tocco più in profondità. */
+/* Il pulsante "🎮 Giochi" va dritto al pannello con il filtro: le due caselle Abilità/Fortuna sono lì
+   dentro, quindi un menu intermedio con due pulsanti che portavano alla stessa identica schermata
+   era solo un passaggio in più senza motivo. */
 function modalGiochi(){
-  openModal('🎮 GIOCHI', `
-    <button class="btn ghost" style="width:100%; border-color:var(--cyan); color:var(--cyan)" onclick="openGamesFilterModal('skill')" data-tip="Apre l'elenco dei minigiochi di abilità, con filtro per sottocategoria">🧠 ABILITÀ</button>
-    <button class="btn ghost mt" style="width:100%; border-color:var(--gold); color:var(--gold)" onclick="openGamesFilterModal('luck')" data-tip="Apre l'elenco dei minigiochi di fortuna, con filtro per sottocategoria">🍀 FORTUNA</button>`);
+  openGamesFilterModal(null);
 }
 function modalProjector(){
   const previewOn = $('projPreview').classList.contains('on');
@@ -22524,7 +22523,7 @@ const LUCK_GAMES = [
   {k:'cards', cats:['Carte'], cls:'mg', style:'', fn:'openCards', label:`🎴 Carta Rossa, Carta Nera`},
   {k:'cenerentola', cats:['Scelta Fortunata'], cls:'', style:'background:linear-gradient(180deg,#c9a0ff,var(--viola)); color:#fff; box-shadow:0 7px 0 #5a2a9c,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(157,77,255,.35)', fn:'openCenerentola', label:`👠 Cenerentola de Noi Artri`},
   {k:'gold', cats:['Estrazione Casuale'], cls:'', style:'background:linear-gradient(180deg,#ffcf3d,#8a5a00); color:#3a2600; box-shadow:0 7px 0 #4a2f00,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,207,61,.4)', fn:'openGold', label:`🎫 Il Biglietto d'Oro`},
-  {k:'dado', cats:['Estrazione Casuale'], cls:'', style:'background:linear-gradient(180deg,#ffe93d,#8a6f0b); color:#2e2400; box-shadow:0 7px 0 #4a3a00,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,233,61,.4)', fn:'openDado', label:`🎲 Il Dado del Destino`},
+  {k:'dado', cats:['Dita Veloci'], cls:'', style:'background:linear-gradient(180deg,#ffe93d,#8a6f0b); color:#2e2400; box-shadow:0 7px 0 #4a3a00,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(255,233,61,.4)', fn:'openDado', label:`🎲 Il Dado del Destino`},
   {k:'pacchi', cats:['Scelta Fortunata'], cls:'', style:'background:linear-gradient(180deg,#d9ac6e,#8a6428); color:#fff; box-shadow:0 7px 0 #5a3d18,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(138,100,40,.35)', fn:'openPacchi', label:`📦 Il Gioco dei Pacchi`},
   {k:'seed', cats:['Carte'], cls:'', style:'', fn:'openSeed', label:`🃏 Il Seme Vincente`},
   {k:'maj', cats:['Scelta Fortunata'], cls:'', style:'background:linear-gradient(180deg,#189a4a,#0b6fb8); color:#fff; box-shadow:0 7px 0 #0a3a1e,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(24,154,74,.4)', fn:'openMaj', label:`🗳️ La Maggioranza Vince`},
