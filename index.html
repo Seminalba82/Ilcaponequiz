@@ -377,7 +377,7 @@ option{background:var(--bg2);}
 .gameCode{font-family:'Bungee'; font-size:clamp(40px,9vw,84px); letter-spacing:12px; color:var(--lime);
   text-shadow:0 0 24px rgba(182,255,46,.7),0 6px 0 #3f5e00; text-align:center;}
 #qrBox{background:#fff; padding:14px; border-radius:18px; box-shadow:0 0 30px rgba(0,240,255,.5), 0 10px 0 rgba(0,0,0,.4); display:inline-block;}
-.lead{width:100%; max-width:640px;}
+.lead{width:100%; max-width:640px; max-height:min(50vh,420px); overflow-y:auto;}
 .leadRow{display:flex; align-items:center; gap:14px; padding:12px 18px; margin-top:10px; border-radius:16px;
   background:linear-gradient(90deg, rgba(157,77,255,.2), rgba(157,77,255,.05));
   border:1px solid rgba(157,77,255,.35); font-weight:900; font-size:18px;}
@@ -2102,7 +2102,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.81</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.82</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -6821,7 +6821,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1381; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1382; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -15778,7 +15778,7 @@ function ruotaSpinDouble(){
 const TAP_MEDALS = ['🥇','🥈','🥉','4°','5°'];
 function renderTapRanking(el, rows, prizes, live, top3only){
   if (!rows.length){ el.innerHTML = '<div class="byline">Ancora nessun tap...</div>'; return; }
-  const shown = top3only ? rows.slice(0,3) : rows;
+  const shown = top3only ? rows.slice(0,5) : rows;
   el.innerHTML = shown.map((r,i)=> `<div class="tapRankRow">
       <span class="medal">${TAP_MEDALS[i]||((i+1)+'°')}</span>
       <span class="grow">${esc(r.name)}</span>
@@ -16511,7 +16511,7 @@ function puzzleCountdown(barEl, msgEl, endAt, dur, onExpire){
   },100);
 }
 function renderPuzRanking(el, rows, top3only){
-  const shown = top3only ? rows.slice(0,3) : rows;
+  const shown = top3only ? rows.slice(0,5) : rows;
   el.innerHTML = shown.length ? shown.map((r,i)=>
     `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(r.name)} — ${(r.t/1000).toFixed(1)}s <span class="pts">+${r.pts}</span></div>`).join('')
     : '<div class="byline">Ancora nessuno ha risolto...</div>';
@@ -16843,7 +16843,7 @@ function renderWsGrid(el, grid, size){
   el.innerHTML = grid.map((row,r)=> [...row].map((ch,c)=>`<div class="wsTile" data-r="${r}" data-c="${c}">${ch}</div>`).join('')).join('');
 }
 function renderWsRanking(el, rows, top3only){
-  const shown = top3only ? rows.slice(0,3) : rows;
+  const shown = top3only ? rows.slice(0,5) : rows;
   el.innerHTML = shown.length ? shown.map((r,i)=>
     `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(r.name)} — ${(r.t/1000).toFixed(1)}s <span class="pts">+${r.pts}</span></div>`).join('')
     : '<div class="byline">Ancora nessuno l\'ha trovata...</div>';
@@ -19924,18 +19924,34 @@ function openChat(){
   if (!G) return alert('Avvia prima una partita!');
   cancelLiveQuestion(); closeModal(); clearInterval((CHAT||{}).timerInt);
   G.ref.child('chat/messages').off(); G.ref.child('chat').off();
-  G.ref.update({ status:'chat', chat:{ phase:'idle' } });
-  CHAT = {};
-  $('chatSetup').style.display='block'; $('chatLive').style.display='none';
   showScreen('scrChat');
+  // Se la chat era già attiva (es. si era passati a un altro modulo/gioco e si torna qui), la riprendo
+  // così com'è: niente reset, niente messaggi persi, niente nuovo QR da rigenerare inutilmente sul
+  // proiettore. Solo se non c'era nessuna chat in corso mostro il modulo di impostazione da zero.
+  G.ref.child('chat').once('value').then(s=>{
+    const cur = s.val()||{};
+    if (cur.phase==='active'){
+      CHAT = { messages: CHAT.messages||{}, startedAt: CHAT.startedAt||Date.now(), credited:{} };
+      chatSetupLiveUI(cur.endAt||null);
+    } else {
+      CHAT = {};
+      $('chatSetup').style.display='block'; $('chatLive').style.display='none';
+    }
+  });
 }
 function chatStart(){
   const durSec = +($('chatDuration').value||0);
   const roundId = serverNow();
   const endAt = durSec>0 ? serverNow()+durSec*1000 : null;
-  CHAT = { messages:{}, startedAt: Date.now() };
+  CHAT = { messages:{}, startedAt: Date.now(), credited:{} };
   G.ref.child('chat/messages').remove();
   G.ref.update({ status:'chat', chat:{ phase:'active', endAt, roundId } });
+  chatSetupLiveUI(endAt);
+}
+// Parte comune tra "avvia chat nuova" e "riprendi chat già in corso": prepara i pannelli, il conto alla
+// rovescia e i listener. Manda sempre un 'chatActive' fresco al proiettore, così se nel frattempo era
+// passato a un'altra schermata (un altro gioco, un'altra grafica), torna sulla chat col QR ricomparso.
+function chatSetupLiveUI(endAt){
   $('chatSetup').style.display='none'; $('chatLive').style.display='flex';
   $('chatHostMsg').textContent = endAt ? '⏱ CHAT A TEMPO ATTIVA! Chi risponde per ultimo... vince?' : '💬 CHAT LIBERA ATTIVA!';
   $('chatHostTimerWrap').style.display = endAt ? '' : 'none';
@@ -20149,7 +20165,7 @@ const TAMB_LOSS_DEFAULTS = [300,200,100,0,0];
 let TAMB = {};
 function tambRenderRanking(el, rows, prizes, losses, live, top3only){
   const n = rows.length;
-  const shown = top3only ? rows.slice(0,3) : rows;
+  const shown = top3only ? rows.slice(0,5) : rows;
   el.innerHTML = shown.map((r,i)=>{
     const fromEnd = n-1-i; // 0 = ultimo, 1 = penultimo...
     let ptsLabel = '';
@@ -20250,7 +20266,7 @@ const MERC_LOSS_DEFAULTS = [300,200,100,0,0];
 let MERC = {};
 function mercRenderRanking(el, rows, prizes, losses, live, top3only){
   const n = rows.length;
-  const shown = top3only ? rows.slice(0,3) : rows;
+  const shown = top3only ? rows.slice(0,5) : rows;
   el.innerHTML = shown.map((r,i)=>{
     const fromEnd = n-1-i;
     let ptsLabel = '';
@@ -20340,7 +20356,7 @@ const STAC_MEDALS = ['🥇','🥈','🥉','4°','5°'];
 const STAC_PRIZE_DEFAULTS = [1000,700,500,300,200];
 let STAC = {};
 function stacRenderRanking(el, rows, mode, prizes, live, top3only){
-  const shown = top3only ? rows.slice(0,3) : rows;
+  const shown = top3only ? rows.slice(0,5) : rows;
   el.innerHTML = shown.length ? shown.map((r,i)=>{
     let ptsLabel = '';
     if (!live) ptsLabel = r.prize ? `<span class="pts" style="color:var(--lime)">${mode==='points'?'+':''}${r.prize}</span>` : `<span class="pts">—</span>`;
@@ -20427,7 +20443,7 @@ function stacFinish(){
 ================================================================ */
 let MORRA = {};
 function morraRenderRanking(el, rows, live, top3only){
-  const shown = top3only ? rows.slice(0,3) : rows;
+  const shown = top3only ? rows.slice(0,5) : rows;
   el.innerHTML = shown.map((r,i)=>{
     const medal = i<3 ? ['🥇','🥈','🥉'][i] : (i+1)+'°';
     const ptsColor = r.pts>0 ? 'var(--lime)' : (r.pts<0 ? '#ff5d5d' : 'var(--muted)');
@@ -20564,7 +20580,7 @@ function puntoRenderTrack(el, racers, notches, bigTop, maxLanes){
   });
 }
 function puntoRenderRanking(el, rows, notches, live, top3only){
-  const shown = top3only ? rows.slice(0,3) : rows;
+  const shown = top3only ? rows.slice(0,5) : rows;
   el.innerHTML = shown.map((r,i)=>{
     const medal = i<3 ? ['🥇','🥈','🥉'][i] : (i+1)+'°';
     const arrived = r.pos>=notches;
@@ -20727,7 +20743,7 @@ function dadoRebuildPrizeInputs(){
       <input type="number" id="dadoPz${k}" value="${DADO_PRIZE_DEFAULTS[k]}" min="0" style="width:110px; text-align:center"></div>`).join('');
 }
 function dadoRenderRanking(el, rows, notches, live, top3only){
-  const shown = top3only ? rows.slice(0,3) : rows;
+  const shown = top3only ? rows.slice(0,5) : rows;
   el.innerHTML = shown.map((r,i)=>{
     const medal = i<3 ? ['🥇','🥈','🥉'][i] : (i+1)+'°';
     const status = r.finished ? '🏁 arrivato' : ((r.rollsLeft!=null && r.rollsLeft<=0) ? 'tiri finiti' : `tacca ${r.pos}/${notches}`);
@@ -21102,7 +21118,7 @@ function idrRenderGrid(el, path, shapes, placedCount, solved){
   });
 }
 function idrRenderRanking(el, rows, live, top3only){
-  const shown = top3only ? rows.slice(0,3) : rows;
+  const shown = top3only ? rows.slice(0,5) : rows;
   el.innerHTML = shown.map((r,i)=>{
     const medal = i<3 ? ['🥇','🥈','🥉'][i] : (i+1)+'°';
     const status = r.solved ? '✅ completato' : (live ? 'in corso...' : '⏱ tempo scaduto');
@@ -21308,7 +21324,7 @@ function csfUpdateKeypadDisabled(containerId, seq){
   });
 }
 function csfRenderLiveRank(el, list, top3only){
-  const shown = top3only ? list.slice(0,3) : list;
+  const shown = top3only ? list.slice(0,5) : list;
   el.innerHTML = shown.length ? shown.map((r,i)=>`<div class="csfLiveRow"><span>${i+1}° ${esc(r.name)}</span><span style="margin-left:auto">⏱ ${(r.t/1000).toFixed(1)}s</span></div>`).join('')
     : '<div class="byline" style="letter-spacing:1px">Ancora nessuno l\'ha aperta...</div>';
 }
@@ -23630,7 +23646,7 @@ function pjRouteInner(m){
     else if (m.type==='swissResult') {
       const c = $('swissClockPj'); clearInterval(c._int); c.textContent='10.000'; c.classList.add('stopped');
       $('pjSwissMsg').textContent = (m.rows&&m.rows.length) ? `🏆 IL PIÙ SVIZZERO: ${m.rows[0].name}!` : 'NESSUNO HA FERMATO!';
-      $('pjSwissLead').innerHTML = (m.rows||[]).slice(0,3).map((r,i)=>
+      $('pjSwissLead').innerHTML = (m.rows||[]).slice(0,5).map((r,i)=>
         `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(r.name)} — ${(r.t/1000).toFixed(3)}s
          <span class="pts" style="color:${r.pts>=0?'var(--lime)':'var(--red)'}">${r.pts>=0?'+':''}${r.pts}</span></div>`).join('');
       if (m.rows && m.rows.length) confetti();
@@ -23979,7 +23995,7 @@ function pjRouteInner(m){
       $('pjScopaMsg').textContent = 'QUESTE ERANO LE CARTE A TERRA — ECCO CHI HA VINTO!';
       $('pjScopaTableRow').innerHTML = (m.tableCards||[]).map(c=>smCardHTML(c,false)).join('');
       const rows = (m.results||[]).slice().sort((a,b)=>b.points-a.points);
-      $('pjScopaRanking').innerHTML = rows.length ? rows.slice(0,3).map((r,i)=>
+      $('pjScopaRanking').innerHTML = rows.length ? rows.slice(0,5).map((r,i)=>
         `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(r.name)} ${r.scopa?'<span style="color:var(--lime)">🧹 SCOPA!</span>':''}
           <span class="byline" style="margin:0 8px">prese: ${r.total}</span>
           <span class="pts" style="color:var(--lime)">+${r.points}</span></div>`).join('') : '';
@@ -24077,7 +24093,7 @@ function pjRouteInner(m){
       clearInterval(window._pjMemoInt); $('memoTimerWrapPj').style.display='none';
       renderMemoGrid($('memoGridPj'), 8, m.cards, -1, m.targetIdx, true);
       $('pjMemoMsg').textContent = m.rows.length ? `🏆 CARTA IN POSIZIONE ${m.targetIdx+1}!` : `😅 ERA IN POSIZIONE ${m.targetIdx+1}`;
-      $('pjMemoLead').innerHTML = m.rows.length ? m.rows.slice(0,3).map((r,i)=>
+      $('pjMemoLead').innerHTML = m.rows.length ? m.rows.slice(0,5).map((r,i)=>
         `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(r.name)} <span class="pts">+${r.pts}</span></div>`).join('')
         : '<div class="byline">Nessuno ha indovinato la posizione</div>';
       if (m.rows.length) confetti();
@@ -24198,12 +24214,12 @@ function pjRouteInner(m){
       clearInterval(window._pjAnaInt); $('pjAnaTimerBar').style.width='0%';
       $('pjAnaAnswer').textContent = '✔ '+(m.correctText||'').toUpperCase();
       $('pjAnaAnswer').style.display='block';
-      $('pjAnaLead').innerHTML = (m.lead||[]).map((p,i)=>
+      $('pjAnaLead').innerHTML = (m.lead||[]).slice(0,5).map((p,i)=>
         `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(p.name)} <span class="pts">${p.score}</span></div>`).join('');
       confetti();
     }
     else if (m.type==='anaRank') {
-      $('pjAnaLead').innerHTML = (m.lead||[]).slice(0,3).map((p,i)=>
+      $('pjAnaLead').innerHTML = (m.lead||[]).slice(0,5).map((p,i)=>
         `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(p.name)} <span class="pts">${p.score}</span></div>`).join('');
     }
     else if (m.type==='wsState') {
@@ -24374,7 +24390,7 @@ function pjRouteInner(m){
       $('pjRevealTitle').textContent = m.title || 'RISPOSTA GIUSTA';
       $('pjAnswer').innerHTML = (m.sym?`<span class="sym">${m.sym}</span> `:'')+esc(m.correctText||'');
       if (m.stats && m.opts) renderStats($('pjStats'), m.opts, m.stats, m.corrects||[], m.optKind==='photo'); else $('pjStats').innerHTML='';
-      $('pjLead').innerHTML = m.suspense ? '' : (m.lead||[]).slice(0,3).map((p,i)=>
+      $('pjLead').innerHTML = m.suspense ? '' : (m.lead||[]).slice(0,5).map((p,i)=>
         `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(p.name)} <span class="pts">${p.score}</span></div>`).join('');
       showScreen('scrPjReveal');
     }
@@ -24640,7 +24656,7 @@ function pjRouteInner(m){
         (m.secret||[]).map(c=>`<div class="mmSlot filled"><div class="mmPeg" style="background:${MM_COLORS[c].hex}; background-image:radial-gradient(circle at 35% 30%, rgba(255,255,255,.75), rgba(255,255,255,0) 55%)"></div></div>`).join('')
       }</div>`;
       const results = m.results||[];
-      $('pjMmResults').innerHTML = secretRow + (results.length ? results.slice(0,3).map(r=>
+      $('pjMmResults').innerHTML = secretRow + (results.length ? results.slice(0,5).map(r=>
         `<div class="leadRow"><span class="pos">🎯</span> ${esc(r.name)} <span class="pts">+${r.pts}</span></div>`).join('')
         : '<div class="byline">Nessuno ha risolto la sequenza in tempo!</div>');
       confetti();
@@ -24756,7 +24772,7 @@ function pjRouteInner(m){
       clearInterval(window._pjSpesaInt);
       $('pjSpesaBasketBar').style.display='none'; $('pjSpesaListBox').style.display='none'; $('pjSpesaTimerBar').style.width='0%';
       $('pjSpesaMsg').textContent = m.rows.length ? `🏆 ${m.rows[0].name} HA FATTO LA SPESA MIGLIORE!` : 'NESSUNO HA FATTO LA SPESA...';
-      $('pjSpesaResults').innerHTML = m.rows.length ? m.rows.slice(0,3).map((r,i)=>
+      $('pjSpesaResults').innerHTML = m.rows.length ? m.rows.slice(0,5).map((r,i)=>
         `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(r.name)} <span class="pts">${r.correct}/${m.listLen} giusti · +${r.pts}</span></div>`).join('') : '<div class="byline">Nessun risultato.</div>';
       if (m.rows.length) confetti();
     }
