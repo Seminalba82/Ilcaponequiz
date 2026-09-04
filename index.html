@@ -1169,6 +1169,20 @@ body.barOn.barCollapsed .screen.active{padding-bottom:70px;}
   padding:6px 12px; cursor:pointer; user-select:none;}
 .gfChk input{accent-color:var(--gold); width:14px; height:14px; cursor:pointer;}
 .gfChk.gfTypeSkill{border-color:var(--cyan);} .gfChk.gfTypeLuck{border-color:var(--gold);}
+/* ===== POP IT ===== */
+.piField{position:relative; width:100%; max-width:420px; aspect-ratio:1; margin:14px auto; border-radius:20px;
+  background:radial-gradient(circle at 50% 40%, #201033, #0b0614); box-shadow:inset 0 0 40px rgba(0,0,0,.5), 0 10px 30px rgba(0,0,0,.4);
+  overflow:hidden;}
+.piField.pjField{max-width:520px;}
+.piDot{position:absolute; width:6.2%; aspect-ratio:1; border-radius:50%; transform:translate(-50%,-50%);
+  background:radial-gradient(circle at 32% 28%, #ff8a8a, #e0264f 60%, #8a0e2a); box-shadow:0 3px 6px rgba(0,0,0,.45), inset 0 0 0 1.5px rgba(255,255,255,.25);
+  cursor:pointer; transition:transform .12s ease, background .2s ease;}
+.piDot.popped{background:radial-gradient(circle at 32% 28%, #c8ffb0, #4fd15a 60%, #1c7a2a); transform:translate(-50%,-50%) scale(.72);
+  box-shadow:inset 0 2px 6px rgba(0,0,0,.35);}
+.piDot:active{transform:translate(-50%,-50%) scale(.85);}
+.piCounter{font-family:'Bungee'; font-size:clamp(16px,4vw,22px); text-align:center; color:var(--gold); margin-top:8px;}
+.piBar{width:100%; max-width:420px; height:12px; margin:8px auto; border-radius:8px; background:rgba(255,255,255,.08); overflow:hidden;}
+.piBarFill{height:100%; background:linear-gradient(90deg,var(--lime),var(--cyan)); width:0%; transition:width .2s ease;}
 .pjChatQrCorner{position:absolute; top:22px; right:22px; z-index:5; display:flex; flex-direction:column; align-items:center; gap:6px;}
 .pjChatQrBox{background:#fff; padding:10px; border-radius:14px; box-shadow:0 0 26px rgba(0,240,255,.55), 0 6px 18px rgba(0,0,0,.4);}
 .pjChatQrLabel{font-family:'Bungee'; font-size:12px; color:var(--cyan); text-align:center; text-shadow:0 2px 0 rgba(0,0,0,.5);}
@@ -2109,7 +2123,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.87</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.88</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -4887,6 +4901,59 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="feedback mtb" id="battiFbPts" style="display:none"></div>
 </div>
 
+<!-- ==================== REGIA: POP IT ==================== -->
+<div class="screen" id="scrPopit">
+  <div class="brand"><div class="t1" style="font-size:clamp(18px,3.4vw,32px)">🔴 POP IT</div></div>
+  <div class="panel mt" style="max-width:480px" id="popitSetup">
+    <div class="label">Forma da far scoppiare</div>
+    <select id="popitShape" style="width:100%; text-align:center">
+      <option value="stella">⭐ Stella</option>
+      <option value="cuore">❤️ Cuore</option>
+      <option value="fiore">🌸 Fiore</option>
+      <option value="cerchio">⚪ Cerchio</option>
+      <option value="luna">🌙 Luna</option>
+    </select>
+    <div class="label mt">Numero di pallini (30-50)</div>
+    <input type="number" id="popitCount" value="40" min="30" max="50" style="text-align:center">
+    <div class="label mt">Punti massimi (a chi finisce subito)</div>
+    <input type="number" id="popitMaxPts" value="1000" min="0" style="text-align:center">
+    <div class="label mt">In quanti secondi i punti scendono a zero</div>
+    <input type="number" id="popitDecaySec" value="60" min="5" style="text-align:center">
+    <div class="byline mt" style="opacity:.75">🔴 Tutti i giocatori ricevono la stessa identica immagine, fatta di pallini rossi. Devono schiacciarli tutti per farla diventare verde: più sono veloci, più punti guadagnano, perché il punteggio scende man mano che passa il tempo. Non si può schiacciare più di un pallino alla volta (anche appoggiando tutta la mano sul telefono): protegge dai furbetti.</div>
+    <button class="btn mg mt" style="width:100%" onclick="popitStart()">🔴 FAI PARTIRE IL GIOCO!</button>
+  </div>
+  <div id="popitLive" style="display:none; width:100%" class="center">
+    <div class="miniMsg" id="popitMsg"></div>
+    <div class="lead mt" id="popitResults" style="max-width:460px; width:100%"></div>
+    <div class="row mt">
+      <button class="btn ghost" id="popitBtnEnd" onclick="popitEnd()">🏁 Ferma qui</button>
+      <button class="btn cy" id="popitBtnAgain" onclick="openPopit()" style="display:none">🔁 Un altro giro</button>
+    </div>
+  </div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
+</div>
+
+<!-- ==================== PROIETTORE: POP IT ==================== -->
+<div class="screen" id="scrPjPopit">
+  <div class="brand"><div class="t1" style="font-size:clamp(24px,3.6vw,42px)">🔴 SCHIACCIALI TUTTI!</div></div>
+  <div class="miniMsg" id="pjPopitMsg">Ecco l'immagine che ricevono i giocatori...</div>
+  <div class="piField pjField" id="pjPopitField"></div>
+  <div class="lead mt" id="pjPopitResults" style="max-width:520px; width:100%; margin:0 auto"></div>
+</div>
+
+<!-- ==================== PLAYER: POP IT ==================== -->
+<div class="screen" id="scrPlayPopit" style="align-items:center; justify-content:center">
+  <div class="row" style="width:100%; justify-content:space-between">
+    <div class="pill" id="popitpName" style="color:var(--gold)"></div>
+    <div class="pill" id="popitpScore"></div>
+  </div>
+  <div class="piField" id="popitField"></div>
+  <div class="piCounter" id="popitCounter"></div>
+  <div class="piBar"><div class="piBarFill" id="popitBarFill"></div></div>
+  <div class="feedback mtb" id="popitFbMsg" style="display:none"></div>
+  <div class="feedback mtb" id="popitFbPts" style="display:none"></div>
+</div>
+
 <!-- ==================== HOST: LA CASSAFORTE ==================== -->
 <div class="screen" id="scrCassaforte">
   <div class="brand"><div class="t1" style="font-size:clamp(18px,3.4vw,32px)">🔐 LA CASSAFORTE</div></div>
@@ -6884,7 +6951,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1387; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1388; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -9195,6 +9262,7 @@ function listenGame(){
     else if (g.status==='idraulico') showPlayerIdr(g);
     else if (g.status==='patata') showPlayerPatata(g);
     else if (g.status==='batti') showPlayerBatti(g);
+    else if (g.status==='popit') showPlayerPopit(g);
     else if (g.status==='cassaforte') showPlayerCassaforte(g);
     else if (g.status==='settemezzo') showPlayerSetteMezzo(g);
     else if (g.status==='scopa') showPlayerScopa(g);
@@ -13924,6 +13992,65 @@ function battiTap(){
       });
     }
   });
+}
+/* ================================================================
+   POP IT — telefono
+   Ogni giocatore riceve la STESSA lista di pallini (arriva già pronta da Firebase), ma il proprio
+   avanzamento (quali ha già schiacciato) resta locale sul telefono: si invia a Firebase solo il
+   risultato finale, non un aggiornamento a ogni singolo tocco.
+================================================================ */
+function showPlayerPopit(g){
+  const m = g.popit||{};
+  $('popitpName').textContent = P.name;
+  const myScore = ((g.players||{})[P.id]||{}).score||0;
+  $('popitpScore').textContent = myScore+' pt';
+  showScreen('scrPlayPopit');
+  if (m.phase !== 'play'){
+    $('popitField').innerHTML = '';
+    $('popitCounter').textContent = '';
+    $('popitBarFill').style.width = '0%';
+    $('popitFbMsg').style.display='none'; $('popitFbPts').style.display='none';
+    P.popitActive = false;
+    return;
+  }
+  if (P.popitStartAt !== m.startAt){
+    // nuova manche (l'orario di partenza è cambiato): riparto da zero, dimenticando la manche precedente
+    P.popitStartAt = m.startAt;
+    P.popitPopped = new Set();
+    P.popitDone = false;
+    P.popitLastTap = 0;
+    $('popitFbMsg').style.display='none'; $('popitFbPts').style.display='none';
+  }
+  P.popitDots = m.dots; P.popitCount = m.count; P.popitMaxPts = m.maxPts; P.popitDecaySec = m.decaySec;
+  P.popitActive = !P.popitDone;
+  popitRenderField($('popitField'), m.dots, P.popitPopped);
+  $('popitCounter').textContent = `${P.popitPopped.size}/${m.count} pallini`;
+  $('popitBarFill').style.width = (P.popitPopped.size/m.count*100)+'%';
+}
+function popitTap(idx){
+  if (!P.popitActive || P.popitDone || !P.popitPopped) return;
+  if (P.popitPopped.has(idx)) return;
+  const now = Date.now();
+  if (now - (P.popitLastTap||0) < 160) return; // non più di un pallino alla volta: blocca chi appoggia tutta la mano sullo schermo
+  P.popitLastTap = now;
+  P.popitPopped.add(idx);
+  popitRenderField($('popitField'), P.popitDots, P.popitPopped);
+  $('popitCounter').textContent = `${P.popitPopped.size}/${P.popitCount} pallini`;
+  $('popitBarFill').style.width = (P.popitPopped.size/P.popitCount*100)+'%';
+  if (navigator.vibrate) navigator.vibrate(15);
+  if (P.popitPopped.size >= P.popitCount){
+    P.popitDone = true; P.popitActive = false;
+    const elapsedSec = Math.max(0, (serverNow() - P.popitStartAt)/1000);
+    const pts = Math.max(0, Math.round(P.popitMaxPts * Math.max(0, 1 - elapsedSec/P.popitDecaySec)));
+    P.ref.child('popit/results/'+P.id).set({ name:P.name, pts, elapsedSec:+elapsedSec.toFixed(2) });
+    P.ref.child('players/'+P.id+'/score').once('value').then(sc=>{
+      P.ref.child('players/'+P.id+'/score').set((sc.val()||0) + pts);
+    });
+    const msg=$('popitFbMsg'), ptsEl=$('popitFbPts');
+    msg.style.display='block'; msg.className='feedback mtb fb-ok'; msg.textContent='🎉 HAI SCHIACCIATO TUTTI I PALLINI!';
+    ptsEl.style.display='block'; ptsEl.textContent = `+${pts} PUNTI (in ${elapsedSec.toFixed(1)}s)`;
+    if (navigator.vibrate) navigator.vibrate([80,50,80,50,150]);
+  }
 }
 /* ================================================================
    LA CASSAFORTE — telefono
@@ -21599,6 +21726,107 @@ function battiForcePass(){
 }
 
 /* ================================================================
+   POP IT — regia
+   L'immagine è disegnata al volo con formule geometriche (non un'immagine vera caricata): un test
+   matematico "questo punto è dentro la forma?" applicato a una griglia fitta, poi si estraggono a
+   caso tanti punti quanti richiesti dalla regia. Stessa identica lista di pallini per tutti i
+   giocatori, generata una sola volta all'avvio e salvata su Firebase.
+================================================================ */
+function popitPointInStar(x,y){
+  const verts = [];
+  for (let i=0;i<10;i++){
+    const angle = -Math.PI/2 + i*Math.PI/5;
+    const r = (i%2===0) ? 1 : 0.42;
+    verts.push([Math.cos(angle)*r, Math.sin(angle)*r]);
+  }
+  let inside = false;
+  for (let i=0,j=verts.length-1;i<verts.length;j=i++){
+    const xi=verts[i][0], yi=verts[i][1], xj=verts[j][0], yj=verts[j][1];
+    const intersect = ((yi>y)!==(yj>y)) && (x < (xj-xi)*(y-yi)/(yj-yi)+xi);
+    if (intersect) inside = !inside;
+  }
+  return inside;
+}
+const POPIT_SHAPES = {
+  stella: popitPointInStar,
+  cuore: (x,y)=>{ const yy=-y*1.15+0.4; return Math.pow(x*x+yy*yy-1,3) - x*x*Math.pow(yy,3) <= 0; },
+  fiore: (x,y)=>{
+    if (x*x+y*y <= 0.09) return true;
+    for (let i=0;i<6;i++){
+      const angle = i*(Math.PI/3) + Math.PI/2;
+      const cx = Math.cos(angle)*0.52, cy = Math.sin(angle)*0.52;
+      if ((x-cx)*(x-cx)+(y-cy)*(y-cy) <= 0.065) return true;
+    }
+    return false;
+  },
+  cerchio: (x,y)=> x*x+y*y <= 0.82,
+  luna: (x,y)=> (x*x+y*y<=1) && !(((x-0.5)*(x-0.5)+y*y)<=0.72),
+};
+function popitGenerateDots(shape, count){
+  const testFn = POPIT_SHAPES[shape] || POPIT_SHAPES.stella;
+  const RES = 40;
+  const candidates = [];
+  for (let ry=0; ry<RES; ry++){
+    for (let rx=0; rx<RES; rx++){
+      const x = (rx/(RES-1))*2-1, y = (ry/(RES-1))*2-1;
+      if (testFn(x,y)) candidates.push({ x:+((rx/(RES-1))*100).toFixed(2), y:+((ry/(RES-1))*100).toFixed(2) });
+    }
+  }
+  for (let i=candidates.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [candidates[i],candidates[j]]=[candidates[j],candidates[i]]; }
+  return candidates.slice(0, Math.min(count, candidates.length));
+}
+function popitRenderField(el, dots, poppedSet){
+  el.innerHTML = dots.map((d,i)=>
+    `<div class="piDot ${poppedSet && poppedSet.has(i) ? 'popped' : ''}" data-i="${i}" style="left:${d.x}%; top:${d.y}%" onclick="popitTap(${i})"></div>`
+  ).join('');
+}
+let POPIT = {};
+function openPopit(){
+  if (!isGameEnabled('popit')) return alert('⚠️ Questo minigioco non è compreso nella licenza attiva. Contatta Alberto per sbloccarlo.');
+  if (!G) return alert('Avvia prima una partita!');
+  cancelLiveQuestion(); closeModal();
+  G.ref.child('popit').off();
+  G.ref.update({ status:'popit', popit:{ phase:'idle' } });
+  POPIT = {};
+  $('popitSetup').style.display='block'; $('popitLive').style.display='none';
+  pjSend({type:'popitState'});
+  showScreen('scrPopit');
+}
+function popitStart(){
+  const shape = $('popitShape').value;
+  const count = Math.max(30, Math.min(50, +$('popitCount').value||40));
+  const maxPts = Math.max(0, +$('popitMaxPts').value||1000);
+  const decaySec = Math.max(5, +$('popitDecaySec').value||60);
+  const dots = popitGenerateDots(shape, count);
+  POPIT = { ended:false };
+  const startAt = serverNow();
+  G.ref.update({ status:'popit', popit:{ phase:'play', shape, count, maxPts, decaySec, startAt, dots, results:{} } });
+  $('popitSetup').style.display='none'; $('popitLive').style.display='block';
+  $('popitMsg').textContent = '🔴 SI PARTE! CHI FINISCE PRIMA PRENDE PIÙ PUNTI...';
+  $('popitBtnEnd').style.display=''; $('popitBtnAgain').style.display='none';
+  $('popitResults').innerHTML = '';
+  pjSend({type:'popitStart', shape, dots});
+  G.ref.child('popit/results').off();
+  G.ref.child('popit/results').on('value', s=>{
+    const results = s.val()||{};
+    const rows = Object.values(results).sort((a,b)=>(b.pts||0)-(a.pts||0)).slice(0,5);
+    $('popitResults').innerHTML = rows.map((p,i)=>
+      `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(p.name)} <span class="pts">+${p.pts}</span></div>`
+    ).join('') || '<div class="byline center" style="opacity:.7">Nessuno ha ancora finito...</div>';
+    pjSend({type:'popitResults', rows});
+  });
+}
+function popitEnd(){
+  if (!G) return;
+  POPIT.ended = true;
+  G.ref.child('popit/results').off();
+  G.ref.child('popit').update({ phase:'idle' });
+  $('popitMsg').textContent = '🏁 Manche finita!';
+  $('popitBtnEnd').style.display='none'; $('popitBtnAgain').style.display='';
+  pjSend({type:'popitState'});
+}
+
+/* ================================================================
    LA CASSAFORTE — regia
    Stessa identica logica di "quanti giusti/quanti al posto giusto" di Mastermind, ma semplificata:
    con cifre tutte diverse tra loro (garantito dal tastierino, che blocca le cifre già scelte) non
@@ -22752,6 +22980,7 @@ const GIOCHI_CATALOGO = [
   {k:'stendi', l:'🧺 Stendi i Panni'},
   {k:'parcheggio', l:'🅿️ Parcheggio Perfetto!'},
   {k:'poker', l:'🃏 Poker'},
+  {k:'popit', l:'🔴 Pop It'},
   {k:'spesa', l:'🛒 Lista della Spesa'},
   {k:'mastermind', l:'🎯 Mastermind'},
   {k:'bomba', l:'💣 Bomba a Orologeria'},
@@ -22821,6 +23050,7 @@ const SKILL_GAMES = [
   {k:'shapes', cats:['Dita Veloci'], cls:'', style:'background:linear-gradient(180deg,#c2183d,#ff8a3c); color:#fff; box-shadow:0 7px 0 #6b0e21,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(194,24,61,.4)', fn:'openShapes', label:`👁 Occhio alle Forme`},
   {k:'parcheggio', cats:['Logica'], cls:'', style:'background:linear-gradient(180deg,#3a3a3f,#1a1a1e); color:#ffcc33; box-shadow:0 7px 0 #0a0a0c,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(58,58,63,.5)', fn:'openParcheggio', label:`🅿️ Parcheggio Perfetto!`},
   {k:'poker', cats:['Carte'], cls:'', style:'background:linear-gradient(180deg,#0f6b3a,#083a1f); color:#fff; box-shadow:0 7px 0 #041d0f,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(15,107,58,.4)', fn:'openPoker', label:`🃏 Poker`},
+  {k:'popit', cats:['Dita Veloci'], cls:'', style:'background:linear-gradient(180deg,#e0264f,#7a0e2a); color:#fff; box-shadow:0 7px 0 #4a0518,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(224,38,79,.4)', fn:'openPopit', label:`🔴 Pop It`},
   {k:'swiss', cats:['Dita Veloci'], cls:'cy', style:'', fn:'openSwiss', label:`⌚ Precisione Svizzera`},
   {k:'puzzle', cats:['Logica'], cls:'mg', style:'', fn:'openPuzzle', label:`🧩 Puzzle`},
   {k:'salumi', cats:['Dita Veloci'], cls:'', style:'background:linear-gradient(180deg,#c99a2e,#6f2f22); color:#fff; box-shadow:0 7px 0 #3d1a10,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(201,154,46,.4)', fn:'openSalumi', label:`🔪 Salumi e Formaggi`},
@@ -24230,6 +24460,22 @@ function pjRouteInner(m){
       $('pjBattiWin').style.display='block';
       $('pjBattiWinTxt').textContent = `${(m.winnerName||'?').toUpperCase()} HA BATTUTO 5 VOLTE! MAXI PREMIO!`;
       confetti();
+    }
+    else if (m.type==='popitState') {
+      showScreen('scrPjPopit');
+      $('pjPopitField').innerHTML=''; $('pjPopitResults').innerHTML='';
+      $('pjPopitMsg').textContent = "Ecco l'immagine che ricevono i giocatori...";
+    }
+    else if (m.type==='popitStart') {
+      showScreen('scrPjPopit');
+      $('pjPopitMsg').textContent = 'Ogni giocatore ha la stessa immagine sul suo telefono: chi finisce prima prende più punti!';
+      $('pjPopitField').innerHTML = (m.dots||[]).map(d=>`<div class="piDot" style="left:${d.x}%; top:${d.y}%"></div>`).join('');
+      $('pjPopitResults').innerHTML = '';
+    }
+    else if (m.type==='popitResults') {
+      $('pjPopitResults').innerHTML = (m.rows||[]).map((p,i)=>
+        `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(p.name)} <span class="pts">+${p.pts}</span></div>`
+      ).join('');
     }
     else if (m.type==='csfState' || m.type==='csfBet') {
       showScreen('scrPjCassaforte');
