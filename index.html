@@ -2109,7 +2109,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.85</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.86</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -6884,7 +6884,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1385; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1386; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -8563,6 +8563,39 @@ function btnEndQuiz(){
   endQuiz();
 }
 
+// Segnala alla regia chi non risponde da troppe domande di fila (utile se qualcuno se n'è andato ma la
+// squadra è rimasta collegata): un contatore per giocatore, azzerato appena risponde, che si controlla
+// una volta sola ad ogni chiusura di domanda — nessun controllo continuo, quindi nessun peso aggiuntivo.
+let inactivityQueue = [];
+function checkInactivity(ans, players){
+  if (!G) return;
+  const updates = {};
+  const newlyFlagged = [];
+  for (const pid in players){
+    if (players[pid].eliminated) continue; // già fuori per la Modalità Highlander: non ha senso segnalarlo
+    const answered = !!ans[pid];
+    const cur = players[pid].missStreak||0;
+    const next = answered ? 0 : cur+1;
+    if (next !== cur) updates['players/'+pid+'/missStreak'] = next;
+    if (!answered && next === 3) newlyFlagged.push({pid, name: players[pid].name});
+  }
+  if (Object.keys(updates).length) G.ref.update(updates);
+  if (newlyFlagged.length){
+    inactivityQueue.push(...newlyFlagged);
+    setTimeout(showNextInactivityPrompt, 700); // un attimo dopo, per non accavallarsi con la rivelazione appena mostrata
+  }
+}
+function showNextInactivityPrompt(){
+  if (!inactivityQueue.length || !G) return;
+  const {pid, name} = inactivityQueue.shift();
+  const ok = confirm(`⚠️ "${name}" non ha risposto per 3 domande consecutive.\n\nVuoi eliminare questa squadra dalla partita?`);
+  if (ok){
+    G.ref.child('players/'+pid).remove();
+  } else {
+    G.ref.child('players/'+pid+'/missStreak').set(0); // confermata presente: riparto da zero, non richiedo ogni domanda dopo
+  }
+  if (inactivityQueue.length) setTimeout(showNextInactivityPrompt, 400);
+}
 function closeQuestion(){
   if (G.closed) return; G.closed = true;
   clearInterval(G.timerInt);
@@ -8573,6 +8606,7 @@ function closeQuestion(){
     const ans = s.val()||{};
     G.ref.child('players').once('value').then(ps=>{
       const players = ps.val()||{};
+      checkInactivity(ans, players); // segnala alla regia chi non risponde da 3 domande di fila, prima di ogni altra cosa
       const results = {}, pending = [];
       const accepted = (q.accepted||'').split(',').map(norm).filter(Boolean);
       const corrects = (q.corrects && q.corrects.length) ? q.corrects : [q.correct||0];
