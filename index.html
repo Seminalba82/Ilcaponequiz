@@ -2123,7 +2123,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.89</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.90</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -4924,6 +4924,7 @@ body.suspense-on #pfRank{ display:none !important; }
   </div>
   <div id="popitLive" style="display:none; width:100%" class="center">
     <div class="miniMsg" id="popitMsg"></div>
+    <div class="piBar" style="max-width:420px" id="popitHostTimeBarWrap"><div class="piBarFill" id="popitHostTimeBarFill" style="background:linear-gradient(90deg,var(--gold),var(--magenta))"></div></div>
     <div class="lead mt" id="popitResults" style="max-width:460px; width:100%"></div>
     <div class="row mt">
       <button class="btn ghost" id="popitBtnEnd" onclick="popitEnd()">🏁 Ferma qui</button>
@@ -4938,6 +4939,7 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="brand"><div class="t1" style="font-size:clamp(24px,3.6vw,42px)">🔴 SCHIACCIALI TUTTI!</div></div>
   <div class="miniMsg" id="pjPopitMsg">Ecco l'immagine che ricevono i giocatori...</div>
   <div class="piField pjField" id="pjPopitField"></div>
+  <div class="piBar" style="max-width:520px" id="pjPopitTimeBarWrap"><div class="piBarFill" id="pjPopitTimeBarFill" style="background:linear-gradient(90deg,var(--gold),var(--magenta))"></div></div>
   <div class="lead mt" id="pjPopitResults" style="max-width:520px; width:100%; margin:0 auto"></div>
 </div>
 
@@ -4950,6 +4952,8 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="piField" id="popitField"></div>
   <div class="piCounter" id="popitCounter"></div>
   <div class="piBar"><div class="piBarFill" id="popitBarFill"></div></div>
+  <div class="piCounter" id="popitPtsNow" style="font-size:clamp(13px,3.2vw,16px); color:var(--muted)"></div>
+  <div class="piBar"><div class="piBarFill" id="popitTimeBarFill" style="background:linear-gradient(90deg,var(--gold),var(--magenta))"></div></div>
   <div class="feedback mtb" id="popitFbMsg" style="display:none"></div>
   <div class="feedback mtb" id="popitFbPts" style="display:none"></div>
 </div>
@@ -6951,7 +6955,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1389; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1390; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -14006,9 +14010,12 @@ function showPlayerPopit(g){
   $('popitpScore').textContent = myScore+' pt';
   showScreen('scrPlayPopit');
   if (m.phase !== 'play'){
+    clearInterval(P.popitTimerInt);
     $('popitField').innerHTML = '';
     $('popitCounter').textContent = '';
     $('popitBarFill').style.width = '0%';
+    $('popitPtsNow').textContent = '';
+    $('popitTimeBarFill').style.width = '0%';
     $('popitFbMsg').style.display='none'; $('popitFbPts').style.display='none';
     P.popitActive = false;
     return;
@@ -14020,12 +14027,26 @@ function showPlayerPopit(g){
     P.popitDone = false;
     P.popitLastTap = 0;
     $('popitFbMsg').style.display='none'; $('popitFbPts').style.display='none';
+    clearInterval(P.popitTimerInt);
+    P.popitTimerInt = setInterval(popitUpdateTimeBar, 100);
+    popitUpdateTimeBar();
   }
   P.popitDots = m.dots; P.popitCount = m.count; P.popitMaxPts = m.maxPts; P.popitDecaySec = m.decaySec;
   P.popitActive = !P.popitDone;
   popitRenderField($('popitField'), m.dots, P.popitPopped);
   $('popitCounter').textContent = `${P.popitPopped.size}/${m.count} pallini`;
   $('popitBarFill').style.width = (P.popitPopped.size/m.count*100)+'%';
+}
+// Barra che mostra quanti punti si vincerebbero SCHIACCIANDO L'ULTIMO PALLINO ADESSO: mancava del
+// tutto (segnalato da Alberto), ed è proprio quella che comunica l'urgenza di questo gioco — i punti
+// calano nel tempo, ma senza vederlo scendere sembra un gioco senza fretta.
+function popitUpdateTimeBar(){
+  if (!P.popitStartAt || P.popitDone){ clearInterval(P.popitTimerInt); return; }
+  const elapsedSec = Math.max(0, (serverNow() - P.popitStartAt)/1000);
+  const frac = Math.max(0, 1 - elapsedSec/P.popitDecaySec);
+  const ptsNow = Math.round(P.popitMaxPts * frac);
+  const bar = $('popitTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%';
+  const lbl = $('popitPtsNow'); if (lbl) lbl.textContent = `⏱ punti se finisci adesso: ${ptsNow}`;
 }
 function popitTap(idx){
   if (!P.popitActive || P.popitDone || !P.popitPopped) return;
@@ -14040,6 +14061,7 @@ function popitTap(idx){
   if (navigator.vibrate) navigator.vibrate(15);
   if (P.popitPopped.size >= P.popitCount){
     P.popitDone = true; P.popitActive = false;
+    clearInterval(P.popitTimerInt);
     const elapsedSec = Math.max(0, (serverNow() - P.popitStartAt)/1000);
     const pts = Math.max(0, Math.round(P.popitMaxPts * Math.max(0, 1 - elapsedSec/P.popitDecaySec)));
     P.ref.child('popit/results/'+P.id).set({ name:P.name, pts, elapsedSec:+elapsedSec.toFixed(2) });
@@ -21754,11 +21776,11 @@ const POPIT_SHAPES = {
   stella: { test: popitPointInStar, center:[0,0] },
   cuore: { test:(x,y)=>{ const yy=-y*1.15+0.4; return Math.pow(x*x+yy*yy-1,3) - x*x*Math.pow(yy,3) <= 0; }, center:[0,0] },
   fiore: { test:(x,y)=>{
-      if (x*x+y*y <= 0.09) return true;
+      if (x*x+y*y <= 0.075) return true;
       for (let i=0;i<6;i++){
         const angle = i*(Math.PI/3) + Math.PI/2;
-        const cx = Math.cos(angle)*0.52, cy = Math.sin(angle)*0.52;
-        if ((x-cx)*(x-cx)+(y-cy)*(y-cy) <= 0.065) return true;
+        const cx = Math.cos(angle)*0.42, cy = Math.sin(angle)*0.42;
+        if ((x-cx)*(x-cx)+(y-cy)*(y-cy) <= 0.11) return true;
       }
       return false;
     }, center:[0,0] },
@@ -21769,20 +21791,32 @@ const POPIT_SHAPES = {
 // per farla riconoscere: si perde nel rumore. Molto più efficace seguire il CONTORNO della figura —
 // esattamente come farebbe una mano che la disegna — e distribuire i pallini a distanza regolare
 // lungo quel contorno. Il contorno si traccia lanciando un raggio dal centro della forma in tante
-// direzioni (240), e cercando con una ricerca binaria il punto più lontano in cui il raggio esce
-// dalla forma: è lì il bordo, in quella direzione.
+// direzioni (240): per ogni direzione si cerca il bordo PARTENDO DA FUORI verso dentro (non da dentro
+// verso fuori), fermandosi al primo punto trovato dentro la forma — così anche una forma con un vuoto
+// tra due parti (come il Fiore, che ha uno spazio vuoto tra il cerchietto centrale e i petali) prende
+// sempre il vero bordo ESTERNO, invece di incepparsi su quel vuoto e restituire un punto interno
+// sbagliato (il difetto che creava i pallini accatastati tutti nello stesso punto, segnalato da Alberto).
 function popitTraceOutline(shapeDef, nSamples){
   const [cx,cy] = shapeDef.center;
   const points = [];
+  const STEPS = 90;
   for (let i=0;i<nSamples;i++){
     const theta = (i/nSamples)*2*Math.PI;
-    let lo=0, hi=1.8;
-    for (let iter=0; iter<25; iter++){
-      const mid = (lo+hi)/2;
-      const px = cx+Math.cos(theta)*mid, py = cy+Math.sin(theta)*mid;
-      if (shapeDef.test(px,py)) lo = mid; else hi = mid;
+    let foundR = 0;
+    for (let s=STEPS; s>=1; s--){
+      const r = (s/STEPS)*1.8;
+      if (shapeDef.test(cx+Math.cos(theta)*r, cy+Math.sin(theta)*r)){ foundR = r; break; }
     }
-    points.push([cx+Math.cos(theta)*lo, cy+Math.sin(theta)*lo]);
+    // affino il punto trovato con una piccola ricerca binaria nell'intorno, per un bordo più pulito
+    let lo = Math.max(0, foundR - 1.8/STEPS), hi = foundR + 1.8/STEPS;
+    if (shapeDef.test(cx+Math.cos(theta)*lo, cy+Math.sin(theta)*lo)){
+      for (let iter=0; iter<15; iter++){
+        const mid = (lo+hi)/2;
+        if (shapeDef.test(cx+Math.cos(theta)*mid, cy+Math.sin(theta)*mid)) lo = mid; else hi = mid;
+      }
+      foundR = lo;
+    }
+    points.push([cx+Math.cos(theta)*foundR, cy+Math.sin(theta)*foundR]);
   }
   return points;
 }
@@ -21795,11 +21829,29 @@ function popitGenerateDots(shape, count){
   let maxAbs = 0;
   outline.forEach(([x,y])=>{ maxAbs = Math.max(maxAbs, Math.abs(x), Math.abs(y)); });
   const scale = maxAbs>0 ? 0.94/maxAbs : 1; // 0.94 invece di 1 per lasciare un piccolo margine dai bordi
-  const step = outline.length/count;
-  const offset = Math.floor(Math.random()*outline.length); // punto di partenza casuale: stessa forma, ma mai identica alla manche prima
+  // Una spaziatura uniforme per ANGOLO (il metodo usato prima) non equivale a una spaziatura uniforme
+  // per DISTANZA reale: in forme con punte strette o curve brusche (come la Luna), lo stesso passo
+  // angolare può corrispondere a un tratto di contorno cortissimo, facendo finire due pallini quasi
+  // uno sopra l'altro — impossibili da toccare separatamente (segnalato da Alberto). Ridistribuisco
+  // invece i pallini a distanza fisica realmente uniforme, calcolando quanto è lungo il contorno
+  // punto per punto e piazzando ogni pallino a intervalli regolari lungo quella lunghezza vera.
+  const n = outline.length;
+  const cum = [0];
+  for (let i=1;i<=n;i++){
+    const [x1,y1] = outline[(i-1)%n], [x2,y2] = outline[i%n];
+    cum.push(cum[i-1] + Math.hypot(x2-x1, y2-y1));
+  }
+  const total = cum[n];
+  const startOffset = Math.random()*total; // punto di partenza casuale: stessa forma, ma mai identica alla manche prima
   const dots = [];
-  for (let i=0;i<count;i++){
-    const [x,y] = outline[(Math.floor(i*step)+offset) % outline.length];
+  for (let k=0;k<count;k++){
+    const target = (startOffset + (k/count)*total) % total;
+    let i = 0;
+    while (i<n && cum[i+1] < target) i++;
+    const segLen = cum[i+1]-cum[i];
+    const t = segLen>0 ? (target-cum[i])/segLen : 0;
+    const [x1,y1] = outline[i%n], [x2,y2] = outline[(i+1)%n];
+    const x = x1+(x2-x1)*t, y = y1+(y2-y1)*t;
     dots.push({ x:+((x*scale+1)/2*100).toFixed(2), y:+((y*scale+1)/2*100).toFixed(2) });
   }
   return dots;
@@ -21827,13 +21879,20 @@ function popitStart(){
   const maxPts = Math.max(0, +$('popitMaxPts').value||1000);
   const decaySec = Math.max(5, +$('popitDecaySec').value||60);
   const dots = popitGenerateDots(shape, count);
-  POPIT = { ended:false };
   const startAt = serverNow();
+  POPIT = { ended:false, startAt, decaySec, maxPts };
   G.ref.update({ status:'popit', popit:{ phase:'play', shape, count, maxPts, decaySec, startAt, dots, results:{} } });
   $('popitSetup').style.display='none'; $('popitLive').style.display='block';
   $('popitMsg').textContent = '🔴 SI PARTE! CHI FINISCE PRIMA PRENDE PIÙ PUNTI...';
   $('popitResults').innerHTML = '';
-  pjSend({type:'popitStart', shape, dots});
+  pjSend({type:'popitStart', shape, dots, startAt, decaySec, maxPts});
+  clearInterval(POPIT.timerInt);
+  POPIT.timerInt = setInterval(()=>{
+    const elapsedSec = Math.max(0, (serverNow()-startAt)/1000);
+    const frac = Math.max(0, 1 - elapsedSec/decaySec);
+    const bar = $('popitHostTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%';
+    if (frac<=0) clearInterval(POPIT.timerInt);
+  }, 200);
   G.ref.child('popit/results').off();
   G.ref.child('popit/results').on('value', s=>{
     const results = s.val()||{};
@@ -21847,6 +21906,7 @@ function popitStart(){
 function popitEnd(){
   if (!G) return;
   POPIT.ended = true;
+  clearInterval(POPIT.timerInt);
   G.ref.child('popit/results').off();
   G.ref.child('popit').update({ phase:'idle' });
   $('popitMsg').textContent = '🏁 Manche finita!';
@@ -24490,14 +24550,23 @@ function pjRouteInner(m){
     }
     else if (m.type==='popitState') {
       showScreen('scrPjPopit');
+      clearInterval(window._popitPjTimerInt);
       $('pjPopitField').innerHTML=''; $('pjPopitResults').innerHTML='';
       $('pjPopitMsg').textContent = "Ecco l'immagine che ricevono i giocatori...";
+      $('pjPopitTimeBarFill').style.width='0%';
     }
     else if (m.type==='popitStart') {
       showScreen('scrPjPopit');
       $('pjPopitMsg').textContent = 'Ogni giocatore ha la stessa immagine sul suo telefono: chi finisce prima prende più punti!';
       $('pjPopitField').innerHTML = (m.dots||[]).map(d=>`<div class="piDot" style="left:${d.x}%; top:${d.y}%"></div>`).join('');
       $('pjPopitResults').innerHTML = '';
+      clearInterval(window._popitPjTimerInt);
+      window._popitPjTimerInt = setInterval(()=>{
+        const elapsedSec = Math.max(0, (serverNow()-m.startAt)/1000);
+        const frac = Math.max(0, 1 - elapsedSec/m.decaySec);
+        const bar = $('pjPopitTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%';
+        if (frac<=0) clearInterval(window._popitPjTimerInt);
+      }, 200);
     }
     else if (m.type==='popitResults') {
       $('pjPopitResults').innerHTML = (m.rows||[]).map((p,i)=>
