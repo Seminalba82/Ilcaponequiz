@@ -2109,7 +2109,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.83</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.85</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -4791,6 +4791,7 @@ body.suspense-on #pfRank{ display:none !important; }
       <button class="btn ghost" id="patataBtnEnd" onclick="patataManualEnd()">🏁 Fermala qui (senza esplosione)</button>
       <button class="btn cy" id="patataBtnAgain" onclick="openPatata()" style="display:none">🔁 Un'altra bomba</button>
     </div>
+    <button class="btn lm mt" onclick="patataForcePass()" data-tip="Se chi ce l'ha in mano se n'è andato ed è rimasto solo il telefono, passala tu a un altro giocatore a caso, senza aspettare che scoppi">➡️ Passa la bomba (giocatore assente)</button>
   </div>
   <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
@@ -4853,6 +4854,7 @@ body.suspense-on #pfRank{ display:none !important; }
       <button class="btn ghost" id="battiBtnEnd" onclick="battiEnd()">🏁 Ferma qui, senza vincitore</button>
       <button class="btn cy" id="battiBtnAgain" onclick="openBatti()" style="display:none">🔁 Un altro giro</button>
     </div>
+    <button class="btn lm mt" onclick="battiForcePass()" data-tip="Se chi ce l'ha in mano se n'è andato ed è rimasto solo il telefono, passala tu a un altro giocatore a caso: non conta come un vero tocco, nessun punto assegnato">➡️ Passa la mano (giocatore assente)</button>
   </div>
   <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
@@ -6882,7 +6884,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1383; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1385; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -21422,6 +21424,23 @@ function patataStart(){
     });
   });
 }
+// Se chi ha in mano la bomba se n'è andato dal locale ma la squadra è rimasta iscritta, il gioco si blocca
+// su quel telefono finché non tocca lo schermo — cosa che non farà mai. Questo pulsante lascia alla regia
+// la possibilità di far girare la bomba a mano, senza toccare punteggi o penalità: sposta solo la bomba.
+function patataForcePass(){
+  if (!G || (PATATA||{}).ended) return;
+  G.ref.child('patata').once('value').then(s=>{
+    const pv = s.val()||{};
+    if (pv.phase!=='play') return;
+    G.ref.child('players').once('value').then(ps=>{
+      const players = ps.val()||{};
+      const ids = Object.keys(players).filter(id=>id!==pv.holderId);
+      if (!ids.length) return;
+      const nextId = ids[Math.floor(Math.random()*ids.length)];
+      G.ref.child('patata').update({ holderId:nextId, holderName:players[nextId].name, passCount:(pv.passCount||0)+1 });
+    });
+  });
+}
 function patataExplode(){
   clearInterval(PATATA.timerInt);
   G.ref.child('patata').off();
@@ -21509,6 +21528,23 @@ function battiEnd(){
   G.ref.child('batti').off();
   G.ref.child('batti').update({ phase:'idle' });
   $('battiSetup').style.display='block'; $('battiLive').style.display='none';
+}
+// Stesso salvagente di Patata Bollente: se chi ha in mano se n'è andato, la regia la fa girare a mano.
+// NON conta come un vero tocco: nessun punto assegnato, nessun avvicinamento al maxi premio per nessuno —
+// altrimenti la regia potrebbe involontariamente far vincere qualcuno che non ha mai schiacciato nulla.
+function battiForcePass(){
+  if (!G || (BATTI||{}).ended) return;
+  G.ref.child('batti').once('value').then(s=>{
+    const bv = s.val()||{};
+    if (bv.phase!=='play') return;
+    G.ref.child('players').once('value').then(ps=>{
+      const players = ps.val()||{};
+      const ids = Object.keys(players).filter(id=>id!==bv.holderId);
+      if (!ids.length) return;
+      const nextId = ids[Math.floor(Math.random()*ids.length)];
+      G.ref.child('batti').update({ holderId:nextId, holderName:players[nextId].name, passCount:(bv.passCount||0)+1 });
+    });
+  });
 }
 
 /* ================================================================
@@ -23663,7 +23699,7 @@ function initProjector(){
     });
     base.child('poker/results').on('value', s=>{
       const results = s.val()||{};
-      const entries = Object.values(results).sort((a,b)=>(b.pts||0)-(a.pts||0));
+      const entries = Object.values(results).sort((a,b)=>(b.pts||0)-(a.pts||0)).slice(0,5);
       const el = $('pjPokerResults');
       if (el) el.innerHTML = entries.map(p=>
         `<div class="leadRow"><span class="pos">${p.pts>=0?'🟢':'🔴'}</span> ${esc(p.name||'?')} <span class="pts">${p.pts>=0?'+':''}${p.pts||0}</span></div>`
@@ -23674,7 +23710,7 @@ function initProjector(){
       const entries = Object.values(results).sort((a,b)=>{
         if (a.jumped && !b.jumped) return 1; if (!a.jumped && b.jumped) return -1;
         return (a.reactionMs??999999)-(b.reactionMs??999999);
-      });
+      }).slice(0,5);
       const el = $('pjF1Results');
       if (el) el.innerHTML = entries.map(p=>
         `<div class="leadRow"><span class="pos">${p.jumped?'🚩':'🏁'}</span> ${esc(p.name||'?')} <span class="pts">${p.pts>=0?'+':''}${p.pts||0}${p.reactionMs!=null?' · '+(p.reactionMs/1000).toFixed(3)+'s':''}</span></div>`
@@ -23682,7 +23718,7 @@ function initProjector(){
     });
     base.child('marg/results').on('value', s=>{
       const results = s.val()||{};
-      const entries = Object.values(results);
+      const entries = Object.values(results).sort((a,b)=> (b.win?1:0)-(a.win?1:0)).slice(0,5);
       const el = $('pjMargResults');
       if (el) el.innerHTML = entries.map(p=>
         `<div class="leadRow"><span class="pos">${p.win?'💗':'💔'}</span> ${esc(p.name||'?')} <span class="pts">${p.win ? (p.pts>0?'+'+p.pts+' pt':(p.prizeText||'premio')) : 'niente'}</span></div>`
@@ -23714,7 +23750,7 @@ function pjApplyLead(v){
   const ov = $('pjLeadOverlay');
   if (v && v.on) {
     $('pjLeadTitle').textContent = v.title||'';
-    $('pjLeadRows').innerHTML = (v.rows||[]).map(r=>
+    $('pjLeadRows').innerHTML = (v.rows||[]).slice(0,5).map(r=>
       `<div class="leadRow"><span class="pos">${esc(r.pos)}</span> ${esc(r.name)} <span class="pts">${esc(r.val)}</span></div>`).join('');
     ov.style.display='flex';
     ov.scrollTop = 0; // altrimenti, se l'ultima volta era stato scorso in giù, riparte da lì invece che dal primo posto
