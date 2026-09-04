@@ -2123,7 +2123,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.88</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.89</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -4927,7 +4927,7 @@ body.suspense-on #pfRank{ display:none !important; }
     <div class="lead mt" id="popitResults" style="max-width:460px; width:100%"></div>
     <div class="row mt">
       <button class="btn ghost" id="popitBtnEnd" onclick="popitEnd()">🏁 Ferma qui</button>
-      <button class="btn cy" id="popitBtnAgain" onclick="openPopit()" style="display:none">🔁 Un altro giro</button>
+      <button class="btn cy" id="popitBtnAgain" onclick="openPopit()">🔁 Un altro giro</button>
     </div>
   </div>
   <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
@@ -6951,7 +6951,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1388; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1389; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -21747,33 +21747,62 @@ function popitPointInStar(x,y){
   }
   return inside;
 }
+// Ogni forma è un test "questo punto è dentro?" (come prima) PIÙ un "centro" garantito dentro la
+// forma, da cui parte il tracciamento del contorno (vedi popitGenerateDots). Per la luna il centro
+// del cerchio non basta (il morso ce lo toglie): uso un punto spostato verso la punta piena.
 const POPIT_SHAPES = {
-  stella: popitPointInStar,
-  cuore: (x,y)=>{ const yy=-y*1.15+0.4; return Math.pow(x*x+yy*yy-1,3) - x*x*Math.pow(yy,3) <= 0; },
-  fiore: (x,y)=>{
-    if (x*x+y*y <= 0.09) return true;
-    for (let i=0;i<6;i++){
-      const angle = i*(Math.PI/3) + Math.PI/2;
-      const cx = Math.cos(angle)*0.52, cy = Math.sin(angle)*0.52;
-      if ((x-cx)*(x-cx)+(y-cy)*(y-cy) <= 0.065) return true;
-    }
-    return false;
-  },
-  cerchio: (x,y)=> x*x+y*y <= 0.82,
-  luna: (x,y)=> (x*x+y*y<=1) && !(((x-0.5)*(x-0.5)+y*y)<=0.72),
+  stella: { test: popitPointInStar, center:[0,0] },
+  cuore: { test:(x,y)=>{ const yy=-y*1.15+0.4; return Math.pow(x*x+yy*yy-1,3) - x*x*Math.pow(yy,3) <= 0; }, center:[0,0] },
+  fiore: { test:(x,y)=>{
+      if (x*x+y*y <= 0.09) return true;
+      for (let i=0;i<6;i++){
+        const angle = i*(Math.PI/3) + Math.PI/2;
+        const cx = Math.cos(angle)*0.52, cy = Math.sin(angle)*0.52;
+        if ((x-cx)*(x-cx)+(y-cy)*(y-cy) <= 0.065) return true;
+      }
+      return false;
+    }, center:[0,0] },
+  cerchio: { test:(x,y)=> x*x+y*y <= 0.82, center:[0,0] },
+  luna: { test:(x,y)=> (x*x+y*y<=1) && !(((x-0.5)*(x-0.5)+y*y)<=0.7225), center:[-0.4,0] },
 };
-function popitGenerateDots(shape, count){
-  const testFn = POPIT_SHAPES[shape] || POPIT_SHAPES.stella;
-  const RES = 40;
-  const candidates = [];
-  for (let ry=0; ry<RES; ry++){
-    for (let rx=0; rx<RES; rx++){
-      const x = (rx/(RES-1))*2-1, y = (ry/(RES-1))*2-1;
-      if (testFn(x,y)) candidates.push({ x:+((rx/(RES-1))*100).toFixed(2), y:+((ry/(RES-1))*100).toFixed(2) });
+// Con soli 30-50 pallini, riempire l'interno della forma (anche a caso e ben distribuito) non basta
+// per farla riconoscere: si perde nel rumore. Molto più efficace seguire il CONTORNO della figura —
+// esattamente come farebbe una mano che la disegna — e distribuire i pallini a distanza regolare
+// lungo quel contorno. Il contorno si traccia lanciando un raggio dal centro della forma in tante
+// direzioni (240), e cercando con una ricerca binaria il punto più lontano in cui il raggio esce
+// dalla forma: è lì il bordo, in quella direzione.
+function popitTraceOutline(shapeDef, nSamples){
+  const [cx,cy] = shapeDef.center;
+  const points = [];
+  for (let i=0;i<nSamples;i++){
+    const theta = (i/nSamples)*2*Math.PI;
+    let lo=0, hi=1.8;
+    for (let iter=0; iter<25; iter++){
+      const mid = (lo+hi)/2;
+      const px = cx+Math.cos(theta)*mid, py = cy+Math.sin(theta)*mid;
+      if (shapeDef.test(px,py)) lo = mid; else hi = mid;
     }
+    points.push([cx+Math.cos(theta)*lo, cy+Math.sin(theta)*lo]);
   }
-  for (let i=candidates.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [candidates[i],candidates[j]]=[candidates[j],candidates[i]]; }
-  return candidates.slice(0, Math.min(count, candidates.length));
+  return points;
+}
+function popitGenerateDots(shape, count){
+  const shapeDef = POPIT_SHAPES[shape] || POPIT_SHAPES.stella;
+  const outline = popitTraceOutline(shapeDef, 240);
+  // alcune forme (il cuore, per come è scritta la sua formula) possono uscire leggermente dal
+  // riquadro [-1,1]: normalizzo qui in base all'ingombro VERO di questa forma, così resta sempre
+  // ben dentro lo schermo qualunque sia la figura scelta dalla regia.
+  let maxAbs = 0;
+  outline.forEach(([x,y])=>{ maxAbs = Math.max(maxAbs, Math.abs(x), Math.abs(y)); });
+  const scale = maxAbs>0 ? 0.94/maxAbs : 1; // 0.94 invece di 1 per lasciare un piccolo margine dai bordi
+  const step = outline.length/count;
+  const offset = Math.floor(Math.random()*outline.length); // punto di partenza casuale: stessa forma, ma mai identica alla manche prima
+  const dots = [];
+  for (let i=0;i<count;i++){
+    const [x,y] = outline[(Math.floor(i*step)+offset) % outline.length];
+    dots.push({ x:+((x*scale+1)/2*100).toFixed(2), y:+((y*scale+1)/2*100).toFixed(2) });
+  }
+  return dots;
 }
 function popitRenderField(el, dots, poppedSet){
   el.innerHTML = dots.map((d,i)=>
@@ -21803,7 +21832,6 @@ function popitStart(){
   G.ref.update({ status:'popit', popit:{ phase:'play', shape, count, maxPts, decaySec, startAt, dots, results:{} } });
   $('popitSetup').style.display='none'; $('popitLive').style.display='block';
   $('popitMsg').textContent = '🔴 SI PARTE! CHI FINISCE PRIMA PRENDE PIÙ PUNTI...';
-  $('popitBtnEnd').style.display=''; $('popitBtnAgain').style.display='none';
   $('popitResults').innerHTML = '';
   pjSend({type:'popitStart', shape, dots});
   G.ref.child('popit/results').off();
@@ -21822,7 +21850,6 @@ function popitEnd(){
   G.ref.child('popit/results').off();
   G.ref.child('popit').update({ phase:'idle' });
   $('popitMsg').textContent = '🏁 Manche finita!';
-  $('popitBtnEnd').style.display='none'; $('popitBtnAgain').style.display='';
   pjSend({type:'popitState'});
 }
 
