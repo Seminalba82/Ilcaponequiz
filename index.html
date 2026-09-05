@@ -2123,7 +2123,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.91</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.92</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -6955,7 +6955,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1391; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1392; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -23119,21 +23119,21 @@ function gk(key, html){
 const SKILL_GAMES = [
   {k:'settemezzo', cats:['Carte'], cls:'', style:'background:linear-gradient(180deg,#1a7a3a,#0a3a1a); color:#fff; box-shadow:0 7px 0 #052610,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(26,122,58,.4)', fn:'openSetteMezzo', label:`🎴 7 e 1/2`},
   {k:'anagram', cats:['Logica'], cls:'', style:'background:linear-gradient(180deg,#2d6fd6,#163a70); color:#fff; box-shadow:0 7px 0 #0a1c38,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(45,111,214,.4)', fn:'openAnagram', label:`🔤➰ Anagramma`},
-  {k:'mini', cats:["Colpo d'Occhio"], cls:'', style:'background:linear-gradient(180deg,#e0a83d,#8a5a0b); color:#3a2600; box-shadow:0 7px 0 #4a3300,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(224,168,61,.4)', fn:'openMini', label:`🥃 Bussolotti`},
+  {k:'mini', cats:["Colpo d'Occhio"], cls:'', style:'background:linear-gradient(180deg,#e8e8e8,#a8a8a8); color:#1c1c1c; box-shadow:0 7px 0 #5a5a5a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(200,200,200,.35)', fn:'openMini', label:`🥃 Bussolotti`},
   {k:'f1', cats:['Dita Veloci'], cls:'', style:'background:linear-gradient(180deg,#e0264f,#7a0e2a); color:#fff; box-shadow:0 7px 0 #4a0518,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(224,38,79,.4)', fn:'openF1', label:`🏎️ Formula Uno`},
   {k:'tamb', cats:['Dita Veloci'], cls:'', style:'background:linear-gradient(180deg,#e0264f,#7a0e2a); color:#fff; box-shadow:0 7px 0 #4a0518,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(224,38,79,.4)', fn:'openTamb', label:`🥁 I Tamburini`},
   {k:'pontesospeso', cats:['Logica'], cls:'', style:'background:linear-gradient(180deg,#2d6fd6,#163a70); color:#fff; box-shadow:0 7px 0 #0a1c38,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(45,111,214,.4)', fn:'openPonteSospeso', label:`🌉 Il Ponte Sospeso`},
   {k:'punto', cats:['Logica'], cls:'', style:'background:linear-gradient(180deg,#2d6fd6,#163a70); color:#fff; box-shadow:0 7px 0 #0a1c38,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(45,111,214,.4)', fn:'openPunto', label:`🏁 Il Punto della Situazione`},
-  {k:'clover', cats:["Colpo d'Occhio"], cls:'', style:'background:linear-gradient(180deg,#e0a83d,#8a5a0b); color:#3a2600; box-shadow:0 7px 0 #4a3300,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(224,168,61,.4)', fn:'openClover', label:`🍀 Il Quadrifoglio`},
+  {k:'clover', cats:["Colpo d'Occhio"], cls:'', style:'background:linear-gradient(180deg,#e8e8e8,#a8a8a8); color:#1c1c1c; box-shadow:0 7px 0 #5a5a5a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(200,200,200,.35)', fn:'openClover', label:`🍀 Il Quadrifoglio`},
   {k:'idr', cats:['Logica'], cls:'', style:'background:linear-gradient(180deg,#2d6fd6,#163a70); color:#fff; box-shadow:0 7px 0 #0a1c38,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(45,111,214,.4)', fn:'openIdr', label:`🔧 L'Idraulico`},
   {k:'cassaforte', cats:['Logica'], cls:'', style:'background:linear-gradient(180deg,#2d6fd6,#163a70); color:#fff; box-shadow:0 7px 0 #0a1c38,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(45,111,214,.4)', fn:'openCassaforte', label:`🔐 La Cassaforte`},
-  {k:'rana', cats:['Si Grida'], cls:'', style:'background:linear-gradient(180deg,#e0397a,#7a123f); color:#fff; box-shadow:0 7px 0 #4a0522,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(224,57,122,.4)', fn:'openRana', label:`🐸 La Rana Salterina`},
+  {k:'rana', cats:['Si Grida'], cls:'', style:'background:linear-gradient(180deg,#3a3a3a,#0a0a0a); color:#fff; box-shadow:0 7px 0 #000000,0 10px 0 rgba(0,0,0,.5),0 14px 30px rgba(0,0,0,.5)', fn:'openRana', label:`🐸 La Rana Salterina`},
   {k:'rdc', cats:['Logica'], cls:'', style:'background:linear-gradient(180deg,#2d6fd6,#163a70); color:#fff; box-shadow:0 7px 0 #0a1c38,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(45,111,214,.4)', fn:'openRdc', label:`🧮 La Resa dei Conti`},
-  {k:'spesa', cats:["Colpo d'Occhio"], cls:'', style:'background:linear-gradient(180deg,#e0a83d,#8a5a0b); color:#3a2600; box-shadow:0 7px 0 #4a3300,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(224,168,61,.4)', fn:'openSpesa', label:`🛒 Lista della Spesa`},
-  {k:'staccionata', cats:['Si Grida'], cls:'', style:'background:linear-gradient(180deg,#e0397a,#7a123f); color:#fff; box-shadow:0 7px 0 #4a0522,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(224,57,122,.4)', fn:'openStaccionata', label:`🪵 Maledetta Staccionata`},
+  {k:'spesa', cats:["Colpo d'Occhio"], cls:'', style:'background:linear-gradient(180deg,#e8e8e8,#a8a8a8); color:#1c1c1c; box-shadow:0 7px 0 #5a5a5a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(200,200,200,.35)', fn:'openSpesa', label:`🛒 Lista della Spesa`},
+  {k:'staccionata', cats:['Si Grida'], cls:'', style:'background:linear-gradient(180deg,#3a3a3a,#0a0a0a); color:#fff; box-shadow:0 7px 0 #000000,0 10px 0 rgba(0,0,0,.5),0 14px 30px rgba(0,0,0,.5)', fn:'openStaccionata', label:`🪵 Maledetta Staccionata`},
   {k:'mastermind', cats:['Logica'], cls:'', style:'background:linear-gradient(180deg,#2d6fd6,#163a70); color:#fff; box-shadow:0 7px 0 #0a1c38,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(45,111,214,.4)', fn:'openMastermind', label:`🎯 Mastermind`},
-  {k:'memocoppie', cats:["Colpo d'Occhio"], cls:'', style:'background:linear-gradient(180deg,#e0a83d,#8a5a0b); color:#3a2600; box-shadow:0 7px 0 #4a3300,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(224,168,61,.4)', fn:'openMemoCoppie', label:`🃏 Memo le Coppie`},
-  {k:'merc', cats:['Si Grida'], cls:'', style:'background:linear-gradient(180deg,#e0397a,#7a123f); color:#fff; box-shadow:0 7px 0 #4a0522,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(224,57,122,.4)', fn:'openMerc', label:`📣 Mercatista per un Giorno`},
+  {k:'memocoppie', cats:["Colpo d'Occhio"], cls:'', style:'background:linear-gradient(180deg,#e8e8e8,#a8a8a8); color:#1c1c1c; box-shadow:0 7px 0 #5a5a5a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(200,200,200,.35)', fn:'openMemoCoppie', label:`🃏 Memo le Coppie`},
+  {k:'merc', cats:['Si Grida'], cls:'', style:'background:linear-gradient(180deg,#3a3a3a,#0a0a0a); color:#fff; box-shadow:0 7px 0 #000000,0 10px 0 rgba(0,0,0,.5),0 14px 30px rgba(0,0,0,.5)', fn:'openMerc', label:`📣 Mercatista per un Giorno`},
   {k:'shapes', cats:['Dita Veloci'], cls:'', style:'background:linear-gradient(180deg,#e0264f,#7a0e2a); color:#fff; box-shadow:0 7px 0 #4a0518,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(224,38,79,.4)', fn:'openShapes', label:`👁 Occhio alle Forme`},
   {k:'parcheggio', cats:['Logica'], cls:'', style:'background:linear-gradient(180deg,#2d6fd6,#163a70); color:#fff; box-shadow:0 7px 0 #0a1c38,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(45,111,214,.4)', fn:'openParcheggio', label:`🅿️ Parcheggio Perfetto!`},
   {k:'poker', cats:['Carte'], cls:'', style:'background:linear-gradient(180deg,#1a7a3a,#0a3a1a); color:#fff; box-shadow:0 7px 0 #052610,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(26,122,58,.4)', fn:'openPoker', label:`🃏 Poker`},
@@ -23143,13 +23143,13 @@ const SKILL_GAMES = [
   {k:'salumi', cats:['Dita Veloci'], cls:'', style:'background:linear-gradient(180deg,#e0264f,#7a0e2a); color:#fff; box-shadow:0 7px 0 #4a0518,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(224,38,79,.4)', fn:'openSalumi', label:`🔪 Salumi e Formaggi`},
   {k:'scopa', cats:['Carte'], cls:'', style:'background:linear-gradient(180deg,#1a7a3a,#0a3a1a); color:#fff; box-shadow:0 7px 0 #052610,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(26,122,58,.4)', fn:'openScopa', label:`🧹 Scopa e Vinci`},
   {k:'tfiscale', cats:['Logica'], cls:'', style:'background:linear-gradient(180deg,#2d6fd6,#163a70); color:#fff; box-shadow:0 7px 0 #0a1c38,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(45,111,214,.4)', fn:'openTFiscale', label:`💶 Sei Troppo Fiscale!`},
-  {k:'simon', cats:["Colpo d'Occhio"], cls:'', style:'background:linear-gradient(180deg,#e0a83d,#8a5a0b); color:#3a2600; box-shadow:0 7px 0 #4a3300,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(224,168,61,.4)', fn:'openSimon', label:`🎨 Simon`},
+  {k:'simon', cats:["Colpo d'Occhio"], cls:'', style:'background:linear-gradient(180deg,#e8e8e8,#a8a8a8); color:#1c1c1c; box-shadow:0 7px 0 #5a5a5a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(200,200,200,.35)', fn:'openSimon', label:`🎨 Simon`},
   {k:'stendi', cats:['Logica'], cls:'', style:'background:linear-gradient(180deg,#2d6fd6,#163a70); color:#fff; box-shadow:0 7px 0 #0a1c38,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(45,111,214,.4)', fn:'openStendi', label:`🧺 Stendi i Panni`},
   {k:'taptap', cats:['Dita Veloci'], cls:'', style:'background:linear-gradient(180deg,#e0264f,#7a0e2a); color:#fff; box-shadow:0 7px 0 #4a0518,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(224,38,79,.4)', fn:'openTapTap', label:`👆 Tap Tap`},
   {k:'memo', cats:['Carte',"Colpo d'Occhio"], cls:'', style:'background:linear-gradient(180deg,#1a7a3a,#0a3a1a); color:#fff; box-shadow:0 7px 0 #052610,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(26,122,58,.4)', fn:'openMemo', label:`🔍 Trova la Carta`},
-  {k:'wordsearch', cats:["Colpo d'Occhio"], cls:'', style:'background:linear-gradient(180deg,#e0a83d,#8a5a0b); color:#3a2600; box-shadow:0 7px 0 #4a3300,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(224,168,61,.4)', fn:'openWordSearch', label:`🔤 Trova la Parola`},
-  {k:'finddiff', cats:["Colpo d'Occhio"], cls:'', style:'background:linear-gradient(180deg,#e0a83d,#8a5a0b); color:#3a2600; box-shadow:0 7px 0 #4a3300,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(224,168,61,.4)', fn:'openFindDiff', label:`🔍 Trova le Differenze`},
-  {k:'panino', cats:["Colpo d'Occhio"], cls:'', style:'background:linear-gradient(180deg,#e0a83d,#8a5a0b); color:#3a2600; box-shadow:0 7px 0 #4a3300,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(224,168,61,.4)', fn:'openPanino', label:`🥪 Un Panino al Camioncino`},
+  {k:'wordsearch', cats:["Colpo d'Occhio"], cls:'', style:'background:linear-gradient(180deg,#e8e8e8,#a8a8a8); color:#1c1c1c; box-shadow:0 7px 0 #5a5a5a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(200,200,200,.35)', fn:'openWordSearch', label:`🔤 Trova la Parola`},
+  {k:'finddiff', cats:["Colpo d'Occhio"], cls:'', style:'background:linear-gradient(180deg,#e8e8e8,#a8a8a8); color:#1c1c1c; box-shadow:0 7px 0 #5a5a5a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(200,200,200,.35)', fn:'openFindDiff', label:`🔍 Trova le Differenze`},
+  {k:'panino', cats:["Colpo d'Occhio"], cls:'', style:'background:linear-gradient(180deg,#e8e8e8,#a8a8a8); color:#1c1c1c; box-shadow:0 7px 0 #5a5a5a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(200,200,200,.35)', fn:'openPanino', label:`🥪 Un Panino al Camioncino`},
   {k:'xox', cats:['Logica'], cls:'', style:'background:linear-gradient(180deg,#2d6fd6,#163a70); color:#fff; box-shadow:0 7px 0 #0a1c38,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(45,111,214,.4)', fn:'openXox', label:`❌⭕ XOX`},
   {k:'zanzare', cats:['Dita Veloci'], cls:'', style:'background:linear-gradient(180deg,#e0264f,#7a0e2a); color:#fff; box-shadow:0 7px 0 #4a0518,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(224,38,79,.4)', fn:'openZanzare', label:`🦟 Zanzare`},
 ];
@@ -23173,7 +23173,7 @@ const LUCK_GAMES = [
   {k:'morra', cats:['Scelta Fortunata'], cls:'', style:'background:linear-gradient(180deg,#e8862e,#8a4a0e); color:#3a1c00; box-shadow:0 7px 0 #4a2600,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(232,134,46,.4)', fn:'openMorra', label:`✊✋✌️ Morra Cinese`},
   {k:'dice', cats:['Scelta Fortunata'], cls:'', style:'background:linear-gradient(180deg,#e8862e,#8a4a0e); color:#3a1c00; box-shadow:0 7px 0 #4a2600,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(232,134,46,.4)', fn:'openDice', label:`🎲 Pari o Dispari`},
   {k:'patata', cats:['Estrazione Casuale'], cls:'', style:'background:linear-gradient(180deg,#8a4fd6,#452170); color:#fff; box-shadow:0 7px 0 #200e38,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(138,79,214,.4)', fn:'openPatata', label:`💣 Patata Bollente`},
-  {k:'horses', cats:['Si Grida'], cls:'', style:'background:linear-gradient(180deg,#e0397a,#7a123f); color:#fff; box-shadow:0 7px 0 #4a0522,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(224,57,122,.4)', fn:'openHorses', label:`🐎 Pubbliche Offese`},
+  {k:'horses', cats:['Si Grida'], cls:'', style:'background:linear-gradient(180deg,#3a3a3a,#0a0a0a); color:#fff; box-shadow:0 7px 0 #000000,0 10px 0 rgba(0,0,0,.5),0 14px 30px rgba(0,0,0,.5)', fn:'openHorses', label:`🐎 Pubbliche Offese`},
   {k:'casino', cats:['Scelta Fortunata'], cls:'', style:'background:linear-gradient(180deg,#e8862e,#8a4a0e); color:#3a1c00; box-shadow:0 7px 0 #4a2600,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(232,134,46,.4)', fn:'openCasino', label:`🎰 Roulette (Casinò)`},
   {k:'roulette', cats:['Scelta Fortunata'], cls:'', style:'background:linear-gradient(180deg,#e8862e,#8a4a0e); color:#3a1c00; box-shadow:0 7px 0 #4a2600,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(232,134,46,.4)', fn:'openRoulette', label:`🤠 Roulette Russa`},
   {k:'slotmachine', cats:['Estrazione Casuale'], cls:'', style:'background:linear-gradient(180deg,#8a4fd6,#452170); color:#fff; box-shadow:0 7px 0 #200e38,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(138,79,214,.4)', fn:'openSlotMachine', label:`🎰 Slot Machine`},
@@ -23200,8 +23200,8 @@ const GAME_SUBCAT_COLORS = {
   "Dita Veloci":        '#e0264f',
   "Carte":              '#2fae5a',
   "Logica":             '#3a86e0',
-  "Colpo d'Occhio":     '#e0a83d',
-  "Si Grida":           '#e0397a',
+  "Colpo d'Occhio":     '#c9c9c9',
+  "Si Grida":           '#f0f0f0', // il nero vero è sui pulsanti dei giochi: qui, come testo su sfondo scuro del menu, sarebbe invisibile
   "Estrazione Casuale": '#a06fe0',
   "Scelta Fortunata":   '#e8862e',
 };
@@ -23231,7 +23231,8 @@ function gfRenderModal(){
       <div class="gfRow">
         ${GAME_SUBCATS.map(c=>{
           const col = GAME_SUBCAT_COLORS[c] || 'var(--muted)';
-          return `<label class="gfChk" style="border-color:${col}; color:${col}"><input type="checkbox" ${cChk(c)} onchange="gfToggleCat('${c}',this.checked)"> ${esc(c)}</label>`;
+          const cSafe = c.replace(/'/g, "\\'"); // "Colpo d'Occhio" ha un apostrofo che altrimenti chiude la stringa JS anzitempo, rompendo l'onchange e facendo sembrare il filtro "morto"
+          return `<label class="gfChk" style="border-color:${col}; color:${col}"><input type="checkbox" ${cChk(c)} onchange="gfToggleCat('${cSafe}',this.checked)"> ${esc(c)}</label>`;
         }).join('')}
       </div>
     </div>`;
