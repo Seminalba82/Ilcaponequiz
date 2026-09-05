@@ -1194,6 +1194,32 @@ body.barOn.barCollapsed .screen.active{padding-bottom:70px;}
 .bcHandLabel{font-family:'Bungee'; font-size:clamp(14px,4vw,18px); color:var(--gold); text-shadow:0 0 10px rgba(255,201,60,.5); margin-top:6px;}
 .bcTallyMsg{font-family:'Outfit',sans-serif; font-weight:800; font-size:15px; color:var(--muted); text-align:center; margin-top:10px;}
 .pjBcHand{font-size:clamp(90px,16vw,170px); text-align:center; margin:10px auto; animation:bcHandPulse 1.1s ease-in-out infinite; filter:drop-shadow(0 14px 24px rgba(0,0,0,.5));}
+/* ===== SCHIACCIA LA TALPA ===== */
+.taField{position:relative; width:100%; max-width:420px; aspect-ratio:1; margin:14px auto; border-radius:26px; overflow:hidden;
+  background-color:#4a9e2a;
+  background-image:radial-gradient(ellipse at 30% 15%, rgba(255,255,255,.12), transparent 55%),
+    linear-gradient(180deg,#75c945 0%, #4a9e2a 45%, #397f1f 100%);
+  box-shadow:0 14px 34px rgba(0,0,0,.55), inset 0 0 50px rgba(0,0,0,.2);}
+.taField.pjTaField{max-width:520px;}
+.taGrid{position:absolute; inset:6%; display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,1fr);}
+.taHoleWrap{position:relative; display:flex; align-items:flex-end; justify-content:center;}
+.taGrass{position:absolute; bottom:26%; width:12%; z-index:3; opacity:.9;}
+.taDirt{position:absolute; bottom:16%; width:76%; height:34%; border-radius:50%;
+  background:radial-gradient(ellipse at 50% 30%,#6b4423,#3a2510 75%); box-shadow:0 3px 0 rgba(0,0,0,.25);}
+.taHole{position:absolute; bottom:24%; width:56%; height:22%; border-radius:50%;
+  background:radial-gradient(ellipse at 50% 40%,#1a0f08,#000 80%); cursor:pointer; z-index:2;}
+.taMole{position:absolute; bottom:24%; width:56%; transform-origin:bottom center; transform:translateY(72%) scale(.85);
+  z-index:4; cursor:pointer; transition:transform .16s cubic-bezier(.34,1.56,.64,1); filter:drop-shadow(0 6px 6px rgba(0,0,0,.35));}
+.taMole.up{transform:translateY(-2%) scale(1);}
+.taMole.hit{transform:translateY(30%) scale(.7) rotate(8deg); transition:transform .18s ease-in;}
+.taStars{position:absolute; bottom:40%; width:100%; text-align:center; font-size:22px; z-index:5; pointer-events:none;
+  opacity:0; animation:taStarPop .5s ease-out forwards;}
+@keyframes taStarPop{0%{opacity:1; transform:translateY(0) scale(.6);} 100%{opacity:0; transform:translateY(-40px) scale(1.3);}}
+.taScoreFloat{position:absolute; bottom:55%; width:100%; text-align:center; font-family:'Bungee'; font-size:15px; color:var(--gold);
+  z-index:5; pointer-events:none; opacity:0; text-shadow:0 0 8px rgba(0,0,0,.6); animation:taScorePop .6s ease-out forwards;}
+.taScoreFloat.bad{color:var(--red);}
+@keyframes taScorePop{0%{opacity:1; transform:translateY(0);} 100%{opacity:0; transform:translateY(-30px);}}
+.taCounter{font-family:'Bungee'; font-size:clamp(16px,4vw,22px); text-align:center; color:var(--gold); margin-top:6px;}
 .parkPct{font-family:'Bungee'; font-size:clamp(22px,6vw,30px); color:var(--gold); text-align:center; margin-top:10px;
   text-shadow:0 2px 0 #6b4a00;}
 .parkPctSub{font-family:'Outfit',sans-serif; font-weight:600; font-size:13px; color:var(--muted); text-align:center; margin-top:-4px;}
@@ -2123,7 +2149,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.92</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.94</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -4958,6 +4984,56 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="feedback mtb" id="popitFbPts" style="display:none"></div>
 </div>
 
+<!-- ==================== REGIA: SCHIACCIA LA TALPA ==================== -->
+<div class="screen" id="scrTalpa">
+  <div class="brand"><div class="t1" style="font-size:clamp(18px,3.4vw,32px)">🔨 SCHIACCIA LA TALPA</div></div>
+  <div class="panel mt" style="max-width:480px" id="talpaSetup">
+    <div class="label">Velocità delle talpe</div>
+    <select id="talpaSpeed" style="width:100%; text-align:center">
+      <option value="lenta">🐢 Lenta</option>
+      <option value="normale" selected>🚶 Normale</option>
+      <option value="veloce">🏃 Veloce</option>
+      <option value="frenetica">🔥 Frenetica</option>
+    </select>
+    <div class="label mt">Punti per ogni talpa schiacciata</div>
+    <input type="number" id="talpaPts" value="100" min="0" style="text-align:center">
+    <div class="label mt">Penalità per colpo a vuoto (buca senza talpa) — 0 per disattivarla</div>
+    <input type="number" id="talpaMissPenalty" value="20" min="0" style="text-align:center">
+    <div class="label mt">Durata del gioco (secondi)</div>
+    <input type="number" id="talpaDuration" value="30" min="10" style="text-align:center">
+    <div class="byline mt" style="opacity:.75">🔨 Le talpe escono a caso dalle buche, ognuno sul proprio telefono: più ne schiacciano, più punti fanno. La velocità decide quanto spesso escono e per quanto restano fuori.</div>
+    <button class="btn mg mt" style="width:100%" onclick="talpaStart()">🔨 FAI PARTIRE IL GIOCO!</button>
+  </div>
+  <div id="talpaLive" style="display:none; width:100%" class="center">
+    <div class="miniMsg" id="talpaMsg"></div>
+    <div class="piBar" style="max-width:420px"><div class="piBarFill" id="talpaHostTimeBarFill" style="background:linear-gradient(90deg,var(--lime),var(--cyan))"></div></div>
+    <div class="lead mt" id="talpaResults" style="max-width:460px; width:100%"></div>
+    <div class="row mt"><button class="btn ghost" onclick="talpaEnd()">🏁 Ferma qui</button></div>
+  </div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
+</div>
+
+<!-- ==================== PROIETTORE: SCHIACCIA LA TALPA ==================== -->
+<div class="screen" id="scrPjTalpa">
+  <div class="brand"><div class="t1" style="font-size:clamp(24px,3.6vw,42px)">🔨 SCHIACCIA LA TALPA</div></div>
+  <div class="miniMsg" id="pjTalpaMsg">Ognuno schiaccia le talpe sul proprio telefono!</div>
+  <div class="taField pjTaField" id="pjTalpaField"></div>
+  <div class="piBar" style="max-width:520px"><div class="piBarFill" id="pjTalpaTimeBarFill" style="background:linear-gradient(90deg,var(--lime),var(--cyan))"></div></div>
+  <div class="lead mt" id="pjTalpaResults" style="max-width:520px; width:100%; margin:0 auto"></div>
+</div>
+
+<!-- ==================== PLAYER: SCHIACCIA LA TALPA ==================== -->
+<div class="screen" id="scrPlayTalpa" style="align-items:center; justify-content:center">
+  <div class="row" style="width:100%; justify-content:space-between">
+    <div class="pill" id="talpapName" style="color:var(--gold)"></div>
+    <div class="pill" id="talpapScore"></div>
+  </div>
+  <div class="taField" id="talpaField"></div>
+  <div class="piBar" style="max-width:420px"><div class="piBarFill" id="talpaTimeBarFill" style="background:linear-gradient(90deg,var(--lime),var(--cyan))"></div></div>
+  <div class="taCounter" id="talpaCounter"></div>
+  <div class="feedback mtb" id="talpaFbMsg" style="display:none"></div>
+</div>
+
 <!-- ==================== HOST: LA CASSAFORTE ==================== -->
 <div class="screen" id="scrCassaforte">
   <div class="brand"><div class="t1" style="font-size:clamp(18px,3.4vw,32px)">🔐 LA CASSAFORTE</div></div>
@@ -6955,7 +7031,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1392; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1394; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -9267,6 +9343,7 @@ function listenGame(){
     else if (g.status==='patata') showPlayerPatata(g);
     else if (g.status==='batti') showPlayerBatti(g);
     else if (g.status==='popit') showPlayerPopit(g);
+    else if (g.status==='talpa') showPlayerTalpa(g);
     else if (g.status==='cassaforte') showPlayerCassaforte(g);
     else if (g.status==='settemezzo') showPlayerSetteMezzo(g);
     else if (g.status==='scopa') showPlayerScopa(g);
@@ -14073,6 +14150,128 @@ function popitTap(idx){
     ptsEl.style.display='block'; ptsEl.textContent = `+${pts} PUNTI (in ${elapsedSec.toFixed(1)}s)`;
     if (navigator.vibrate) navigator.vibrate([80,50,80,50,150]);
   }
+}
+/* ================================================================
+   SCHIACCIA LA TALPA — telefono
+   Ogni giocatore ha il proprio ciclo indipendente di talpe (posizione e tempi decisi localmente sul
+   telefono, non sincronizzati tra un giocatore e l'altro): solo il punteggio finale, a tempo scaduto,
+   viene inviato a Firebase. Questo evita un traffico enorme di aggiornamenti ad ogni singola talpa.
+================================================================ */
+function showPlayerTalpa(g){
+  const m = g.talpa||{};
+  $('talpapName').textContent = P.name;
+  const myScore = ((g.players||{})[P.id]||{}).score||0;
+  $('talpapScore').textContent = myScore+' pt';
+  showScreen('scrPlayTalpa');
+  if (m.phase !== 'play'){
+    talpaStopLocalLoop();
+    $('talpaField').innerHTML = '';
+    $('talpaCounter').textContent = '';
+    $('talpaTimeBarFill').style.width = '0%';
+    $('talpaFbMsg').style.display = 'none';
+    P.talpaActive = false;
+    return;
+  }
+  if (P.talpaStartAt !== m.startAt){
+    // nuova manche (l'orario di partenza è cambiato): riparto da zero
+    P.talpaStartAt = m.startAt;
+    P.talpaDurationSec = m.durationSec;
+    P.talpaPointsPerHit = m.pointsPerHit;
+    P.talpaMissPenalty = m.missPenalty||0;
+    P.talpaSpawnMin = m.spawnMin; P.talpaSpawnMax = m.spawnMax; P.talpaVisibleMs = m.visibleMs;
+    P.talpaScore = 0;
+    P.talpaSubmitted = false;
+    P.talpaActive = true;
+    P.talpaLastHole = -1;
+    P.talpaCurrentHole = null;
+    $('talpaFbMsg').style.display = 'none';
+    taBuildField('talpaField', 'talpaWhack');
+    $('talpaCounter').textContent = 'Punti: 0';
+    talpaStopLocalLoop();
+    talpaSpawnLoop();
+    P.talpaTimerInt = setInterval(talpaTick, 150);
+    talpaTick();
+  }
+}
+function talpaStopLocalLoop(){
+  clearTimeout(P.talpaSpawnTimeout);
+  clearTimeout(P.talpaHideTimeout);
+  clearInterval(P.talpaTimerInt);
+}
+function talpaTick(){
+  if (!P.talpaStartAt) return;
+  const elapsedSec = (serverNow() - P.talpaStartAt)/1000;
+  const frac = Math.max(0, 1 - elapsedSec/P.talpaDurationSec);
+  const bar = $('talpaTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%';
+  if (elapsedSec >= P.talpaDurationSec && !P.talpaSubmitted) talpaFinishRound();
+}
+function talpaSpawnLoop(){
+  if (!P.talpaActive) return;
+  let nextHole = Math.floor(Math.random()*9);
+  if (nextHole === P.talpaLastHole) nextHole = (nextHole+1)%9; // mai due volte di fila nella stessa buca
+  P.talpaLastHole = nextHole;
+  P.talpaCurrentHole = nextHole;
+  P.talpaHitThisRound = false;
+  const moleEl = $('talpaField_mole'+nextHole);
+  if (moleEl) moleEl.classList.add('up');
+  P.talpaHideTimeout = setTimeout(()=>{
+    if (moleEl && !P.talpaHitThisRound) moleEl.classList.remove('up');
+    P.talpaCurrentHole = null;
+    const pause = P.talpaSpawnMin + Math.random()*(P.talpaSpawnMax-P.talpaSpawnMin);
+    P.talpaSpawnTimeout = setTimeout(talpaSpawnLoop, pause);
+  }, P.talpaVisibleMs);
+}
+function talpaWhack(idx){
+  if (!P.talpaActive) return;
+  const isRealHit = (idx === P.talpaCurrentHole && !P.talpaHitThisRound);
+  const isSameMoleAlreadyHit = (idx === P.talpaCurrentHole && P.talpaHitThisRound);
+  if (isSameMoleAlreadyHit) return; // talpa già presa un istante fa: nessun effetto, né premio né penalità
+  if (isRealHit){
+    P.talpaHitThisRound = true;
+    clearTimeout(P.talpaHideTimeout);
+    P.talpaScore += P.talpaPointsPerHit;
+    $('talpaCounter').textContent = 'Punti: '+P.talpaScore;
+    const moleEl = $('talpaField_mole'+idx);
+    if (moleEl){
+      moleEl.classList.remove('up'); moleEl.classList.add('hit');
+      setTimeout(()=> moleEl.classList.remove('hit'), 200);
+      talpaShowFloatingScore(moleEl.parentElement, '+'+P.talpaPointsPerHit, false);
+    }
+    if (navigator.vibrate) navigator.vibrate(25);
+    P.talpaCurrentHole = null;
+    const pause = P.talpaSpawnMin + Math.random()*(P.talpaSpawnMax-P.talpaSpawnMin);
+    P.talpaSpawnTimeout = setTimeout(talpaSpawnLoop, pause*0.6); // un filo più veloce dopo un colpo, per premiare la reattività
+  } else {
+    // colpo a vuoto: buca senza nessuna talpa in quel momento
+    if (P.talpaMissPenalty > 0){
+      P.talpaScore = Math.max(0, P.talpaScore - P.talpaMissPenalty); // mai sotto zero, per non confondere con un punteggio negativo
+      $('talpaCounter').textContent = 'Punti: '+P.talpaScore;
+      const holeWrap = document.querySelectorAll('#talpaField .taHoleWrap')[idx];
+      if (holeWrap) talpaShowFloatingScore(holeWrap, '-'+P.talpaMissPenalty, true);
+      if (navigator.vibrate) navigator.vibrate(50);
+    }
+  }
+}
+function talpaShowFloatingScore(wrapEl, text, isPenalty){
+  if (!wrapEl) return;
+  const fx = document.createElement('div');
+  fx.className = 'taScoreFloat' + (isPenalty ? ' bad' : '');
+  fx.textContent = text;
+  wrapEl.appendChild(fx);
+  setTimeout(()=> fx.remove(), 650);
+}
+function talpaFinishRound(){
+  P.talpaSubmitted = true;
+  P.talpaActive = false;
+  talpaStopLocalLoop();
+  P.ref.child('talpa/results/'+P.id).set({ name:P.name, pts:P.talpaScore });
+  P.ref.child('players/'+P.id+'/score').once('value').then(sc=>{
+    P.ref.child('players/'+P.id+'/score').set((sc.val()||0) + P.talpaScore);
+  });
+  const msg = $('talpaFbMsg');
+  msg.style.display = 'block'; msg.className = 'feedback mtb fb-ok';
+  msg.textContent = `⏱ TEMPO SCADUTO! ${P.talpaScore} punti guadagnati`;
+  if (navigator.vibrate) navigator.vibrate([80,50,80,50,150]);
 }
 /* ================================================================
    LA CASSAFORTE — telefono
@@ -21914,6 +22113,112 @@ function popitEnd(){
 }
 
 /* ================================================================
+   SCHIACCIA LA TALPA — grafica condivisa (regia/telefono/proiettore) + regia
+================================================================ */
+function taMoleSvgHtml(){
+  return `<svg viewBox="0 0 100 100">
+    <ellipse cx="50" cy="70" rx="34" ry="14" fill="#000" opacity=".2"/>
+    <path d="M20,95 Q15,45 50,30 Q85,45 80,95 Z" fill="#9b6b3f"/>
+    <ellipse cx="50" cy="85" rx="18" ry="12" fill="#dcb98a"/>
+    <ellipse cx="26" cy="38" rx="11" ry="13" fill="#9b6b3f"/>
+    <ellipse cx="74" cy="38" rx="11" ry="13" fill="#9b6b3f"/>
+    <ellipse cx="26" cy="39" rx="6" ry="8" fill="#6b4423"/>
+    <ellipse cx="74" cy="39" rx="6" ry="8" fill="#6b4423"/>
+    <ellipse cx="38" cy="56" rx="5" ry="6" fill="#2a1a0f"/>
+    <ellipse cx="62" cy="56" rx="5" ry="6" fill="#2a1a0f"/>
+    <circle cx="40" cy="53.5" r="1.6" fill="#fff"/>
+    <circle cx="64" cy="53.5" r="1.6" fill="#fff"/>
+    <ellipse cx="50" cy="68" rx="11" ry="8" fill="#f0c9a8"/>
+    <ellipse cx="50" cy="67" rx="5" ry="4" fill="#d6607f"/>
+    <path d="M50,69 Q46,73 42,72" stroke="#8a4a5f" stroke-width="1.2" fill="none"/>
+    <path d="M50,69 Q54,73 58,72" stroke="#8a4a5f" stroke-width="1.2" fill="none"/>
+    <line x1="28" y1="62" x2="10" y2="58" stroke="#3a2510" stroke-width="1"/>
+    <line x1="28" y1="66" x2="10" y2="66" stroke="#3a2510" stroke-width="1"/>
+    <line x1="72" y1="62" x2="90" y2="58" stroke="#3a2510" stroke-width="1"/>
+    <line x1="72" y1="66" x2="90" y2="66" stroke="#3a2510" stroke-width="1"/>
+  </svg>`;
+}
+function taGrassSvgHtml(){
+  return `<svg viewBox="0 0 20 30"><path d="M2,30 Q0,10 4,0 M8,30 Q7,8 10,0 M14,30 Q16,10 12,2" stroke="#2f7a1a" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`;
+}
+// Costruisce le 9 buche del campo. Se tapFnName è passato, ogni buca diventa cliccabile (telefono);
+// altrimenti resta solo decorativa (proiettore, dove le talpe spuntano a caso solo per atmosfera,
+// senza legame con quello che sta davvero succedendo sui telefoni dei singoli giocatori).
+function taBuildField(elId, tapFnName){
+  const el = $(elId); if (!el) return;
+  let html = '<div class="taGrid">';
+  for (let i=0;i<9;i++){
+    html += `<div class="taHoleWrap">
+      <div class="taGrass" style="left:6%">${taGrassSvgHtml()}</div>
+      <div class="taGrass" style="right:6%">${taGrassSvgHtml()}</div>
+      <div class="taDirt"></div>
+      <div class="taHole" ${tapFnName?`onclick="${tapFnName}(${i})"`:''}></div>
+      <div class="taMole" id="${elId}_mole${i}" ${tapFnName?`onclick="${tapFnName}(${i})"`:''}>${taMoleSvgHtml()}</div>
+    </div>`;
+  }
+  html += '</div>';
+  el.innerHTML = html;
+}
+const TALPA_SPEEDS = {
+  lenta:     { spawnMin:1200, spawnMax:2000, visibleMs:1500 },
+  normale:   { spawnMin:800,  spawnMax:1400, visibleMs:1100 },
+  veloce:    { spawnMin:500,  spawnMax:900,  visibleMs:750 },
+  frenetica: { spawnMin:300,  spawnMax:600,  visibleMs:550 },
+};
+let TALPA = {};
+function openTalpa(){
+  if (!isGameEnabled('talpa')) return alert('⚠️ Questo minigioco non è compreso nella licenza attiva. Contatta Alberto per sbloccarlo.');
+  if (!G) return alert('Avvia prima una partita!');
+  cancelLiveQuestion(); closeModal();
+  G.ref.child('talpa').off();
+  G.ref.update({ status:'talpa', talpa:{ phase:'idle' } });
+  TALPA = {};
+  $('talpaSetup').style.display='block'; $('talpaLive').style.display='none';
+  pjSend({type:'talpaState'});
+  showScreen('scrTalpa');
+}
+function talpaStart(){
+  const speedKey = $('talpaSpeed').value;
+  const speed = TALPA_SPEEDS[speedKey] || TALPA_SPEEDS.normale;
+  const pointsPerHit = Math.max(0, +$('talpaPts').value||100);
+  const missPenalty = Math.max(0, +$('talpaMissPenalty').value||0);
+  const durationSec = Math.max(10, +$('talpaDuration').value||30);
+  const startAt = serverNow();
+  TALPA = { ended:false, startAt, durationSec };
+  G.ref.update({ status:'talpa', talpa:{ phase:'play', pointsPerHit, missPenalty, durationSec, startAt,
+    spawnMin:speed.spawnMin, spawnMax:speed.spawnMax, visibleMs:speed.visibleMs, results:{} } });
+  $('talpaSetup').style.display='none'; $('talpaLive').style.display='block';
+  $('talpaMsg').textContent = '🔨 SI PARTE! CHI SCHIACCIA PIÙ TALPE VINCE...';
+  $('talpaResults').innerHTML = '';
+  pjSend({type:'talpaStart', durationSec, startAt});
+  clearInterval(TALPA.timerInt);
+  TALPA.timerInt = setInterval(()=>{
+    const elapsedSec = Math.max(0,(serverNow()-startAt)/1000);
+    const frac = Math.max(0, 1-elapsedSec/durationSec);
+    const bar = $('talpaHostTimeBarFill'); if (bar) bar.style.width=(frac*100)+'%';
+    if (frac<=0) clearInterval(TALPA.timerInt);
+  }, 200);
+  G.ref.child('talpa/results').off();
+  G.ref.child('talpa/results').on('value', s=>{
+    const results = s.val()||{};
+    const rows = Object.values(results).sort((a,b)=>(b.pts||0)-(a.pts||0)).slice(0,5);
+    $('talpaResults').innerHTML = rows.map((p,i)=>
+      `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(p.name)} <span class="pts">+${p.pts}</span></div>`
+    ).join('') || '<div class="byline center" style="opacity:.7">Nessuno ha ancora finito...</div>';
+    pjSend({type:'talpaResults', rows});
+  });
+}
+function talpaEnd(){
+  if (!G) return;
+  TALPA.ended = true;
+  clearInterval(TALPA.timerInt);
+  G.ref.child('talpa/results').off();
+  G.ref.child('talpa').update({ phase:'idle' });
+  $('talpaMsg').textContent = '🏁 Manche finita!';
+  pjSend({type:'talpaState'});
+}
+
+/* ================================================================
    LA CASSAFORTE — regia
    Stessa identica logica di "quanti giusti/quanti al posto giusto" di Mastermind, ma semplificata:
    con cifre tutte diverse tra loro (garantito dal tastierino, che blocca le cifre già scelte) non
@@ -23050,6 +23355,7 @@ const GIOCHI_CATALOGO = [
   {k:'ruota', l:'🎡 La Ruota Gira per Tutti'},
   {k:'scossa', l:'⚡ La Scossa'},
   {k:'swiss', l:'⌚ Precisione Svizzera'},
+  {k:'talpa', l:'🔨 Schiaccia la Talpa'},
   {k:'hilo', l:'🃏 Carta Alta, Carta Bassa'},
   {k:'wheels', l:'🎡 Le Ruote della Fortuna'},
   {k:'memo', l:'🔍 Trova la Carta'},
@@ -23141,6 +23447,7 @@ const SKILL_GAMES = [
   {k:'swiss', cats:['Dita Veloci'], cls:'', style:'background:linear-gradient(180deg,#e0264f,#7a0e2a); color:#fff; box-shadow:0 7px 0 #4a0518,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(224,38,79,.4)', fn:'openSwiss', label:`⌚ Precisione Svizzera`},
   {k:'puzzle', cats:['Logica'], cls:'', style:'background:linear-gradient(180deg,#2d6fd6,#163a70); color:#fff; box-shadow:0 7px 0 #0a1c38,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(45,111,214,.4)', fn:'openPuzzle', label:`🧩 Puzzle`},
   {k:'salumi', cats:['Dita Veloci'], cls:'', style:'background:linear-gradient(180deg,#e0264f,#7a0e2a); color:#fff; box-shadow:0 7px 0 #4a0518,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(224,38,79,.4)', fn:'openSalumi', label:`🔪 Salumi e Formaggi`},
+  {k:'talpa', cats:['Dita Veloci'], cls:'', style:'background:linear-gradient(180deg,#e0264f,#7a0e2a); color:#fff; box-shadow:0 7px 0 #4a0518,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(224,38,79,.4)', fn:'openTalpa', label:`🔨 Schiaccia la Talpa`},
   {k:'scopa', cats:['Carte'], cls:'', style:'background:linear-gradient(180deg,#1a7a3a,#0a3a1a); color:#fff; box-shadow:0 7px 0 #052610,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(26,122,58,.4)', fn:'openScopa', label:`🧹 Scopa e Vinci`},
   {k:'tfiscale', cats:['Logica'], cls:'', style:'background:linear-gradient(180deg,#2d6fd6,#163a70); color:#fff; box-shadow:0 7px 0 #0a1c38,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(45,111,214,.4)', fn:'openTFiscale', label:`💶 Sei Troppo Fiscale!`},
   {k:'simon', cats:["Colpo d'Occhio"], cls:'', style:'background:linear-gradient(180deg,#e8e8e8,#a8a8a8); color:#1c1c1c; box-shadow:0 7px 0 #5a5a5a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(200,200,200,.35)', fn:'openSimon', label:`🎨 Simon`},
@@ -24586,6 +24893,38 @@ function pjRouteInner(m){
     }
     else if (m.type==='popitResults') {
       $('pjPopitResults').innerHTML = (m.rows||[]).map((p,i)=>
+        `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(p.name)} <span class="pts">+${p.pts}</span></div>`
+      ).join('');
+    }
+    else if (m.type==='talpaState') {
+      showScreen('scrPjTalpa');
+      clearInterval(window._talpaPjTimerInt); clearInterval(window._talpaPjAmbientInt);
+      $('pjTalpaField').innerHTML=''; $('pjTalpaResults').innerHTML='';
+      $('pjTalpaTimeBarFill').style.width='0%';
+      $('pjTalpaMsg').textContent = 'Ognuno schiaccia le talpe sul proprio telefono!';
+    }
+    else if (m.type==='talpaStart') {
+      showScreen('scrPjTalpa');
+      $('pjTalpaMsg').textContent = 'Ognuno schiaccia le talpe sul proprio telefono!';
+      $('pjTalpaResults').innerHTML = '';
+      taBuildField('pjTalpaField', null); // solo decorativo: le talpe qui spuntano a caso per atmosfera,
+      // non riflettono davvero cosa succede sui singoli telefoni (ognuno ha il proprio ciclo indipendente)
+      clearInterval(window._talpaPjAmbientInt);
+      window._talpaPjAmbientInt = setInterval(()=>{
+        const idx = Math.floor(Math.random()*9);
+        const el = document.getElementById('pjTalpaField_mole'+idx);
+        if (el){ el.classList.add('up'); setTimeout(()=>el.classList.remove('up'), 700+Math.random()*500); }
+      }, 500);
+      clearInterval(window._talpaPjTimerInt);
+      window._talpaPjTimerInt = setInterval(()=>{
+        const elapsedSec = Math.max(0, (serverNow()-m.startAt)/1000);
+        const frac = Math.max(0, 1 - elapsedSec/m.durationSec);
+        const bar = $('pjTalpaTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%';
+        if (frac<=0){ clearInterval(window._talpaPjTimerInt); clearInterval(window._talpaPjAmbientInt); }
+      }, 200);
+    }
+    else if (m.type==='talpaResults') {
+      $('pjTalpaResults').innerHTML = (m.rows||[]).map((p,i)=>
         `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(p.name)} <span class="pts">+${p.pts}</span></div>`
       ).join('');
     }
