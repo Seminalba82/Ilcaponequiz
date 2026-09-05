@@ -1206,12 +1206,18 @@ body.barOn.barCollapsed .screen.active{padding-bottom:70px;}
 .taGrass{position:absolute; bottom:26%; width:12%; z-index:3; opacity:.9;}
 .taDirt{position:absolute; bottom:16%; width:76%; height:34%; border-radius:50%;
   background:radial-gradient(ellipse at 50% 30%,#6b4423,#3a2510 75%); box-shadow:0 3px 0 rgba(0,0,0,.25);}
-.taHole{position:absolute; bottom:24%; width:56%; height:22%; border-radius:50%;
+/* La talpa sta "sotto terra" quando non è attiva: .taHoleShaft ritaglia via (overflow:hidden) tutto
+   quello che scende oltre il buco, così a riposo non si vede più nessuna talpa — prima restava
+   comunque visibile sull'erba, solo spostata un po' più in basso, ed era proprio il difetto segnalato
+   da Alberto ("non è bello vederle sotto"). */
+.taHoleShaft{position:absolute; bottom:22%; width:58%; height:56%; overflow:hidden; z-index:1;}
+.taHole{position:absolute; bottom:0; left:0; right:0; height:38%; border-radius:50%;
   background:radial-gradient(ellipse at 50% 40%,#1a0f08,#000 80%); cursor:pointer; z-index:2;}
-.taMole{position:absolute; bottom:24%; width:56%; transform-origin:bottom center; transform:translateY(72%) scale(.85);
-  z-index:4; cursor:pointer; transition:transform .16s cubic-bezier(.34,1.56,.64,1); filter:drop-shadow(0 6px 6px rgba(0,0,0,.35));}
-.taMole.up{transform:translateY(-2%) scale(1);}
-.taMole.hit{transform:translateY(30%) scale(.7) rotate(8deg); transition:transform .18s ease-in;}
+.taMole{position:absolute; bottom:0; left:0; right:0; width:100%; transform-origin:bottom center;
+  transform:translateY(130%) scale(.85); z-index:1; cursor:pointer;
+  transition:transform .16s cubic-bezier(.34,1.56,.64,1); filter:drop-shadow(0 6px 6px rgba(0,0,0,.35));}
+.taMole.up{transform:translateY(-52%) scale(1);}
+.taMole.hit{transform:translateY(85%) scale(.7) rotate(8deg); transition:transform .18s ease-in;}
 .taStars{position:absolute; bottom:40%; width:100%; text-align:center; font-size:22px; z-index:5; pointer-events:none;
   opacity:0; animation:taStarPop .5s ease-out forwards;}
 @keyframes taStarPop{0%{opacity:1; transform:translateY(0) scale(.6);} 100%{opacity:0; transform:translateY(-40px) scale(1.3);}}
@@ -2149,7 +2155,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.95</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.96</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -7038,7 +7044,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1395; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1396; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -22160,8 +22166,10 @@ function taBuildField(elId, tapFnName){
       <div class="taGrass" style="left:6%">${taGrassSvgHtml()}</div>
       <div class="taGrass" style="right:6%">${taGrassSvgHtml()}</div>
       <div class="taDirt"></div>
-      <div class="taHole" ${tapFnName?`onclick="${tapFnName}(${i})"`:''}></div>
-      <div class="taMole" id="${elId}_mole${i}" ${tapFnName?`onclick="${tapFnName}(${i})"`:''}>${taMoleSvgHtml()}</div>
+      <div class="taHoleShaft">
+        <div class="taHole" ${tapFnName?`onclick="${tapFnName}(${i})"`:''}></div>
+        <div class="taMole" id="${elId}_mole${i}" ${tapFnName?`onclick="${tapFnName}(${i})"`:''}>${taMoleSvgHtml()}</div>
+      </div>
     </div>`;
   }
   html += '</div>';
