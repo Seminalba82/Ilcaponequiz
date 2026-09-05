@@ -2149,7 +2149,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v13.94</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v13.95</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -3058,7 +3058,10 @@ body.suspense-on #pfRank{ display:none !important; }
       <div class="tomPrizes" id="tomPrizesHost"></div>
     </div>
   </div>
-  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
+  <div class="row mt">
+    <button class="btn cy" id="tomBtnAgain" onclick="openTombola()" style="display:none">🔁 Un'altra tombola</button>
+    <button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button>
+  </div>
 </div>
 
 <!-- ==================== PROIETTORE: TOMBOLA ==================== -->
@@ -5008,7 +5011,10 @@ body.suspense-on #pfRank{ display:none !important; }
     <div class="miniMsg" id="talpaMsg"></div>
     <div class="piBar" style="max-width:420px"><div class="piBarFill" id="talpaHostTimeBarFill" style="background:linear-gradient(90deg,var(--lime),var(--cyan))"></div></div>
     <div class="lead mt" id="talpaResults" style="max-width:460px; width:100%"></div>
-    <div class="row mt"><button class="btn ghost" onclick="talpaEnd()">🏁 Ferma qui</button></div>
+    <div class="row mt">
+      <button class="btn ghost" id="talpaBtnEnd" onclick="talpaEnd()">🏁 Ferma qui</button>
+      <button class="btn cy" id="talpaBtnAgain" onclick="openTalpa()">🔁 Un'altra manche</button>
+    </div>
   </div>
   <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
@@ -5649,6 +5655,7 @@ body.suspense-on #pfRank{ display:none !important; }
     <div class="timerWrap mt" style="max-width:420px"><div class="timerBar" id="bridgeTimerBarHost"></div></div>
     <div class="byline" id="bridgeCount"></div>
     <div class="lead mt" id="bridgeResultsLive" style="max-width:500px; width:100%"></div>
+    <div class="row mt"><button class="btn cy" onclick="openPonteSospeso()">🔁 Un'altra manche</button></div>
   </div>
   <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
 </div>
@@ -7031,7 +7038,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1394; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1395; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -16921,6 +16928,7 @@ function openTombola(){
       <input type="number" id="tomPts_${k}" value="${TOM_DEFAULTS[k]}" min="0" style="width:100px; text-align:center">
       <input type="text" id="tomTxt_${k}" class="grow" placeholder="Premio extra (es. birra media 🍺)" maxlength="30"></div>`).join('');
   $('tomSetup').style.display='block'; $('tomLive').style.display='none';
+  $('tomBtnAgain').style.display='none';
   showScreen('scrTombola');
 }
 function tombolaStart(){
@@ -16987,7 +16995,7 @@ function tombolaCheckWins(){
       if (Object.keys(updates).length) G.ref.update(updates);
       renderTomPrizes($('tomPrizesHost'), TOM.prizes, TOM.won);
       newWins.forEach((w,i)=> setTimeout(()=> pjSend({type:'tombolaWin', ...w}), 600 + i*4000));
-      if (TOM.won.tombola) $('tomBtnDraw').disabled = true;
+      if (TOM.won.tombola){ $('tomBtnDraw').disabled = true; $('tomBtnAgain').style.display=''; }
     });
   });
 }
@@ -17003,7 +17011,7 @@ function tombolaDraw(){
   renderTabellone($('tomBoardHost'), drawnSet, n);
   renderTomDrawn($('tomDrawnHost'), TOM.drawn);
   pjSend({type:'tombola', prizes:TOM.prizes, drawn:TOM.drawn, won:TOM.won, lastN:n, cardsCount:Object.keys(TOM.cards).length, manualMark:TOM.manualMark});
-  if (!TOM.remaining.length) $('tomBtnDraw').disabled = true;
+  if (!TOM.remaining.length){ $('tomBtnDraw').disabled = true; $('tomBtnAgain').style.display=''; }
   tombolaCheckWins();
 }
 
