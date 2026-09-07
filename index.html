@@ -2209,7 +2209,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v14.03</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v14.04</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -7271,7 +7271,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1403; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1404; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -14679,8 +14679,8 @@ function equilibrioStopLocalLoop(){
 }
 function equilibrioMotionHandler(event){
   const beta = event.beta || 0, gamma = event.gamma || 0;
-  P.equilibrioTiltX = Math.max(-1, Math.min(1, gamma/35));
-  P.equilibrioTiltY = Math.max(-1, Math.min(1, beta/35));
+  P.equilibrioTiltX = Math.max(-1, Math.min(1, gamma/32));
+  P.equilibrioTiltY = Math.max(-1, Math.min(1, beta/32));
 }
 function equilibrioTick(){
   if (!P.equilibrioStartAt || !P.equilibrioActive) return;
@@ -14688,7 +14688,7 @@ function equilibrioTick(){
   const dt = Math.min(0.1, (now - P.equilibrioLastTick)/1000); // tetto a 0.1s per evitare salti se il telefono si blocca un istante
   P.equilibrioLastTick = now;
 
-  const ACCEL = 2.4, FRICTION = 0.9;
+  const ACCEL = 3.6, FRICTION = 0.94; // aumentati (erano 2.4/0.9): la pallina scivola di più ed è più viva, come richiesto da Alberto
   P.equilibrioVx = (P.equilibrioVx + (P.equilibrioTiltX||0)*ACCEL*dt) * FRICTION;
   P.equilibrioVy = (P.equilibrioVy + (P.equilibrioTiltY||0)*ACCEL*dt) * FRICTION;
   P.equilibrioX += P.equilibrioVx*dt;
