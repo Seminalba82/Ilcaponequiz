@@ -2209,7 +2209,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v14.04</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v14.06</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -5170,10 +5170,10 @@ body.suspense-on #pfRank{ display:none !important; }
     <input type="number" id="equilibrioPts" value="100" min="0" style="text-align:center">
     <div class="label mt">Livello di difficoltà (quanto è grande il vuoto attorno)</div>
     <select id="equilibrioLevel" style="width:100%; text-align:center">
-      <option value="facile">🟢 Facile</option>
       <option value="normale" selected>🟡 Normale</option>
       <option value="difficile">🟠 Difficile</option>
       <option value="estremo">🔴 Estremo</option>
+      <option value="diabolico">⚫ Diabolico</option>
     </select>
     <div class="label mt">Durata (secondi)</div>
     <input type="number" id="equilibrioDuration" value="20" min="10" style="text-align:center">
@@ -7271,7 +7271,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1404; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1406; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -14679,8 +14679,8 @@ function equilibrioStopLocalLoop(){
 }
 function equilibrioMotionHandler(event){
   const beta = event.beta || 0, gamma = event.gamma || 0;
-  P.equilibrioTiltX = Math.max(-1, Math.min(1, gamma/32));
-  P.equilibrioTiltY = Math.max(-1, Math.min(1, beta/32));
+  P.equilibrioTiltX = Math.max(-1, Math.min(1, gamma/30));
+  P.equilibrioTiltY = Math.max(-1, Math.min(1, beta/30));
 }
 function equilibrioTick(){
   if (!P.equilibrioStartAt || !P.equilibrioActive) return;
@@ -14688,7 +14688,7 @@ function equilibrioTick(){
   const dt = Math.min(0.1, (now - P.equilibrioLastTick)/1000); // tetto a 0.1s per evitare salti se il telefono si blocca un istante
   P.equilibrioLastTick = now;
 
-  const ACCEL = 3.6, FRICTION = 0.94; // aumentati (erano 2.4/0.9): la pallina scivola di più ed è più viva, come richiesto da Alberto
+  const ACCEL = 5.2, FRICTION = 0.96; // aumentati ancora (erano 3.6/0.94): ~2x più mobile di prima, su richiesta di Alberto
   P.equilibrioVx = (P.equilibrioVx + (P.equilibrioTiltX||0)*ACCEL*dt) * FRICTION;
   P.equilibrioVy = (P.equilibrioVy + (P.equilibrioTiltY||0)*ACCEL*dt) * FRICTION;
   P.equilibrioX += P.equilibrioVx*dt;
@@ -14793,8 +14793,10 @@ function dadiMattiBeginRound(){
 }
 function dadiMattiStopLocalLoop(){
   window.removeEventListener('devicemotion', dadiMattiMotionHandler);
-  clearInterval(P.dadiMattiTimerInt);
   clearInterval(P.dadiMattiTumbleInt);
+  // NB: il ciclo del timer (P.dadiMattiTimerInt) NON si ferma qui apposta: la barra del tempo deve
+  // continuare a scorrere fino alla fine della manche anche dopo che questo giocatore ha già ottenuto
+  // la sua somma, esattamente come succede in regia e sul proiettore (segnalato da Alberto).
 }
 const DADIMATTI_THRESHOLD = 14;
 function dadiMattiMotionHandler(event){
@@ -14820,12 +14822,13 @@ function dadiMattiStartRolling(){
   }, 220);
 }
 function dadiMattiTick(){
-  if (!P.dadiMattiActive || P.dadiMattiSettled) return;
+  if (!P.dadiMattiStartAt) return;
   const now = Date.now();
   const elapsedSec = (serverNow() - P.dadiMattiStartAt)/1000;
   const frac = Math.max(0, 1 - elapsedSec/P.dadiMattiDurationSec);
-  const bar = $('dadiMattiTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%';
-
+  const bar = $('dadiMattiTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%'; // sempre aggiornata, anche a somma già ottenuta
+  if (frac<=0){ clearInterval(P.dadiMattiTimerInt); return; } // manche davvero finita per tutti: qui posso fermare il ciclo
+  if (P.dadiMattiSettled) return; // già ottenuta la somma: continuo solo ad aggiornare la barra, nessun altro controllo
   const stoppedShaking = P.dadiMattiRolling && (now - P.dadiMattiLastShakeAt > 700);
   const timeUp = elapsedSec >= P.dadiMattiDurationSec;
   if (stoppedShaking || timeUp) dadiMattiSettleAll();
@@ -14850,8 +14853,7 @@ function dadiMattiSettleAll(){
 function dadiMattiFinishRound(sum){
   if (P.dadiMattiSubmitted) return;
   P.dadiMattiSubmitted = true;
-  P.dadiMattiActive = false;
-  dadiMattiStopLocalLoop();
+  dadiMattiStopLocalLoop(); // ferma sensori e rotolamento, ma NON il timer: continua a scorrere fino a fine manche
   P.ref.child('dadimatti/results/'+P.id).set({ name:P.name, sum });
   const msg = $('dadiMattiFbMsg');
   msg.style.display = 'block'; msg.className = 'feedback mtb fb-ok';
@@ -22896,7 +22898,7 @@ function scuotiEnd(){
    di vicinanza al centro, e quindi i punti, li calcola ogni telefono per conto proprio; qui arriva solo
    il punteggio totale finale di ciascuno, da ordinare in classifica.
 ================================================================ */
-const EQUILIBRIO_LEVELS = { facile:0.85, normale:0.65, difficile:0.45, estremo:0.28 };
+const EQUILIBRIO_LEVELS = { normale:0.65, difficile:0.45, estremo:0.28, diabolico:0.14 };
 let EQUILIBRIO = {};
 function openEquilibrio(){
   if (!isGameEnabled('equilibrio')) return alert('⚠️ Questo minigioco non è compreso nella licenza attiva. Contatta Alberto per sbloccarlo.');
