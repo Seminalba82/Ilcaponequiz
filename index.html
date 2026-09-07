@@ -1226,6 +1226,60 @@ body.barOn.barCollapsed .screen.active{padding-bottom:70px;}
 .taScoreFloat.bad{color:var(--red);}
 @keyframes taScorePop{0%{opacity:1; transform:translateY(0);} 100%{opacity:0; transform:translateY(-30px);}}
 .taCounter{font-family:'Bungee'; font-size:clamp(16px,4vw,22px); text-align:center; color:var(--gold); margin-top:6px;}
+/* ===== SCUOTI FORTE ===== */
+.pjShakeIcon{font-size:clamp(80px,18vw,150px); text-align:center; margin:14px auto; animation:scuotiShake .35s ease-in-out infinite; filter:drop-shadow(0 10px 20px rgba(0,0,0,.5));}
+@keyframes scuotiShake{
+  0%,100%{transform:rotate(0deg) translateX(0);}
+  20%{transform:rotate(-14deg) translateX(-6px);}
+  40%{transform:rotate(10deg) translateX(5px);}
+  60%{transform:rotate(-8deg) translateX(-4px);}
+  80%{transform:rotate(6deg) translateX(3px);}
+}
+.scuotiIconWrap{margin-top:6%;}
+.scuotiIcon{font-size:clamp(70px,20vw,120px); display:inline-block; filter:drop-shadow(0 8px 16px rgba(0,0,0,.5));}
+.scuotiIcon.shaking{animation:scuotiShake .28s ease-in-out infinite;}
+.scuotiCountBig{font-family:'Orbitron',sans-serif; font-weight:900; font-size:clamp(50px,16vw,90px); color:var(--gold);
+  text-shadow:0 0 26px rgba(255,201,60,.6); line-height:1; margin-top:6px;}
+/* ===== TIENI L'EQUILIBRIO ===== */
+.eqArena{position:relative; width:100%; max-width:400px; aspect-ratio:1; margin:14px auto; border-radius:50%; overflow:hidden;
+  background:radial-gradient(circle at 50% 50%, #2a1a45 0%, #1c1033 62%, #0b0614 100%);
+  box-shadow:0 14px 34px rgba(0,0,0,.6), inset 0 0 0 6px rgba(255,255,255,.06);}
+.eqArena.pjArena{max-width:480px;}
+.eqVoidStripes{position:absolute; inset:0; border-radius:50%;
+  background:repeating-conic-gradient(from 0deg, rgba(255,59,59,.32) 0deg 8deg, rgba(60,10,10,.5) 8deg 16deg);}
+.eqSafeZone{position:absolute; top:50%; left:50%; border-radius:50%; transform:translate(-50%,-50%);
+  background:radial-gradient(circle at 42% 38%, rgba(182,255,46,.35), rgba(0,240,255,.12) 60%, transparent 100%);
+  box-shadow:0 0 0 3px rgba(182,255,46,.55), inset 0 0 40px rgba(182,255,46,.15); transition:width .3s, height .3s;}
+.eqCenterDot{position:absolute; top:50%; left:50%; width:5%; height:5%; border-radius:50%; transform:translate(-50%,-50%);
+  background:rgba(255,255,255,.5); box-shadow:0 0 10px rgba(255,255,255,.6);}
+.eqBall{position:absolute; top:50%; left:50%; width:13%; aspect-ratio:1; border-radius:50%;
+  background:radial-gradient(circle at 32% 28%, #fff8d6, var(--gold) 55%, #a86e00 100%);
+  box-shadow:0 6px 10px rgba(0,0,0,.5), 0 0 14px rgba(255,201,60,.5);
+  transform:translate(-50%,-50%); z-index:5; will-change:left, top;}
+.eqPctBig{font-family:'Orbitron',sans-serif; font-weight:900; font-size:clamp(40px,14vw,70px); color:var(--lime);
+  text-shadow:0 0 22px rgba(182,255,46,.55); line-height:1; margin-top:6px;}
+/* ===== DADI MATTI ===== */
+.ddTable{position:relative; width:100%; max-width:420px; margin:14px auto; border-radius:22px; padding:16px;
+  background:radial-gradient(ellipse at 50% 25%, #1c9e52, #0a5c2e 75%);
+  box-shadow:0 14px 34px rgba(0,0,0,.6), inset 0 0 60px rgba(0,0,0,.3), inset 0 0 0 8px #4a2e14;
+  display:grid; grid-template-columns:repeat(5,1fr); gap:10px; justify-items:center; align-items:center;
+  --dieZ:26px;}
+.ddTable.pjTable{max-width:560px; padding:22px; gap:14px; --dieZ:36px;}
+.ddDie{width:100%; aspect-ratio:1; max-width:56px; perspective:260px;}
+.pjTable .ddDie{max-width:76px;}
+.ddCube{position:relative; width:100%; height:100%; transform-style:preserve-3d; transition:transform .75s cubic-bezier(.34,1.15,.4,1);}
+.ddFace{position:absolute; width:100%; height:100%; background:linear-gradient(145deg,#fdfdfd,#dcdcdc);
+  border-radius:18%; box-shadow:inset 0 0 0 1.5px rgba(0,0,0,.14), inset 0 -5px 7px rgba(0,0,0,.14), inset 0 4px 6px rgba(255,255,255,.75);
+  display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,1fr); padding:14%; box-sizing:border-box;}
+.ddPip{width:22%; height:22%; border-radius:50%; background:radial-gradient(circle at 35% 30%, #555, #0d0d0d); align-self:center; justify-self:center;}
+.ddFace.front{transform:rotateY(0deg) translateZ(var(--dieZ));}
+.ddFace.back{transform:rotateY(180deg) translateZ(var(--dieZ));}
+.ddFace.right{transform:rotateY(90deg) translateZ(var(--dieZ));}
+.ddFace.left{transform:rotateY(-90deg) translateZ(var(--dieZ));}
+.ddFace.top{transform:rotateX(90deg) translateZ(var(--dieZ));}
+.ddFace.bottom{transform:rotateX(-90deg) translateZ(var(--dieZ));}
+.ddSumBig{font-family:'Orbitron',sans-serif; font-weight:900; font-size:clamp(46px,15vw,80px); color:var(--gold);
+  text-shadow:0 0 24px rgba(255,201,60,.6); line-height:1; margin-top:10px;}
 .parkPct{font-family:'Bungee'; font-size:clamp(22px,6vw,30px); color:var(--gold); text-align:center; margin-top:10px;
   text-shadow:0 2px 0 #6b4a00;}
 .parkPctSub{font-family:'Outfit',sans-serif; font-weight:600; font-size:13px; color:var(--muted); text-align:center; margin-top:-4px;}
@@ -2155,7 +2209,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v14.00</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v14.03</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -5046,6 +5100,179 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="feedback mtb" id="talpaFbMsg" style="display:none"></div>
 </div>
 
+<!-- ==================== REGIA: SCUOTI FORTE ==================== -->
+<div class="screen" id="scrScuoti">
+  <div class="brand"><div class="t1" style="font-size:clamp(18px,3.4vw,32px)">🫨 SCUOTI FORTE!</div></div>
+  <div class="panel mt" style="max-width:480px" id="scuotiSetup">
+    <div class="row">
+      <div class="grow"><div class="label">Punti 1°</div><input type="number" id="scuotiP1" value="1000" min="0" style="width:100%; text-align:center"></div>
+      <div class="grow"><div class="label">Punti 2°</div><input type="number" id="scuotiP2" value="700" min="0" style="width:100%; text-align:center"></div>
+    </div>
+    <div class="row mt">
+      <div class="grow"><div class="label">Punti 3°</div><input type="number" id="scuotiP3" value="500" min="0" style="width:100%; text-align:center"></div>
+      <div class="grow"><div class="label">Punti 4°</div><input type="number" id="scuotiP4" value="300" min="0" style="width:100%; text-align:center"></div>
+    </div>
+    <div class="label mt">Punti 5°</div>
+    <input type="number" id="scuotiP5" value="150" min="0" style="text-align:center">
+    <div class="label mt">Penalità per chi si è mosso di meno di tutti</div>
+    <input type="number" id="scuotiPenalty" value="100" min="0" style="text-align:center">
+    <div class="label mt">Durata (secondi)</div>
+    <input type="number" id="scuotiDuration" value="15" min="5" style="text-align:center">
+    <div class="byline mt" style="opacity:.75">🫨 Ogni giocatore scuote il proprio telefono più forte e più a lungo possibile. Chi ne fa registrare di più tra i 5 migliori guadagna i punti impostati sopra; chi si sarà mosso meno di tutti in sala perde punti secondo la penalità.</div>
+    <button class="btn mg mt" style="width:100%" onclick="scuotiStart()">🫨 FAI PARTIRE IL GIOCO!</button>
+  </div>
+  <div id="scuotiLive" style="display:none; width:100%" class="center">
+    <div class="miniMsg" id="scuotiMsg"></div>
+    <div class="piBar" style="max-width:420px"><div class="piBarFill" id="scuotiHostTimeBarFill" style="background:linear-gradient(90deg,var(--lime),var(--cyan))"></div></div>
+    <div class="lead mt" id="scuotiResults" style="max-width:460px; width:100%"></div>
+    <div class="row mt">
+      <button class="btn ghost" id="scuotiBtnEnd" onclick="scuotiEnd()">🏁 Ferma qui</button>
+      <button class="btn cy" id="scuotiBtnAgain" onclick="openScuoti()">🔁 Un'altra manche</button>
+    </div>
+  </div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
+</div>
+
+<!-- ==================== PROIETTORE: SCUOTI FORTE ==================== -->
+<div class="screen" id="scrPjScuoti">
+  <div class="brand"><div class="t1" style="font-size:clamp(24px,3.6vw,42px)">🫨 SCUOTI FORTE!</div></div>
+  <div class="miniMsg" id="pjScuotiMsg">Scuotete il telefono più forte possibile!</div>
+  <div class="pjShakeIcon">📳</div>
+  <div class="piBar" style="max-width:520px"><div class="piBarFill" id="pjScuotiTimeBarFill" style="background:linear-gradient(90deg,var(--lime),var(--cyan))"></div></div>
+  <div class="lead mt" id="pjScuotiResults" style="max-width:520px; width:100%; margin:0 auto"></div>
+</div>
+
+<!-- ==================== PLAYER: SCUOTI FORTE ==================== -->
+<div class="screen" id="scrPlayScuoti" style="align-items:center; justify-content:center">
+  <div class="row" style="width:100%; justify-content:space-between">
+    <div class="pill" id="scuotipName" style="color:var(--gold)"></div>
+    <div class="pill" id="scuotipScore"></div>
+  </div>
+  <div id="scuotiPermWrap" style="display:none; text-align:center; margin-top:14%">
+    <div style="font-size:70px">🤳</div>
+    <div class="miniMsg" style="margin-top:10px">Serve il permesso per leggere il movimento del telefono</div>
+    <button class="btn mg mt" onclick="scuotiRequestPermission()">✅ Attiva i sensori</button>
+  </div>
+  <div id="scuotiPlayWrap" style="display:none; text-align:center; width:100%">
+    <div class="scuotiIconWrap"><div class="scuotiIcon" id="scuotiIcon">📳</div></div>
+    <div class="scuotiCountBig" id="scuotiCountBig">0</div>
+    <div class="byline center">scosse registrate</div>
+    <div class="piBar" style="max-width:420px"><div class="piBarFill" id="scuotiTimeBarFill" style="background:linear-gradient(90deg,var(--lime),var(--cyan))"></div></div>
+  </div>
+  <div class="feedback mtb" id="scuotiFbMsg" style="display:none"></div>
+</div>
+
+<!-- ==================== REGIA: TIENI L'EQUILIBRIO ==================== -->
+<div class="screen" id="scrEquilibrio">
+  <div class="brand"><div class="t1" style="font-size:clamp(18px,3.4vw,32px)">⚖️ TIENI L'EQUILIBRIO</div></div>
+  <div class="panel mt" style="max-width:480px" id="equilibrioSetup">
+    <div class="label">Punti massimi al secondo (pallina esattamente al centro)</div>
+    <input type="number" id="equilibrioPts" value="100" min="0" style="text-align:center">
+    <div class="label mt">Livello di difficoltà (quanto è grande il vuoto attorno)</div>
+    <select id="equilibrioLevel" style="width:100%; text-align:center">
+      <option value="facile">🟢 Facile</option>
+      <option value="normale" selected>🟡 Normale</option>
+      <option value="difficile">🟠 Difficile</option>
+      <option value="estremo">🔴 Estremo</option>
+    </select>
+    <div class="label mt">Durata (secondi)</div>
+    <input type="number" id="equilibrioDuration" value="20" min="10" style="text-align:center">
+    <div class="byline mt" style="opacity:.75">⚖️ Ogni giocatore inclina il proprio telefono per tenere la pallina il più vicino possibile al centro: più ci resta vicina, più punti guadagna ogni secondo. Se la pallina finisce nell'anello di vuoto attorno, cade e la manche finisce lì per quel giocatore. Più il livello è alto, più piccola è la zona sicura al centro.</div>
+    <button class="btn mg mt" style="width:100%" onclick="equilibrioStart()">⚖️ FAI PARTIRE IL GIOCO!</button>
+  </div>
+  <div id="equilibrioLive" style="display:none; width:100%" class="center">
+    <div class="miniMsg" id="equilibrioMsg"></div>
+    <div class="piBar" style="max-width:420px"><div class="piBarFill" id="equilibrioHostTimeBarFill" style="background:linear-gradient(90deg,var(--lime),var(--cyan))"></div></div>
+    <div class="lead mt" id="equilibrioResults" style="max-width:460px; width:100%"></div>
+    <div class="row mt">
+      <button class="btn ghost" id="equilibrioBtnEnd" onclick="equilibrioEnd()">🏁 Ferma qui</button>
+      <button class="btn cy" id="equilibrioBtnAgain" onclick="openEquilibrio()">🔁 Un'altra manche</button>
+    </div>
+  </div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
+</div>
+
+<!-- ==================== PROIETTORE: TIENI L'EQUILIBRIO ==================== -->
+<div class="screen" id="scrPjEquilibrio">
+  <div class="brand"><div class="t1" style="font-size:clamp(24px,3.6vw,42px)">⚖️ TIENI L'EQUILIBRIO</div></div>
+  <div class="miniMsg" id="pjEquilibrioMsg">Inclinate il telefono per restare al centro!</div>
+  <div class="eqArena pjArena" id="pjEquilibrioArena"><div class="eqVoidStripes"></div><div class="eqSafeZone" id="pjEquilibrioSafeZone"></div><div class="eqCenterDot"></div></div>
+  <div class="piBar" style="max-width:520px"><div class="piBarFill" id="pjEquilibrioTimeBarFill" style="background:linear-gradient(90deg,var(--lime),var(--cyan))"></div></div>
+  <div class="lead mt" id="pjEquilibrioResults" style="max-width:520px; width:100%; margin:0 auto"></div>
+</div>
+
+<!-- ==================== PLAYER: TIENI L'EQUILIBRIO ==================== -->
+<div class="screen" id="scrPlayEquilibrio" style="align-items:center; justify-content:center">
+  <div class="row" style="width:100%; justify-content:space-between">
+    <div class="pill" id="equilibriopName" style="color:var(--gold)"></div>
+    <div class="pill" id="equilibriopScore"></div>
+  </div>
+  <div id="equilibrioPermWrap" style="display:none; text-align:center; margin-top:14%">
+    <div style="font-size:70px">🤳</div>
+    <div class="miniMsg" style="margin-top:10px">Serve il permesso per leggere l'inclinazione del telefono</div>
+    <button class="btn mg mt" onclick="equilibrioRequestPermission()">✅ Attiva i sensori</button>
+  </div>
+  <div id="equilibrioPlayWrap" style="display:none; width:100%; text-align:center">
+    <div class="eqArena" id="equilibrioArena"><div class="eqVoidStripes"></div><div class="eqSafeZone" id="equilibrioSafeZone"></div><div class="eqCenterDot"></div><div class="eqBall" id="equilibrioBall"></div></div>
+    <div class="eqPctBig" id="equilibrioPctBig">0%</div>
+    <div class="byline center">vicinanza al centro</div>
+    <div class="piBar" style="max-width:420px"><div class="piBarFill" id="equilibrioTimeBarFill" style="background:linear-gradient(90deg,var(--lime),var(--cyan))"></div></div>
+  </div>
+  <div class="feedback mtb" id="equilibrioFbMsg" style="display:none"></div>
+</div>
+
+<!-- ==================== REGIA: DADI MATTI ==================== -->
+<div class="screen" id="scrDadiMatti">
+  <div class="brand"><div class="t1" style="font-size:clamp(18px,3.4vw,32px)">🎲 DADI MATTI</div></div>
+  <div class="panel mt" style="max-width:480px" id="dadiMattiSetup">
+    <div class="label">Moltiplicatore (i punti del vincitore saranno: somma dei 10 dadi × questo numero)</div>
+    <input type="number" id="dadiMattiMult" value="10" min="1" style="text-align:center">
+    <div class="label mt">Tempo massimo per scuotere (secondi)</div>
+    <input type="number" id="dadiMattiDuration" value="12" min="5" style="text-align:center">
+    <div class="byline mt" style="opacity:.75">🎲 Ogni giocatore scuote il telefono per mescolare 10 dadi sul proprio tavolo verde. Smettendo di scuotere (o scaduto il tempo), i dadi si fermano mostrando il risultato e la somma totale. Chi totalizza di più vince: somma × moltiplicatore.</div>
+    <button class="btn mg mt" style="width:100%" onclick="dadiMattiStart()">🎲 FAI PARTIRE IL GIOCO!</button>
+  </div>
+  <div id="dadiMattiLive" style="display:none; width:100%" class="center">
+    <div class="miniMsg" id="dadiMattiMsg"></div>
+    <div class="piBar" style="max-width:420px"><div class="piBarFill" id="dadiMattiHostTimeBarFill" style="background:linear-gradient(90deg,var(--lime),var(--cyan))"></div></div>
+    <div class="lead mt" id="dadiMattiResults" style="max-width:460px; width:100%"></div>
+    <div class="row mt">
+      <button class="btn ghost" id="dadiMattiBtnEnd" onclick="dadiMattiEnd()">🏁 Ferma qui</button>
+      <button class="btn cy" id="dadiMattiBtnAgain" onclick="openDadiMatti()">🔁 Un'altra manche</button>
+    </div>
+  </div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
+</div>
+
+<!-- ==================== PROIETTORE: DADI MATTI ==================== -->
+<div class="screen" id="scrPjDadiMatti">
+  <div class="brand"><div class="t1" style="font-size:clamp(24px,3.6vw,42px)">🎲 DADI MATTI</div></div>
+  <div class="miniMsg" id="pjDadiMattiMsg">Scuotete il telefono per mescolare i dadi!</div>
+  <div class="ddTable pjTable" id="pjDadiMattiTable"></div>
+  <div class="piBar" style="max-width:520px"><div class="piBarFill" id="pjDadiMattiTimeBarFill" style="background:linear-gradient(90deg,var(--lime),var(--cyan))"></div></div>
+  <div class="lead mt" id="pjDadiMattiResults" style="max-width:520px; width:100%; margin:0 auto"></div>
+</div>
+
+<!-- ==================== PLAYER: DADI MATTI ==================== -->
+<div class="screen" id="scrPlayDadiMatti" style="align-items:center; justify-content:center">
+  <div class="row" style="width:100%; justify-content:space-between">
+    <div class="pill" id="dadiMattipName" style="color:var(--gold)"></div>
+    <div class="pill" id="dadiMattipScore"></div>
+  </div>
+  <div id="dadiMattiPermWrap" style="display:none; text-align:center; margin-top:14%">
+    <div style="font-size:70px">🤳</div>
+    <div class="miniMsg" style="margin-top:10px">Serve il permesso per leggere il movimento del telefono</div>
+    <button class="btn mg mt" onclick="dadiMattiRequestPermission()">✅ Attiva i sensori</button>
+  </div>
+  <div id="dadiMattiPlayWrap" style="display:none; width:100%; text-align:center">
+    <div class="ddTable" id="dadiMattiTable"></div>
+    <div class="ddSumBig" id="dadiMattiSumBig">—</div>
+    <div class="byline center" id="dadiMattiHint">scuoti il telefono!</div>
+    <div class="piBar" style="max-width:420px"><div class="piBarFill" id="dadiMattiTimeBarFill" style="background:linear-gradient(90deg,var(--lime),var(--cyan))"></div></div>
+  </div>
+  <div class="feedback mtb" id="dadiMattiFbMsg" style="display:none"></div>
+</div>
+
 <!-- ==================== HOST: LA CASSAFORTE ==================== -->
 <div class="screen" id="scrCassaforte">
   <div class="brand"><div class="t1" style="font-size:clamp(18px,3.4vw,32px)">🔐 LA CASSAFORTE</div></div>
@@ -7044,7 +7271,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1400; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1403; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -9357,6 +9584,9 @@ function listenGame(){
     else if (g.status==='batti') showPlayerBatti(g);
     else if (g.status==='popit') showPlayerPopit(g);
     else if (g.status==='talpa') showPlayerTalpa(g);
+    else if (g.status==='scuoti') showPlayerScuoti(g);
+    else if (g.status==='equilibrio') showPlayerEquilibrio(g);
+    else if (g.status==='dadimatti') showPlayerDadiMatti(g);
     else if (g.status==='cassaforte') showPlayerCassaforte(g);
     else if (g.status==='settemezzo') showPlayerSetteMezzo(g);
     else if (g.status==='scopa') showPlayerScopa(g);
@@ -14285,6 +14515,347 @@ function talpaFinishRound(){
   msg.style.display = 'block'; msg.className = 'feedback mtb fb-ok';
   msg.textContent = `⏱ TEMPO SCADUTO! ${P.talpaScore} punti guadagnati`;
   if (navigator.vibrate) navigator.vibrate([80,50,80,50,150]);
+}
+/* ================================================================
+   SCUOTI FORTE — telefono
+   Su iPhone (iOS 13+) il browser deve chiedere il permesso esplicito per leggere l'accelerometro, e
+   quel permesso può essere richiesto SOLO in risposta a un tocco dell'utente — da qui il pulsante
+   "Attiva i sensori" iniziale. Su Android, di norma, non serve nessun permesso: si parte subito.
+   Il conteggio delle scosse resta locale sul telefono per tutta la manche (nessun aggiornamento
+   continuo su Firebase): si invia una sola volta il risultato finale, a tempo scaduto.
+================================================================ */
+function showPlayerScuoti(g){
+  const m = g.scuoti||{};
+  $('scuotipName').textContent = P.name;
+  const myScore = ((g.players||{})[P.id]||{}).score||0;
+  $('scuotipScore').textContent = myScore+' pt';
+  showScreen('scrPlayScuoti');
+  if (m.phase !== 'play'){
+    scuotiStopLocalLoop();
+    $('scuotiPermWrap').style.display='none';
+    $('scuotiPlayWrap').style.display='none';
+    $('scuotiFbMsg').style.display='none';
+    P.scuotiActive = false;
+    return;
+  }
+  if (P.scuotiStartAt !== m.startAt){
+    P.scuotiStartAt = m.startAt;
+    P.scuotiDurationSec = m.durationSec;
+    P.scuotiCount = 0;
+    P.scuotiSubmitted = false;
+    P.scuotiLastShakeAt = 0;
+    $('scuotiFbMsg').style.display='none';
+    $('scuotiCountBig').textContent = '0';
+    if (P.scuotiPermGranted){
+      scuotiBeginRound();
+    } else {
+      $('scuotiPermWrap').style.display='block';
+      $('scuotiPlayWrap').style.display='none';
+    }
+  }
+}
+function scuotiRequestPermission(){
+  const finishSetup = ()=>{ P.scuotiPermGranted = true; scuotiBeginRound(); };
+  if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function'){
+    DeviceMotionEvent.requestPermission().then(state=>{
+      if (state === 'granted') finishSetup();
+      else alert('Serve il permesso per leggere il movimento del telefono: riprova e concedilo per giocare.');
+    }).catch(()=> alert('Non sono riuscito a chiedere il permesso di movimento. Riprova.'));
+  } else {
+    finishSetup(); // Android e la maggior parte degli altri browser: nessun permesso da chiedere
+  }
+}
+function scuotiBeginRound(){
+  $('scuotiPermWrap').style.display='none';
+  $('scuotiPlayWrap').style.display='block';
+  P.scuotiActive = true;
+  window.addEventListener('devicemotion', scuotiMotionHandler);
+  clearInterval(P.scuotiTimerInt);
+  P.scuotiTimerInt = setInterval(scuotiTick, 150);
+  scuotiTick();
+}
+function scuotiStopLocalLoop(){
+  window.removeEventListener('devicemotion', scuotiMotionHandler);
+  clearInterval(P.scuotiTimerInt);
+}
+function scuotiTick(){
+  if (!P.scuotiStartAt) return;
+  const elapsedSec = (serverNow() - P.scuotiStartAt)/1000;
+  const frac = Math.max(0, 1 - elapsedSec/P.scuotiDurationSec);
+  const bar = $('scuotiTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%';
+  if (elapsedSec >= P.scuotiDurationSec && !P.scuotiSubmitted) scuotiFinishRound();
+}
+const SCUOTI_THRESHOLD = 16; // soglia di accelerazione (m/s²) sopra cui conto una scossa
+const SCUOTI_COOLDOWN = 300; // ms minimi tra una scossa contata e la successiva, per non contarne 10 dalla stessa scrollata
+function scuotiMotionHandler(event){
+  if (!P.scuotiActive) return;
+  const acc = event.accelerationIncludingGravity || event.acceleration;
+  if (!acc) return;
+  const magnitude = Math.sqrt((acc.x||0)**2 + (acc.y||0)**2 + (acc.z||0)**2);
+  const now = Date.now();
+  if (magnitude > SCUOTI_THRESHOLD && now - (P.scuotiLastShakeAt||0) > SCUOTI_COOLDOWN){
+    P.scuotiLastShakeAt = now;
+    P.scuotiCount++;
+    $('scuotiCountBig').textContent = P.scuotiCount;
+    const icon = $('scuotiIcon');
+    if (icon){ icon.classList.add('shaking'); clearTimeout(P.scuotiIconTimeout); P.scuotiIconTimeout = setTimeout(()=>icon.classList.remove('shaking'), 250); }
+    if (navigator.vibrate) navigator.vibrate(15);
+  }
+}
+function scuotiFinishRound(){
+  P.scuotiSubmitted = true;
+  P.scuotiActive = false;
+  scuotiStopLocalLoop();
+  P.ref.child('scuoti/results/'+P.id).set({ name:P.name, count:P.scuotiCount });
+  const msg = $('scuotiFbMsg');
+  msg.style.display = 'block'; msg.className = 'feedback mtb fb-ok';
+  msg.textContent = `⏱ TEMPO SCADUTO! ${P.scuotiCount} scosse registrate`;
+  if (navigator.vibrate) navigator.vibrate([80,50,80,50,150]);
+}
+/* ================================================================
+   TIENI L'EQUILIBRIO — telefono
+   La pallina si muove con una vera fisica (accelerazione dall'inclinazione + attrito, non un semplice
+   "segui l'inclinazione"), così scivola davvero e va corretta in continuazione, come una pallina vera
+   su un piano che si inclina. La posizione resta in uno spazio normalizzato da -1 a 1 (1 = bordo esterno
+   dell'arena): la zona sicura, in percentuale di quel raggio, la decide la regia col livello scelto.
+================================================================ */
+function showPlayerEquilibrio(g){
+  const m = g.equilibrio||{};
+  $('equilibriopName').textContent = P.name;
+  const myScore = ((g.players||{})[P.id]||{}).score||0;
+  $('equilibriopScore').textContent = myScore+' pt';
+  showScreen('scrPlayEquilibrio');
+  if (m.phase !== 'play'){
+    equilibrioStopLocalLoop();
+    $('equilibrioPermWrap').style.display='none';
+    $('equilibrioPlayWrap').style.display='none';
+    $('equilibrioFbMsg').style.display='none';
+    P.equilibrioActive = false;
+    return;
+  }
+  if (P.equilibrioStartAt !== m.startAt){
+    P.equilibrioStartAt = m.startAt;
+    P.equilibrioDurationSec = m.durationSec;
+    P.equilibrioPtsPerSec = m.ptsPerSec;
+    P.equilibrioSafeFrac = m.safeFrac;
+    P.equilibrioScore = 0;
+    P.equilibrioSubmitted = false;
+    P.equilibrioX = 0; P.equilibrioY = 0; P.equilibrioVx = 0; P.equilibrioVy = 0;
+    $('equilibrioFbMsg').style.display='none';
+    const zone = $('equilibrioSafeZone');
+    if (zone){ const pct = (m.safeFrac*100)+'%'; zone.style.width = pct; zone.style.height = pct; }
+    if (P.equilibrioPermGranted){
+      equilibrioBeginRound();
+    } else {
+      $('equilibrioPermWrap').style.display='block';
+      $('equilibrioPlayWrap').style.display='none';
+    }
+  }
+}
+function equilibrioRequestPermission(){
+  const finishSetup = ()=>{ P.equilibrioPermGranted = true; equilibrioBeginRound(); };
+  if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function'){
+    DeviceOrientationEvent.requestPermission().then(state=>{
+      if (state === 'granted') finishSetup();
+      else alert('Serve il permesso per leggere l\'inclinazione del telefono: riprova e concedilo per giocare.');
+    }).catch(()=> alert('Non sono riuscito a chiedere il permesso di orientamento. Riprova.'));
+  } else {
+    finishSetup(); // Android e la maggior parte degli altri browser: nessun permesso da chiedere
+  }
+}
+function equilibrioBeginRound(){
+  $('equilibrioPermWrap').style.display='none';
+  $('equilibrioPlayWrap').style.display='block';
+  P.equilibrioActive = true;
+  P.equilibrioTiltX = 0; P.equilibrioTiltY = 0;
+  window.addEventListener('deviceorientation', equilibrioMotionHandler);
+  P.equilibrioLastTick = Date.now();
+  clearInterval(P.equilibrioTimerInt);
+  P.equilibrioTimerInt = setInterval(equilibrioTick, 50);
+}
+function equilibrioStopLocalLoop(){
+  window.removeEventListener('deviceorientation', equilibrioMotionHandler);
+  clearInterval(P.equilibrioTimerInt);
+}
+function equilibrioMotionHandler(event){
+  const beta = event.beta || 0, gamma = event.gamma || 0;
+  P.equilibrioTiltX = Math.max(-1, Math.min(1, gamma/35));
+  P.equilibrioTiltY = Math.max(-1, Math.min(1, beta/35));
+}
+function equilibrioTick(){
+  if (!P.equilibrioStartAt || !P.equilibrioActive) return;
+  const now = Date.now();
+  const dt = Math.min(0.1, (now - P.equilibrioLastTick)/1000); // tetto a 0.1s per evitare salti se il telefono si blocca un istante
+  P.equilibrioLastTick = now;
+
+  const ACCEL = 2.4, FRICTION = 0.9;
+  P.equilibrioVx = (P.equilibrioVx + (P.equilibrioTiltX||0)*ACCEL*dt) * FRICTION;
+  P.equilibrioVy = (P.equilibrioVy + (P.equilibrioTiltY||0)*ACCEL*dt) * FRICTION;
+  P.equilibrioX += P.equilibrioVx*dt;
+  P.equilibrioY += P.equilibrioVy*dt;
+  const dist = Math.hypot(P.equilibrioX, P.equilibrioY);
+  if (dist > 1){ // non può fisicamente uscire dal bordo esterno dell'arena
+    P.equilibrioX /= dist; P.equilibrioY /= dist; P.equilibrioVx = 0; P.equilibrioVy = 0;
+  }
+  const ball = $('equilibrioBall');
+  if (ball){ ball.style.left = (50+P.equilibrioX*50)+'%'; ball.style.top = (50+P.equilibrioY*50)+'%'; }
+
+  const distFinal = Math.hypot(P.equilibrioX, P.equilibrioY);
+  if (distFinal > P.equilibrioSafeFrac){
+    equilibrioFinishRound(true); // caduta nel vuoto: fine manche per questo giocatore
+    return;
+  }
+  const closeness = Math.max(0, 1 - distFinal/P.equilibrioSafeFrac);
+  P.equilibrioScore += P.equilibrioPtsPerSec * closeness * dt;
+  $('equilibrioPctBig').textContent = Math.round(closeness*100)+'%';
+
+  const elapsedSec = (serverNow() - P.equilibrioStartAt)/1000;
+  const frac = Math.max(0, 1 - elapsedSec/P.equilibrioDurationSec);
+  const bar = $('equilibrioTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%';
+  if (elapsedSec >= P.equilibrioDurationSec) equilibrioFinishRound(false);
+}
+function equilibrioFinishRound(fell){
+  if (P.equilibrioSubmitted) return;
+  P.equilibrioSubmitted = true;
+  P.equilibrioActive = false;
+  equilibrioStopLocalLoop();
+  const finalPts = Math.round(P.equilibrioScore);
+  P.ref.child('equilibrio/results/'+P.id).set({ name:P.name, pts:finalPts });
+  P.ref.child('players/'+P.id+'/score').once('value').then(sc=>{
+    P.ref.child('players/'+P.id+'/score').set((sc.val()||0) + finalPts);
+  });
+  const msg = $('equilibrioFbMsg');
+  msg.style.display = 'block'; msg.className = 'feedback mtb ' + (fell ? 'fb-no' : 'fb-ok');
+  msg.textContent = fell
+    ? `💥 SEI CADUTO NEL VUOTO! ${finalPts} punti guadagnati fino a qui`
+    : `⏱ TEMPO SCADUTO! ${finalPts} punti guadagnati`;
+  if (navigator.vibrate) navigator.vibrate(fell ? [120,80,120] : [80,50,80,50,150]);
+}
+/* ================================================================
+   DADI MATTI — telefono
+   Mentre il telefono viene scosso, i 10 dadi ruotano a caso ad ogni tocco del ciclo (un vero tumbling
+   visivo, non un'animazione a schema fisso che si ripete uguale). Appena si smette di scuotere per un
+   po', o scade il tempo massimo, i dadi si fermano tutti insieme su un valore vero e proprio (1-6),
+   con una rotazione fluida verso la faccia giusta, esattamente come richiesto.
+================================================================ */
+function showPlayerDadiMatti(g){
+  const m = g.dadimatti||{};
+  $('dadiMattipName').textContent = P.name;
+  const myScore = ((g.players||{})[P.id]||{}).score||0;
+  $('dadiMattipScore').textContent = myScore+' pt';
+  showScreen('scrPlayDadiMatti');
+  if (m.phase !== 'play'){
+    dadiMattiStopLocalLoop();
+    $('dadiMattiPermWrap').style.display='none';
+    $('dadiMattiPlayWrap').style.display='none';
+    $('dadiMattiFbMsg').style.display='none';
+    P.dadiMattiActive = false;
+    return;
+  }
+  if (P.dadiMattiStartAt !== m.startAt){
+    P.dadiMattiStartAt = m.startAt;
+    P.dadiMattiDurationSec = m.durationSec;
+    P.dadiMattiSubmitted = false;
+    P.dadiMattiSettled = false;
+    P.dadiMattiRolling = false;
+    $('dadiMattiFbMsg').style.display='none';
+    $('dadiMattiSumBig').textContent = '—';
+    $('dadiMattiHint').textContent = 'scuoti il telefono!';
+    ddBuildTable('dadiMattiTable');
+    if (P.dadiMattiPermGranted){
+      dadiMattiBeginRound();
+    } else {
+      $('dadiMattiPermWrap').style.display='block';
+      $('dadiMattiPlayWrap').style.display='none';
+    }
+  }
+}
+function dadiMattiRequestPermission(){
+  const finishSetup = ()=>{ P.dadiMattiPermGranted = true; dadiMattiBeginRound(); };
+  if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function'){
+    DeviceMotionEvent.requestPermission().then(state=>{
+      if (state === 'granted') finishSetup();
+      else alert('Serve il permesso per leggere il movimento del telefono: riprova e concedilo per giocare.');
+    }).catch(()=> alert('Non sono riuscito a chiedere il permesso di movimento. Riprova.'));
+  } else {
+    finishSetup();
+  }
+}
+function dadiMattiBeginRound(){
+  $('dadiMattiPermWrap').style.display='none';
+  $('dadiMattiPlayWrap').style.display='block';
+  P.dadiMattiActive = true;
+  P.dadiMattiLastShakeAt = 0;
+  P.dadiMattiRolling = false;
+  window.addEventListener('devicemotion', dadiMattiMotionHandler);
+  clearInterval(P.dadiMattiTimerInt);
+  P.dadiMattiTimerInt = setInterval(dadiMattiTick, 60);
+}
+function dadiMattiStopLocalLoop(){
+  window.removeEventListener('devicemotion', dadiMattiMotionHandler);
+  clearInterval(P.dadiMattiTimerInt);
+  clearInterval(P.dadiMattiTumbleInt);
+}
+const DADIMATTI_THRESHOLD = 14;
+function dadiMattiMotionHandler(event){
+  if (!P.dadiMattiActive || P.dadiMattiSettled) return;
+  const acc = event.accelerationIncludingGravity || event.acceleration;
+  if (!acc) return;
+  const magnitude = Math.sqrt((acc.x||0)**2 + (acc.y||0)**2 + (acc.z||0)**2);
+  if (magnitude > DADIMATTI_THRESHOLD){
+    P.dadiMattiLastShakeAt = Date.now();
+    if (!P.dadiMattiRolling) dadiMattiStartRolling();
+  }
+}
+function dadiMattiStartRolling(){
+  P.dadiMattiRolling = true;
+  $('dadiMattiHint').textContent = 'stai mescolando i dadi...';
+  clearInterval(P.dadiMattiTumbleInt);
+  P.dadiMattiTumbleInt = setInterval(()=>{
+    for (let i=0;i<10;i++){
+      const cube = document.getElementById('dadiMattiTable_cube'+i);
+      if (!cube) continue;
+      cube.style.transform = `rotateX(${Math.random()*360}deg) rotateY(${Math.random()*360}deg)`;
+    }
+  }, 220);
+}
+function dadiMattiTick(){
+  if (!P.dadiMattiActive || P.dadiMattiSettled) return;
+  const now = Date.now();
+  const elapsedSec = (serverNow() - P.dadiMattiStartAt)/1000;
+  const frac = Math.max(0, 1 - elapsedSec/P.dadiMattiDurationSec);
+  const bar = $('dadiMattiTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%';
+
+  const stoppedShaking = P.dadiMattiRolling && (now - P.dadiMattiLastShakeAt > 700);
+  const timeUp = elapsedSec >= P.dadiMattiDurationSec;
+  if (stoppedShaking || timeUp) dadiMattiSettleAll();
+}
+function dadiMattiSettleAll(){
+  if (P.dadiMattiSettled) return;
+  P.dadiMattiSettled = true;
+  P.dadiMattiRolling = false;
+  clearInterval(P.dadiMattiTumbleInt);
+  let sum = 0;
+  for (let i=0;i<10;i++){
+    const val = 1+Math.floor(Math.random()*6);
+    sum += val;
+    const cube = document.getElementById('dadiMattiTable_cube'+i);
+    if (cube) ddSettleCube(cube, val);
+  }
+  $('dadiMattiSumBig').textContent = sum;
+  $('dadiMattiHint').textContent = 'somma totale';
+  if (navigator.vibrate) navigator.vibrate([60,40,60]);
+  dadiMattiFinishRound(sum);
+}
+function dadiMattiFinishRound(sum){
+  if (P.dadiMattiSubmitted) return;
+  P.dadiMattiSubmitted = true;
+  P.dadiMattiActive = false;
+  dadiMattiStopLocalLoop();
+  P.ref.child('dadimatti/results/'+P.id).set({ name:P.name, sum });
+  const msg = $('dadiMattiFbMsg');
+  msg.style.display = 'block'; msg.className = 'feedback mtb fb-ok';
+  msg.textContent = `🎲 Somma totale: ${sum}. In attesa degli altri...`;
 }
 /* ================================================================
    LA CASSAFORTE — telefono
@@ -22235,6 +22806,253 @@ function talpaEnd(){
 }
 
 /* ================================================================
+   SCUOTI FORTE — regia
+   Ogni giocatore conta le proprie scosse in autonomia sul telefono (nessun aggiornamento continuo su
+   Firebase durante il conteggio, solo il risultato finale): al termine, la regia ordina tutti per
+   numero di scosse, assegna i punti di piazzamento ai primi 5, e la penalità a chi ne ha fatte MENO
+   di tutti — anche se quella persona rientra già nei primi 5 (i due premi/penalità sono indipendenti).
+================================================================ */
+let SCUOTI = {};
+function openScuoti(){
+  if (!isGameEnabled('scuoti')) return alert('⚠️ Questo minigioco non è compreso nella licenza attiva. Contatta Alberto per sbloccarlo.');
+  if (!G) return alert('Avvia prima una partita!');
+  cancelLiveQuestion(); closeModal();
+  G.ref.child('scuoti').off();
+  G.ref.update({ status:'scuoti', scuoti:{ phase:'idle' } });
+  SCUOTI = {};
+  $('scuotiSetup').style.display='block'; $('scuotiLive').style.display='none';
+  pjSend({type:'scuotiState'});
+  showScreen('scrScuoti');
+}
+function scuotiStart(){
+  const pts = [1,2,3,4,5].map(i => Math.max(0, +$('scuotiP'+i).value||0));
+  const penalty = Math.max(0, +$('scuotiPenalty').value||0);
+  const durationSec = Math.max(5, +$('scuotiDuration').value||15);
+  const startAt = serverNow();
+  SCUOTI = { ended:false, startAt, durationSec, pts, penalty };
+  G.ref.update({ status:'scuoti', scuoti:{ phase:'play', pts, penalty, durationSec, startAt, results:{} } });
+  $('scuotiSetup').style.display='none'; $('scuotiLive').style.display='block';
+  $('scuotiMsg').textContent = '🫨 SCUOTETE FORTE! CHI SI MUOVE DI PIÙ VINCE...';
+  $('scuotiResults').innerHTML = '';
+  pjSend({type:'scuotiStart', startAt, durationSec});
+  clearInterval(SCUOTI.timerInt);
+  SCUOTI.timerInt = setInterval(()=>{
+    const elapsedSec = Math.max(0,(serverNow()-startAt)/1000);
+    const frac = Math.max(0, 1 - elapsedSec/durationSec);
+    const bar = $('scuotiHostTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%';
+    if (frac<=0){
+      clearInterval(SCUOTI.timerInt);
+      if (!SCUOTI.ended){ SCUOTI.ended = true; scuotiAssignPoints(); $('scuotiMsg').textContent = '🏁 Tempo scaduto! Punti assegnati.'; }
+    }
+  }, 200);
+  G.ref.child('scuoti/results').off();
+  G.ref.child('scuoti/results').on('value', s=>{
+    const results = s.val()||{};
+    const rows = Object.entries(results).sort((a,b)=>(b[1].count||0)-(a[1].count||0));
+    $('scuotiResults').innerHTML = rows.slice(0,5).map(([pid,p],i)=>
+      `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(p.name)} <span class="pts">${p.count} scosse</span></div>`
+    ).join('') || '<div class="byline center" style="opacity:.7">Nessuno ha ancora finito...</div>';
+    pjSend({type:'scuotiResults', rows: rows.slice(0,5).map(([pid,p])=>({name:p.name, count:p.count}))});
+  });
+}
+// Chiamata una sola volta, quando il tempo è scaduto per tutti: assegna i punti di piazzamento e la
+// penalità a chi si è mosso meno, e aggiorna il punteggio totale di ciascun giocatore.
+function scuotiAssignPoints(){
+  if (!G || !SCUOTI.pts) return;
+  G.ref.child('scuoti/results').once('value').then(s=>{
+    const results = s.val()||{};
+    const entries = Object.entries(results); // [pid, {name, count}]
+    if (!entries.length) return;
+    const sorted = [...entries].sort((a,b)=>(b[1].count||0)-(a[1].count||0));
+    const minCount = Math.min(...entries.map(([,p])=>p.count||0));
+    const stillest = entries.filter(([,p])=>(p.count||0)===minCount).map(([pid])=>pid);
+    const deltas = {};
+    sorted.slice(0,5).forEach(([pid], i)=>{ deltas[pid] = (deltas[pid]||0) + (SCUOTI.pts[i]||0); });
+    if (SCUOTI.penalty > 0){
+      stillest.forEach(pid=>{ deltas[pid] = (deltas[pid]||0) - SCUOTI.penalty; });
+    }
+    const proms = Object.entries(deltas).map(([pid, delta])=>
+      G.ref.child('players/'+pid+'/score').once('value').then(sc=>
+        G.ref.child('players/'+pid+'/score').set((sc.val()||0) + delta)
+      )
+    );
+    Promise.all(proms);
+  });
+}
+function scuotiEnd(){
+  if (!G) return;
+  clearInterval(SCUOTI.timerInt);
+  if (!SCUOTI.ended){ SCUOTI.ended = true; scuotiAssignPoints(); }
+  G.ref.child('scuoti/results').off();
+  G.ref.child('scuoti').update({ phase:'idle' });
+  $('scuotiMsg').textContent = '🏁 Manche finita!';
+  pjSend({type:'scuotiState'});
+}
+
+/* ================================================================
+   TIENI L'EQUILIBRIO — regia
+   Il livello di difficoltà decide quanto è grande la zona sicura al centro (in percentuale del raggio
+   totale dell'arena): più è piccola, più è facile finire nell'anello di vuoto attorno. La percentuale
+   di vicinanza al centro, e quindi i punti, li calcola ogni telefono per conto proprio; qui arriva solo
+   il punteggio totale finale di ciascuno, da ordinare in classifica.
+================================================================ */
+const EQUILIBRIO_LEVELS = { facile:0.85, normale:0.65, difficile:0.45, estremo:0.28 };
+let EQUILIBRIO = {};
+function openEquilibrio(){
+  if (!isGameEnabled('equilibrio')) return alert('⚠️ Questo minigioco non è compreso nella licenza attiva. Contatta Alberto per sbloccarlo.');
+  if (!G) return alert('Avvia prima una partita!');
+  cancelLiveQuestion(); closeModal();
+  G.ref.child('equilibrio').off();
+  G.ref.update({ status:'equilibrio', equilibrio:{ phase:'idle' } });
+  EQUILIBRIO = {};
+  $('equilibrioSetup').style.display='block'; $('equilibrioLive').style.display='none';
+  pjSend({type:'equilibrioState'});
+  showScreen('scrEquilibrio');
+}
+function equilibrioStart(){
+  const ptsPerSec = Math.max(0, +$('equilibrioPts').value||100);
+  const levelKey = $('equilibrioLevel').value;
+  const safeFrac = EQUILIBRIO_LEVELS[levelKey] || EQUILIBRIO_LEVELS.normale;
+  const durationSec = Math.max(10, +$('equilibrioDuration').value||20);
+  const startAt = serverNow();
+  EQUILIBRIO = { ended:false, startAt, durationSec };
+  G.ref.update({ status:'equilibrio', equilibrio:{ phase:'play', ptsPerSec, safeFrac, durationSec, startAt, results:{} } });
+  $('equilibrioSetup').style.display='none'; $('equilibrioLive').style.display='block';
+  $('equilibrioMsg').textContent = '⚖️ SI PARTE! RESTATE VICINI AL CENTRO...';
+  $('equilibrioResults').innerHTML = '';
+  pjSend({type:'equilibrioStart', startAt, durationSec, safeFrac});
+  clearInterval(EQUILIBRIO.timerInt);
+  EQUILIBRIO.timerInt = setInterval(()=>{
+    const elapsedSec = Math.max(0,(serverNow()-startAt)/1000);
+    const frac = Math.max(0, 1 - elapsedSec/durationSec);
+    const bar = $('equilibrioHostTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%';
+    if (frac<=0) clearInterval(EQUILIBRIO.timerInt);
+  }, 200);
+  G.ref.child('equilibrio/results').off();
+  G.ref.child('equilibrio/results').on('value', s=>{
+    const results = s.val()||{};
+    const rows = Object.values(results).sort((a,b)=>(b.pts||0)-(a.pts||0)).slice(0,5);
+    $('equilibrioResults').innerHTML = rows.map((p,i)=>
+      `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(p.name)} <span class="pts">+${p.pts}</span></div>`
+    ).join('') || '<div class="byline center" style="opacity:.7">Nessuno ha ancora finito...</div>';
+    pjSend({type:'equilibrioResults', rows});
+  });
+}
+function equilibrioEnd(){
+  if (!G) return;
+  EQUILIBRIO.ended = true;
+  clearInterval(EQUILIBRIO.timerInt);
+  G.ref.child('equilibrio/results').off();
+  G.ref.child('equilibrio').update({ phase:'idle' });
+  $('equilibrioMsg').textContent = '🏁 Manche finita!';
+  pjSend({type:'equilibrioState'});
+}
+
+/* ================================================================
+   DADI MATTI — grafica condivisa (regia/telefono/proiettore) + regia
+   Ogni dado è un vero cubo 3D (6 facce, ciascuna con i pallini giusti), non un'immagine piatta. Per
+   mostrare il valore N, si ruota il cubo intero fino a portare la faccia che rappresenta N verso chi
+   guarda — sommando qualche giro intero in più durante lo scuotimento, dà l'idea di un vero tumbling.
+================================================================ */
+const DD_PIP_LAYOUTS = { 1:[5], 2:[1,9], 3:[1,5,9], 4:[1,3,7,9], 5:[1,3,5,7,9], 6:[1,3,4,6,7,9] };
+// Facce opposte che sommano sempre a 7, come su un vero dado: front↔back (1↔6), right↔left (3↔4), top↔bottom (2↔5)
+const DD_FACE_VALUE = { front:1, back:6, right:3, left:4, top:2, bottom:5 };
+const DD_FACE_TO_ROTATION = { 1:{x:0,y:0}, 6:{x:0,y:180}, 3:{x:0,y:-90}, 4:{x:0,y:90}, 2:{x:-90,y:0}, 5:{x:90,y:0} };
+function ddPipsHtml(n){
+  let html = '';
+  for (let i=1;i<=9;i++) html += DD_PIP_LAYOUTS[n].includes(i) ? '<div class="ddPip"></div>' : '<div></div>';
+  return html;
+}
+function ddBuildTable(elId){
+  const el = $(elId); if (!el) return;
+  let html = '';
+  for (let i=0;i<10;i++){
+    html += `<div class="ddDie"><div class="ddCube" id="${elId}_cube${i}">`;
+    for (const [cls,val] of Object.entries(DD_FACE_VALUE)){
+      html += `<div class="ddFace ${cls}">${ddPipsHtml(val)}</div>`;
+    }
+    html += `</div></div>`;
+  }
+  el.innerHTML = html;
+}
+function ddSettleCube(cube, val, extraSpins){
+  const rot = DD_FACE_TO_ROTATION[val];
+  const spins = extraSpins!=null ? extraSpins : (1+Math.floor(Math.random()*2));
+  cube.style.transform = `rotateX(${rot.x+360*spins}deg) rotateY(${rot.y+360*spins}deg)`;
+}
+let DADIMATTI = {};
+function openDadiMatti(){
+  if (!isGameEnabled('dadimatti')) return alert('⚠️ Questo minigioco non è compreso nella licenza attiva. Contatta Alberto per sbloccarlo.');
+  if (!G) return alert('Avvia prima una partita!');
+  cancelLiveQuestion(); closeModal();
+  G.ref.child('dadimatti').off();
+  G.ref.update({ status:'dadimatti', dadimatti:{ phase:'idle' } });
+  DADIMATTI = {};
+  $('dadiMattiSetup').style.display='block'; $('dadiMattiLive').style.display='none';
+  pjSend({type:'dadiMattiState'});
+  showScreen('scrDadiMatti');
+}
+function dadiMattiStart(){
+  const multiplier = Math.max(1, +$('dadiMattiMult').value||10);
+  const durationSec = Math.max(5, +$('dadiMattiDuration').value||12);
+  const startAt = serverNow();
+  DADIMATTI = { ended:false, startAt, durationSec, multiplier };
+  G.ref.update({ status:'dadimatti', dadimatti:{ phase:'play', multiplier, durationSec, startAt, results:{} } });
+  $('dadiMattiSetup').style.display='none'; $('dadiMattiLive').style.display='block';
+  $('dadiMattiMsg').textContent = '🎲 SCUOTETE! CHI FA IL TOTALE PIÙ ALTO VINCE...';
+  $('dadiMattiResults').innerHTML = '';
+  pjSend({type:'dadiMattiStart', startAt, durationSec});
+  clearInterval(DADIMATTI.timerInt);
+  DADIMATTI.timerInt = setInterval(()=>{
+    const elapsedSec = Math.max(0,(serverNow()-startAt)/1000);
+    const frac = Math.max(0, 1 - elapsedSec/durationSec);
+    const bar = $('dadiMattiHostTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%';
+    if (frac<=0){
+      clearInterval(DADIMATTI.timerInt);
+      if (!DADIMATTI.ended){ DADIMATTI.ended = true; dadiMattiAssignPoints(); $('dadiMattiMsg').textContent = '🏁 Tempo scaduto! Punti assegnati.'; }
+    }
+  }, 200);
+  G.ref.child('dadimatti/results').off();
+  G.ref.child('dadimatti/results').on('value', s=>{
+    const results = s.val()||{};
+    const rows = Object.values(results).sort((a,b)=>(b.sum||0)-(a.sum||0)).slice(0,5);
+    $('dadiMattiResults').innerHTML = rows.map((p,i)=>
+      `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(p.name)} <span class="pts">somma ${p.sum}</span></div>`
+    ).join('') || '<div class="byline center" style="opacity:.7">Nessuno ha ancora finito...</div>';
+    pjSend({type:'dadiMattiResults', rows});
+  });
+}
+// Chi fa la somma più alta vince: somma × moltiplicatore. In caso di parità sul primo posto, il premio
+// va a TUTTI quelli in parità (stessa logica già usata per la penalità di Scuoti Forte), non solo al
+// primo che ha inviato il risultato.
+function dadiMattiAssignPoints(){
+  if (!G) return;
+  G.ref.child('dadimatti/results').once('value').then(s=>{
+    const results = s.val()||{};
+    const entries = Object.entries(results);
+    if (!entries.length) return;
+    const maxSum = Math.max(...entries.map(([,p])=>p.sum||0));
+    const winners = entries.filter(([,p])=>(p.sum||0)===maxSum);
+    const pts = maxSum * DADIMATTI.multiplier;
+    const proms = winners.map(([pid])=>
+      G.ref.child('players/'+pid+'/score').once('value').then(sc=>
+        G.ref.child('players/'+pid+'/score').set((sc.val()||0) + pts)
+      )
+    );
+    Promise.all(proms);
+  });
+}
+function dadiMattiEnd(){
+  if (!G) return;
+  clearInterval(DADIMATTI.timerInt);
+  if (!DADIMATTI.ended){ DADIMATTI.ended = true; dadiMattiAssignPoints(); }
+  G.ref.child('dadimatti/results').off();
+  G.ref.child('dadimatti').update({ phase:'idle' });
+  $('dadiMattiMsg').textContent = '🏁 Manche finita!';
+  pjSend({type:'dadiMattiState'});
+}
+
+/* ================================================================
    LA CASSAFORTE — regia
    Stessa identica logica di "quanti giusti/quanti al posto giusto" di Mastermind, ma semplificata:
    con cifre tutte diverse tra loro (garantito dal tastierino, che blocca le cifre già scelte) non
@@ -23372,6 +24190,9 @@ const GIOCHI_CATALOGO = [
   {k:'scossa', l:'⚡ La Scossa'},
   {k:'swiss', l:'⌚ Precisione Svizzera'},
   {k:'talpa', l:'🔨 Schiaccia la Talpa'},
+  {k:'scuoti', l:'🫨 Scuoti Forte!'},
+  {k:'equilibrio', l:'⚖️ Tieni l\'Equilibrio'},
+  {k:'dadimatti', l:'🎲 Dadi Matti'},
   {k:'hilo', l:'🃏 Carta Alta, Carta Bassa'},
   {k:'wheels', l:'🎡 Le Ruote della Fortuna'},
   {k:'memo', l:'🔍 Trova la Carta'},
@@ -23464,7 +24285,10 @@ const SKILL_GAMES = [
   {k:'puzzle', cats:['Logica'], cls:'', style:'background:linear-gradient(180deg,#2d6fd6,#163a70); color:#fff; box-shadow:0 7px 0 #0a1c38,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(45,111,214,.4)', fn:'openPuzzle', label:`🧩 Puzzle`},
   {k:'salumi', cats:['Dita Veloci'], cls:'', style:'background:linear-gradient(180deg,#e0264f,#7a0e2a); color:#fff; box-shadow:0 7px 0 #4a0518,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(224,38,79,.4)', fn:'openSalumi', label:`🔪 Salumi e Formaggi`},
   {k:'talpa', cats:['Dita Veloci'], cls:'', style:'background:linear-gradient(180deg,#e0264f,#7a0e2a); color:#fff; box-shadow:0 7px 0 #4a0518,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(224,38,79,.4)', fn:'openTalpa', label:`🔨 Schiaccia la Talpa`},
+  {k:'equilibrio', cats:['Dita Veloci'], cls:'', style:'background:linear-gradient(180deg,#e0264f,#7a0e2a); color:#fff; box-shadow:0 7px 0 #4a0518,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(224,38,79,.4)', fn:'openEquilibrio', label:`⚖️ Tieni l'Equilibrio`},
+  {k:'dadimatti', cats:['Dita Veloci'], cls:'', style:'background:linear-gradient(180deg,#e0264f,#7a0e2a); color:#fff; box-shadow:0 7px 0 #4a0518,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(224,38,79,.4)', fn:'openDadiMatti', label:`🎲 Dadi Matti`},
   {k:'scopa', cats:['Carte'], cls:'', style:'background:linear-gradient(180deg,#1a7a3a,#0a3a1a); color:#fff; box-shadow:0 7px 0 #052610,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(26,122,58,.4)', fn:'openScopa', label:`🧹 Scopa e Vinci`},
+  {k:'scuoti', cats:['Dita Veloci'], cls:'', style:'background:linear-gradient(180deg,#e0264f,#7a0e2a); color:#fff; box-shadow:0 7px 0 #4a0518,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(224,38,79,.4)', fn:'openScuoti', label:`🫨 Scuoti Forte!`},
   {k:'tfiscale', cats:['Logica'], cls:'', style:'background:linear-gradient(180deg,#2d6fd6,#163a70); color:#fff; box-shadow:0 7px 0 #0a1c38,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(45,111,214,.4)', fn:'openTFiscale', label:`💶 Sei Troppo Fiscale!`},
   {k:'simon', cats:["Colpo d'Occhio"], cls:'', style:'background:linear-gradient(180deg,#e8e8e8,#a8a8a8); color:#1c1c1c; box-shadow:0 7px 0 #5a5a5a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(200,200,200,.35)', fn:'openSimon', label:`🎨 Simon`},
   {k:'stendi', cats:['Logica'], cls:'', style:'background:linear-gradient(180deg,#2d6fd6,#163a70); color:#fff; box-shadow:0 7px 0 #0a1c38,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(45,111,214,.4)', fn:'openStendi', label:`🧺 Stendi i Panni`},
@@ -24942,6 +25766,87 @@ function pjRouteInner(m){
     else if (m.type==='talpaResults') {
       $('pjTalpaResults').innerHTML = (m.rows||[]).map((p,i)=>
         `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(p.name)} <span class="pts">+${p.pts}</span></div>`
+      ).join('');
+    }
+    else if (m.type==='scuotiState') {
+      showScreen('scrPjScuoti');
+      clearInterval(window._scuotiPjTimerInt);
+      $('pjScuotiResults').innerHTML = '';
+      $('pjScuotiTimeBarFill').style.width='0%';
+      $('pjScuotiMsg').textContent = 'Scuotete il telefono più forte possibile!';
+    }
+    else if (m.type==='scuotiStart') {
+      showScreen('scrPjScuoti');
+      $('pjScuotiMsg').textContent = 'Scuotete il telefono più forte possibile!';
+      $('pjScuotiResults').innerHTML = '';
+      clearInterval(window._scuotiPjTimerInt);
+      window._scuotiPjTimerInt = setInterval(()=>{
+        const elapsedSec = Math.max(0, (serverNow()-m.startAt)/1000);
+        const frac = Math.max(0, 1 - elapsedSec/m.durationSec);
+        const bar = $('pjScuotiTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%';
+        if (frac<=0) clearInterval(window._scuotiPjTimerInt);
+      }, 200);
+    }
+    else if (m.type==='scuotiResults') {
+      $('pjScuotiResults').innerHTML = (m.rows||[]).map((p,i)=>
+        `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(p.name)} <span class="pts">${p.count} scosse</span></div>`
+      ).join('');
+    }
+    else if (m.type==='equilibrioState') {
+      showScreen('scrPjEquilibrio');
+      clearInterval(window._equilibrioPjTimerInt);
+      $('pjEquilibrioResults').innerHTML = '';
+      $('pjEquilibrioTimeBarFill').style.width='0%';
+      $('pjEquilibrioMsg').textContent = 'Inclinate il telefono per restare al centro!';
+    }
+    else if (m.type==='equilibrioStart') {
+      showScreen('scrPjEquilibrio');
+      $('pjEquilibrioMsg').textContent = 'Inclinate il telefono per restare al centro!';
+      $('pjEquilibrioResults').innerHTML = '';
+      const zone = $('pjEquilibrioSafeZone');
+      if (zone){ const pct = (m.safeFrac*100)+'%'; zone.style.width = pct; zone.style.height = pct; }
+      clearInterval(window._equilibrioPjTimerInt);
+      window._equilibrioPjTimerInt = setInterval(()=>{
+        const elapsedSec = Math.max(0, (serverNow()-m.startAt)/1000);
+        const frac = Math.max(0, 1 - elapsedSec/m.durationSec);
+        const bar = $('pjEquilibrioTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%';
+        if (frac<=0) clearInterval(window._equilibrioPjTimerInt);
+      }, 200);
+    }
+    else if (m.type==='equilibrioResults') {
+      $('pjEquilibrioResults').innerHTML = (m.rows||[]).map((p,i)=>
+        `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(p.name)} <span class="pts">+${p.pts}</span></div>`
+      ).join('');
+    }
+    else if (m.type==='dadiMattiState') {
+      showScreen('scrPjDadiMatti');
+      clearInterval(window._dadiMattiPjTimerInt); clearInterval(window._dadiMattiPjAmbientInt);
+      $('pjDadiMattiResults').innerHTML = '';
+      $('pjDadiMattiTimeBarFill').style.width='0%';
+      $('pjDadiMattiMsg').textContent = 'Scuotete il telefono per mescolare i dadi!';
+    }
+    else if (m.type==='dadiMattiStart') {
+      showScreen('scrPjDadiMatti');
+      $('pjDadiMattiMsg').textContent = 'Scuotete il telefono per mescolare i dadi!';
+      $('pjDadiMattiResults').innerHTML = '';
+      ddBuildTable('pjDadiMattiTable');
+      clearInterval(window._dadiMattiPjAmbientInt);
+      window._dadiMattiPjAmbientInt = setInterval(()=>{
+        const idx = Math.floor(Math.random()*10);
+        const cube = document.getElementById('pjDadiMattiTable_cube'+idx);
+        if (cube) ddSettleCube(cube, 1+Math.floor(Math.random()*6), 1+Math.floor(Math.random()*2));
+      }, 450);
+      clearInterval(window._dadiMattiPjTimerInt);
+      window._dadiMattiPjTimerInt = setInterval(()=>{
+        const elapsedSec = Math.max(0, (serverNow()-m.startAt)/1000);
+        const frac = Math.max(0, 1 - elapsedSec/m.durationSec);
+        const bar = $('pjDadiMattiTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%';
+        if (frac<=0){ clearInterval(window._dadiMattiPjTimerInt); clearInterval(window._dadiMattiPjAmbientInt); }
+      }, 200);
+    }
+    else if (m.type==='dadiMattiResults') {
+      $('pjDadiMattiResults').innerHTML = (m.rows||[]).map((p,i)=>
+        `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(p.name)} <span class="pts">somma ${p.sum}</span></div>`
       ).join('');
     }
     else if (m.type==='csfState' || m.type==='csfBet') {
