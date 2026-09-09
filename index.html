@@ -1182,7 +1182,12 @@ body.barOn.barCollapsed .screen.active{padding-bottom:70px;}
 .piDot:active{transform:translate(-50%,-50%) scale(.85);}
 .piCounter{font-family:'Bungee'; font-size:clamp(16px,4vw,22px); text-align:center; color:var(--gold); margin-top:8px;}
 .piBar{width:100%; max-width:420px; height:12px; margin:8px auto; border-radius:8px; background:rgba(255,255,255,.08); overflow:hidden;}
-.piBarFill{height:100%; background:linear-gradient(90deg,var(--lime),var(--cyan)); width:0%; transition:width .2s ease;}
+.piBarFill{height:100%; background:linear-gradient(90deg,var(--lime),var(--cyan)); width:0%;}
+/* NB: niente transizione CSS qui apposta. Questa barra viene aggiornata via JavaScript molto spesso
+   (ogni 50-150ms in quasi tutti i giochi con sensori/fotocamera) già con incrementi piccoli e frequenti:
+   una transizione CSS più lenta di quell'intervallo (come i precedenti 0,2s) veniva interrotta a metà
+   da ogni nuovo aggiornamento, creando un effetto "sali e scendi" a scatti invece di uno scorrimento
+   fluido (segnalato da Alberto su Il Vassoio del Cameriere, ma il problema riguardava tutte le barre). */
 .pjChatQrCorner{position:absolute; top:22px; right:22px; z-index:5; display:flex; flex-direction:column; align-items:center; gap:6px;}
 .pjChatQrBox{background:#fff; padding:10px; border-radius:14px; box-shadow:0 0 26px rgba(0,240,255,.55), 0 6px 18px rgba(0,0,0,.4);}
 .pjChatQrLabel{font-family:'Bungee'; font-size:12px; color:var(--cyan); text-align:center; text-shadow:0 2px 0 rgba(0,0,0,.5);}
@@ -2315,7 +2320,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v14.22</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v14.23</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -7933,7 +7938,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1422; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1423; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
