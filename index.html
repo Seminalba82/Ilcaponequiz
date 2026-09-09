@@ -1280,6 +1280,112 @@ body.barOn.barCollapsed .screen.active{padding-bottom:70px;}
 .ddFace.bottom{transform:rotateX(-90deg) translateZ(var(--dieZ));}
 .ddSumBig{font-family:'Orbitron',sans-serif; font-weight:900; font-size:clamp(46px,15vw,80px); color:var(--gold);
   text-shadow:0 0 24px rgba(255,201,60,.6); line-height:1; margin-top:10px;}
+/* ===== LA BUSSOLA MALEDETTA ===== */
+.bcDial{position:relative; width:100%; max-width:340px; aspect-ratio:1; margin:14px auto; border-radius:50%;
+  background:radial-gradient(circle at 50% 38%, #241a3d, #0b0614 78%);
+  box-shadow:0 14px 34px rgba(0,0,0,.6), inset 0 0 0 5px rgba(255,255,255,.08), inset 0 0 30px rgba(0,0,0,.4);}
+.bcDial.pjDial{max-width:420px;}
+.bcTick{position:absolute; top:50%; left:50%; width:2px; height:8%; background:rgba(255,255,255,.3); transform-origin:50% 0%;}
+.bcTick.major{height:11%; background:rgba(255,255,255,.55); width:3px;}
+.bcCardinal{position:absolute; font-family:'Bungee'; font-size:clamp(14px,4vw,20px); color:var(--gold); transform:translate(-50%,-50%);
+  text-shadow:0 0 8px rgba(0,0,0,.7);}
+.bcTargetWedge{position:absolute; width:9%; aspect-ratio:1; border-radius:50%; background:radial-gradient(circle, #fff8d6, var(--lime) 60%, #4a8a00);
+  box-shadow:0 0 14px rgba(182,255,46,.7), 0 0 0 3px rgba(182,255,46,.25); transform:translate(-50%,-50%); z-index:3;}
+.bcNeedleWrap{position:absolute; top:0; left:0; width:100%; height:100%; transform-origin:50% 50%; z-index:4; transition:transform .12s linear;}
+.bcNeedle{position:absolute; left:46%; top:8%; width:8%; height:38%;
+  background:linear-gradient(180deg, var(--magenta), #7a0e50); clip-path:polygon(50% 0%, 100% 100%, 0% 100%);
+  filter:drop-shadow(0 3px 6px rgba(0,0,0,.5));}
+.bcNeedleTail{position:absolute; left:47%; top:50%; width:6%; height:22%;
+  background:linear-gradient(180deg, #444, #111); clip-path:polygon(50% 100%, 100% 0%, 0% 0%);}
+.bcCenterHub{position:absolute; top:50%; left:50%; width:7%; aspect-ratio:1; border-radius:50%; transform:translate(-50%,-50%);
+  background:radial-gradient(circle at 35% 30%, #fff, #ccc 60%, #888); box-shadow:0 2px 4px rgba(0,0,0,.5); z-index:5;}
+.bcPctBig{font-family:'Orbitron',sans-serif; font-weight:900; font-size:clamp(40px,14vw,70px); color:var(--lime);
+  text-shadow:0 0 22px rgba(182,255,46,.55); line-height:1; margin-top:6px;}
+/* ===== NON VERSARE IL BICCHIERE ===== */
+.glScene{position:relative; width:100%; max-width:260px; height:340px; margin:14px auto; display:flex; align-items:flex-end; justify-content:center;}
+.glScene.pjScene{max-width:320px; height:400px;}
+.glBody{position:relative; width:64%; height:88%; overflow:hidden;
+  clip-path:polygon(22% 0%, 78% 0%, 96% 100%, 4% 100%);
+  background:linear-gradient(100deg, rgba(255,255,255,.14), rgba(255,255,255,.04) 40%, rgba(255,255,255,.1));
+  box-shadow:inset 0 0 0 3px rgba(255,255,255,.22), 0 10px 24px rgba(0,0,0,.4);}
+.glLiquid{position:absolute; bottom:0; left:0; width:100%; height:0%; transition:height .08s linear;
+  background:linear-gradient(180deg, #ffe08a, #e8862e 55%, #b85a0e);}
+.glLiquid::before{content:''; position:absolute; top:0; left:0; right:0; height:10px;
+  background:radial-gradient(ellipse at 50% 100%, rgba(255,255,255,.5), transparent 70%);}
+.glShine{position:absolute; top:6%; left:14%; width:12%; height:80%; border-radius:50%;
+  background:linear-gradient(180deg, rgba(255,255,255,.35), transparent); z-index:2;}
+.glOverflow{position:absolute; bottom:86%; left:-6%; right:-6%; height:14%; pointer-events:none; opacity:0;}
+.glOverflow.show{opacity:1; animation:glSplash .5s ease-out;}
+@keyframes glSplash{0%{opacity:1; transform:translateY(0);} 100%{opacity:0; transform:translateY(20px);}}
+.glPctBig{font-family:'Orbitron',sans-serif; font-weight:900; font-size:clamp(40px,14vw,70px); color:var(--gold);
+  text-shadow:0 0 22px rgba(255,201,60,.55); line-height:1; margin-top:6px;}
+/* ===== MANI FERME ===== */
+.mfArena{position:relative; width:100%; max-width:320px; aspect-ratio:1; margin:14px auto; border-radius:50%;
+  background:radial-gradient(circle at 50% 40%, #1c1033, #0b0614 78%);
+  box-shadow:0 14px 34px rgba(0,0,0,.6);}
+.mfArena.pjArena{max-width:400px;}
+.mfRing{position:absolute; inset:6%; border-radius:50%; border:6px solid var(--lime);
+  transition:border-color .15s linear, box-shadow .15s linear; box-shadow:0 0 20px rgba(182,255,46,.3);}
+.mfOrbWrap{position:absolute; top:50%; left:50%; width:34%; aspect-ratio:1; transform:translate(-50%,-50%);}
+.mfOrb{width:100%; height:100%; border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, #fff8d6, var(--gold) 55%, #a86e00);
+  box-shadow:0 0 24px rgba(255,201,60,.5); transition:transform .06s linear;}
+.mfPctBig{font-family:'Orbitron',sans-serif; font-weight:900; font-size:clamp(40px,14vw,70px); color:var(--lime);
+  text-shadow:0 0 22px rgba(182,255,46,.55); line-height:1; margin-top:6px; transition:color .15s linear;}
+/* ===== IL COLPO SECCO ===== */
+.csIcon{font-size:clamp(90px,22vw,160px); text-align:center; margin:20px auto; filter:drop-shadow(0 12px 20px rgba(0,0,0,.5));
+  animation:csPulseWait 1.1s ease-in-out infinite;}
+.csIcon.csGo{animation:csFlash .5s ease-in-out infinite;}
+.csIcon.csDone{animation:none;}
+@keyframes csPulseWait{0%,100%{transform:scale(1);} 50%{transform:scale(.92);}}
+@keyframes csFlash{0%,100%{transform:scale(1.15);} 50%{transform:scale(1.3);}}
+.csWaitMsg{font-family:'Bungee'; font-size:clamp(20px,5vw,28px); color:var(--muted); text-align:center; letter-spacing:1px;}
+.csGoMsg{font-family:'Bungee'; font-size:clamp(30px,8vw,46px); color:var(--gold); text-align:center; letter-spacing:2px;
+  text-shadow:0 0 22px rgba(255,201,60,.7);}
+.csReactionBig{font-family:'Orbitron',sans-serif; font-weight:900; font-size:clamp(36px,12vw,60px); color:var(--lime);
+  text-shadow:0 0 22px rgba(182,255,46,.55); line-height:1; margin-top:6px;}
+/* ===== SPREMI L'ARANCIA ===== */
+.arScene{position:relative; width:100%; max-width:260px; margin:10px auto; display:flex; flex-direction:column; align-items:center; gap:10px;}
+.arScene.pjScene{max-width:320px;}
+.arOrangeWrap{width:46%; aspect-ratio:1; perspective:200px;}
+.arOrange{width:100%; height:100%; border-radius:50%; position:relative; overflow:hidden;
+  background:radial-gradient(circle at 32% 28%, #ffcf6b, #f5940e 55%, #c46f00);
+  box-shadow:0 10px 20px rgba(0,0,0,.45), inset 0 0 0 3px rgba(255,255,255,.15); will-change:transform;}
+.arOrange::before{content:''; position:absolute; inset:0; border-radius:50%; opacity:.35;
+  background:repeating-radial-gradient(circle at 50% 50%, transparent 0 6%, rgba(180,90,0,.5) 6.5% 7%);}
+.arLeaf{position:absolute; top:-6%; left:50%; width:22%; height:16%; transform:translateX(-50%) rotate(-15deg);
+  background:#2f9e3a; border-radius:0% 100% 0% 100%; z-index:2;}
+.arGlassWrap{width:52%;}
+.arJuicePctBig{font-family:'Orbitron',sans-serif; font-weight:900; font-size:clamp(36px,12vw,60px); color:var(--gold);
+  text-shadow:0 0 22px rgba(255,201,60,.55); line-height:1;}
+/* ===== IL VASSOIO DEL CAMERIERE ===== */
+.vsTray{position:relative; width:100%; max-width:340px; aspect-ratio:1; margin:14px auto; border-radius:50%;
+  background:radial-gradient(circle at 50% 40%, #d8d0c0, #a89a80 70%, #7a6d55 100%);
+  box-shadow:0 14px 34px rgba(0,0,0,.6), inset 0 0 0 8px #8a7c60, inset 0 0 24px rgba(0,0,0,.35);}
+.vsTray.pjTray{max-width:420px;}
+.vsRim{position:absolute; inset:4%; border-radius:50%; border:3px dashed rgba(90,70,30,.4);}
+.vsGlass{position:absolute; top:50%; left:50%; width:13%; aspect-ratio:1; border-radius:22% 22% 45% 45%;
+  transform:translate(-50%,-50%); box-shadow:0 5px 10px rgba(0,0,0,.4); transition:opacity .3s;}
+.vsGlass.g0{background:linear-gradient(180deg,#ffb3d4,#e0397a);}
+.vsGlass.g1{background:linear-gradient(180deg,#b3e0ff,#2d6fd6);}
+.vsGlass.g2{background:linear-gradient(180deg,#d6ffb3,#6fae2d);}
+.vsGlass.dropped{opacity:0; transform:translate(-50%,-50%) scale(.3);}
+.vsPctBig{font-family:'Orbitron',sans-serif; font-weight:900; font-size:clamp(40px,14vw,70px); color:var(--lime);
+  text-shadow:0 0 22px rgba(182,255,46,.55); line-height:1; margin-top:6px;}
+/* ===== TROVA IL COLORE ===== */
+.tcCameraWrap{position:relative; width:100%; max-width:300px; aspect-ratio:3/4; margin:10px auto; border-radius:20px; overflow:hidden;
+  background:#111; box-shadow:0 14px 34px rgba(0,0,0,.6);}
+.tcCameraWrap video{width:100%; height:100%; object-fit:cover; display:block;}
+.tcReticle{position:absolute; top:50%; left:50%; width:19%; aspect-ratio:1; border-radius:50%;
+  transform:translate(-50%,-50%); border:4px solid rgba(255,255,255,.9); box-shadow:0 0 0 2000px rgba(0,0,0,.3);
+  transition:border-color .15s linear; pointer-events:none;}
+.tcTargetSwatch{width:60px; height:60px; border-radius:16px; margin:8px auto; box-shadow:0 6px 14px rgba(0,0,0,.45), inset 0 0 0 3px rgba(255,255,255,.35);}
+.tcPctBig{font-family:'Orbitron',sans-serif; font-weight:900; font-size:clamp(40px,14vw,70px); color:var(--lime);
+  text-shadow:0 0 22px rgba(182,255,46,.55); line-height:1; margin-top:2px; transition:color .15s linear;}
+/* ===== CACCIA ALLA LUCE ===== */
+.clModeIcon{font-size:44px; text-align:center; margin:6px auto;}
+.clPctBig{font-family:'Orbitron',sans-serif; font-weight:900; font-size:clamp(40px,14vw,70px); color:var(--lime);
+  text-shadow:0 0 22px rgba(182,255,46,.55); line-height:1; margin-top:2px; transition:color .15s linear;}
 .parkPct{font-family:'Bungee'; font-size:clamp(22px,6vw,30px); color:var(--gold); text-align:center; margin-top:10px;
   text-shadow:0 2px 0 #6b4a00;}
 .parkPctSub{font-family:'Outfit',sans-serif; font-weight:600; font-size:13px; color:var(--muted); text-align:center; margin-top:-4px;}
@@ -2209,7 +2315,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v14.07</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v14.16</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -4943,7 +5049,9 @@ body.suspense-on #pfRank{ display:none !important; }
     <input type="number" id="battiPassPts" value="100" min="0" style="text-align:center">
     <div class="label mt">MAXI PREMIO per chi batte la mano per 5 volte</div>
     <input type="number" id="battiMaxPts" value="1000" min="0" style="text-align:center">
-    <div class="byline mt" style="opacity:.75">🖐️ La mano parte da un giocatore a caso. Chi ce l'ha la batte toccandola: guadagna subito i punti del passaggio, e la mano vola su un altro giocatore a caso — può capitare più volte alla stessa persona. Ogni volta che una persona batte la mano (anche in giri diversi) conta per lei: al 5° tocco totale vince il MAXI PREMIO e la manche finisce.</div>
+    <div class="label mt">Secondi di inattività prima del passaggio automatico (mano "passiva")</div>
+    <input type="number" id="battiIdleSecs" value="6" min="3" style="text-align:center">
+    <div class="byline mt" style="opacity:.75">🖐️ La mano parte da un giocatore a caso. Chi ce l'ha la batte toccandola: guadagna subito i punti del passaggio, e la mano vola su un altro giocatore a caso — può capitare più volte alla stessa persona. Ogni volta che una persona batte la mano (anche in giri diversi) conta per lei: al 5° tocco totale vince il MAXI PREMIO e la manche finisce. Se nessuno la tocca per il tempo impostato, la mano passa da sola a un altro giocatore a caso (senza punti per nessuno), così non resta mai bloccata su chi non risponde.</div>
     <button class="btn mg mt" style="width:100%" onclick="battiStart()">🖐️ FAI PARTIRE LA MANO!</button>
   </div>
   <div id="battiLive" style="display:none; width:100%" class="center">
@@ -5271,6 +5379,551 @@ body.suspense-on #pfRank{ display:none !important; }
     <div class="piBar" style="max-width:420px"><div class="piBarFill" id="dadiMattiTimeBarFill" style="background:linear-gradient(90deg,var(--lime),var(--cyan))"></div></div>
   </div>
   <div class="feedback mtb" id="dadiMattiFbMsg" style="display:none"></div>
+</div>
+
+<!-- ==================== REGIA: LA BUSSOLA MALEDETTA ==================== -->
+<div class="screen" id="scrBussola">
+  <div class="brand"><div class="t1" style="font-size:clamp(18px,3.4vw,32px)">🧭 LA BUSSOLA MALEDETTA</div></div>
+  <div class="panel mt" style="max-width:480px" id="bussolaSetup">
+    <div class="label">Punti massimi al secondo (puntando esattamente giusto)</div>
+    <input type="number" id="bussolaPts" value="100" min="0" style="text-align:center">
+    <div class="label mt">Soglia di tolleranza (gradi entro cui si guadagna qualcosa)</div>
+    <input type="number" id="bussolaThreshold" value="45" min="5" max="180" style="text-align:center">
+    <div class="label mt">Penalità al secondo, oltre la soglia (troppo lontani dall'obiettivo)</div>
+    <input type="number" id="bussolaPenalty" value="20" min="0" style="text-align:center">
+    <div class="label mt">Durata (secondi)</div>
+    <input type="number" id="bussolaDuration" value="20" min="10" style="text-align:center">
+    <div class="byline mt" style="opacity:.75">🧭 Ai giocatori viene assegnata una direzione a caso (uguale per tutti). Devono ruotare il telefono per puntarla: più sono precisi, più punti guadagnano ogni secondo; restando troppo lontani dalla direzione giusta (oltre la soglia), perdono punti invece di guadagnarne.</div>
+    <button class="btn mg mt" style="width:100%" onclick="bussolaStart()">🧭 FAI PARTIRE IL GIOCO!</button>
+  </div>
+  <div id="bussolaLive" style="display:none; width:100%" class="center">
+    <div class="miniMsg" id="bussolaMsg"></div>
+    <div class="piBar" style="max-width:420px"><div class="piBarFill" id="bussolaHostTimeBarFill" style="background:linear-gradient(90deg,var(--lime),var(--cyan))"></div></div>
+    <div class="lead mt" id="bussolaResults" style="max-width:460px; width:100%"></div>
+    <div class="row mt">
+      <button class="btn ghost" id="bussolaBtnEnd" onclick="bussolaEnd()">🏁 Ferma qui</button>
+      <button class="btn cy" id="bussolaBtnAgain" onclick="openBussola()">🔁 Un'altra manche</button>
+    </div>
+  </div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
+</div>
+
+<!-- ==================== PROIETTORE: LA BUSSOLA MALEDETTA ==================== -->
+<div class="screen" id="scrPjBussola">
+  <div class="brand"><div class="t1" style="font-size:clamp(24px,3.6vw,42px)">🧭 LA BUSSOLA MALEDETTA</div></div>
+  <div class="miniMsg" id="pjBussolaMsg">Ruotate il telefono per puntare la direzione giusta!</div>
+  <div class="bcDial pjDial" id="pjBussolaDial"></div>
+  <div class="piBar" style="max-width:520px"><div class="piBarFill" id="pjBussolaTimeBarFill" style="background:linear-gradient(90deg,var(--lime),var(--cyan))"></div></div>
+  <div class="lead mt" id="pjBussolaResults" style="max-width:520px; width:100%; margin:0 auto"></div>
+</div>
+
+<!-- ==================== PLAYER: LA BUSSOLA MALEDETTA ==================== -->
+<div class="screen" id="scrPlayBussola" style="align-items:center; justify-content:center">
+  <div class="row" style="width:100%; justify-content:space-between">
+    <div class="pill" id="bussolapName" style="color:var(--gold)"></div>
+    <div class="pill" id="bussolapScore"></div>
+  </div>
+  <div id="bussolaPermWrap" style="display:none; text-align:center; margin-top:14%">
+    <div style="font-size:70px">🤳</div>
+    <div class="miniMsg" style="margin-top:10px">Serve il permesso per leggere la bussola del telefono</div>
+    <button class="btn mg mt" onclick="bussolaRequestPermission()">✅ Attiva i sensori</button>
+  </div>
+  <div id="bussolaPlayWrap" style="display:none; width:100%; text-align:center">
+    <div class="bcDial" id="bussolaDial"></div>
+    <div class="bcPctBig" id="bussolaPctBig">0%</div>
+    <div class="byline center">precisione sul bersaglio</div>
+    <div class="piBar" style="max-width:420px"><div class="piBarFill" id="bussolaTimeBarFill" style="background:linear-gradient(90deg,var(--lime),var(--cyan))"></div></div>
+  </div>
+  <div class="feedback mtb" id="bussolaFbMsg" style="display:none"></div>
+</div>
+
+<!-- ==================== REGIA: NON VERSARE IL BICCHIERE ==================== -->
+<div class="screen" id="scrBicchiere">
+  <div class="brand"><div class="t1" style="font-size:clamp(18px,3.4vw,32px)">🍹 NON VERSARE IL BICCHIERE</div></div>
+  <div class="panel mt" style="max-width:480px" id="bicchiereSetup">
+    <div class="label">Punti massimi al secondo (bicchiere pieno)</div>
+    <input type="number" id="bicchierePts" value="100" min="0" style="text-align:center">
+    <div class="label mt">Penalità per chi lo fa traboccare</div>
+    <input type="number" id="bicchierePenalty" value="300" min="0" style="text-align:center">
+    <div class="label mt">Durata massima (secondi)</div>
+    <input type="number" id="bicchiereDuration" value="20" min="10" style="text-align:center">
+    <div class="byline mt" style="opacity:.75">🍹 Inclinando il telefono in avanti, il bicchiere si riempie: più forte si inclina, più veloce si versa. Più il bicchiere è pieno, più punti si guadagnano ogni secondo — ma se trabocca, la manche finisce lì per quel giocatore, con una penalità.</div>
+    <button class="btn mg mt" style="width:100%" onclick="bicchiereStart()">🍹 FAI PARTIRE IL GIOCO!</button>
+  </div>
+  <div id="bicchiereLive" style="display:none; width:100%" class="center">
+    <div class="miniMsg" id="bicchiereMsg"></div>
+    <div class="piBar" style="max-width:420px"><div class="piBarFill" id="bicchiereHostTimeBarFill" style="background:linear-gradient(90deg,var(--lime),var(--cyan))"></div></div>
+    <div class="lead mt" id="bicchiereResults" style="max-width:460px; width:100%"></div>
+    <div class="row mt">
+      <button class="btn ghost" id="bicchiereBtnEnd" onclick="bicchiereEnd()">🏁 Ferma qui</button>
+      <button class="btn cy" id="bicchiereBtnAgain" onclick="openBicchiere()">🔁 Un'altra manche</button>
+    </div>
+  </div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
+</div>
+
+<!-- ==================== PROIETTORE: NON VERSARE IL BICCHIERE ==================== -->
+<div class="screen" id="scrPjBicchiere">
+  <div class="brand"><div class="t1" style="font-size:clamp(24px,3.6vw,42px)">🍹 NON VERSARE IL BICCHIERE</div></div>
+  <div class="miniMsg" id="pjBicchiereMsg">Inclinate il telefono per versare, senza far traboccare!</div>
+  <div class="glScene pjScene"><div class="glBody"><div class="glLiquid" id="pjBicchiereLiquid"></div><div class="glShine"></div></div></div>
+  <div class="piBar" style="max-width:520px"><div class="piBarFill" id="pjBicchiereTimeBarFill" style="background:linear-gradient(90deg,var(--lime),var(--cyan))"></div></div>
+  <div class="lead mt" id="pjBicchiereResults" style="max-width:520px; width:100%; margin:0 auto"></div>
+</div>
+
+<!-- ==================== PLAYER: NON VERSARE IL BICCHIERE ==================== -->
+<div class="screen" id="scrPlayBicchiere" style="align-items:center; justify-content:center">
+  <div class="row" style="width:100%; justify-content:space-between">
+    <div class="pill" id="bicchierepName" style="color:var(--gold)"></div>
+    <div class="pill" id="bicchierepScore"></div>
+  </div>
+  <div id="bicchierePermWrap" style="display:none; text-align:center; margin-top:14%">
+    <div style="font-size:70px">🤳</div>
+    <div class="miniMsg" style="margin-top:10px">Serve il permesso per leggere l'inclinazione del telefono</div>
+    <button class="btn mg mt" onclick="bicchiereRequestPermission()">✅ Attiva i sensori</button>
+  </div>
+  <div id="bicchierePlayWrap" style="display:none; width:100%; text-align:center">
+    <div class="glScene"><div class="glBody"><div class="glLiquid" id="bicchiereLiquid"></div><div class="glShine"></div></div></div>
+    <div class="glPctBig" id="bicchierePctBig">0%</div>
+    <div class="byline center">pieno</div>
+    <div class="piBar" style="max-width:420px"><div class="piBarFill" id="bicchiereTimeBarFill" style="background:linear-gradient(90deg,var(--lime),var(--cyan))"></div></div>
+  </div>
+  <div class="feedback mtb" id="bicchiereFbMsg" style="display:none"></div>
+</div>
+
+<!-- ==================== REGIA: MANI FERME ==================== -->
+<div class="screen" id="scrManoFerma">
+  <div class="brand"><div class="t1" style="font-size:clamp(18px,3.4vw,32px)">🤚 MANI FERME!</div></div>
+  <div class="panel mt" style="max-width:480px" id="manoFermaSetup">
+    <div class="label">Punti massimi al secondo (fermi come una statua)</div>
+    <input type="number" id="manoFermaPts" value="100" min="0" style="text-align:center">
+    <div class="label mt">Soglia di tolleranza (quanto tremore è ancora accettabile)</div>
+    <input type="number" id="manoFermaThreshold" value="0.7" min="0.1" step="0.1" style="text-align:center">
+    <div class="label mt">Penalità al secondo per chi si muove troppo</div>
+    <input type="number" id="manoFermaPenalty" value="40" min="0" style="text-align:center">
+    <div class="label mt">Durata (secondi)</div>
+    <input type="number" id="manoFermaDuration" value="15" min="10" style="text-align:center">
+    <div class="byline mt" style="opacity:.75">🤚 L'esatto opposto di Scuoti Forte: bisogna tenere il telefono il più fermo possibile. Più si resta immobili, più punti si guadagnano ogni secondo; muovendosi troppo (oltre la soglia), si perdono punti invece di guadagnarne.</div>
+    <button class="btn mg mt" style="width:100%" onclick="manoFermaStart()">🤚 FAI PARTIRE IL GIOCO!</button>
+  </div>
+  <div id="manoFermaLive" style="display:none; width:100%" class="center">
+    <div class="miniMsg" id="manoFermaMsg"></div>
+    <div class="piBar" style="max-width:420px"><div class="piBarFill" id="manoFermaHostTimeBarFill" style="background:linear-gradient(90deg,var(--lime),var(--cyan))"></div></div>
+    <div class="lead mt" id="manoFermaResults" style="max-width:460px; width:100%"></div>
+    <div class="row mt">
+      <button class="btn ghost" id="manoFermaBtnEnd" onclick="manoFermaEnd()">🏁 Ferma qui</button>
+      <button class="btn cy" id="manoFermaBtnAgain" onclick="openManoFerma()">🔁 Un'altra manche</button>
+    </div>
+  </div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
+</div>
+
+<!-- ==================== PROIETTORE: MANI FERME ==================== -->
+<div class="screen" id="scrPjManoFerma">
+  <div class="brand"><div class="t1" style="font-size:clamp(24px,3.6vw,42px)">🤚 MANI FERME!</div></div>
+  <div class="miniMsg" id="pjManoFermaMsg">Tenete il telefono il più fermo possibile!</div>
+  <div class="mfArena pjArena"><div class="mfRing"></div><div class="mfOrbWrap"><div class="mfOrb"></div></div></div>
+  <div class="piBar" style="max-width:520px"><div class="piBarFill" id="pjManoFermaTimeBarFill" style="background:linear-gradient(90deg,var(--lime),var(--cyan))"></div></div>
+  <div class="lead mt" id="pjManoFermaResults" style="max-width:520px; width:100%; margin:0 auto"></div>
+</div>
+
+<!-- ==================== PLAYER: MANI FERME ==================== -->
+<div class="screen" id="scrPlayManoFerma" style="align-items:center; justify-content:center">
+  <div class="row" style="width:100%; justify-content:space-between">
+    <div class="pill" id="manoFermapName" style="color:var(--gold)"></div>
+    <div class="pill" id="manoFermapScore"></div>
+  </div>
+  <div id="manoFermaPermWrap" style="display:none; text-align:center; margin-top:14%">
+    <div style="font-size:70px">🤳</div>
+    <div class="miniMsg" style="margin-top:10px">Serve il permesso per leggere il movimento del telefono</div>
+    <button class="btn mg mt" onclick="manoFermaRequestPermission()">✅ Attiva i sensori</button>
+  </div>
+  <div id="manoFermaPlayWrap" style="display:none; width:100%; text-align:center">
+    <div class="mfArena" id="manoFermaArena"><div class="mfRing" id="manoFermaRing"></div><div class="mfOrbWrap"><div class="mfOrb" id="manoFermaOrb"></div></div></div>
+    <div class="mfPctBig" id="manoFermaPctBig">0%</div>
+    <div class="byline center">fermezza</div>
+    <div class="piBar" style="max-width:420px"><div class="piBarFill" id="manoFermaTimeBarFill" style="background:linear-gradient(90deg,var(--lime),var(--cyan))"></div></div>
+  </div>
+  <div class="feedback mtb" id="manoFermaFbMsg" style="display:none"></div>
+</div>
+
+<!-- ==================== REGIA: IL COLPO SECCO ==================== -->
+<div class="screen" id="scrColpoSecco">
+  <div class="brand"><div class="t1" style="font-size:clamp(18px,3.4vw,32px)">🥊 IL COLPO SECCO</div></div>
+  <div class="panel mt" style="max-width:480px" id="colpoSeccoSetup">
+    <div class="row">
+      <div class="grow"><div class="label">Punti 1°</div><input type="number" id="colpoSeccoP1" value="1000" min="0" style="width:100%; text-align:center"></div>
+      <div class="grow"><div class="label">Punti 2°</div><input type="number" id="colpoSeccoP2" value="700" min="0" style="width:100%; text-align:center"></div>
+    </div>
+    <div class="row mt">
+      <div class="grow"><div class="label">Punti 3°</div><input type="number" id="colpoSeccoP3" value="500" min="0" style="width:100%; text-align:center"></div>
+      <div class="grow"><div class="label">Punti 4°</div><input type="number" id="colpoSeccoP4" value="300" min="0" style="width:100%; text-align:center"></div>
+    </div>
+    <div class="label mt">Punti 5°</div>
+    <input type="number" id="colpoSeccoP5" value="150" min="0" style="text-align:center">
+    <div class="label mt">Penalità per chi parte in anticipo</div>
+    <input type="number" id="colpoSeccoEarlyPenalty" value="200" min="0" style="text-align:center">
+    <div class="byline mt" style="opacity:.75">🥊 Al segnale "VIA!" (dopo un'attesa imprevedibile, come un vero semaforo), ogni giocatore deve sferrare un colpo secco e deciso col telefono in mano, il più veloce possibile. Chi si muove prima del segnale viene penalizzato.</div>
+    <button class="btn mg mt" style="width:100%" onclick="colpoSeccoStart()">🥊 FAI PARTIRE IL GIOCO!</button>
+  </div>
+  <div id="colpoSeccoLive" style="display:none; width:100%" class="center">
+    <div class="miniMsg" id="colpoSeccoMsg"></div>
+    <div class="byline center" id="colpoSeccoCount"></div>
+    <div class="lead mt" id="colpoSeccoResults" style="max-width:460px; width:100%"></div>
+    <div class="row mt">
+      <button class="btn ghost" id="colpoSeccoBtnEnd" onclick="colpoSeccoEnd()">🏁 Ferma qui</button>
+      <button class="btn cy" id="colpoSeccoBtnAgain" onclick="openColpoSecco()">🔁 Un'altra manche</button>
+    </div>
+  </div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
+</div>
+
+<!-- ==================== PROIETTORE: IL COLPO SECCO ==================== -->
+<div class="screen" id="scrPjColpoSecco">
+  <div class="brand"><div class="t1" style="font-size:clamp(24px,3.6vw,42px)">🥊 IL COLPO SECCO</div></div>
+  <div class="csIcon" id="pjColpoSeccoIcon">✊</div>
+  <div class="csWaitMsg" id="pjColpoSeccoMsg">PRONTI...</div>
+  <div class="lead mt" id="pjColpoSeccoResults" style="max-width:520px; width:100%; margin:20px auto 0"></div>
+</div>
+
+<!-- ==================== PLAYER: IL COLPO SECCO ==================== -->
+<div class="screen" id="scrPlayColpoSecco" style="align-items:center; justify-content:center">
+  <div class="row" style="width:100%; justify-content:space-between">
+    <div class="pill" id="colpoSeccopName" style="color:var(--gold)"></div>
+    <div class="pill" id="colpoSeccopScore"></div>
+  </div>
+  <div id="colpoSeccoPermWrap" style="display:none; text-align:center; margin-top:14%">
+    <div style="font-size:70px">🤳</div>
+    <div class="miniMsg" style="margin-top:10px">Serve il permesso per leggere il movimento del telefono</div>
+    <button class="btn mg mt" onclick="colpoSeccoRequestPermission()">✅ Attiva i sensori</button>
+  </div>
+  <div id="colpoSeccoPlayWrap" style="display:none; width:100%; text-align:center">
+    <div class="csIcon" id="colpoSeccoIcon">✊</div>
+    <div class="csWaitMsg" id="colpoSeccoWaitMsg">TIENITI PRONTO...</div>
+    <div class="csGoMsg" id="colpoSeccoGoMsg" style="display:none">VIA!!!</div>
+    <div class="csReactionBig" id="colpoSeccoReactionBig" style="display:none"></div>
+  </div>
+  <div class="feedback mtb" id="colpoSeccoFbMsg" style="display:none"></div>
+</div>
+
+<!-- ==================== REGIA: SPREMI L'ARANCIA ==================== -->
+<div class="screen" id="scrArancia">
+  <div class="brand"><div class="t1" style="font-size:clamp(18px,3.4vw,32px)">🍊 SPREMI L'ARANCIA</div></div>
+  <div class="panel mt" style="max-width:480px" id="aranciaSetup">
+    <div class="label">Punti massimi (arancia spremuta al 100%)</div>
+    <input type="number" id="aranciaPts" value="1000" min="0" style="text-align:center">
+    <div class="label mt">Durata (secondi)</div>
+    <input type="number" id="aranciaDuration" value="20" min="10" style="text-align:center">
+    <div class="byline mt" style="opacity:.75">🍊 Ogni giocatore ruota il polso col telefono in mano, come per spremere un'arancia vera. Più succo estrae, più punti guadagna — ma l'arancia si "asciuga" man mano che si spreme: i primi movimenti danno molto succo, gli ultimi sempre meno.</div>
+    <button class="btn mg mt" style="width:100%" onclick="aranciaStart()">🍊 FAI PARTIRE IL GIOCO!</button>
+  </div>
+  <div id="aranciaLive" style="display:none; width:100%" class="center">
+    <div class="miniMsg" id="aranciaMsg"></div>
+    <div class="piBar" style="max-width:420px"><div class="piBarFill" id="aranciaHostTimeBarFill" style="background:linear-gradient(90deg,var(--lime),var(--cyan))"></div></div>
+    <div class="lead mt" id="aranciaResults" style="max-width:460px; width:100%"></div>
+    <div class="row mt">
+      <button class="btn ghost" id="aranciaBtnEnd" onclick="aranciaEnd()">🏁 Ferma qui</button>
+      <button class="btn cy" id="aranciaBtnAgain" onclick="openArancia()">🔁 Un'altra manche</button>
+    </div>
+  </div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
+</div>
+
+<!-- ==================== PROIETTORE: SPREMI L'ARANCIA ==================== -->
+<div class="screen" id="scrPjArancia">
+  <div class="brand"><div class="t1" style="font-size:clamp(24px,3.6vw,42px)">🍊 SPREMI L'ARANCIA</div></div>
+  <div class="miniMsg" id="pjAranciaMsg">Ruotate il polso per spremere più succo possibile!</div>
+  <div class="arScene pjScene">
+    <div class="arOrangeWrap"><div class="arOrange" id="pjAranciaOrange"><div class="arLeaf"></div></div></div>
+  </div>
+  <div class="piBar" style="max-width:520px"><div class="piBarFill" id="pjAranciaTimeBarFill" style="background:linear-gradient(90deg,var(--lime),var(--cyan))"></div></div>
+  <div class="lead mt" id="pjAranciaResults" style="max-width:520px; width:100%; margin:0 auto"></div>
+</div>
+
+<!-- ==================== PLAYER: SPREMI L'ARANCIA ==================== -->
+<div class="screen" id="scrPlayArancia" style="align-items:center; justify-content:center">
+  <div class="row" style="width:100%; justify-content:space-between">
+    <div class="pill" id="aranciapName" style="color:var(--gold)"></div>
+    <div class="pill" id="aranciapScore"></div>
+  </div>
+  <div id="aranciaPermWrap" style="display:none; text-align:center; margin-top:14%">
+    <div style="font-size:70px">🤳</div>
+    <div class="miniMsg" style="margin-top:10px">Serve il permesso per leggere il movimento del telefono</div>
+    <button class="btn mg mt" onclick="aranciaRequestPermission()">✅ Attiva i sensori</button>
+  </div>
+  <div id="aranciaPlayWrap" style="display:none; width:100%; text-align:center">
+    <div class="arScene">
+      <div class="arOrangeWrap"><div class="arOrange" id="aranciaOrange"><div class="arLeaf"></div></div></div>
+      <div class="arGlassWrap"><div class="glScene" style="max-width:130px; height:150px"><div class="glBody"><div class="glLiquid" id="aranciaLiquid"></div><div class="glShine"></div></div></div></div>
+      <div class="arJuicePctBig" id="aranciaPctBig">0%</div>
+    </div>
+    <div class="piBar" style="max-width:420px"><div class="piBarFill" id="aranciaTimeBarFill" style="background:linear-gradient(90deg,var(--lime),var(--cyan))"></div></div>
+  </div>
+  <div class="feedback mtb" id="aranciaFbMsg" style="display:none"></div>
+</div>
+
+<!-- ==================== REGIA: IL VASSOIO DEL CAMERIERE ==================== -->
+<div class="screen" id="scrVassoio">
+  <div class="brand"><div class="t1" style="font-size:clamp(18px,3.4vw,32px)">🎪 IL VASSOIO DEL CAMERIERE</div></div>
+  <div class="panel mt" style="max-width:480px" id="vassoioSetup">
+    <div class="label">Punti massimi al secondo (3 bicchieri, tutti centrati)</div>
+    <input type="number" id="vassoioPts" value="100" min="0" style="text-align:center">
+    <div class="label mt">Penalità per ogni bicchiere che cade</div>
+    <input type="number" id="vassoioDropPenalty" value="150" min="0" style="text-align:center">
+    <div class="label mt">Durata (secondi)</div>
+    <input type="number" id="vassoioDuration" value="20" min="10" style="text-align:center">
+    <div class="byline mt" style="opacity:.75">🎪 Come Tieni l'Equilibrio, ma con TRE bicchieri da tenere in equilibrio sullo stesso vassoio contemporaneamente: la difficoltà non è una zona più piccola, è doverli seguire tutti insieme. Ogni bicchiere che cade dal vassoio dà una penalità e riduce il punteggio massimo ottenibile.</div>
+    <button class="btn mg mt" style="width:100%" onclick="vassoioStart()">🎪 FAI PARTIRE IL GIOCO!</button>
+  </div>
+  <div id="vassoioLive" style="display:none; width:100%" class="center">
+    <div class="miniMsg" id="vassoioMsg"></div>
+    <div class="piBar" style="max-width:420px"><div class="piBarFill" id="vassoioHostTimeBarFill" style="background:linear-gradient(90deg,var(--lime),var(--cyan))"></div></div>
+    <div class="lead mt" id="vassoioResults" style="max-width:460px; width:100%"></div>
+    <div class="row mt">
+      <button class="btn ghost" id="vassoioBtnEnd" onclick="vassoioEnd()">🏁 Ferma qui</button>
+      <button class="btn cy" id="vassoioBtnAgain" onclick="openVassoio()">🔁 Un'altra manche</button>
+    </div>
+  </div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
+</div>
+
+<!-- ==================== PROIETTORE: IL VASSOIO DEL CAMERIERE ==================== -->
+<div class="screen" id="scrPjVassoio">
+  <div class="brand"><div class="t1" style="font-size:clamp(24px,3.6vw,42px)">🎪 IL VASSOIO DEL CAMERIERE</div></div>
+  <div class="miniMsg" id="pjVassoioMsg">Tre bicchieri da tenere in equilibrio insieme!</div>
+  <div class="vsTray pjTray"><div class="vsRim"></div>
+    <div class="vsGlass g0" style="left:42%; top:48%"></div>
+    <div class="vsGlass g1" style="left:58%; top:52%"></div>
+    <div class="vsGlass g2" style="left:50%; top:42%"></div>
+  </div>
+  <div class="piBar" style="max-width:520px"><div class="piBarFill" id="pjVassoioTimeBarFill" style="background:linear-gradient(90deg,var(--lime),var(--cyan))"></div></div>
+  <div class="lead mt" id="pjVassoioResults" style="max-width:520px; width:100%; margin:0 auto"></div>
+</div>
+
+<!-- ==================== PLAYER: IL VASSOIO DEL CAMERIERE ==================== -->
+<div class="screen" id="scrPlayVassoio" style="align-items:center; justify-content:center">
+  <div class="row" style="width:100%; justify-content:space-between">
+    <div class="pill" id="vassoiopName" style="color:var(--gold)"></div>
+    <div class="pill" id="vassoiopScore"></div>
+  </div>
+  <div id="vassoioPermWrap" style="display:none; text-align:center; margin-top:14%">
+    <div style="font-size:70px">🤳</div>
+    <div class="miniMsg" style="margin-top:10px">Serve il permesso per leggere l'inclinazione del telefono</div>
+    <button class="btn mg mt" onclick="vassoioRequestPermission()">✅ Attiva i sensori</button>
+  </div>
+  <div id="vassoioPlayWrap" style="display:none; width:100%; text-align:center">
+    <div class="vsTray" id="vassoioTray"><div class="vsRim"></div>
+      <div class="vsGlass g0" id="vassoioGlass0"></div>
+      <div class="vsGlass g1" id="vassoioGlass1"></div>
+      <div class="vsGlass g2" id="vassoioGlass2"></div>
+    </div>
+    <div class="vsPctBig" id="vassoioPctBig">0%</div>
+    <div class="byline center">bicchieri al sicuro</div>
+    <div class="piBar" style="max-width:420px"><div class="piBarFill" id="vassoioTimeBarFill" style="background:linear-gradient(90deg,var(--lime),var(--cyan))"></div></div>
+  </div>
+  <div class="feedback mtb" id="vassoioFbMsg" style="display:none"></div>
+</div>
+
+<!-- ==================== REGIA: TROVA IL COLORE ==================== -->
+<div class="screen" id="scrTrovaColore">
+  <div class="brand"><div class="t1" style="font-size:clamp(18px,3.4vw,32px)">🎨 TROVA IL COLORE</div></div>
+  <div class="panel mt" style="max-width:480px" id="trovaColoreSetup">
+    <div class="label">Colore bersaglio</div>
+    <select id="trovaColoreTarget" style="width:100%; text-align:center">
+      <option value="random" selected>🎲 Casuale</option>
+      <option value="rosso">🔴 Rosso</option>
+      <option value="blu">🔵 Blu</option>
+      <option value="verde">🟢 Verde</option>
+      <option value="giallo">🟡 Giallo</option>
+      <option value="arancione">🟠 Arancione</option>
+      <option value="viola">🟣 Viola</option>
+      <option value="rosa">🩷 Rosa</option>
+      <option value="nero">⚫ Nero</option>
+      <option value="bianco">⚪ Bianco</option>
+      <option value="marrone">🟤 Marrone</option>
+    </select>
+    <div class="label mt">Punti massimi al secondo (colore perfetto)</div>
+    <input type="number" id="trovaColorePts" value="100" min="0" style="text-align:center">
+    <div class="label mt">Soglia di tolleranza (più basso = più severo)</div>
+    <input type="number" id="trovaColoreThreshold" value="90" min="10" style="text-align:center">
+    <div class="label mt">Penalità al secondo, oltre la soglia</div>
+    <input type="number" id="trovaColorePenalty" value="20" min="0" style="text-align:center">
+    <div class="label mt">Durata (secondi)</div>
+    <input type="number" id="trovaColoreDuration" value="20" min="10" style="text-align:center">
+    <div class="byline mt" style="opacity:.75">🎨 Ogni giocatore usa la fotocamera per inquadrare qualcosa in sala che assomigli il più possibile al colore bersaglio. Più il colore inquadrato è vicino, più punti si guadagnano ogni secondo; troppo lontani dal colore giusto, si perdono punti invece di guadagnarne.</div>
+    <button class="btn mg mt" style="width:100%" onclick="trovaColoreStart()">🎨 FAI PARTIRE IL GIOCO!</button>
+  </div>
+  <div id="trovaColoreLive" style="display:none; width:100%" class="center">
+    <div class="miniMsg" id="trovaColoreMsg"></div>
+    <div class="piBar" style="max-width:420px"><div class="piBarFill" id="trovaColoreHostTimeBarFill" style="background:linear-gradient(90deg,var(--lime),var(--cyan))"></div></div>
+    <div class="lead mt" id="trovaColoreResults" style="max-width:460px; width:100%"></div>
+    <div class="row mt">
+      <button class="btn ghost" id="trovaColoreBtnEnd" onclick="trovaColoreEnd()">🏁 Ferma qui</button>
+      <button class="btn cy" id="trovaColoreBtnAgain" onclick="openTrovaColore()">🔁 Un'altra manche</button>
+    </div>
+  </div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
+</div>
+
+<!-- ==================== PROIETTORE: TROVA IL COLORE ==================== -->
+<div class="screen" id="scrPjTrovaColore">
+  <div class="brand"><div class="t1" style="font-size:clamp(24px,3.6vw,42px)">🎨 TROVA IL COLORE</div></div>
+  <div class="miniMsg">Inquadrate con la fotocamera qualcosa di questo colore!</div>
+  <div class="tcTargetSwatch" id="pjTrovaColoreSwatch" style="width:120px; height:120px; border-radius:24px; margin:20px auto"></div>
+  <div class="piBar" style="max-width:520px"><div class="piBarFill" id="pjTrovaColoreTimeBarFill" style="background:linear-gradient(90deg,var(--lime),var(--cyan))"></div></div>
+  <div class="lead mt" id="pjTrovaColoreResults" style="max-width:520px; width:100%; margin:0 auto"></div>
+</div>
+
+<!-- ==================== PLAYER: TROVA IL COLORE ==================== -->
+<div class="screen" id="scrPlayTrovaColore" style="align-items:center; justify-content:center">
+  <div class="row" style="width:100%; justify-content:space-between">
+    <div class="pill" id="trovaColorepName" style="color:var(--gold)"></div>
+    <div class="pill" id="trovaColorepScore"></div>
+  </div>
+  <div id="trovaColorePermWrap" style="display:none; text-align:center; margin-top:14%">
+    <div style="font-size:70px">📷</div>
+    <div class="miniMsg" style="margin-top:10px">Serve il permesso per usare la fotocamera</div>
+    <button class="btn mg mt" onclick="trovaColoreRequestPermission()">✅ Attiva la fotocamera</button>
+  </div>
+  <div id="trovaColorePlayWrap" style="display:none; width:100%; text-align:center">
+    <div class="tcTargetSwatch" id="trovaColoreSwatch"></div>
+    <div class="tcCameraWrap">
+      <video id="trovaColoreVideo" autoplay playsinline muted></video>
+      <div class="tcReticle" id="trovaColoreReticle"></div>
+    </div>
+    <canvas id="trovaColoreCanvas" style="display:none"></canvas>
+    <div class="tcPctBig" id="trovaColorePctBig">0%</div>
+    <div class="piBar" style="max-width:300px"><div class="piBarFill" id="trovaColoreTimeBarFill" style="background:linear-gradient(90deg,var(--lime),var(--cyan))"></div></div>
+  </div>
+  <div class="feedback mtb" id="trovaColoreFbMsg" style="display:none"></div>
+</div>
+
+<!-- ==================== REGIA: CACCIA ALLA LUCE ==================== -->
+<div class="screen" id="scrCacciaLuce">
+  <div class="brand"><div class="t1" style="font-size:clamp(18px,3.4vw,32px)">💡 CACCIA ALLA LUCE</div></div>
+  <div class="panel mt" style="max-width:480px" id="cacciaLuceSetup">
+    <div class="label">Cosa cercare</div>
+    <select id="cacciaLuceMode" style="width:100%; text-align:center">
+      <option value="random" selected>🎲 Casuale</option>
+      <option value="luce">☀️ Il punto più luminoso</option>
+      <option value="buio">🌑 Il punto più buio</option>
+    </select>
+    <div class="label mt">Punti massimi al secondo (nel punto perfetto)</div>
+    <input type="number" id="cacciaLucePts" value="100" min="0" style="text-align:center">
+    <div class="label mt">Soglia di tolleranza (più basso = più severo)</div>
+    <input type="number" id="cacciaLuceThreshold" value="90" min="10" style="text-align:center">
+    <div class="label mt">Penalità al secondo, oltre la soglia</div>
+    <input type="number" id="cacciaLucePenalty" value="20" min="0" style="text-align:center">
+    <div class="label mt">Durata (secondi)</div>
+    <input type="number" id="cacciaLuceDuration" value="20" min="10" style="text-align:center">
+    <div class="byline mt" style="opacity:.75">💡 Ogni giocatore usa la fotocamera per cercare in sala il punto più luminoso (o più buio, a seconda della modalità) possibile. Più ci si avvicina, più punti si guadagnano ogni secondo; troppo lontani dall'obiettivo, si perdono punti invece di guadagnarne.</div>
+    <button class="btn mg mt" style="width:100%" onclick="cacciaLuceStart()">💡 FAI PARTIRE IL GIOCO!</button>
+  </div>
+  <div id="cacciaLuceLive" style="display:none; width:100%" class="center">
+    <div class="miniMsg" id="cacciaLuceMsg"></div>
+    <div class="piBar" style="max-width:420px"><div class="piBarFill" id="cacciaLuceHostTimeBarFill" style="background:linear-gradient(90deg,var(--lime),var(--cyan))"></div></div>
+    <div class="lead mt" id="cacciaLuceResults" style="max-width:460px; width:100%"></div>
+    <div class="row mt">
+      <button class="btn ghost" id="cacciaLuceBtnEnd" onclick="cacciaLuceEnd()">🏁 Ferma qui</button>
+      <button class="btn cy" id="cacciaLuceBtnAgain" onclick="openCacciaLuce()">🔁 Un'altra manche</button>
+    </div>
+  </div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
+</div>
+
+<!-- ==================== PROIETTORE: CACCIA ALLA LUCE ==================== -->
+<div class="screen" id="scrPjCacciaLuce">
+  <div class="brand"><div class="t1" style="font-size:clamp(24px,3.6vw,42px)">💡 CACCIA ALLA LUCE</div></div>
+  <div class="miniMsg" id="pjCacciaLuceMsg">Cercate con la fotocamera il punto giusto!</div>
+  <div class="clModeIcon" id="pjCacciaLuceIcon" style="font-size:90px">☀️</div>
+  <div class="piBar" style="max-width:520px"><div class="piBarFill" id="pjCacciaLuceTimeBarFill" style="background:linear-gradient(90deg,var(--lime),var(--cyan))"></div></div>
+  <div class="lead mt" id="pjCacciaLuceResults" style="max-width:520px; width:100%; margin:0 auto"></div>
+</div>
+
+<!-- ==================== PLAYER: CACCIA ALLA LUCE ==================== -->
+<div class="screen" id="scrPlayCacciaLuce" style="align-items:center; justify-content:center">
+  <div class="row" style="width:100%; justify-content:space-between">
+    <div class="pill" id="cacciaLucepName" style="color:var(--gold)"></div>
+    <div class="pill" id="cacciaLucepScore"></div>
+  </div>
+  <div id="cacciaLucePermWrap" style="display:none; text-align:center; margin-top:14%">
+    <div style="font-size:70px">📷</div>
+    <div class="miniMsg" style="margin-top:10px">Serve il permesso per usare la fotocamera</div>
+    <button class="btn mg mt" onclick="cacciaLuceRequestPermission()">✅ Attiva la fotocamera</button>
+  </div>
+  <div id="cacciaLucePlayWrap" style="display:none; width:100%; text-align:center">
+    <div class="clModeIcon" id="cacciaLuceIcon">☀️</div>
+    <div class="tcCameraWrap">
+      <video id="cacciaLuceVideo" autoplay playsinline muted></video>
+      <div class="tcReticle" id="cacciaLuceReticle"></div>
+    </div>
+    <canvas id="cacciaLuceCanvas" style="display:none"></canvas>
+    <div class="clPctBig" id="cacciaLucePctBig">0%</div>
+    <div class="piBar" style="max-width:300px"><div class="piBarFill" id="cacciaLuceTimeBarFill" style="background:linear-gradient(90deg,var(--lime),var(--cyan))"></div></div>
+  </div>
+  <div class="feedback mtb" id="cacciaLuceFbMsg" style="display:none"></div>
+</div>
+
+<!-- ==================== REGIA: MIMETIZZATI ==================== -->
+<div class="screen" id="scrMimetizzati">
+  <div class="brand"><div class="t1" style="font-size:clamp(18px,3.4vw,32px)">🫥 MIMETIZZATI</div></div>
+  <div class="panel mt" style="max-width:480px" id="mimetizzatiSetup">
+    <div class="label">Punti massimi al secondo (mimetizzati alla perfezione)</div>
+    <input type="number" id="mimetizzatiPts" value="100" min="0" style="text-align:center">
+    <div class="label mt">Soglia di tolleranza (più basso = più severo)</div>
+    <input type="number" id="mimetizzatiThreshold" value="90" min="10" style="text-align:center">
+    <div class="label mt">Penalità al secondo, oltre la soglia</div>
+    <input type="number" id="mimetizzatiPenalty" value="20" min="0" style="text-align:center">
+    <div class="label mt">Durata totale (secondi) — include anche il tempo per "fissare" il proprio colore</div>
+    <input type="number" id="mimetizzatiDuration" value="25" min="15" style="text-align:center">
+    <div class="byline mt" style="opacity:.75">🫥 Ogni giocatore inquadra prima se stesso (o i propri vestiti) per fissare un colore personale, poi deve trovare in sala qualcosa che ci si confonda il più possibile: un bersaglio diverso per ognuno, deciso da loro stessi. Il tempo per fissare il colore si toglie dal tempo totale a disposizione.</div>
+    <button class="btn mg mt" style="width:100%" onclick="mimetizzatiStart()">🫥 FAI PARTIRE IL GIOCO!</button>
+  </div>
+  <div id="mimetizzatiLive" style="display:none; width:100%" class="center">
+    <div class="miniMsg" id="mimetizzatiMsg"></div>
+    <div class="piBar" style="max-width:420px"><div class="piBarFill" id="mimetizzatiHostTimeBarFill" style="background:linear-gradient(90deg,var(--lime),var(--cyan))"></div></div>
+    <div class="lead mt" id="mimetizzatiResults" style="max-width:460px; width:100%"></div>
+    <div class="row mt">
+      <button class="btn ghost" id="mimetizzatiBtnEnd" onclick="mimetizzatiEnd()">🏁 Ferma qui</button>
+      <button class="btn cy" id="mimetizzatiBtnAgain" onclick="openMimetizzati()">🔁 Un'altra manche</button>
+    </div>
+  </div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
+</div>
+
+<!-- ==================== PROIETTORE: MIMETIZZATI ==================== -->
+<div class="screen" id="scrPjMimetizzati">
+  <div class="brand"><div class="t1" style="font-size:clamp(24px,3.6vw,42px)">🫥 MIMETIZZATI</div></div>
+  <div class="miniMsg">Fissate il vostro colore, poi confondetevi con l'ambiente!</div>
+  <div style="font-size:90px; text-align:center; margin:20px auto">🫥</div>
+  <div class="piBar" style="max-width:520px"><div class="piBarFill" id="pjMimetizzatiTimeBarFill" style="background:linear-gradient(90deg,var(--lime),var(--cyan))"></div></div>
+  <div class="lead mt" id="pjMimetizzatiResults" style="max-width:520px; width:100%; margin:0 auto"></div>
+</div>
+
+<!-- ==================== PLAYER: MIMETIZZATI ==================== -->
+<div class="screen" id="scrPlayMimetizzati" style="align-items:center; justify-content:center">
+  <div class="row" style="width:100%; justify-content:space-between">
+    <div class="pill" id="mimetizzatipName" style="color:var(--gold)"></div>
+    <div class="pill" id="mimetizzatipScore"></div>
+  </div>
+  <div id="mimetizzatiPermWrap" style="display:none; text-align:center; margin-top:14%">
+    <div style="font-size:70px">📷</div>
+    <div class="miniMsg" style="margin-top:10px">Serve il permesso per usare la fotocamera</div>
+    <button class="btn mg mt" onclick="mimetizzatiRequestPermission()">✅ Attiva la fotocamera</button>
+  </div>
+  <div id="mimetizzatiPlayWrap" style="display:none; width:100%; text-align:center">
+    <div class="miniMsg" id="mimetizzatiStepMsg">STEP 1 — Inquadra te stesso o i tuoi vestiti</div>
+    <div class="tcCameraWrap">
+      <video id="mimetizzatiVideo" autoplay playsinline muted></video>
+      <div class="tcReticle" id="mimetizzatiReticle"></div>
+    </div>
+    <canvas id="mimetizzatiCanvas" style="display:none"></canvas>
+    <button class="btn mg mt" id="mimetizzatiCaptureBtn" onclick="mimetizzatiCapture()">📸 Fissa questo colore</button>
+    <div class="tcTargetSwatch" id="mimetizzatiSwatch" style="display:none"></div>
+    <div class="clPctBig" id="mimetizzatiPctBig" style="display:none">0%</div>
+    <div class="piBar" style="max-width:300px"><div class="piBarFill" id="mimetizzatiTimeBarFill" style="background:linear-gradient(90deg,var(--lime),var(--cyan))"></div></div>
+  </div>
+  <div class="feedback mtb" id="mimetizzatiFbMsg" style="display:none"></div>
 </div>
 
 <!-- ==================== HOST: LA CASSAFORTE ==================== -->
@@ -7271,7 +7924,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1407; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1416; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -9511,6 +10164,7 @@ function listenGame(){
     const me = (g.players||{})[P.id] || {score:0};
     $('pqScore').textContent = (me.score||0)+' pt';
     if (g.status!=='horses' && typeof stopHypeMic==='function') stopHypeMic();
+    stopUnusedCameraStreams(g.status);
     // MODALITÀ HIGHLANDER: chi è stato eliminato non può più rispondere alle domande, ma resta in classifica
     if (me.eliminated && (g.status==='question' || g.status==='wordsearch' || g.status==='anagram')){
       showScreen('scrWait');
@@ -9587,6 +10241,15 @@ function listenGame(){
     else if (g.status==='scuoti') showPlayerScuoti(g);
     else if (g.status==='equilibrio') showPlayerEquilibrio(g);
     else if (g.status==='dadimatti') showPlayerDadiMatti(g);
+    else if (g.status==='bussola') showPlayerBussola(g);
+    else if (g.status==='bicchiere') showPlayerBicchiere(g);
+    else if (g.status==='manoferma') showPlayerManoFerma(g);
+    else if (g.status==='colposecco') showPlayerColpoSecco(g);
+    else if (g.status==='arancia') showPlayerArancia(g);
+    else if (g.status==='vassoio') showPlayerVassoio(g);
+    else if (g.status==='trovacolore') showPlayerTrovaColore(g);
+    else if (g.status==='caccialuce') showPlayerCacciaLuce(g);
+    else if (g.status==='mimetizzati') showPlayerMimetizzati(g);
     else if (g.status==='cassaforte') showPlayerCassaforte(g);
     else if (g.status==='settemezzo') showPlayerSetteMezzo(g);
     else if (g.status==='scopa') showPlayerScopa(g);
@@ -10018,6 +10681,25 @@ function stopHypeMic(){
   if (hrsAudioCtx){ try{ hrsAudioCtx.close(); }catch(e){} hrsAudioCtx=null; }
   hrsAnalyser = null;
   const w = $('hypeWrap'); if (w) w.style.display='none';
+}
+// I tre giochi con la fotocamera (Trova il Colore, Caccia alla Luce, Mimetizzati) tengono di proposito
+// la propria fotocamera accesa tra una manche e l'altra dello STESSO gioco, per non richiedere il
+// permesso ogni volta. Ma se il giocatore passa a un gioco DIVERSO (anche un altro gioco con
+// fotocamera), le fotocamere rimaste accese vanno spente: altrimenti restano tutte attive insieme,
+// sprecando batteria e rischiando conflitti hardware su alcuni telefoni.
+function stopUnusedCameraStreams(currentStatus){
+  const streams = [
+    { status:'trovacolore', key:'trovaColoreStream' },
+    { status:'caccialuce', key:'cacciaLuceStream' },
+    { status:'mimetizzati', key:'mimetizzatiStream' },
+  ];
+  streams.forEach(({status, key})=>{
+    if (status !== currentStatus && P[key]){
+      P[key].getTracks().forEach(t=>t.stop());
+      P[key] = null;
+      P[key.replace('Stream','PermGranted')] = false; // richiederà di nuovo il permesso alla prossima manche di QUESTO gioco
+    }
+  });
 }
 /* ================================================================
    SEI TROPPO FISCALE! — telefono
@@ -14307,11 +14989,11 @@ function battiTap(){
         const ids = Object.keys(players).filter(id=>id!==P.id);
         if (!ids.length){
           // caso raro (un solo giocatore in partita): la mano resta a chi l'ha appena battuta
-          P.ref.child('batti').update({ ['tallies/'+P.id]: myTally, passCount:(m.passCount||0)+1 });
+          P.ref.child('batti').update({ ['tallies/'+P.id]: myTally, holderSince:serverNow(), passCount:(m.passCount||0)+1 });
           return;
         }
         const nextId = ids[Math.floor(Math.random()*ids.length)];
-        P.ref.child('batti').update({ holderId:nextId, holderName:players[nextId].name,
+        P.ref.child('batti').update({ holderId:nextId, holderName:players[nextId].name, holderSince:serverNow(),
           ['tallies/'+P.id]: myTally, passCount:(m.passCount||0)+1 });
       });
     }
@@ -14858,6 +15540,1087 @@ function dadiMattiFinishRound(sum){
   const msg = $('dadiMattiFbMsg');
   msg.style.display = 'block'; msg.className = 'feedback mtb fb-ok';
   msg.textContent = `🎲 Somma totale: ${sum}. In attesa degli altri...`;
+}
+/* ================================================================
+   LA BUSSOLA MALEDETTA — telefono
+   Uso webkitCompassHeading su iPhone (già in gradi bussola veri) e event.alpha su Android/altri browser,
+   convertito in un'intestazione bussola equivalente. Il bersaglio è lo stesso per tutti i giocatori in
+   quella manche (arriva dalla regia), per una gara leale.
+================================================================ */
+function showPlayerBussola(g){
+  const m = g.bussola||{};
+  $('bussolapName').textContent = P.name;
+  const myScore = ((g.players||{})[P.id]||{}).score||0;
+  $('bussolapScore').textContent = myScore+' pt';
+  showScreen('scrPlayBussola');
+  if (m.phase !== 'play'){
+    bussolaStopLocalLoop();
+    $('bussolaPermWrap').style.display='none';
+    $('bussolaPlayWrap').style.display='none';
+    $('bussolaFbMsg').style.display='none';
+    P.bussolaActive = false;
+    return;
+  }
+  if (P.bussolaStartAt !== m.startAt){
+    P.bussolaStartAt = m.startAt;
+    P.bussolaDurationSec = m.durationSec;
+    P.bussolaPtsPerSec = m.ptsPerSec;
+    P.bussolaThresholdDeg = m.thresholdDeg;
+    P.bussolaPenaltyPerSec = m.penaltyPerSec;
+    P.bussolaTargetHeading = m.targetHeading;
+    P.bussolaScore = 0;
+    P.bussolaSubmitted = false;
+    P.bussolaHeading = 0;
+    $('bussolaFbMsg').style.display='none';
+    bcBuildDial('bussolaDial');
+    bcPositionTarget('bussolaDial', m.targetHeading);
+    if (P.bussolaPermGranted){
+      bussolaBeginRound();
+    } else {
+      $('bussolaPermWrap').style.display='block';
+      $('bussolaPlayWrap').style.display='none';
+    }
+  }
+}
+function bussolaRequestPermission(){
+  const finishSetup = ()=>{ P.bussolaPermGranted = true; bussolaBeginRound(); };
+  if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function'){
+    DeviceOrientationEvent.requestPermission().then(state=>{
+      if (state === 'granted') finishSetup();
+      else alert('Serve il permesso per leggere l\'orientamento del telefono: riprova e concedilo per giocare.');
+    }).catch(()=> alert('Non sono riuscito a chiedere il permesso di orientamento. Riprova.'));
+  } else {
+    finishSetup();
+  }
+}
+function bussolaBeginRound(){
+  $('bussolaPermWrap').style.display='none';
+  $('bussolaPlayWrap').style.display='block';
+  P.bussolaActive = true;
+  window.addEventListener('deviceorientation', bussolaMotionHandler);
+  P.bussolaLastTick = Date.now();
+  clearInterval(P.bussolaTimerInt);
+  P.bussolaTimerInt = setInterval(bussolaTick, 100);
+}
+function bussolaStopLocalLoop(){
+  window.removeEventListener('deviceorientation', bussolaMotionHandler);
+  clearInterval(P.bussolaTimerInt);
+}
+function bussolaMotionHandler(event){
+  let heading;
+  if (typeof event.webkitCompassHeading === 'number'){
+    heading = event.webkitCompassHeading; // iPhone: già una vera intestazione bussola, 0=nord, in senso orario
+  } else if (event.alpha != null){
+    heading = (360 - event.alpha) % 360; // Android: alpha cresce in senso antiorario, lo converto
+  } else return;
+  P.bussolaHeading = heading;
+  const needle = document.getElementById('bussolaDial_needleWrap');
+  if (needle) needle.style.transform = `rotate(${heading}deg)`;
+}
+function bussolaTick(){
+  if (!P.bussolaStartAt || !P.bussolaActive) return;
+  const now = Date.now();
+  const dt = Math.min(0.2, (now - P.bussolaLastTick)/1000);
+  P.bussolaLastTick = now;
+  const diff = bcAngularDiff(P.bussolaHeading, P.bussolaTargetHeading);
+  let pct;
+  if (diff <= P.bussolaThresholdDeg){
+    pct = 1 - diff/P.bussolaThresholdDeg;
+    P.bussolaScore += P.bussolaPtsPerSec * pct * dt;
+  } else {
+    pct = 0;
+    P.bussolaScore -= P.bussolaPenaltyPerSec * dt; // oltre la soglia: si perdono punti invece di guadagnarne
+  }
+  $('bussolaPctBig').textContent = Math.round(pct*100)+'%';
+
+  const elapsedSec = (serverNow() - P.bussolaStartAt)/1000;
+  const frac = Math.max(0, 1 - elapsedSec/P.bussolaDurationSec);
+  const bar = $('bussolaTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%';
+  if (elapsedSec >= P.bussolaDurationSec) bussolaFinishRound();
+}
+function bussolaFinishRound(){
+  if (P.bussolaSubmitted) return;
+  P.bussolaSubmitted = true;
+  P.bussolaActive = false;
+  bussolaStopLocalLoop();
+  const finalPts = Math.round(P.bussolaScore);
+  P.ref.child('bussola/results/'+P.id).set({ name:P.name, pts:finalPts });
+  P.ref.child('players/'+P.id+'/score').once('value').then(sc=>{
+    P.ref.child('players/'+P.id+'/score').set((sc.val()||0) + finalPts);
+  });
+  const msg = $('bussolaFbMsg');
+  msg.style.display = 'block'; msg.className = 'feedback mtb ' + (finalPts>=0?'fb-ok':'fb-no');
+  msg.textContent = `⏱ TEMPO SCADUTO! ${finalPts>=0?'+':''}${finalPts} punti`;
+  if (navigator.vibrate) navigator.vibrate(finalPts>=0 ? [80,50,80,50,150] : [120,80,120]);
+}
+/* ================================================================
+   NON VERSARE IL BICCHIERE — telefono
+   Uso solo l'inclinazione avanti/indietro (beta) per versare, non anche i lati: un solo asse da
+   gestire, per un gesto che ricorda davvero il versare da un bicchiere. Sotto una piccola zona morta
+   non esce nulla (tenere il telefono comodo in mano non deve far traboccare per sbaglio).
+================================================================ */
+const BICCHIERE_DEADZONE = 6, BICCHIERE_RATE_K = 2.2, BICCHIERE_MAX_TILT = 45, BICCHIERE_OVERFLOW_BUFFER = 4;
+function showPlayerBicchiere(g){
+  const m = g.bicchiere||{};
+  $('bicchierepName').textContent = P.name;
+  const myScore = ((g.players||{})[P.id]||{}).score||0;
+  $('bicchierepScore').textContent = myScore+' pt';
+  showScreen('scrPlayBicchiere');
+  if (m.phase !== 'play'){
+    bicchiereStopLocalLoop();
+    $('bicchierePermWrap').style.display='none';
+    $('bicchierePlayWrap').style.display='none';
+    $('bicchiereFbMsg').style.display='none';
+    P.bicchiereActive = false;
+    return;
+  }
+  if (P.bicchiereStartAt !== m.startAt){
+    P.bicchiereStartAt = m.startAt;
+    P.bicchiereDurationSec = m.durationSec;
+    P.bicchierePtsPerSec = m.ptsPerSec;
+    P.bicchiereOverflowPenalty = m.overflowPenalty;
+    P.bicchiereFill = 0;
+    P.bicchiereScore = 0;
+    P.bicchiereSubmitted = false;
+    P.bicchiereTilt = 0;
+    $('bicchiereFbMsg').style.display='none';
+    $('bicchiereLiquid').style.height = '0%';
+    $('bicchierePctBig').textContent = '0%';
+    if (P.bicchierePermGranted){
+      bicchiereBeginRound();
+    } else {
+      $('bicchierePermWrap').style.display='block';
+      $('bicchierePlayWrap').style.display='none';
+    }
+  }
+}
+function bicchiereRequestPermission(){
+  const finishSetup = ()=>{ P.bicchierePermGranted = true; bicchiereBeginRound(); };
+  if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function'){
+    DeviceOrientationEvent.requestPermission().then(state=>{
+      if (state === 'granted') finishSetup();
+      else alert('Serve il permesso per leggere l\'inclinazione del telefono: riprova e concedilo per giocare.');
+    }).catch(()=> alert('Non sono riuscito a chiedere il permesso di orientamento. Riprova.'));
+  } else {
+    finishSetup();
+  }
+}
+function bicchiereBeginRound(){
+  $('bicchierePermWrap').style.display='none';
+  $('bicchierePlayWrap').style.display='block';
+  P.bicchiereActive = true;
+  window.addEventListener('deviceorientation', bicchiereMotionHandler);
+  P.bicchiereLastTick = Date.now();
+  clearInterval(P.bicchiereTimerInt);
+  P.bicchiereTimerInt = setInterval(bicchiereTick, 60);
+}
+function bicchiereStopLocalLoop(){
+  window.removeEventListener('deviceorientation', bicchiereMotionHandler);
+  clearInterval(P.bicchiereTimerInt);
+}
+function bicchiereMotionHandler(event){
+  if (event.beta == null) return;
+  P.bicchiereTilt = event.beta; // solo l'asse avanti/indietro: un gesto vero di "versare"
+}
+function bicchierePourRate(tiltDeg){
+  const t = Math.max(0, Math.min(BICCHIERE_MAX_TILT, Math.abs(tiltDeg)) - BICCHIERE_DEADZONE);
+  return t * BICCHIERE_RATE_K; // % al secondo
+}
+function bicchiereTick(){
+  if (!P.bicchiereStartAt || !P.bicchiereActive) return;
+  const now = Date.now();
+  const dt = Math.min(0.1, (now - P.bicchiereLastTick)/1000);
+  P.bicchiereLastTick = now;
+
+  P.bicchiereFill += bicchierePourRate(P.bicchiereTilt) * dt;
+  const liquidEl = $('bicchiereLiquid');
+  if (liquidEl) liquidEl.style.height = Math.min(100, P.bicchiereFill)+'%';
+  $('bicchierePctBig').textContent = Math.round(Math.min(100,P.bicchiereFill))+'%';
+
+  if (P.bicchiereFill > 100+BICCHIERE_OVERFLOW_BUFFER){
+    bicchiereFinishRound(true); // trabocca: fine manche subito, con penalità
+    return;
+  }
+  P.bicchiereScore += P.bicchierePtsPerSec * Math.min(1, P.bicchiereFill/100) * dt;
+
+  const elapsedSec = (serverNow() - P.bicchiereStartAt)/1000;
+  const frac = Math.max(0, 1 - elapsedSec/P.bicchiereDurationSec);
+  const bar = $('bicchiereTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%';
+  if (elapsedSec >= P.bicchiereDurationSec) bicchiereFinishRound(false);
+}
+function bicchiereFinishRound(spilled){
+  if (P.bicchiereSubmitted) return;
+  P.bicchiereSubmitted = true;
+  P.bicchiereActive = false;
+  bicchiereStopLocalLoop();
+  let finalPts = Math.round(P.bicchiereScore);
+  if (spilled) finalPts -= P.bicchiereOverflowPenalty;
+  P.ref.child('bicchiere/results/'+P.id).set({ name:P.name, pts:finalPts, spilled:!!spilled });
+  P.ref.child('players/'+P.id+'/score').once('value').then(sc=>{
+    P.ref.child('players/'+P.id+'/score').set((sc.val()||0) + finalPts);
+  });
+  const msg = $('bicchiereFbMsg');
+  msg.style.display = 'block'; msg.className = 'feedback mtb ' + (spilled ? 'fb-no' : 'fb-ok');
+  msg.textContent = spilled
+    ? `💦 TRABOCCATO! ${finalPts>=0?'+':''}${finalPts} punti`
+    : `⏱ TEMPO SCADUTO! +${finalPts} punti`;
+  if (navigator.vibrate) navigator.vibrate(spilled ? [120,80,120] : [80,50,80,50,150]);
+}
+/* ================================================================
+   MANI FERME — telefono
+   Il tremore (jitter) si misura come differenza tra una lettura dell'accelerometro e la successiva:
+   non serve calibrare nulla all'inizio, e funziona qualunque sia la posizione in cui si tiene il
+   telefono (dato che la gravità costante si "cancella" automaticamente in questo calcolo).
+================================================================ */
+function showPlayerManoFerma(g){
+  const m = g.manoferma||{};
+  $('manoFermapName').textContent = P.name;
+  const myScore = ((g.players||{})[P.id]||{}).score||0;
+  $('manoFermapScore').textContent = myScore+' pt';
+  showScreen('scrPlayManoFerma');
+  if (m.phase !== 'play'){
+    manoFermaStopLocalLoop();
+    $('manoFermaPermWrap').style.display='none';
+    $('manoFermaPlayWrap').style.display='none';
+    $('manoFermaFbMsg').style.display='none';
+    P.manoFermaActive = false;
+    return;
+  }
+  if (P.manoFermaStartAt !== m.startAt){
+    P.manoFermaStartAt = m.startAt;
+    P.manoFermaDurationSec = m.durationSec;
+    P.manoFermaPtsPerSec = m.ptsPerSec;
+    P.manoFermaThresholdJitter = m.thresholdJitter;
+    P.manoFermaPenaltyPerSec = m.penaltyPerSec;
+    P.manoFermaScore = 0;
+    P.manoFermaSubmitted = false;
+    P.manoFermaPrevMag = null;
+    P.manoFermaJitter = 0;
+    $('manoFermaFbMsg').style.display='none';
+    if (P.manoFermaPermGranted){
+      manoFermaBeginRound();
+    } else {
+      $('manoFermaPermWrap').style.display='block';
+      $('manoFermaPlayWrap').style.display='none';
+    }
+  }
+}
+function manoFermaRequestPermission(){
+  const finishSetup = ()=>{ P.manoFermaPermGranted = true; manoFermaBeginRound(); };
+  if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function'){
+    DeviceMotionEvent.requestPermission().then(state=>{
+      if (state === 'granted') finishSetup();
+      else alert('Serve il permesso per leggere il movimento del telefono: riprova e concedilo per giocare.');
+    }).catch(()=> alert('Non sono riuscito a chiedere il permesso di movimento. Riprova.'));
+  } else {
+    finishSetup();
+  }
+}
+function manoFermaBeginRound(){
+  $('manoFermaPermWrap').style.display='none';
+  $('manoFermaPlayWrap').style.display='block';
+  P.manoFermaActive = true;
+  window.addEventListener('devicemotion', manoFermaMotionHandler);
+  P.manoFermaLastTick = Date.now();
+  clearInterval(P.manoFermaTimerInt);
+  P.manoFermaTimerInt = setInterval(manoFermaTick, 100);
+}
+function manoFermaStopLocalLoop(){
+  window.removeEventListener('devicemotion', manoFermaMotionHandler);
+  clearInterval(P.manoFermaTimerInt);
+}
+function manoFermaMotionHandler(event){
+  const acc = event.accelerationIncludingGravity || event.acceleration;
+  if (!acc) return;
+  const mag = Math.sqrt((acc.x||0)**2 + (acc.y||0)**2 + (acc.z||0)**2);
+  if (P.manoFermaPrevMag != null) P.manoFermaJitter = Math.abs(mag - P.manoFermaPrevMag);
+  P.manoFermaPrevMag = mag;
+}
+function manoFermaTick(){
+  if (!P.manoFermaStartAt || !P.manoFermaActive) return;
+  const now = Date.now();
+  const dt = Math.min(0.2, (now - P.manoFermaLastTick)/1000);
+  P.manoFermaLastTick = now;
+
+  const jitter = P.manoFermaJitter;
+  let pct;
+  if (jitter <= P.manoFermaThresholdJitter){
+    pct = 1 - jitter/P.manoFermaThresholdJitter;
+    P.manoFermaScore += P.manoFermaPtsPerSec * pct * dt;
+  } else {
+    pct = 0;
+    P.manoFermaScore -= P.manoFermaPenaltyPerSec * dt;
+  }
+  $('manoFermaPctBig').textContent = Math.round(pct*100)+'%';
+  // feedback visivo: l'orbe trema quanto più la mano trema davvero, e l'anello cambia colore
+  const orb = $('manoFermaOrb'), ring = $('manoFermaRing');
+  const wobble = Math.min(14, jitter*8);
+  const angle = Math.random()*Math.PI*2;
+  if (orb) orb.style.transform = `translate(${Math.cos(angle)*wobble}px, ${Math.sin(angle)*wobble}px)`;
+  if (ring){
+    const col = pct>0.66 ? 'var(--lime)' : pct>0.33 ? 'var(--gold)' : '#ff3b3b';
+    ring.style.borderColor = col; ring.style.boxShadow = `0 0 20px ${col}`;
+  }
+  const pctEl = $('manoFermaPctBig');
+  if (pctEl) pctEl.style.color = pct>0.66 ? 'var(--lime)' : pct>0.33 ? 'var(--gold)' : '#ff3b3b';
+
+  const elapsedSec = (serverNow() - P.manoFermaStartAt)/1000;
+  const frac = Math.max(0, 1 - elapsedSec/P.manoFermaDurationSec);
+  const bar = $('manoFermaTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%';
+  if (elapsedSec >= P.manoFermaDurationSec) manoFermaFinishRound();
+}
+function manoFermaFinishRound(){
+  if (P.manoFermaSubmitted) return;
+  P.manoFermaSubmitted = true;
+  P.manoFermaActive = false;
+  manoFermaStopLocalLoop();
+  const finalPts = Math.round(P.manoFermaScore);
+  P.ref.child('manoferma/results/'+P.id).set({ name:P.name, pts:finalPts });
+  P.ref.child('players/'+P.id+'/score').once('value').then(sc=>{
+    P.ref.child('players/'+P.id+'/score').set((sc.val()||0) + finalPts);
+  });
+  const msg = $('manoFermaFbMsg');
+  msg.style.display = 'block'; msg.className = 'feedback mtb ' + (finalPts>=0?'fb-ok':'fb-no');
+  msg.textContent = `⏱ TEMPO SCADUTO! ${finalPts>=0?'+':''}${finalPts} punti`;
+  if (navigator.vibrate) navigator.vibrate(finalPts>=0 ? [80,50,80,50,150] : [120,80,120]);
+}
+/* ================================================================
+   IL COLPO SECCO — telefono
+   Il giudizio "prima o dopo il VIA" si fa confrontando l'istante ESATTO del colpo rilevato con goAt
+   (l'orario condiviso da tutti), non con un interruttore aggiornato periodicamente: evita che un
+   piccolo ritardo nel controllo periodico classifichi per sbaglio come "anticipo" un colpo arrivato
+   giusto un istante dopo il VIA.
+================================================================ */
+function showPlayerColpoSecco(g){
+  const m = g.colposecco||{};
+  $('colpoSeccopName').textContent = P.name;
+  const myScore = ((g.players||{})[P.id]||{}).score||0;
+  $('colpoSeccopScore').textContent = myScore+' pt';
+  showScreen('scrPlayColpoSecco');
+  if (m.phase !== 'wait'){
+    colpoSeccoStopLocalLoop();
+    $('colpoSeccoPermWrap').style.display='none';
+    $('colpoSeccoPlayWrap').style.display='none';
+    $('colpoSeccoFbMsg').style.display='none';
+    P.colpoSeccoActive = false;
+    return;
+  }
+  if (P.colpoSeccoGoAt !== m.goAt){
+    P.colpoSeccoGoAt = m.goAt;
+    P.colpoSeccoEarlyPenalty = m.earlyPenalty;
+    P.colpoSeccoSubmitted = false;
+    P.colpoSeccoWentGo = false;
+    $('colpoSeccoFbMsg').style.display='none';
+    const icon = $('colpoSeccoIcon');
+    icon.className = 'csIcon'; icon.textContent = '✊';
+    $('colpoSeccoWaitMsg').style.display='block'; $('colpoSeccoWaitMsg').textContent = 'TIENITI PRONTO...';
+    $('colpoSeccoGoMsg').style.display='none';
+    $('colpoSeccoReactionBig').style.display='none';
+    if (P.colpoSeccoPermGranted){
+      colpoSeccoBeginRound();
+    } else {
+      $('colpoSeccoPermWrap').style.display='block';
+      $('colpoSeccoPlayWrap').style.display='none';
+    }
+  }
+}
+function colpoSeccoRequestPermission(){
+  const finishSetup = ()=>{ P.colpoSeccoPermGranted = true; colpoSeccoBeginRound(); };
+  if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function'){
+    DeviceMotionEvent.requestPermission().then(state=>{
+      if (state === 'granted') finishSetup();
+      else alert('Serve il permesso per leggere il movimento del telefono: riprova e concedilo per giocare.');
+    }).catch(()=> alert('Non sono riuscito a chiedere il permesso di movimento. Riprova.'));
+  } else {
+    finishSetup();
+  }
+}
+function colpoSeccoBeginRound(){
+  $('colpoSeccoPermWrap').style.display='none';
+  $('colpoSeccoPlayWrap').style.display='block';
+  P.colpoSeccoActive = true;
+  window.addEventListener('devicemotion', colpoSeccoMotionHandler);
+  clearInterval(P.colpoSeccoWatchInt);
+  P.colpoSeccoWatchInt = setInterval(colpoSeccoWatch, 30); // solo per il cambio visivo a "VIA!", non per il giudizio
+}
+function colpoSeccoStopLocalLoop(){
+  window.removeEventListener('devicemotion', colpoSeccoMotionHandler);
+  clearInterval(P.colpoSeccoWatchInt);
+}
+const COLPOSECCO_THRESHOLD = 16;
+function colpoSeccoMotionHandler(event){
+  if (!P.colpoSeccoActive || P.colpoSeccoSubmitted) return;
+  const acc = event.accelerationIncludingGravity || event.acceleration;
+  if (!acc) return;
+  const magnitude = Math.sqrt((acc.x||0)**2 + (acc.y||0)**2 + (acc.z||0)**2);
+  if (magnitude > COLPOSECCO_THRESHOLD){
+    const now = serverNow();
+    if (now < P.colpoSeccoGoAt) colpoSeccoSubmit(true, null);
+    else colpoSeccoSubmit(false, now - P.colpoSeccoGoAt);
+  }
+}
+function colpoSeccoWatch(){
+  if (!P.colpoSeccoActive || P.colpoSeccoWentGo || P.colpoSeccoSubmitted) return;
+  if (serverNow() >= P.colpoSeccoGoAt){
+    P.colpoSeccoWentGo = true;
+    const icon = $('colpoSeccoIcon');
+    icon.classList.add('csGo'); icon.textContent = '💥';
+    $('colpoSeccoWaitMsg').style.display='none';
+    $('colpoSeccoGoMsg').style.display='block';
+    if (navigator.vibrate) navigator.vibrate(80);
+  }
+}
+function colpoSeccoSubmit(jumped, reactionMs){
+  if (P.colpoSeccoSubmitted) return;
+  P.colpoSeccoSubmitted = true;
+  P.colpoSeccoActive = false;
+  colpoSeccoStopLocalLoop();
+  const data = jumped ? { name:P.name, jumped:true } : { name:P.name, reactionMs };
+  P.ref.child('colposecco/results/'+P.id).set(data);
+  const icon = $('colpoSeccoIcon');
+  icon.classList.remove('csGo'); icon.classList.add('csDone');
+  icon.textContent = jumped ? '🚩' : '✅';
+  $('colpoSeccoGoMsg').style.display='none'; $('colpoSeccoWaitMsg').style.display='none';
+  const msg = $('colpoSeccoFbMsg');
+  msg.style.display='block'; msg.className = 'feedback mtb ' + (jumped?'fb-no':'fb-ok');
+  if (jumped){
+    msg.textContent = `🚩 PARTITO IN ANTICIPO! Penalità di ${P.colpoSeccoEarlyPenalty} punti`;
+    if (navigator.vibrate) navigator.vibrate([120,80,120]);
+  } else {
+    $('colpoSeccoReactionBig').style.display='block';
+    $('colpoSeccoReactionBig').textContent = (reactionMs/1000).toFixed(3)+'s';
+    msg.textContent = `🥊 Colpo registrato! In attesa degli altri...`;
+    if (navigator.vibrate) navigator.vibrate([60,40,60]);
+  }
+}
+/* ================================================================
+   SPREMI L'ARANCIA — telefono
+   Uso rotationRate (velocità angolare sui 3 assi), non l'accelerazione: rileva proprio il movimento
+   rotatorio del polso, non uno scuotimento lineare. Rendimenti calanti: quanto più l'arancia è già
+   stata spremuta, meno succo dà a parità di sforzo — proprio come un'arancia vera.
+================================================================ */
+const ARANCIA_SQUEEZE_K = 0.09;
+function showPlayerArancia(g){
+  const m = g.arancia||{};
+  $('aranciapName').textContent = P.name;
+  const myScore = ((g.players||{})[P.id]||{}).score||0;
+  $('aranciapScore').textContent = myScore+' pt';
+  showScreen('scrPlayArancia');
+  if (m.phase !== 'play'){
+    aranciaStopLocalLoop();
+    $('aranciaPermWrap').style.display='none';
+    $('aranciaPlayWrap').style.display='none';
+    $('aranciaFbMsg').style.display='none';
+    P.aranciaActive = false;
+    return;
+  }
+  if (P.aranciaStartAt !== m.startAt){
+    P.aranciaStartAt = m.startAt;
+    P.aranciaDurationSec = m.durationSec;
+    P.aranciaMaxPts = m.maxPts;
+    P.aranciaJuice = 0;
+    P.aranciaRotIntensity = 0;
+    P.aranciaSpin = 0;
+    P.aranciaSubmitted = false;
+    $('aranciaFbMsg').style.display='none';
+    $('aranciaLiquid').style.height = '0%';
+    $('aranciaPctBig').textContent = '0%';
+    if (P.aranciaPermGranted){
+      aranciaBeginRound();
+    } else {
+      $('aranciaPermWrap').style.display='block';
+      $('aranciaPlayWrap').style.display='none';
+    }
+  }
+}
+function aranciaRequestPermission(){
+  const finishSetup = ()=>{ P.aranciaPermGranted = true; aranciaBeginRound(); };
+  if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function'){
+    DeviceMotionEvent.requestPermission().then(state=>{
+      if (state === 'granted') finishSetup();
+      else alert('Serve il permesso per leggere il movimento del telefono: riprova e concedilo per giocare.');
+    }).catch(()=> alert('Non sono riuscito a chiedere il permesso di movimento. Riprova.'));
+  } else {
+    finishSetup();
+  }
+}
+function aranciaBeginRound(){
+  $('aranciaPermWrap').style.display='none';
+  $('aranciaPlayWrap').style.display='block';
+  P.aranciaActive = true;
+  window.addEventListener('devicemotion', aranciaMotionHandler);
+  P.aranciaLastTick = Date.now();
+  clearInterval(P.aranciaTimerInt);
+  P.aranciaTimerInt = setInterval(aranciaTick, 60);
+}
+function aranciaStopLocalLoop(){
+  window.removeEventListener('devicemotion', aranciaMotionHandler);
+  clearInterval(P.aranciaTimerInt);
+}
+function aranciaMotionHandler(event){
+  const r = event.rotationRate;
+  if (!r) return;
+  P.aranciaRotIntensity = Math.sqrt((r.alpha||0)**2 + (r.beta||0)**2 + (r.gamma||0)**2);
+}
+function aranciaTick(){
+  if (!P.aranciaStartAt || !P.aranciaActive) return;
+  const now = Date.now();
+  const dt = Math.min(0.1, (now - P.aranciaLastTick)/1000);
+  P.aranciaLastTick = now;
+
+  P.aranciaJuice = Math.min(100, P.aranciaJuice + ARANCIA_SQUEEZE_K * P.aranciaRotIntensity * dt * (1 - P.aranciaJuice/100));
+  const liquidEl = $('aranciaLiquid');
+  if (liquidEl) liquidEl.style.height = P.aranciaJuice+'%';
+  $('aranciaPctBig').textContent = Math.round(P.aranciaJuice)+'%';
+  // l'arancia gira visivamente in base a quanto sta girando davvero il polso in quel momento
+  P.aranciaSpin += P.aranciaRotIntensity * dt * 0.6;
+  const orb = $('aranciaOrange'); if (orb) orb.style.transform = `rotate(${P.aranciaSpin}deg)`;
+
+  const elapsedSec = (serverNow() - P.aranciaStartAt)/1000;
+  const frac = Math.max(0, 1 - elapsedSec/P.aranciaDurationSec);
+  const bar = $('aranciaTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%';
+  if (elapsedSec >= P.aranciaDurationSec) aranciaFinishRound();
+}
+function aranciaFinishRound(){
+  if (P.aranciaSubmitted) return;
+  P.aranciaSubmitted = true;
+  P.aranciaActive = false;
+  aranciaStopLocalLoop();
+  const juiceRounded = Math.round(P.aranciaJuice);
+  const finalPts = Math.round(P.aranciaMaxPts * P.aranciaJuice/100);
+  P.ref.child('arancia/results/'+P.id).set({ name:P.name, pts:finalPts, juice:juiceRounded });
+  P.ref.child('players/'+P.id+'/score').once('value').then(sc=>{
+    P.ref.child('players/'+P.id+'/score').set((sc.val()||0) + finalPts);
+  });
+  const msg = $('aranciaFbMsg');
+  msg.style.display = 'block'; msg.className = 'feedback mtb fb-ok';
+  msg.textContent = `⏱ TEMPO SCADUTO! Succo spremuto: ${juiceRounded}% — +${finalPts} punti`;
+  if (navigator.vibrate) navigator.vibrate([80,50,80,50,150]);
+}
+/* ================================================================
+   IL VASSOIO DEL CAMERIERE — telefono
+   Tre bicchieri indipendenti, ciascuno con la propria posizione/velocità: partono da un piccolo
+   scostamento diverso l'uno dall'altro, così anche con la stessa inclinazione tendono a separarsi nel
+   tempo — è proprio questo che li rende difficili da seguire tutti insieme, a differenza di un solo
+   bicchiere (Tieni l'Equilibrio).
+================================================================ */
+const VASSOIO_ACCEL = 5.2, VASSOIO_FRICTION = 0.96, VASSOIO_SAFE_FRAC = 0.6;
+function showPlayerVassoio(g){
+  const m = g.vassoio||{};
+  $('vassoiopName').textContent = P.name;
+  const myScore = ((g.players||{})[P.id]||{}).score||0;
+  $('vassoiopScore').textContent = myScore+' pt';
+  showScreen('scrPlayVassoio');
+  if (m.phase !== 'play'){
+    vassoioStopLocalLoop();
+    $('vassoioPermWrap').style.display='none';
+    $('vassoioPlayWrap').style.display='none';
+    $('vassoioFbMsg').style.display='none';
+    P.vassoioActive = false;
+    return;
+  }
+  if (P.vassoioStartAt !== m.startAt){
+    P.vassoioStartAt = m.startAt;
+    P.vassoioDurationSec = m.durationSec;
+    P.vassoioPtsPerSec = m.ptsPerSec;
+    P.vassoioDropPenalty = m.dropPenalty;
+    P.vassoioScore = 0;
+    P.vassoioSubmitted = false;
+    P.vassoioTiltX = 0; P.vassoioTiltY = 0;
+    // tre bicchieri, ciascuno con un piccolo scostamento iniziale diverso dal centro
+    P.vassoioGlasses = [
+      { x:0.12, y:0.06, vx:0, vy:0, alive:true },
+      { x:-0.09, y:0.11, vx:0, vy:0, alive:true },
+      { x:0.04, y:-0.13, vx:0, vy:0, alive:true },
+    ];
+    P.vassoioDropped = 0;
+    $('vassoioFbMsg').style.display='none';
+    for (let i=0;i<3;i++){
+      const el = $('vassoioGlass'+i);
+      if (el){ el.classList.remove('dropped'); el.style.left='50%'; el.style.top='50%'; }
+    }
+    if (P.vassoioPermGranted){
+      vassoioBeginRound();
+    } else {
+      $('vassoioPermWrap').style.display='block';
+      $('vassoioPlayWrap').style.display='none';
+    }
+  }
+}
+function vassoioRequestPermission(){
+  const finishSetup = ()=>{ P.vassoioPermGranted = true; vassoioBeginRound(); };
+  if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function'){
+    DeviceOrientationEvent.requestPermission().then(state=>{
+      if (state === 'granted') finishSetup();
+      else alert('Serve il permesso per leggere l\'inclinazione del telefono: riprova e concedilo per giocare.');
+    }).catch(()=> alert('Non sono riuscito a chiedere il permesso di orientamento. Riprova.'));
+  } else {
+    finishSetup();
+  }
+}
+function vassoioBeginRound(){
+  $('vassoioPermWrap').style.display='none';
+  $('vassoioPlayWrap').style.display='block';
+  P.vassoioActive = true;
+  window.addEventListener('deviceorientation', vassoioMotionHandler);
+  P.vassoioLastTick = Date.now();
+  clearInterval(P.vassoioTimerInt);
+  P.vassoioTimerInt = setInterval(vassoioTick, 50);
+}
+function vassoioStopLocalLoop(){
+  window.removeEventListener('deviceorientation', vassoioMotionHandler);
+  clearInterval(P.vassoioTimerInt);
+}
+function vassoioMotionHandler(event){
+  const beta = event.beta || 0, gamma = event.gamma || 0;
+  P.vassoioTiltX = Math.max(-1, Math.min(1, gamma/30));
+  P.vassoioTiltY = Math.max(-1, Math.min(1, beta/30));
+}
+function vassoioTick(){
+  if (!P.vassoioStartAt || !P.vassoioActive) return;
+  const now = Date.now();
+  const dt = Math.min(0.1, (now - P.vassoioLastTick)/1000);
+  P.vassoioLastTick = now;
+
+  let sommaVicinanza = 0;
+  P.vassoioGlasses.forEach((glass, i)=>{
+    if (!glass.alive) return;
+    glass.vx = (glass.vx + P.vassoioTiltX*VASSOIO_ACCEL*dt) * VASSOIO_FRICTION;
+    glass.vy = (glass.vy + P.vassoioTiltY*VASSOIO_ACCEL*dt) * VASSOIO_FRICTION;
+    glass.x += glass.vx*dt; glass.y += glass.vy*dt;
+    const dist = Math.hypot(glass.x, glass.y);
+    const el = $('vassoioGlass'+i);
+    if (dist > 1){
+      glass.alive = false;
+      P.vassoioDropped++;
+      P.vassoioScore -= P.vassoioDropPenalty;
+      if (el) el.classList.add('dropped');
+      if (navigator.vibrate) navigator.vibrate(100);
+      return;
+    }
+    if (el){ el.style.left = (50+glass.x*50)+'%'; el.style.top = (50+glass.y*50)+'%'; }
+    sommaVicinanza += Math.max(0, 1 - dist/VASSOIO_SAFE_FRAC);
+  });
+  const aliveCount = P.vassoioGlasses.filter(g=>g.alive).length;
+  if (aliveCount>0) P.vassoioScore += P.vassoioPtsPerSec * (sommaVicinanza/3) * dt;
+  $('vassoioPctBig').textContent = aliveCount+'/3';
+
+  const elapsedSec = (serverNow() - P.vassoioStartAt)/1000;
+  const frac = Math.max(0, 1 - elapsedSec/P.vassoioDurationSec);
+  const bar = $('vassoioTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%';
+  if (aliveCount===0 || elapsedSec >= P.vassoioDurationSec) vassoioFinishRound(aliveCount===0);
+}
+function vassoioFinishRound(allDropped){
+  if (P.vassoioSubmitted) return;
+  P.vassoioSubmitted = true;
+  P.vassoioActive = false;
+  vassoioStopLocalLoop();
+  const finalPts = Math.round(P.vassoioScore);
+  P.ref.child('vassoio/results/'+P.id).set({ name:P.name, pts:finalPts, dropped:P.vassoioDropped });
+  P.ref.child('players/'+P.id+'/score').once('value').then(sc=>{
+    P.ref.child('players/'+P.id+'/score').set((sc.val()||0) + finalPts);
+  });
+  const msg = $('vassoioFbMsg');
+  msg.style.display = 'block'; msg.className = 'feedback mtb ' + (finalPts>=0?'fb-ok':'fb-no');
+  msg.textContent = allDropped
+    ? `💥 TUTTI I BICCHIERI CADUTI! ${finalPts>=0?'+':''}${finalPts} punti`
+    : `⏱ TEMPO SCADUTO! ${finalPts>=0?'+':''}${finalPts} punti (${P.vassoioDropped} caduti)`;
+  if (navigator.vibrate) navigator.vibrate(finalPts>=0 ? [80,50,80,50,150] : [120,80,120]);
+}
+/* ================================================================
+   TROVA IL COLORE — telefono
+   Uso getUserMedia per la fotocamera posteriore (facingMode:'environment'), poi disegno solo la
+   piccola porzione centrale del video (quella dentro il mirino) su un minuscolo canvas nascosto, e ne
+   leggo il colore medio dei pixel: molto più leggero che analizzare l'intero fotogramma ad ogni tick.
+================================================================ */
+function showPlayerTrovaColore(g){
+  const m = g.trovacolore||{};
+  $('trovaColorepName').textContent = P.name;
+  const myScore = ((g.players||{})[P.id]||{}).score||0;
+  $('trovaColorepScore').textContent = myScore+' pt';
+  showScreen('scrPlayTrovaColore');
+  if (m.phase !== 'play'){
+    trovaColoreStopLocalLoop();
+    $('trovaColorePermWrap').style.display='none';
+    $('trovaColorePlayWrap').style.display='none';
+    $('trovaColoreFbMsg').style.display='none';
+    P.trovaColoreActive = false;
+    return;
+  }
+  if (P.trovaColoreStartAt !== m.startAt){
+    P.trovaColoreStartAt = m.startAt;
+    P.trovaColoreDurationSec = m.durationSec;
+    P.trovaColorePtsPerSec = m.ptsPerSec;
+    P.trovaColoreThresholdDist = m.thresholdDist;
+    P.trovaColorePenaltyPerSec = m.penaltyPerSec;
+    P.trovaColoreTargetColor = m.targetColor;
+    P.trovaColoreScore = 0;
+    P.trovaColoreSubmitted = false;
+    $('trovaColoreFbMsg').style.display='none';
+    $('trovaColoreSwatch').style.background = tcRgbCss(m.targetColor);
+    $('trovaColorePctBig').textContent = '0%';
+    if (P.trovaColorePermGranted){
+      trovaColoreBeginRound();
+    } else {
+      $('trovaColorePermWrap').style.display='block';
+      $('trovaColorePlayWrap').style.display='none';
+    }
+  }
+}
+async function trovaColoreRequestPermission(){
+  try{
+    const stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:'environment' } });
+    P.trovaColoreStream = stream;
+    const video = $('trovaColoreVideo');
+    video.srcObject = stream;
+    video.play().catch(()=>{}); // rinforzo esplicito: su alcuni browser l'attributo autoplay da solo non basta dopo srcObject impostato da JS
+    P.trovaColorePermGranted = true;
+    trovaColoreBeginRound();
+  } catch(e){
+    alert('Non sono riuscito ad accedere alla fotocamera. Controlla di aver concesso il permesso a questo sito e riprova.');
+  }
+}
+function trovaColoreBeginRound(){
+  $('trovaColorePermWrap').style.display='none';
+  $('trovaColorePlayWrap').style.display='block';
+  P.trovaColoreActive = true;
+  P.trovaColoreLastTick = Date.now();
+  clearInterval(P.trovaColoreTimerInt);
+  P.trovaColoreTimerInt = setInterval(trovaColoreTick, 150);
+}
+function trovaColoreStopLocalLoop(){
+  clearInterval(P.trovaColoreTimerInt);
+  // NB: non fermo lo stream della fotocamera qui apposta: resta attivo per l'eventuale prossima
+  // manche, così non si deve richiedere il permesso ogni volta
+}
+function trovaColoreSampleColor(){
+  const video = $('trovaColoreVideo');
+  if (!video || !video.videoWidth) return null;
+  const canvas = $('trovaColoreCanvas');
+  const ctx = canvas.getContext('2d');
+  const size = 16;
+  canvas.width = size; canvas.height = size;
+  const vw = video.videoWidth, vh = video.videoHeight;
+  const cropSize = Math.min(vw,vh)*0.19; // solo la piccola zona centrale dentro il mirino
+  ctx.drawImage(video, vw/2-cropSize/2, vh/2-cropSize/2, cropSize, cropSize, 0, 0, size, size);
+  const data = ctx.getImageData(0,0,size,size).data;
+  let r=0,g=0,b=0,n=0;
+  for (let i=0;i<data.length;i+=4){ r+=data[i]; g+=data[i+1]; b+=data[i+2]; n++; }
+  return { r:r/n, g:g/n, b:b/n };
+}
+function trovaColoreDist(c1,c2){
+  return Math.sqrt((c1.r-c2.r)**2 + (c1.g-c2.g)**2 + (c1.b-c2.b)**2);
+}
+function trovaColoreTick(){
+  if (!P.trovaColoreStartAt || !P.trovaColoreActive) return;
+  const now = Date.now();
+  const dt = Math.min(0.3, (now - P.trovaColoreLastTick)/1000);
+  P.trovaColoreLastTick = now;
+
+  const sampled = trovaColoreSampleColor();
+  let pct = 0;
+  const reticle = $('trovaColoreReticle');
+  if (sampled){
+    const dist = trovaColoreDist(sampled, P.trovaColoreTargetColor);
+    if (dist <= P.trovaColoreThresholdDist){
+      pct = 1 - dist/P.trovaColoreThresholdDist;
+      P.trovaColoreScore += P.trovaColorePtsPerSec * pct * dt;
+    } else {
+      P.trovaColoreScore -= P.trovaColorePenaltyPerSec * dt;
+    }
+  }
+  const col = pct>0.66 ? 'var(--lime)' : pct>0.33 ? 'var(--gold)' : '#ff3b3b';
+  if (reticle) reticle.style.borderColor = col;
+  const pctEl = $('trovaColorePctBig');
+  if (pctEl){ pctEl.textContent = Math.round(pct*100)+'%'; pctEl.style.color = col; }
+
+  const elapsedSec = (serverNow() - P.trovaColoreStartAt)/1000;
+  const frac = Math.max(0, 1 - elapsedSec/P.trovaColoreDurationSec);
+  const bar = $('trovaColoreTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%';
+  if (elapsedSec >= P.trovaColoreDurationSec) trovaColoreFinishRound();
+}
+function trovaColoreFinishRound(){
+  if (P.trovaColoreSubmitted) return;
+  P.trovaColoreSubmitted = true;
+  P.trovaColoreActive = false;
+  trovaColoreStopLocalLoop();
+  const finalPts = Math.round(P.trovaColoreScore);
+  P.ref.child('trovacolore/results/'+P.id).set({ name:P.name, pts:finalPts });
+  P.ref.child('players/'+P.id+'/score').once('value').then(sc=>{
+    P.ref.child('players/'+P.id+'/score').set((sc.val()||0) + finalPts);
+  });
+  const msg = $('trovaColoreFbMsg');
+  msg.style.display = 'block'; msg.className = 'feedback mtb ' + (finalPts>=0?'fb-ok':'fb-no');
+  msg.textContent = `⏱ TEMPO SCADUTO! ${finalPts>=0?'+':''}${finalPts} punti`;
+  if (navigator.vibrate) navigator.vibrate(finalPts>=0 ? [80,50,80,50,150] : [120,80,120]);
+}
+/* ================================================================
+   CACCIA ALLA LUCE — telefono
+   Stessa tecnica di campionamento di Trova il Colore (piccolo canvas nascosto sulla zona centrale del
+   mirino), ma qui si calcola la luminosità percepita con la formula standard 0.299R+0.587G+0.114B,
+   e la si confronta con l'estremo giusto (255=bianco per "luce", 0=nero per "buio").
+================================================================ */
+function showPlayerCacciaLuce(g){
+  const m = g.caccialuce||{};
+  $('cacciaLucepName').textContent = P.name;
+  const myScore = ((g.players||{})[P.id]||{}).score||0;
+  $('cacciaLucepScore').textContent = myScore+' pt';
+  showScreen('scrPlayCacciaLuce');
+  if (m.phase !== 'play'){
+    cacciaLuceStopLocalLoop();
+    $('cacciaLucePermWrap').style.display='none';
+    $('cacciaLucePlayWrap').style.display='none';
+    $('cacciaLuceFbMsg').style.display='none';
+    P.cacciaLuceActive = false;
+    return;
+  }
+  if (P.cacciaLuceStartAt !== m.startAt){
+    P.cacciaLuceStartAt = m.startAt;
+    P.cacciaLuceDurationSec = m.durationSec;
+    P.cacciaLucePtsPerSec = m.ptsPerSec;
+    P.cacciaLuceThresholdDist = m.thresholdDist;
+    P.cacciaLucePenaltyPerSec = m.penaltyPerSec;
+    P.cacciaLuceMode = m.mode;
+    P.cacciaLuceTargetLum = m.mode==='luce' ? 255 : 0;
+    P.cacciaLuceScore = 0;
+    P.cacciaLuceSubmitted = false;
+    $('cacciaLuceFbMsg').style.display='none';
+    $('cacciaLuceIcon').textContent = m.mode==='luce' ? '☀️' : '🌑';
+    $('cacciaLucePctBig').textContent = '0%';
+    if (P.cacciaLucePermGranted){
+      cacciaLuceBeginRound();
+    } else {
+      $('cacciaLucePermWrap').style.display='block';
+      $('cacciaLucePlayWrap').style.display='none';
+    }
+  }
+}
+async function cacciaLuceRequestPermission(){
+  try{
+    const stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:'environment' } });
+    P.cacciaLuceStream = stream;
+    const video = $('cacciaLuceVideo');
+    video.srcObject = stream;
+    video.play().catch(()=>{}); // rinforzo esplicito: su alcuni browser l'attributo autoplay da solo non basta dopo srcObject impostato da JS
+    P.cacciaLucePermGranted = true;
+    cacciaLuceBeginRound();
+  } catch(e){
+    alert('Non sono riuscito ad accedere alla fotocamera. Controlla di aver concesso il permesso a questo sito e riprova.');
+  }
+}
+function cacciaLuceBeginRound(){
+  $('cacciaLucePermWrap').style.display='none';
+  $('cacciaLucePlayWrap').style.display='block';
+  P.cacciaLuceActive = true;
+  P.cacciaLuceLastTick = Date.now();
+  clearInterval(P.cacciaLuceTimerInt);
+  P.cacciaLuceTimerInt = setInterval(cacciaLuceTick, 150);
+}
+function cacciaLuceStopLocalLoop(){
+  clearInterval(P.cacciaLuceTimerInt);
+  // NB: non fermo lo stream della fotocamera qui apposta, stesso motivo di Trova il Colore
+}
+function cacciaLuceSampleLuminance(){
+  const video = $('cacciaLuceVideo');
+  if (!video || !video.videoWidth) return null;
+  const canvas = $('cacciaLuceCanvas');
+  const ctx = canvas.getContext('2d');
+  const size = 16;
+  canvas.width = size; canvas.height = size;
+  const vw = video.videoWidth, vh = video.videoHeight;
+  const cropSize = Math.min(vw,vh)*0.19;
+  ctx.drawImage(video, vw/2-cropSize/2, vh/2-cropSize/2, cropSize, cropSize, 0, 0, size, size);
+  const data = ctx.getImageData(0,0,size,size).data;
+  let somma=0, n=0;
+  for (let i=0;i<data.length;i+=4){ somma += 0.299*data[i] + 0.587*data[i+1] + 0.114*data[i+2]; n++; }
+  return somma/n;
+}
+function cacciaLuceTick(){
+  if (!P.cacciaLuceStartAt || !P.cacciaLuceActive) return;
+  const now = Date.now();
+  const dt = Math.min(0.3, (now - P.cacciaLuceLastTick)/1000);
+  P.cacciaLuceLastTick = now;
+
+  const lum = cacciaLuceSampleLuminance();
+  let pct = 0;
+  const reticle = $('cacciaLuceReticle');
+  if (lum != null){
+    const dist = Math.abs(lum - P.cacciaLuceTargetLum);
+    if (dist <= P.cacciaLuceThresholdDist){
+      pct = 1 - dist/P.cacciaLuceThresholdDist;
+      P.cacciaLuceScore += P.cacciaLucePtsPerSec * pct * dt;
+    } else {
+      P.cacciaLuceScore -= P.cacciaLucePenaltyPerSec * dt;
+    }
+  }
+  const col = pct>0.66 ? 'var(--lime)' : pct>0.33 ? 'var(--gold)' : '#ff3b3b';
+  if (reticle) reticle.style.borderColor = col;
+  const pctEl = $('cacciaLucePctBig');
+  if (pctEl){ pctEl.textContent = Math.round(pct*100)+'%'; pctEl.style.color = col; }
+
+  const elapsedSec = (serverNow() - P.cacciaLuceStartAt)/1000;
+  const frac = Math.max(0, 1 - elapsedSec/P.cacciaLuceDurationSec);
+  const bar = $('cacciaLuceTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%';
+  if (elapsedSec >= P.cacciaLuceDurationSec) cacciaLuceFinishRound();
+}
+function cacciaLuceFinishRound(){
+  if (P.cacciaLuceSubmitted) return;
+  P.cacciaLuceSubmitted = true;
+  P.cacciaLuceActive = false;
+  cacciaLuceStopLocalLoop();
+  const finalPts = Math.round(P.cacciaLuceScore);
+  P.ref.child('caccialuce/results/'+P.id).set({ name:P.name, pts:finalPts });
+  P.ref.child('players/'+P.id+'/score').once('value').then(sc=>{
+    P.ref.child('players/'+P.id+'/score').set((sc.val()||0) + finalPts);
+  });
+  const msg = $('cacciaLuceFbMsg');
+  msg.style.display = 'block'; msg.className = 'feedback mtb ' + (finalPts>=0?'fb-ok':'fb-no');
+  msg.textContent = `⏱ TEMPO SCADUTO! ${finalPts>=0?'+':''}${finalPts} punti`;
+  if (navigator.vibrate) navigator.vibrate(finalPts>=0 ? [80,50,80,50,150] : [120,80,120]);
+}
+/* ================================================================
+   MIMETIZZATI — telefono
+   Due fasi sullo stesso telefono: prima "capturing" (il giocatore fissa il proprio colore toccando
+   un pulsante, quando vuole lui), poi "hiding" (stesso calcolo di Trova il Colore, ma confrontato col
+   colore appena fissato invece che con uno scelto dalla regia). Il tempo speso a fissare il colore si
+   toglie dal tempo totale a disposizione per nascondersi.
+================================================================ */
+function showPlayerMimetizzati(g){
+  const m = g.mimetizzati||{};
+  $('mimetizzatipName').textContent = P.name;
+  const myScore = ((g.players||{})[P.id]||{}).score||0;
+  $('mimetizzatipScore').textContent = myScore+' pt';
+  showScreen('scrPlayMimetizzati');
+  if (m.phase !== 'play'){
+    mimetizzatiStopLocalLoop();
+    $('mimetizzatiPermWrap').style.display='none';
+    $('mimetizzatiPlayWrap').style.display='none';
+    $('mimetizzatiFbMsg').style.display='none';
+    P.mimetizzatiActive = false;
+    return;
+  }
+  if (P.mimetizzatiStartAt !== m.startAt){
+    P.mimetizzatiStartAt = m.startAt;
+    P.mimetizzatiDurationSec = m.durationSec;
+    P.mimetizzatiPtsPerSec = m.ptsPerSec;
+    P.mimetizzatiThresholdDist = m.thresholdDist;
+    P.mimetizzatiPenaltyPerSec = m.penaltyPerSec;
+    P.mimetizzatiScore = 0;
+    P.mimetizzatiSubmitted = false;
+    P.mimetizzatiTargetColor = null;
+    P.mimetizzatiStep = 'capturing';
+    $('mimetizzatiFbMsg').style.display='none';
+    $('mimetizzatiStepMsg').textContent = 'STEP 1 — Inquadra te stesso o i tuoi vestiti';
+    $('mimetizzatiCaptureBtn').style.display='';
+    $('mimetizzatiSwatch').style.display='none';
+    $('mimetizzatiPctBig').style.display='none';
+    if (P.mimetizzatiPermGranted){
+      mimetizzatiBeginRound();
+    } else {
+      $('mimetizzatiPermWrap').style.display='block';
+      $('mimetizzatiPlayWrap').style.display='none';
+    }
+  }
+}
+async function mimetizzatiRequestPermission(){
+  try{
+    const stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:'environment' } });
+    P.mimetizzatiStream = stream;
+    const video = $('mimetizzatiVideo');
+    video.srcObject = stream;
+    video.play().catch(()=>{}); // rinforzo esplicito: su alcuni browser l'attributo autoplay da solo non basta dopo srcObject impostato da JS
+    P.mimetizzatiPermGranted = true;
+    mimetizzatiBeginRound();
+  } catch(e){
+    alert('Non sono riuscito ad accedere alla fotocamera. Controlla di aver concesso il permesso a questo sito e riprova.');
+  }
+}
+function mimetizzatiBeginRound(){
+  $('mimetizzatiPermWrap').style.display='none';
+  $('mimetizzatiPlayWrap').style.display='block';
+  P.mimetizzatiActive = true;
+  P.mimetizzatiLastTick = Date.now();
+  clearInterval(P.mimetizzatiTimerInt);
+  P.mimetizzatiTimerInt = setInterval(mimetizzatiTick, 150);
+}
+function mimetizzatiStopLocalLoop(){
+  clearInterval(P.mimetizzatiTimerInt);
+  // NB: non fermo lo stream della fotocamera qui apposta, stesso motivo degli altri giochi con la fotocamera
+}
+function mimetizzatiSampleColor(){
+  const video = $('mimetizzatiVideo');
+  if (!video || !video.videoWidth) return null;
+  const canvas = $('mimetizzatiCanvas');
+  const ctx = canvas.getContext('2d');
+  const size = 16;
+  canvas.width = size; canvas.height = size;
+  const vw = video.videoWidth, vh = video.videoHeight;
+  const cropSize = Math.min(vw,vh)*0.19;
+  ctx.drawImage(video, vw/2-cropSize/2, vh/2-cropSize/2, cropSize, cropSize, 0, 0, size, size);
+  const data = ctx.getImageData(0,0,size,size).data;
+  let r=0,g=0,b=0,n=0;
+  for (let i=0;i<data.length;i+=4){ r+=data[i]; g+=data[i+1]; b+=data[i+2]; n++; }
+  return { r:r/n, g:g/n, b:b/n };
+}
+function mimetizzatiCapture(){
+  if (P.mimetizzatiStep !== 'capturing') return;
+  const sampled = mimetizzatiSampleColor();
+  if (!sampled){ alert('La fotocamera non è ancora pronta: riprova tra un istante.'); return; }
+  P.mimetizzatiTargetColor = sampled;
+  P.mimetizzatiStep = 'hiding';
+  $('mimetizzatiStepMsg').textContent = 'STEP 2 — Ora nasconditi! Trova qualcosa che assomigli a questo colore';
+  $('mimetizzatiCaptureBtn').style.display='none';
+  const swatch = $('mimetizzatiSwatch');
+  swatch.style.display=''; swatch.style.background = tcRgbCss(sampled);
+  $('mimetizzatiPctBig').style.display='';
+  if (navigator.vibrate) navigator.vibrate(40);
+}
+function mimetizzatiTick(){
+  if (!P.mimetizzatiStartAt || !P.mimetizzatiActive) return;
+  const now = Date.now();
+  const dt = Math.min(0.3, (now - P.mimetizzatiLastTick)/1000);
+  P.mimetizzatiLastTick = now;
+
+  if (P.mimetizzatiStep === 'hiding' && P.mimetizzatiTargetColor){
+    const sampled = mimetizzatiSampleColor();
+    let pct = 0;
+    const reticle = $('mimetizzatiReticle');
+    if (sampled){
+      const dist = trovaColoreDist(sampled, P.mimetizzatiTargetColor);
+      if (dist <= P.mimetizzatiThresholdDist){
+        pct = 1 - dist/P.mimetizzatiThresholdDist;
+        P.mimetizzatiScore += P.mimetizzatiPtsPerSec * pct * dt;
+      } else {
+        P.mimetizzatiScore -= P.mimetizzatiPenaltyPerSec * dt;
+      }
+    }
+    const col = pct>0.66 ? 'var(--lime)' : pct>0.33 ? 'var(--gold)' : '#ff3b3b';
+    if (reticle) reticle.style.borderColor = col;
+    const pctEl = $('mimetizzatiPctBig');
+    if (pctEl){ pctEl.textContent = Math.round(pct*100)+'%'; pctEl.style.color = col; }
+  }
+
+  const elapsedSec = (serverNow() - P.mimetizzatiStartAt)/1000;
+  const frac = Math.max(0, 1 - elapsedSec/P.mimetizzatiDurationSec);
+  const bar = $('mimetizzatiTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%';
+  if (elapsedSec >= P.mimetizzatiDurationSec) mimetizzatiFinishRound();
+}
+function mimetizzatiFinishRound(){
+  if (P.mimetizzatiSubmitted) return;
+  P.mimetizzatiSubmitted = true;
+  P.mimetizzatiActive = false;
+  mimetizzatiStopLocalLoop();
+  const finalPts = Math.round(P.mimetizzatiScore);
+  P.ref.child('mimetizzati/results/'+P.id).set({ name:P.name, pts:finalPts });
+  P.ref.child('players/'+P.id+'/score').once('value').then(sc=>{
+    P.ref.child('players/'+P.id+'/score').set((sc.val()||0) + finalPts);
+  });
+  const msg = $('mimetizzatiFbMsg');
+  msg.style.display = 'block'; msg.className = 'feedback mtb ' + (finalPts>=0?'fb-ok':'fb-no');
+  msg.textContent = P.mimetizzatiStep==='capturing'
+    ? `⏱ TEMPO SCADUTO! Non hai fatto in tempo a fissare il tuo colore: 0 punti`
+    : `⏱ TEMPO SCADUTO! ${finalPts>=0?'+':''}${finalPts} punti`;
+  if (navigator.vibrate) navigator.vibrate(finalPts>=0 ? [80,50,80,50,150] : [120,80,120]);
 }
 /* ================================================================
    LA CASSAFORTE — telefono
@@ -22469,13 +24232,14 @@ function openBatti(){
 function battiStart(){
   const passPts = Math.max(0,+$('battiPassPts').value||0);
   const maxPts = Math.max(0,+$('battiMaxPts').value||0);
+  const idleSecs = Math.max(3,+$('battiIdleSecs').value||6);
   G.ref.child('players').once('value').then(ps=>{
     const players = ps.val()||{};
     const ids = Object.keys(players);
     if (ids.length < 2) return alert('Servono almeno 2 giocatori collegati per far girare la mano!');
     const holderId = ids[Math.floor(Math.random()*ids.length)];
-    BATTI = { passPts, maxPts, ended:false, log:[], lastHolder:holderId };
-    G.ref.update({ status:'batti', batti:{ phase:'play', passPts, maxPts, holderId, holderName:players[holderId].name, passCount:0, tallies:{} } });
+    BATTI = { passPts, maxPts, idleSecs, ended:false, log:[], lastHolder:holderId, autoPassInFlight:false };
+    G.ref.update({ status:'batti', batti:{ phase:'play', passPts, maxPts, holderId, holderName:players[holderId].name, holderSince:serverNow(), passCount:0, tallies:{} } });
     $('battiSetup').style.display='none'; $('battiLive').style.display='block';
     $('battiMsg').textContent = '🖐️ SI PARTE! LA MANO GIRA PER I TELEFONI...';
     $('battiBtnAgain').style.display='none'; $('battiBtnEnd').style.display='';
@@ -22489,6 +24253,7 @@ function battiStart(){
       if (bv.phase==='result'){
         if (BATTI.ended) return;
         BATTI.ended = true;
+        clearInterval(BATTI.idleCheckInt);
         G.ref.child('batti').off();
         const rv = bv.results||{};
         $('battiMsg').textContent = `🏆 ${esc((rv.winnerName||'?')).toUpperCase()} HA BATTUTO 5 VOLTE E VINCE IL MAXI PREMIO!`;
@@ -22506,14 +24271,43 @@ function battiStart(){
         pjSend({type:'battiPass', holderName: bv.holderName});
       }
     });
+    // Controllo periodico per la mano "passiva": se nessuno la tocca entro il tempo impostato, passa
+    // da sola a un altro giocatore a caso. Vedi battiAutoPassIfIdle per i dettagli e le protezioni
+    // contro il rischio di restare bloccata di nuovo.
+    clearInterval(BATTI.idleCheckInt);
+    BATTI.idleCheckInt = setInterval(battiAutoPassIfIdle, 1000);
   });
 }
 function battiEnd(){
   if (!G) return;
   BATTI.ended = true;
+  clearInterval((BATTI||{}).idleCheckInt);
   G.ref.child('batti').off();
   G.ref.child('batti').update({ phase:'idle' });
   $('battiSetup').style.display='block'; $('battiLive').style.display='none';
+}
+// Controllo automatico contro la mano "passiva": letto sempre FRESCO da Firebase (mai dallo stato
+// locale, che potrebbe essere non aggiornato), con un blocco (autoPassInFlight) contro controlli
+// sovrapposti, e un .catch che lo sblocca comunque in caso di errore di rete — proprio per evitare che
+// un singolo controllo fallito lasci la mano bloccata per sempre, come successo la volta scorsa.
+function battiAutoPassIfIdle(){
+  if (!G || !BATTI || BATTI.ended || BATTI.autoPassInFlight) return;
+  BATTI.autoPassInFlight = true;
+  G.ref.child('batti').once('value').then(s=>{
+    BATTI.autoPassInFlight = false;
+    const bv = s.val()||{};
+    if (bv.phase!=='play') return;
+    const idleSecs = BATTI.idleSecs||6;
+    const holderSince = bv.holderSince || 0;
+    if (serverNow() - holderSince < idleSecs*1000) return; // non ancora scaduto il tempo di inattività
+    G.ref.child('players').once('value').then(ps=>{
+      const players = ps.val()||{};
+      const ids = Object.keys(players).filter(id=>id!==bv.holderId);
+      if (!ids.length) return;
+      const nextId = ids[Math.floor(Math.random()*ids.length)];
+      G.ref.child('batti').update({ holderId:nextId, holderName:players[nextId].name, holderSince:serverNow(), passCount:(bv.passCount||0)+1 });
+    });
+  }).catch(()=>{ BATTI.autoPassInFlight = false; });
 }
 // Stesso salvagente di Patata Bollente: se chi ha in mano se n'è andato, la regia la fa girare a mano.
 // NON conta come un vero tocco: nessun punto assegnato, nessun avvicinamento al maxi premio per nessuno —
@@ -22528,7 +24322,7 @@ function battiForcePass(){
       const ids = Object.keys(players).filter(id=>id!==bv.holderId);
       if (!ids.length) return;
       const nextId = ids[Math.floor(Math.random()*ids.length)];
-      G.ref.child('batti').update({ holderId:nextId, holderName:players[nextId].name, passCount:(bv.passCount||0)+1 });
+      G.ref.child('batti').update({ holderId:nextId, holderName:players[nextId].name, holderSince:serverNow(), passCount:(bv.passCount||0)+1 });
     });
   });
 }
@@ -23052,6 +24846,589 @@ function dadiMattiEnd(){
   G.ref.child('dadimatti').update({ phase:'idle' });
   $('dadiMattiMsg').textContent = '🏁 Manche finita!';
   pjSend({type:'dadiMattiState'});
+}
+
+/* ================================================================
+   LA BUSSOLA MALEDETTA — grafica condivisa (regia/telefono/proiettore) + regia
+   Il quadrante ha i punti cardinali fissi (N sempre in alto, come in una vera bussola), un bersaglio
+   verde piazzato nella direzione scelta a caso per quella manche (stessa per tutti, gara leale), e un
+   ago che ruota in base a dove punta davvero il telefono in quel momento.
+================================================================ */
+const BC_CARDINALI = {0:'N', 90:'E', 180:'S', 270:'O'};
+function bcBuildDial(elId){
+  const el = $(elId); if (!el) return;
+  let html = '';
+  for (let deg=0; deg<360; deg+=30){
+    const isMajor = deg%90===0;
+    html += `<div class="bcTick${isMajor?' major':''}" style="transform:translateX(-50%) rotate(${deg}deg)"></div>`;
+  }
+  for (const [deg, letter] of Object.entries(BC_CARDINALI)){
+    const rad = deg*Math.PI/180;
+    const x = 50 + 38*Math.sin(rad), y = 50 - 38*Math.cos(rad);
+    html += `<div class="bcCardinal" style="left:${x}%; top:${y}%">${letter}</div>`;
+  }
+  html += `<div class="bcTargetWedge" id="${elId}_target" style="left:50%; top:6%"></div>`;
+  html += `<div class="bcNeedleWrap" id="${elId}_needleWrap"><div class="bcNeedleTail"></div><div class="bcNeedle"></div></div>`;
+  html += `<div class="bcCenterHub"></div>`;
+  el.innerHTML = html;
+}
+function bcPositionTarget(elId, targetDeg){
+  const rad = targetDeg*Math.PI/180;
+  const x = 50 + 44*Math.sin(rad), y = 50 - 44*Math.cos(rad);
+  const t = document.getElementById(elId+'_target');
+  if (t){ t.style.left = x+'%'; t.style.top = y+'%'; }
+}
+function bcAngularDiff(a, b){
+  let diff = Math.abs(a-b) % 360;
+  if (diff > 180) diff = 360-diff;
+  return diff;
+}
+let BUSSOLA = {};
+function openBussola(){
+  if (!isGameEnabled('bussola')) return alert('⚠️ Questo minigioco non è compreso nella licenza attiva. Contatta Alberto per sbloccarlo.');
+  if (!G) return alert('Avvia prima una partita!');
+  cancelLiveQuestion(); closeModal();
+  G.ref.child('bussola').off();
+  G.ref.update({ status:'bussola', bussola:{ phase:'idle' } });
+  BUSSOLA = {};
+  $('bussolaSetup').style.display='block'; $('bussolaLive').style.display='none';
+  pjSend({type:'bussolaState'});
+  showScreen('scrBussola');
+}
+function bussolaStart(){
+  const ptsPerSec = Math.max(0, +$('bussolaPts').value||100);
+  const thresholdDeg = Math.max(5, Math.min(180, +$('bussolaThreshold').value||45));
+  const penaltyPerSec = Math.max(0, +$('bussolaPenalty').value||20);
+  const durationSec = Math.max(10, +$('bussolaDuration').value||20);
+  const targetHeading = Math.floor(Math.random()*360);
+  const startAt = serverNow();
+  BUSSOLA = { ended:false, startAt, durationSec };
+  G.ref.update({ status:'bussola', bussola:{ phase:'play', ptsPerSec, thresholdDeg, penaltyPerSec, durationSec, targetHeading, startAt, results:{} } });
+  $('bussolaSetup').style.display='none'; $('bussolaLive').style.display='block';
+  $('bussolaMsg').textContent = '🧭 RUOTATE VERSO LA DIREZIONE GIUSTA...';
+  $('bussolaResults').innerHTML = '';
+  pjSend({type:'bussolaStart', startAt, durationSec, targetHeading});
+  clearInterval(BUSSOLA.timerInt);
+  BUSSOLA.timerInt = setInterval(()=>{
+    const elapsedSec = Math.max(0,(serverNow()-startAt)/1000);
+    const frac = Math.max(0, 1 - elapsedSec/durationSec);
+    const bar = $('bussolaHostTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%';
+    if (frac<=0) clearInterval(BUSSOLA.timerInt);
+  }, 200);
+  G.ref.child('bussola/results').off();
+  G.ref.child('bussola/results').on('value', s=>{
+    const results = s.val()||{};
+    const rows = Object.values(results).sort((a,b)=>(b.pts||0)-(a.pts||0)).slice(0,5);
+    $('bussolaResults').innerHTML = rows.map((p,i)=>
+      `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(p.name)} <span class="pts">${p.pts>=0?'+':''}${p.pts}</span></div>`
+    ).join('') || '<div class="byline center" style="opacity:.7">Nessuno ha ancora finito...</div>';
+    pjSend({type:'bussolaResults', rows});
+  });
+}
+function bussolaEnd(){
+  if (!G) return;
+  BUSSOLA.ended = true;
+  clearInterval(BUSSOLA.timerInt);
+  G.ref.child('bussola/results').off();
+  G.ref.child('bussola').update({ phase:'idle' });
+  $('bussolaMsg').textContent = '🏁 Manche finita!';
+  pjSend({type:'bussolaState'});
+}
+
+/* ================================================================
+   NON VERSARE IL BICCHIERE — regia
+   A differenza di Tieni l'Equilibrio (dove serve restare fermi vicino al centro), qui il rischio cresce
+   con l'inclinazione: più forte si versa, più in fretta si riempie ma più vicino si va al trabocco.
+   Un'inclinazione costante trabocca SEMPRE prima o poi: bisogna raddrizzare il telefono avvicinandosi
+   al pieno, per "tenere" il livello raggiunto senza rischiare oltre — è proprio questo il gioco.
+================================================================ */
+let BICCHIERE = {};
+function openBicchiere(){
+  if (!isGameEnabled('bicchiere')) return alert('⚠️ Questo minigioco non è compreso nella licenza attiva. Contatta Alberto per sbloccarlo.');
+  if (!G) return alert('Avvia prima una partita!');
+  cancelLiveQuestion(); closeModal();
+  G.ref.child('bicchiere').off();
+  G.ref.update({ status:'bicchiere', bicchiere:{ phase:'idle' } });
+  BICCHIERE = {};
+  $('bicchiereSetup').style.display='block'; $('bicchiereLive').style.display='none';
+  pjSend({type:'bicchiereState'});
+  showScreen('scrBicchiere');
+}
+function bicchiereStart(){
+  const ptsPerSec = Math.max(0, +$('bicchierePts').value||100);
+  const overflowPenalty = Math.max(0, +$('bicchierePenalty').value||300);
+  const durationSec = Math.max(10, +$('bicchiereDuration').value||20);
+  const startAt = serverNow();
+  BICCHIERE = { ended:false, startAt, durationSec };
+  G.ref.update({ status:'bicchiere', bicchiere:{ phase:'play', ptsPerSec, overflowPenalty, durationSec, startAt, results:{} } });
+  $('bicchiereSetup').style.display='none'; $('bicchiereLive').style.display='block';
+  $('bicchiereMsg').textContent = '🍹 VERSATE CON ATTENZIONE...';
+  $('bicchiereResults').innerHTML = '';
+  pjSend({type:'bicchiereStart', startAt, durationSec});
+  clearInterval(BICCHIERE.timerInt);
+  BICCHIERE.timerInt = setInterval(()=>{
+    const elapsedSec = Math.max(0,(serverNow()-startAt)/1000);
+    const frac = Math.max(0, 1 - elapsedSec/durationSec);
+    const bar = $('bicchiereHostTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%';
+    if (frac<=0) clearInterval(BICCHIERE.timerInt);
+  }, 200);
+  G.ref.child('bicchiere/results').off();
+  G.ref.child('bicchiere/results').on('value', s=>{
+    const results = s.val()||{};
+    const rows = Object.values(results).sort((a,b)=>(b.pts||0)-(a.pts||0)).slice(0,5);
+    $('bicchiereResults').innerHTML = rows.map((p,i)=>
+      `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(p.name)} <span class="pts">${p.pts>=0?'+':''}${p.pts}${p.spilled?' 💦':''}</span></div>`
+    ).join('') || '<div class="byline center" style="opacity:.7">Nessuno ha ancora finito...</div>';
+    pjSend({type:'bicchiereResults', rows});
+  });
+}
+function bicchiereEnd(){
+  if (!G) return;
+  BICCHIERE.ended = true;
+  clearInterval(BICCHIERE.timerInt);
+  G.ref.child('bicchiere/results').off();
+  G.ref.child('bicchiere').update({ phase:'idle' });
+  $('bicchiereMsg').textContent = '🏁 Manche finita!';
+  pjSend({type:'bicchiereState'});
+}
+
+/* ================================================================
+   MANI FERME — regia
+   L'esatto opposto di Scuoti Forte: qui si premia l'IMMOBILITÀ. Il tremore si misura come differenza
+   tra una lettura dell'accelerometro e la successiva (jitter): non serve nessuna calibrazione iniziale,
+   funziona da subito qualunque sia la posizione in cui si tiene il telefono.
+================================================================ */
+let MANOFERMA = {};
+function openManoFerma(){
+  if (!isGameEnabled('manoferma')) return alert('⚠️ Questo minigioco non è compreso nella licenza attiva. Contatta Alberto per sbloccarlo.');
+  if (!G) return alert('Avvia prima una partita!');
+  cancelLiveQuestion(); closeModal();
+  G.ref.child('manoferma').off();
+  G.ref.update({ status:'manoferma', manoferma:{ phase:'idle' } });
+  MANOFERMA = {};
+  $('manoFermaSetup').style.display='block'; $('manoFermaLive').style.display='none';
+  pjSend({type:'manoFermaState'});
+  showScreen('scrManoFerma');
+}
+function manoFermaStart(){
+  const ptsPerSec = Math.max(0, +$('manoFermaPts').value||100);
+  const thresholdJitter = Math.max(0.1, +$('manoFermaThreshold').value||0.7);
+  const penaltyPerSec = Math.max(0, +$('manoFermaPenalty').value||40);
+  const durationSec = Math.max(10, +$('manoFermaDuration').value||15);
+  const startAt = serverNow();
+  MANOFERMA = { ended:false, startAt, durationSec };
+  G.ref.update({ status:'manoferma', manoferma:{ phase:'play', ptsPerSec, thresholdJitter, penaltyPerSec, durationSec, startAt, results:{} } });
+  $('manoFermaSetup').style.display='none'; $('manoFermaLive').style.display='block';
+  $('manoFermaMsg').textContent = '🤚 FERMI COME STATUE...';
+  $('manoFermaResults').innerHTML = '';
+  pjSend({type:'manoFermaStart', startAt, durationSec});
+  clearInterval(MANOFERMA.timerInt);
+  MANOFERMA.timerInt = setInterval(()=>{
+    const elapsedSec = Math.max(0,(serverNow()-startAt)/1000);
+    const frac = Math.max(0, 1 - elapsedSec/durationSec);
+    const bar = $('manoFermaHostTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%';
+    if (frac<=0) clearInterval(MANOFERMA.timerInt);
+  }, 200);
+  G.ref.child('manoferma/results').off();
+  G.ref.child('manoferma/results').on('value', s=>{
+    const results = s.val()||{};
+    const rows = Object.values(results).sort((a,b)=>(b.pts||0)-(a.pts||0)).slice(0,5);
+    $('manoFermaResults').innerHTML = rows.map((p,i)=>
+      `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(p.name)} <span class="pts">${p.pts>=0?'+':''}${p.pts}</span></div>`
+    ).join('') || '<div class="byline center" style="opacity:.7">Nessuno ha ancora finito...</div>';
+    pjSend({type:'manoFermaResults', rows});
+  });
+}
+function manoFermaEnd(){
+  if (!G) return;
+  MANOFERMA.ended = true;
+  clearInterval(MANOFERMA.timerInt);
+  G.ref.child('manoferma/results').off();
+  G.ref.child('manoferma').update({ phase:'idle' });
+  $('manoFermaMsg').textContent = '🏁 Manche finita!';
+  pjSend({type:'manoFermaState'});
+}
+
+/* ================================================================
+   IL COLPO SECCO — regia
+   Stesso principio del semaforo di Formula Uno (attesa imprevedibile prima del segnale, partenza
+   anticipata penalizzata), ma qui non si tocca lo schermo: si sferra un vero colpo col telefono in
+   mano. Il momento esatto del "VIA!" (goAt) è calcolato una sola volta qui e condiviso con tutti,
+   così ogni telefono giudica in autonomia se un colpo è arrivato prima o dopo, sullo stesso identico
+   istante per tutti.
+================================================================ */
+let COLPOSECCO = {};
+function openColpoSecco(){
+  if (!isGameEnabled('colposecco')) return alert('⚠️ Questo minigioco non è compreso nella licenza attiva. Contatta Alberto per sbloccarlo.');
+  if (!G) return alert('Avvia prima una partita!');
+  cancelLiveQuestion(); closeModal();
+  clearTimeout((COLPOSECCO||{}).goTO); clearTimeout((COLPOSECCO||{}).finalizeTO);
+  G.ref.child('colposecco').off();
+  G.ref.update({ status:'colposecco', colposecco:{ phase:'idle' } });
+  COLPOSECCO = {};
+  $('colpoSeccoSetup').style.display='block'; $('colpoSeccoLive').style.display='none';
+  pjSend({type:'colpoSeccoState'});
+  showScreen('scrColpoSecco');
+}
+function colpoSeccoStart(){
+  const pts = [1,2,3,4,5].map(i => Math.max(0, +$('colpoSeccoP'+i).value||0));
+  const earlyPenalty = Math.max(0, +$('colpoSeccoEarlyPenalty').value||200);
+  const startAt = serverNow();
+  const goDelayMs = 1800 + Math.floor(Math.random()*3200); // 1,8s-5,0s: imprevedibile, come un vero semaforo
+  const goAt = startAt + goDelayMs;
+  COLPOSECCO = { ended:false, finalized:false, pts, earlyPenalty };
+  G.ref.update({ status:'colposecco', colposecco:{ phase:'wait', pts, earlyPenalty, startAt, goAt, results:{} } });
+  $('colpoSeccoSetup').style.display='none'; $('colpoSeccoLive').style.display='block';
+  $('colpoSeccoMsg').textContent = '🥊 PRONTI... ASPETTATE IL SEGNALE!';
+  $('colpoSeccoCount').textContent = '';
+  $('colpoSeccoResults').innerHTML = '';
+  pjSend({type:'colpoSeccoWait'});
+  clearTimeout(COLPOSECCO.goTO);
+  COLPOSECCO.goTO = setTimeout(()=>{
+    pjSend({type:'colpoSeccoGo'});
+    $('colpoSeccoMsg').textContent = '🥊 VIA! Aspettando le reazioni...';
+  }, Math.max(0, goAt - serverNow()));
+  clearTimeout(COLPOSECCO.finalizeTO);
+  COLPOSECCO.finalizeTO = setTimeout(()=> colpoSeccoFinalize(), Math.max(0, goAt - serverNow()) + 8000);
+  G.ref.child('colposecco/results').off();
+  G.ref.child('colposecco/results').on('value', s=>{
+    const results = s.val()||{};
+    $('colpoSeccoCount').textContent = `Hanno reagito: ${Object.keys(results).length}`;
+    const entries = Object.values(results).sort((a,b)=>{
+      if (a.jumped && !b.jumped) return 1; if (!a.jumped && b.jumped) return -1;
+      return (a.reactionMs??999999)-(b.reactionMs??999999);
+    });
+    $('colpoSeccoResults').innerHTML = entries.slice(0,5).map(p=>
+      `<div class="leadRow"><span class="pos">${p.jumped?'🚩':'🥊'}</span> ${esc(p.name)} <span class="pts">${p.jumped?'anticipato':(p.reactionMs/1000).toFixed(3)+'s'}</span></div>`
+    ).join('') || '<div class="byline center" style="opacity:.7">Nessuno ha ancora reagito...</div>';
+    pjSend({type:'colpoSeccoResults', rows: entries.slice(0,5)});
+  });
+}
+// I punti di piazzamento vanno solo a chi NON è partito in anticipo, ordinati per tempo di reazione;
+// la penalità va a TUTTI quelli partiti in anticipo, non solo al primo che si è mosso troppo presto.
+function colpoSeccoFinalize(){
+  if (COLPOSECCO.finalized || !G) return;
+  COLPOSECCO.finalized = true;
+  clearTimeout(COLPOSECCO.finalizeTO);
+  G.ref.child('colposecco/results').once('value').then(s=>{
+    const results = s.val()||{};
+    const entries = Object.entries(results);
+    if (!entries.length) return;
+    const deltas = {};
+    const valid = entries.filter(([,r])=>!r.jumped).sort((a,b)=>(a[1].reactionMs)-(b[1].reactionMs));
+    valid.slice(0,5).forEach(([pid], i)=>{ deltas[pid] = (deltas[pid]||0) + (COLPOSECCO.pts[i]||0); });
+    entries.filter(([,r])=>r.jumped).forEach(([pid])=>{ deltas[pid] = (deltas[pid]||0) - COLPOSECCO.earlyPenalty; });
+    const proms = Object.entries(deltas).map(([pid, delta])=>
+      G.ref.child('players/'+pid+'/score').once('value').then(sc=>
+        G.ref.child('players/'+pid+'/score').set((sc.val()||0) + delta)
+      )
+    );
+    Promise.all(proms);
+  });
+}
+function colpoSeccoEnd(){
+  if (!G) return;
+  colpoSeccoFinalize();
+  clearTimeout(COLPOSECCO.goTO); clearTimeout(COLPOSECCO.finalizeTO);
+  G.ref.child('colposecco/results').off();
+  G.ref.child('colposecco').update({ phase:'idle' });
+  $('colpoSeccoMsg').textContent = '🏁 Manche finita!';
+  pjSend({type:'colpoSeccoState'});
+}
+
+/* ================================================================
+   SPREMI L'ARANCIA — regia
+   Usa il giroscopio (velocità di rotazione), non l'accelerometro: un gesto rotatorio del polso, ben
+   diverso dallo scuotere o dall'inclinare. Punteggio individuale diretto, niente classifica da
+   confrontare: ognuno guadagna in base a quanto succo ha spremuto per conto proprio.
+================================================================ */
+let ARANCIA = {};
+function openArancia(){
+  if (!isGameEnabled('arancia')) return alert('⚠️ Questo minigioco non è compreso nella licenza attiva. Contatta Alberto per sbloccarlo.');
+  if (!G) return alert('Avvia prima una partita!');
+  cancelLiveQuestion(); closeModal();
+  G.ref.child('arancia').off();
+  G.ref.update({ status:'arancia', arancia:{ phase:'idle' } });
+  ARANCIA = {};
+  $('aranciaSetup').style.display='block'; $('aranciaLive').style.display='none';
+  pjSend({type:'aranciaState'});
+  showScreen('scrArancia');
+}
+function aranciaStart(){
+  const maxPts = Math.max(0, +$('aranciaPts').value||1000);
+  const durationSec = Math.max(10, +$('aranciaDuration').value||20);
+  const startAt = serverNow();
+  ARANCIA = { ended:false, startAt, durationSec };
+  G.ref.update({ status:'arancia', arancia:{ phase:'play', maxPts, durationSec, startAt, results:{} } });
+  $('aranciaSetup').style.display='none'; $('aranciaLive').style.display='block';
+  $('aranciaMsg').textContent = '🍊 RUOTATE IL POLSO PER SPREMERE!';
+  $('aranciaResults').innerHTML = '';
+  pjSend({type:'aranciaStart', startAt, durationSec});
+  clearInterval(ARANCIA.timerInt);
+  ARANCIA.timerInt = setInterval(()=>{
+    const elapsedSec = Math.max(0,(serverNow()-startAt)/1000);
+    const frac = Math.max(0, 1 - elapsedSec/durationSec);
+    const bar = $('aranciaHostTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%';
+    if (frac<=0) clearInterval(ARANCIA.timerInt);
+  }, 200);
+  G.ref.child('arancia/results').off();
+  G.ref.child('arancia/results').on('value', s=>{
+    const results = s.val()||{};
+    const rows = Object.values(results).sort((a,b)=>(b.pts||0)-(a.pts||0)).slice(0,5);
+    $('aranciaResults').innerHTML = rows.map((p,i)=>
+      `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(p.name)} <span class="pts">+${p.pts} (${p.juice}%)</span></div>`
+    ).join('') || '<div class="byline center" style="opacity:.7">Nessuno ha ancora finito...</div>';
+    pjSend({type:'aranciaResults', rows});
+  });
+}
+function aranciaEnd(){
+  if (!G) return;
+  ARANCIA.ended = true;
+  clearInterval(ARANCIA.timerInt);
+  G.ref.child('arancia/results').off();
+  G.ref.child('arancia').update({ phase:'idle' });
+  $('aranciaMsg').textContent = '🏁 Manche finita!';
+  pjSend({type:'aranciaState'});
+}
+
+/* ================================================================
+   IL VASSOIO DEL CAMERIERE — regia
+   Stessa fisica di Tieni l'Equilibrio (accelerazione + attrito), ma applicata a TRE bicchieri
+   indipendenti sullo stesso vassoio: la difficoltà non nasce da una zona più piccola, ma dal doverli
+   seguire tutti insieme, dato che con la stessa inclinazione tendono comunque a separarsi nel tempo
+   partendo da posizioni leggermente diverse.
+================================================================ */
+let VASSOIO = {};
+function openVassoio(){
+  if (!isGameEnabled('vassoio')) return alert('⚠️ Questo minigioco non è compreso nella licenza attiva. Contatta Alberto per sbloccarlo.');
+  if (!G) return alert('Avvia prima una partita!');
+  cancelLiveQuestion(); closeModal();
+  G.ref.child('vassoio').off();
+  G.ref.update({ status:'vassoio', vassoio:{ phase:'idle' } });
+  VASSOIO = {};
+  $('vassoioSetup').style.display='block'; $('vassoioLive').style.display='none';
+  pjSend({type:'vassoioState'});
+  showScreen('scrVassoio');
+}
+function vassoioStart(){
+  const ptsPerSec = Math.max(0, +$('vassoioPts').value||100);
+  const dropPenalty = Math.max(0, +$('vassoioDropPenalty').value||150);
+  const durationSec = Math.max(10, +$('vassoioDuration').value||20);
+  const startAt = serverNow();
+  VASSOIO = { ended:false, startAt, durationSec };
+  G.ref.update({ status:'vassoio', vassoio:{ phase:'play', ptsPerSec, dropPenalty, durationSec, startAt, results:{} } });
+  $('vassoioSetup').style.display='none'; $('vassoioLive').style.display='block';
+  $('vassoioMsg').textContent = '🎪 TENETE I BICCHIERI IN EQUILIBRIO...';
+  $('vassoioResults').innerHTML = '';
+  pjSend({type:'vassoioStart', startAt, durationSec});
+  clearInterval(VASSOIO.timerInt);
+  VASSOIO.timerInt = setInterval(()=>{
+    const elapsedSec = Math.max(0,(serverNow()-startAt)/1000);
+    const frac = Math.max(0, 1 - elapsedSec/durationSec);
+    const bar = $('vassoioHostTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%';
+    if (frac<=0) clearInterval(VASSOIO.timerInt);
+  }, 200);
+  G.ref.child('vassoio/results').off();
+  G.ref.child('vassoio/results').on('value', s=>{
+    const results = s.val()||{};
+    const rows = Object.values(results).sort((a,b)=>(b.pts||0)-(a.pts||0)).slice(0,5);
+    $('vassoioResults').innerHTML = rows.map((p,i)=>
+      `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(p.name)} <span class="pts">${p.pts>=0?'+':''}${p.pts} (${p.dropped} caduti)</span></div>`
+    ).join('') || '<div class="byline center" style="opacity:.7">Nessuno ha ancora finito...</div>';
+    pjSend({type:'vassoioResults', rows});
+  });
+}
+function vassoioEnd(){
+  if (!G) return;
+  VASSOIO.ended = true;
+  clearInterval(VASSOIO.timerInt);
+  G.ref.child('vassoio/results').off();
+  G.ref.child('vassoio').update({ phase:'idle' });
+  $('vassoioMsg').textContent = '🏁 Manche finita!';
+  pjSend({type:'vassoioState'});
+}
+
+/* ================================================================
+   TROVA IL COLORE — grafica condivisa (regia/telefono/proiettore) + regia
+   Il primo minigioco con la fotocamera vera del telefono, non i sensori di movimento. Il colore
+   bersaglio è lo stesso per tutti (arriva dalla regia, come il bersaglio della bussola), per una
+   gara leale.
+================================================================ */
+const TC_PALETTE = {
+  rosso:{r:214,g:40,b:40}, blu:{r:40,g:90,b:220}, verde:{r:40,g:170,b:60},
+  giallo:{r:230,g:200,b:30}, arancione:{r:230,g:130,b:30}, viola:{r:140,g:60,b:200},
+  rosa:{r:230,g:120,b:170}, nero:{r:30,g:30,b:30}, bianco:{r:235,g:235,b:235}, marrone:{r:110,g:70,b:40},
+};
+function tcRgbCss(c){ return `rgb(${Math.round(c.r)},${Math.round(c.g)},${Math.round(c.b)})`; }
+let TROVACOLORE = {};
+function openTrovaColore(){
+  if (!isGameEnabled('trovacolore')) return alert('⚠️ Questo minigioco non è compreso nella licenza attiva. Contatta Alberto per sbloccarlo.');
+  if (!G) return alert('Avvia prima una partita!');
+  cancelLiveQuestion(); closeModal();
+  G.ref.child('trovacolore').off();
+  G.ref.update({ status:'trovacolore', trovacolore:{ phase:'idle' } });
+  TROVACOLORE = {};
+  $('trovaColoreSetup').style.display='block'; $('trovaColoreLive').style.display='none';
+  pjSend({type:'trovaColoreState'});
+  showScreen('scrTrovaColore');
+}
+function trovaColoreStart(){
+  const targetKey = $('trovaColoreTarget').value;
+  const nomiColori = Object.keys(TC_PALETTE);
+  const finalKey = targetKey==='random' ? nomiColori[Math.floor(Math.random()*nomiColori.length)] : targetKey;
+  const targetColor = TC_PALETTE[finalKey];
+  const ptsPerSec = Math.max(0, +$('trovaColorePts').value||100);
+  const thresholdDist = Math.max(10, +$('trovaColoreThreshold').value||90);
+  const penaltyPerSec = Math.max(0, +$('trovaColorePenalty').value||20);
+  const durationSec = Math.max(10, +$('trovaColoreDuration').value||20);
+  const startAt = serverNow();
+  TROVACOLORE = { ended:false, startAt, durationSec };
+  G.ref.update({ status:'trovacolore', trovacolore:{ phase:'play', targetColor, targetName:finalKey, ptsPerSec, thresholdDist, penaltyPerSec, durationSec, startAt, results:{} } });
+  $('trovaColoreSetup').style.display='none'; $('trovaColoreLive').style.display='block';
+  $('trovaColoreMsg').textContent = '🎨 CERCATE IL COLORE GIUSTO IN SALA...';
+  $('trovaColoreResults').innerHTML = '';
+  pjSend({type:'trovaColoreStart', startAt, durationSec, targetColor});
+  clearInterval(TROVACOLORE.timerInt);
+  TROVACOLORE.timerInt = setInterval(()=>{
+    const elapsedSec = Math.max(0,(serverNow()-startAt)/1000);
+    const frac = Math.max(0, 1 - elapsedSec/durationSec);
+    const bar = $('trovaColoreHostTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%';
+    if (frac<=0) clearInterval(TROVACOLORE.timerInt);
+  }, 200);
+  G.ref.child('trovacolore/results').off();
+  G.ref.child('trovacolore/results').on('value', s=>{
+    const results = s.val()||{};
+    const rows = Object.values(results).sort((a,b)=>(b.pts||0)-(a.pts||0)).slice(0,5);
+    $('trovaColoreResults').innerHTML = rows.map((p,i)=>
+      `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(p.name)} <span class="pts">${p.pts>=0?'+':''}${p.pts}</span></div>`
+    ).join('') || '<div class="byline center" style="opacity:.7">Nessuno ha ancora finito...</div>';
+    pjSend({type:'trovaColoreResults', rows});
+  });
+}
+function trovaColoreEnd(){
+  if (!G) return;
+  TROVACOLORE.ended = true;
+  clearInterval(TROVACOLORE.timerInt);
+  G.ref.child('trovacolore/results').off();
+  G.ref.child('trovacolore').update({ phase:'idle' });
+  $('trovaColoreMsg').textContent = '🏁 Manche finita!';
+  pjSend({type:'trovaColoreState'});
+}
+
+/* ================================================================
+   CACCIA ALLA LUCE — regia
+   Stessa base tecnica di Trova il Colore (fotocamera + mirino centrale), ma qui si misura la
+   luminosità (formula standard 0.299R+0.587G+0.114B) invece del colore: bersaglio bianco puro (255)
+   in modalità "luce", nero puro (0) in modalità "buio".
+================================================================ */
+let CACCIALUCE = {};
+function openCacciaLuce(){
+  if (!isGameEnabled('caccialuce')) return alert('⚠️ Questo minigioco non è compreso nella licenza attiva. Contatta Alberto per sbloccarlo.');
+  if (!G) return alert('Avvia prima una partita!');
+  cancelLiveQuestion(); closeModal();
+  G.ref.child('caccialuce').off();
+  G.ref.update({ status:'caccialuce', caccialuce:{ phase:'idle' } });
+  CACCIALUCE = {};
+  $('cacciaLuceSetup').style.display='block'; $('cacciaLuceLive').style.display='none';
+  pjSend({type:'cacciaLuceState'});
+  showScreen('scrCacciaLuce');
+}
+function cacciaLuceStart(){
+  const modeSel = $('cacciaLuceMode').value;
+  const mode = modeSel==='random' ? (Math.random()<0.5?'luce':'buio') : modeSel;
+  const ptsPerSec = Math.max(0, +$('cacciaLucePts').value||100);
+  const thresholdDist = Math.max(10, +$('cacciaLuceThreshold').value||90);
+  const penaltyPerSec = Math.max(0, +$('cacciaLucePenalty').value||20);
+  const durationSec = Math.max(10, +$('cacciaLuceDuration').value||20);
+  const startAt = serverNow();
+  CACCIALUCE = { ended:false, startAt, durationSec };
+  G.ref.update({ status:'caccialuce', caccialuce:{ phase:'play', mode, ptsPerSec, thresholdDist, penaltyPerSec, durationSec, startAt, results:{} } });
+  $('cacciaLuceSetup').style.display='none'; $('cacciaLuceLive').style.display='block';
+  $('cacciaLuceMsg').textContent = mode==='luce' ? '☀️ CERCATE IL PUNTO PIÙ LUMINOSO!' : '🌑 CERCATE IL PUNTO PIÙ BUIO!';
+  $('cacciaLuceResults').innerHTML = '';
+  pjSend({type:'cacciaLuceStart', startAt, durationSec, mode});
+  clearInterval(CACCIALUCE.timerInt);
+  CACCIALUCE.timerInt = setInterval(()=>{
+    const elapsedSec = Math.max(0,(serverNow()-startAt)/1000);
+    const frac = Math.max(0, 1 - elapsedSec/durationSec);
+    const bar = $('cacciaLuceHostTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%';
+    if (frac<=0) clearInterval(CACCIALUCE.timerInt);
+  }, 200);
+  G.ref.child('caccialuce/results').off();
+  G.ref.child('caccialuce/results').on('value', s=>{
+    const results = s.val()||{};
+    const rows = Object.values(results).sort((a,b)=>(b.pts||0)-(a.pts||0)).slice(0,5);
+    $('cacciaLuceResults').innerHTML = rows.map((p,i)=>
+      `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(p.name)} <span class="pts">${p.pts>=0?'+':''}${p.pts}</span></div>`
+    ).join('') || '<div class="byline center" style="opacity:.7">Nessuno ha ancora finito...</div>';
+    pjSend({type:'cacciaLuceResults', rows});
+  });
+}
+function cacciaLuceEnd(){
+  if (!G) return;
+  CACCIALUCE.ended = true;
+  clearInterval(CACCIALUCE.timerInt);
+  G.ref.child('caccialuce/results').off();
+  G.ref.child('caccialuce').update({ phase:'idle' });
+  $('cacciaLuceMsg').textContent = '🏁 Manche finita!';
+  pjSend({type:'cacciaLuceState'});
+}
+
+/* ================================================================
+   MIMETIZZATI — regia
+   Non c'è un colore bersaglio scelto dalla regia: ognuno fissa il proprio, inquadrando se stesso o i
+   propri vestiti, poi deve trovare qualcosa che ci si confonda. Riusa le stesse funzioni condivise di
+   Trova il Colore (tcRgbCss, trovaColoreDist), niente di duplicato.
+================================================================ */
+let MIMETIZZATI = {};
+function openMimetizzati(){
+  if (!isGameEnabled('mimetizzati')) return alert('⚠️ Questo minigioco non è compreso nella licenza attiva. Contatta Alberto per sbloccarlo.');
+  if (!G) return alert('Avvia prima una partita!');
+  cancelLiveQuestion(); closeModal();
+  G.ref.child('mimetizzati').off();
+  G.ref.update({ status:'mimetizzati', mimetizzati:{ phase:'idle' } });
+  MIMETIZZATI = {};
+  $('mimetizzatiSetup').style.display='block'; $('mimetizzatiLive').style.display='none';
+  pjSend({type:'mimetizzatiState'});
+  showScreen('scrMimetizzati');
+}
+function mimetizzatiStart(){
+  const ptsPerSec = Math.max(0, +$('mimetizzatiPts').value||100);
+  const thresholdDist = Math.max(10, +$('mimetizzatiThreshold').value||90);
+  const penaltyPerSec = Math.max(0, +$('mimetizzatiPenalty').value||20);
+  const durationSec = Math.max(15, +$('mimetizzatiDuration').value||25);
+  const startAt = serverNow();
+  MIMETIZZATI = { ended:false, startAt, durationSec };
+  G.ref.update({ status:'mimetizzati', mimetizzati:{ phase:'play', ptsPerSec, thresholdDist, penaltyPerSec, durationSec, startAt, results:{} } });
+  $('mimetizzatiSetup').style.display='none'; $('mimetizzatiLive').style.display='block';
+  $('mimetizzatiMsg').textContent = '🫥 FISSATE IL VOSTRO COLORE, POI NASCONDETEVI...';
+  $('mimetizzatiResults').innerHTML = '';
+  pjSend({type:'mimetizzatiStart', startAt, durationSec});
+  clearInterval(MIMETIZZATI.timerInt);
+  MIMETIZZATI.timerInt = setInterval(()=>{
+    const elapsedSec = Math.max(0,(serverNow()-startAt)/1000);
+    const frac = Math.max(0, 1 - elapsedSec/durationSec);
+    const bar = $('mimetizzatiHostTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%';
+    if (frac<=0) clearInterval(MIMETIZZATI.timerInt);
+  }, 200);
+  G.ref.child('mimetizzati/results').off();
+  G.ref.child('mimetizzati/results').on('value', s=>{
+    const results = s.val()||{};
+    const rows = Object.values(results).sort((a,b)=>(b.pts||0)-(a.pts||0)).slice(0,5);
+    $('mimetizzatiResults').innerHTML = rows.map((p,i)=>
+      `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(p.name)} <span class="pts">${p.pts>=0?'+':''}${p.pts}</span></div>`
+    ).join('') || '<div class="byline center" style="opacity:.7">Nessuno ha ancora finito...</div>';
+    pjSend({type:'mimetizzatiResults', rows});
+  });
+}
+function mimetizzatiEnd(){
+  if (!G) return;
+  MIMETIZZATI.ended = true;
+  clearInterval(MIMETIZZATI.timerInt);
+  G.ref.child('mimetizzati/results').off();
+  G.ref.child('mimetizzati').update({ phase:'idle' });
+  $('mimetizzatiMsg').textContent = '🏁 Manche finita!';
+  pjSend({type:'mimetizzatiState'});
 }
 
 /* ================================================================
@@ -24194,6 +26571,15 @@ const GIOCHI_CATALOGO = [
   {k:'talpa', l:'🔨 Schiaccia la Talpa'},
   {k:'scuoti', l:'🫨 Scuoti Forte!'},
   {k:'equilibrio', l:'⚖️ Tieni l\'Equilibrio'},
+  {k:'bussola', l:'🧭 La Bussola Maledetta'},
+  {k:'bicchiere', l:'🍹 Non Versare il Bicchiere'},
+  {k:'manoferma', l:'🤚 Mani Ferme!'},
+  {k:'colposecco', l:'🥊 Il Colpo Secco'},
+  {k:'arancia', l:'🍊 Spremi l\'Arancia'},
+  {k:'vassoio', l:'🎪 Il Vassoio del Cameriere'},
+  {k:'trovacolore', l:'🎨 Trova il Colore'},
+  {k:'caccialuce', l:'💡 Caccia alla Luce'},
+  {k:'mimetizzati', l:'🫥 Mimetizzati'},
   {k:'dadimatti', l:'🎲 Dadi Matti'},
   {k:'hilo', l:'🃏 Carta Alta, Carta Bassa'},
   {k:'wheels', l:'🎡 Le Ruote della Fortuna'},
@@ -24288,6 +26674,15 @@ const SKILL_GAMES = [
   {k:'salumi', cats:['Dita Veloci'], cls:'', style:'background:linear-gradient(180deg,#e0264f,#7a0e2a); color:#fff; box-shadow:0 7px 0 #4a0518,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(224,38,79,.4)', fn:'openSalumi', label:`🔪 Salumi e Formaggi`},
   {k:'talpa', cats:['Dita Veloci'], cls:'', style:'background:linear-gradient(180deg,#e0264f,#7a0e2a); color:#fff; box-shadow:0 7px 0 #4a0518,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(224,38,79,.4)', fn:'openTalpa', label:`🔨 Schiaccia la Talpa`},
   {k:'equilibrio', cats:["Colpo d'Occhio",'Oscillometro'], cls:'', style:'background:linear-gradient(180deg,#e8e8e8,#a8a8a8); color:#1c1c1c; box-shadow:0 7px 0 #5a5a5a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(200,200,200,.35)', fn:'openEquilibrio', label:`⚖️ Tieni l'Equilibrio`},
+  {k:'bussola', cats:["Colpo d'Occhio",'Oscillometro'], cls:'', style:'background:linear-gradient(180deg,#e8e8e8,#a8a8a8); color:#1c1c1c; box-shadow:0 7px 0 #5a5a5a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(200,200,200,.35)', fn:'openBussola', label:`🧭 La Bussola Maledetta`},
+  {k:'bicchiere', cats:["Colpo d'Occhio",'Oscillometro'], cls:'', style:'background:linear-gradient(180deg,#e8e8e8,#a8a8a8); color:#1c1c1c; box-shadow:0 7px 0 #5a5a5a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(200,200,200,.35)', fn:'openBicchiere', label:`🍹 Non Versare il Bicchiere`},
+  {k:'manoferma', cats:["Colpo d'Occhio",'Oscillometro'], cls:'', style:'background:linear-gradient(180deg,#e8e8e8,#a8a8a8); color:#1c1c1c; box-shadow:0 7px 0 #5a5a5a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(200,200,200,.35)', fn:'openManoFerma', label:`🤚 Mani Ferme!`},
+  {k:'colposecco', cats:['Dita Veloci','Oscillometro'], cls:'', style:'background:linear-gradient(180deg,#e0264f,#7a0e2a); color:#fff; box-shadow:0 7px 0 #4a0518,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(224,38,79,.4)', fn:'openColpoSecco', label:`🥊 Il Colpo Secco`},
+  {k:'arancia', cats:["Colpo d'Occhio",'Oscillometro'], cls:'', style:'background:linear-gradient(180deg,#e8e8e8,#a8a8a8); color:#1c1c1c; box-shadow:0 7px 0 #5a5a5a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(200,200,200,.35)', fn:'openArancia', label:`🍊 Spremi l'Arancia`},
+  {k:'vassoio', cats:["Colpo d'Occhio",'Oscillometro'], cls:'', style:'background:linear-gradient(180deg,#e8e8e8,#a8a8a8); color:#1c1c1c; box-shadow:0 7px 0 #5a5a5a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(200,200,200,.35)', fn:'openVassoio', label:`🎪 Il Vassoio del Cameriere`},
+  {k:'trovacolore', cats:["Colpo d'Occhio",'Fotocamera'], cls:'', style:'background:linear-gradient(180deg,#e8e8e8,#a8a8a8); color:#1c1c1c; box-shadow:0 7px 0 #5a5a5a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(200,200,200,.35)', fn:'openTrovaColore', label:`🎨 Trova il Colore`},
+  {k:'caccialuce', cats:["Colpo d'Occhio",'Fotocamera'], cls:'', style:'background:linear-gradient(180deg,#e8e8e8,#a8a8a8); color:#1c1c1c; box-shadow:0 7px 0 #5a5a5a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(200,200,200,.35)', fn:'openCacciaLuce', label:`💡 Caccia alla Luce`},
+  {k:'mimetizzati', cats:["Colpo d'Occhio",'Fotocamera'], cls:'', style:'background:linear-gradient(180deg,#e8e8e8,#a8a8a8); color:#1c1c1c; box-shadow:0 7px 0 #5a5a5a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(200,200,200,.35)', fn:'openMimetizzati', label:`🫥 Mimetizzati`},
   {k:'scopa', cats:['Carte'], cls:'', style:'background:linear-gradient(180deg,#1a7a3a,#0a3a1a); color:#fff; box-shadow:0 7px 0 #052610,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(26,122,58,.4)', fn:'openScopa', label:`🧹 Scopa e Vinci`},
   {k:'scuoti', cats:['Dita Veloci','Oscillometro'], cls:'', style:'background:linear-gradient(180deg,#e0264f,#7a0e2a); color:#fff; box-shadow:0 7px 0 #4a0518,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(224,38,79,.4)', fn:'openScuoti', label:`🫨 Scuoti Forte!`},
   {k:'tfiscale', cats:['Logica'], cls:'', style:'background:linear-gradient(180deg,#2d6fd6,#163a70); color:#fff; box-shadow:0 7px 0 #0a1c38,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(45,111,214,.4)', fn:'openTFiscale', label:`💶 Sei Troppo Fiscale!`},
@@ -24341,7 +26736,7 @@ function renderGameBtn(g, counters){
   const styleAttr = g.style ? ` style="${g.style}"` : '';
   return `<button class="btn ${g.cls} gameBtn"${styleAttr} onclick="trackAndOpenGame('${g.k}','${g.fn}')">${g.label} ${badge}</button>`;
 }
-const GAME_SUBCATS = ["Carte","Colpo d'Occhio","Dita Veloci","Estrazione Casuale","Logica","Oscillometro","Scelta Fortunata","Si Grida"];
+const GAME_SUBCATS = ["Carte","Colpo d'Occhio","Dita Veloci","Estrazione Casuale","Fotocamera","Logica","Oscillometro","Scelta Fortunata","Si Grida"];
 // Stessa identica palette usata sui pulsanti dei giochi (SKILL_GAMES/LUCK_GAMES): così l'etichetta
 // del filtro ha subito lo stesso colore dei giochi che raggruppa, un colpo d'occhio solo per capire
 // a quale sottocategoria appartiene ciascun gioco, prima di aprire l'elenco.
@@ -24354,6 +26749,7 @@ const GAME_SUBCAT_COLORS = {
   "Estrazione Casuale": '#a06fe0',
   "Scelta Fortunata":   '#e8862e',
   "Oscillometro":       '#00d4c8', // sottocategoria "trasversale": i giochi che usano i sensori di movimento del telefono, in aggiunta alla loro sottocategoria normale
+  "Fotocamera":         '#ff8fd6', // sottocategoria "trasversale": i giochi che usano la fotocamera del telefono, in aggiunta alla loro sottocategoria normale
 };
 let GF = { types:new Set(), cats:new Set(), counters:{} };
 // Toglie l'emoji/simboli iniziali dall'etichetta per un ordinamento alfabetico vero (altrimenti l'emoji
@@ -25850,6 +28246,239 @@ function pjRouteInner(m){
     else if (m.type==='dadiMattiResults') {
       $('pjDadiMattiResults').innerHTML = (m.rows||[]).map((p,i)=>
         `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(p.name)} <span class="pts">somma ${p.sum}</span></div>`
+      ).join('');
+    }
+    else if (m.type==='bussolaState') {
+      showScreen('scrPjBussola');
+      clearInterval(window._bussolaPjTimerInt);
+      $('pjBussolaResults').innerHTML = '';
+      $('pjBussolaTimeBarFill').style.width='0%';
+      $('pjBussolaMsg').textContent = 'Ruotate il telefono per puntare la direzione giusta!';
+    }
+    else if (m.type==='bussolaStart') {
+      showScreen('scrPjBussola');
+      $('pjBussolaMsg').textContent = 'Ruotate il telefono per puntare la direzione giusta!';
+      $('pjBussolaResults').innerHTML = '';
+      bcBuildDial('pjBussolaDial');
+      bcPositionTarget('pjBussolaDial', m.targetHeading);
+      const needle = document.getElementById('pjBussolaDial_needleWrap');
+      if (needle) needle.style.display = 'none'; // il proiettore non ha una propria bussola: mostra solo il bersaglio, non un ago
+      clearInterval(window._bussolaPjTimerInt);
+      window._bussolaPjTimerInt = setInterval(()=>{
+        const elapsedSec = Math.max(0, (serverNow()-m.startAt)/1000);
+        const frac = Math.max(0, 1 - elapsedSec/m.durationSec);
+        const bar = $('pjBussolaTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%';
+        if (frac<=0) clearInterval(window._bussolaPjTimerInt);
+      }, 200);
+    }
+    else if (m.type==='bussolaResults') {
+      $('pjBussolaResults').innerHTML = (m.rows||[]).map((p,i)=>
+        `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(p.name)} <span class="pts">${p.pts>=0?'+':''}${p.pts}</span></div>`
+      ).join('');
+    }
+    else if (m.type==='bicchiereState') {
+      showScreen('scrPjBicchiere');
+      clearInterval(window._bicchierePjTimerInt); clearInterval(window._bicchierePjAmbientInt);
+      $('pjBicchiereResults').innerHTML = '';
+      $('pjBicchiereTimeBarFill').style.width='0%';
+      $('pjBicchiereLiquid').style.height='0%';
+      $('pjBicchiereMsg').textContent = 'Inclinate il telefono per versare, senza far traboccare!';
+    }
+    else if (m.type==='bicchiereStart') {
+      showScreen('scrPjBicchiere');
+      $('pjBicchiereMsg').textContent = 'Ognuno versa il proprio bicchiere sul telefono!';
+      $('pjBicchiereResults').innerHTML = '';
+      // il proiettore non ha una propria inclinazione: mostra un riempimento ambientale solo per atmosfera,
+      // non riflette davvero cosa succede sui singoli telefoni (ognuno versa per conto proprio)
+      let livelloAmbientale = 0, direzione = 1;
+      clearInterval(window._bicchierePjAmbientInt);
+      window._bicchierePjAmbientInt = setInterval(()=>{
+        livelloAmbientale += direzione*3;
+        if (livelloAmbientale>=85 || livelloAmbientale<=0) direzione *= -1;
+        const liquid = $('pjBicchiereLiquid'); if (liquid) liquid.style.height = livelloAmbientale+'%';
+      }, 260);
+      clearInterval(window._bicchierePjTimerInt);
+      window._bicchierePjTimerInt = setInterval(()=>{
+        const elapsedSec = Math.max(0, (serverNow()-m.startAt)/1000);
+        const frac = Math.max(0, 1 - elapsedSec/m.durationSec);
+        const bar = $('pjBicchiereTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%';
+        if (frac<=0){ clearInterval(window._bicchierePjTimerInt); clearInterval(window._bicchierePjAmbientInt); }
+      }, 200);
+    }
+    else if (m.type==='bicchiereResults') {
+      $('pjBicchiereResults').innerHTML = (m.rows||[]).map((p,i)=>
+        `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(p.name)} <span class="pts">${p.pts>=0?'+':''}${p.pts}${p.spilled?' 💦':''}</span></div>`
+      ).join('');
+    }
+    else if (m.type==='manoFermaState') {
+      showScreen('scrPjManoFerma');
+      clearInterval(window._manoFermaPjTimerInt);
+      $('pjManoFermaResults').innerHTML = '';
+      $('pjManoFermaTimeBarFill').style.width='0%';
+      $('pjManoFermaMsg').textContent = 'Tenete il telefono il più fermo possibile!';
+    }
+    else if (m.type==='manoFermaStart') {
+      showScreen('scrPjManoFerma');
+      $('pjManoFermaMsg').textContent = 'Tenete il telefono il più fermo possibile!';
+      $('pjManoFermaResults').innerHTML = '';
+      clearInterval(window._manoFermaPjTimerInt);
+      window._manoFermaPjTimerInt = setInterval(()=>{
+        const elapsedSec = Math.max(0, (serverNow()-m.startAt)/1000);
+        const frac = Math.max(0, 1 - elapsedSec/m.durationSec);
+        const bar = $('pjManoFermaTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%';
+        if (frac<=0) clearInterval(window._manoFermaPjTimerInt);
+      }, 200);
+    }
+    else if (m.type==='manoFermaResults') {
+      $('pjManoFermaResults').innerHTML = (m.rows||[]).map((p,i)=>
+        `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(p.name)} <span class="pts">${p.pts>=0?'+':''}${p.pts}</span></div>`
+      ).join('');
+    }
+    else if (m.type==='colpoSeccoState') {
+      showScreen('scrPjColpoSecco');
+      const icon = $('pjColpoSeccoIcon'); icon.className='csIcon'; icon.textContent='✊';
+      $('pjColpoSeccoMsg').textContent = 'PRONTI...';
+      $('pjColpoSeccoResults').innerHTML = '';
+    }
+    else if (m.type==='colpoSeccoWait') {
+      showScreen('scrPjColpoSecco');
+      const icon = $('pjColpoSeccoIcon'); icon.className='csIcon'; icon.textContent='✊';
+      $('pjColpoSeccoMsg').textContent = 'PRONTI...';
+      $('pjColpoSeccoResults').innerHTML = '';
+    }
+    else if (m.type==='colpoSeccoGo') {
+      const icon = $('pjColpoSeccoIcon'); icon.classList.add('csGo'); icon.textContent='💥';
+      $('pjColpoSeccoMsg').textContent = 'VIA!!!';
+    }
+    else if (m.type==='colpoSeccoResults') {
+      $('pjColpoSeccoResults').innerHTML = (m.rows||[]).map(p=>
+        `<div class="leadRow"><span class="pos">${p.jumped?'🚩':'🥊'}</span> ${esc(p.name)} <span class="pts">${p.jumped?'anticipato':(p.reactionMs/1000).toFixed(3)+'s'}</span></div>`
+      ).join('');
+    }
+    else if (m.type==='aranciaState') {
+      showScreen('scrPjArancia');
+      clearInterval(window._aranciaPjTimerInt); clearInterval(window._aranciaPjSpinInt);
+      $('pjAranciaResults').innerHTML = '';
+      $('pjAranciaTimeBarFill').style.width='0%';
+      $('pjAranciaOrange').style.transform = 'rotate(0deg)';
+      $('pjAranciaMsg').textContent = 'Ruotate il polso per spremere più succo possibile!';
+    }
+    else if (m.type==='aranciaStart') {
+      showScreen('scrPjArancia');
+      $('pjAranciaMsg').textContent = 'Ognuno spreme la propria arancia sul telefono!';
+      $('pjAranciaResults').innerHTML = '';
+      // rotazione ambientale, solo per atmosfera: non riflette davvero cosa succede sui singoli telefoni
+      let spinAmbientale = 0;
+      clearInterval(window._aranciaPjSpinInt);
+      window._aranciaPjSpinInt = setInterval(()=>{
+        spinAmbientale += 14;
+        const orb = $('pjAranciaOrange'); if (orb) orb.style.transform = `rotate(${spinAmbientale}deg)`;
+      }, 200);
+      clearInterval(window._aranciaPjTimerInt);
+      window._aranciaPjTimerInt = setInterval(()=>{
+        const elapsedSec = Math.max(0, (serverNow()-m.startAt)/1000);
+        const frac = Math.max(0, 1 - elapsedSec/m.durationSec);
+        const bar = $('pjAranciaTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%';
+        if (frac<=0){ clearInterval(window._aranciaPjTimerInt); clearInterval(window._aranciaPjSpinInt); }
+      }, 200);
+    }
+    else if (m.type==='aranciaResults') {
+      $('pjAranciaResults').innerHTML = (m.rows||[]).map((p,i)=>
+        `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(p.name)} <span class="pts">+${p.pts} (${p.juice}%)</span></div>`
+      ).join('');
+    }
+    else if (m.type==='vassoioState') {
+      showScreen('scrPjVassoio');
+      clearInterval(window._vassoioPjTimerInt);
+      $('pjVassoioResults').innerHTML = '';
+      $('pjVassoioTimeBarFill').style.width='0%';
+      $('pjVassoioMsg').textContent = 'Tre bicchieri da tenere in equilibrio insieme!';
+    }
+    else if (m.type==='vassoioStart') {
+      showScreen('scrPjVassoio');
+      $('pjVassoioMsg').textContent = 'Ognuno tiene in equilibrio i propri bicchieri sul telefono!';
+      $('pjVassoioResults').innerHTML = '';
+      clearInterval(window._vassoioPjTimerInt);
+      window._vassoioPjTimerInt = setInterval(()=>{
+        const elapsedSec = Math.max(0, (serverNow()-m.startAt)/1000);
+        const frac = Math.max(0, 1 - elapsedSec/m.durationSec);
+        const bar = $('pjVassoioTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%';
+        if (frac<=0) clearInterval(window._vassoioPjTimerInt);
+      }, 200);
+    }
+    else if (m.type==='vassoioResults') {
+      $('pjVassoioResults').innerHTML = (m.rows||[]).map((p,i)=>
+        `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(p.name)} <span class="pts">${p.pts>=0?'+':''}${p.pts} (${p.dropped} caduti)</span></div>`
+      ).join('');
+    }
+    else if (m.type==='trovaColoreState') {
+      showScreen('scrPjTrovaColore');
+      clearInterval(window._trovaColorePjTimerInt);
+      $('pjTrovaColoreResults').innerHTML = '';
+      $('pjTrovaColoreTimeBarFill').style.width='0%';
+    }
+    else if (m.type==='trovaColoreStart') {
+      showScreen('scrPjTrovaColore');
+      $('pjTrovaColoreResults').innerHTML = '';
+      const swatch = $('pjTrovaColoreSwatch');
+      if (swatch) swatch.style.background = tcRgbCss(m.targetColor);
+      clearInterval(window._trovaColorePjTimerInt);
+      window._trovaColorePjTimerInt = setInterval(()=>{
+        const elapsedSec = Math.max(0, (serverNow()-m.startAt)/1000);
+        const frac = Math.max(0, 1 - elapsedSec/m.durationSec);
+        const bar = $('pjTrovaColoreTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%';
+        if (frac<=0) clearInterval(window._trovaColorePjTimerInt);
+      }, 200);
+    }
+    else if (m.type==='trovaColoreResults') {
+      $('pjTrovaColoreResults').innerHTML = (m.rows||[]).map((p,i)=>
+        `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(p.name)} <span class="pts">${p.pts>=0?'+':''}${p.pts}</span></div>`
+      ).join('');
+    }
+    else if (m.type==='cacciaLuceState') {
+      showScreen('scrPjCacciaLuce');
+      clearInterval(window._cacciaLucePjTimerInt);
+      $('pjCacciaLuceResults').innerHTML = '';
+      $('pjCacciaLuceTimeBarFill').style.width='0%';
+    }
+    else if (m.type==='cacciaLuceStart') {
+      showScreen('scrPjCacciaLuce');
+      $('pjCacciaLuceMsg').textContent = m.mode==='luce' ? 'Cercate con la fotocamera il punto più luminoso!' : 'Cercate con la fotocamera il punto più buio!';
+      $('pjCacciaLuceIcon').textContent = m.mode==='luce' ? '☀️' : '🌑';
+      $('pjCacciaLuceResults').innerHTML = '';
+      clearInterval(window._cacciaLucePjTimerInt);
+      window._cacciaLucePjTimerInt = setInterval(()=>{
+        const elapsedSec = Math.max(0, (serverNow()-m.startAt)/1000);
+        const frac = Math.max(0, 1 - elapsedSec/m.durationSec);
+        const bar = $('pjCacciaLuceTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%';
+        if (frac<=0) clearInterval(window._cacciaLucePjTimerInt);
+      }, 200);
+    }
+    else if (m.type==='cacciaLuceResults') {
+      $('pjCacciaLuceResults').innerHTML = (m.rows||[]).map((p,i)=>
+        `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(p.name)} <span class="pts">${p.pts>=0?'+':''}${p.pts}</span></div>`
+      ).join('');
+    }
+    else if (m.type==='mimetizzatiState') {
+      showScreen('scrPjMimetizzati');
+      clearInterval(window._mimetizzatiPjTimerInt);
+      $('pjMimetizzatiResults').innerHTML = '';
+      $('pjMimetizzatiTimeBarFill').style.width='0%';
+    }
+    else if (m.type==='mimetizzatiStart') {
+      showScreen('scrPjMimetizzati');
+      $('pjMimetizzatiResults').innerHTML = '';
+      clearInterval(window._mimetizzatiPjTimerInt);
+      window._mimetizzatiPjTimerInt = setInterval(()=>{
+        const elapsedSec = Math.max(0, (serverNow()-m.startAt)/1000);
+        const frac = Math.max(0, 1 - elapsedSec/m.durationSec);
+        const bar = $('pjMimetizzatiTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%';
+        if (frac<=0) clearInterval(window._mimetizzatiPjTimerInt);
+      }, 200);
+    }
+    else if (m.type==='mimetizzatiResults') {
+      $('pjMimetizzatiResults').innerHTML = (m.rows||[]).map((p,i)=>
+        `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(p.name)} <span class="pts">${p.pts>=0?'+':''}${p.pts}</span></div>`
       ).join('');
     }
     else if (m.type==='csfState' || m.type==='csfBet') {
