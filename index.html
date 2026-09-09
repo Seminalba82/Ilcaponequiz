@@ -2315,7 +2315,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v14.16</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v14.17</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -7924,7 +7924,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1416; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1417; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -26617,7 +26617,7 @@ const GIOCHI_CATALOGO = [
   {k:'rana', l:'🐸 La Rana Salterina'},
   {k:'punto', l:'🏁 Il Punto della Situazione'},
   {k:'dado', l:'🎲 Il Dado del Destino'},
-  {k:'asta', l:'🔨 Asta'},
+  {k:'asta', l:'🔨 Asta', modulo:true},
   {k:'idr', l:"🔧 L'Idraulico"},
   {k:'patata', l:'💣 Patata Bollente'},
   {k:'cassaforte', l:'🔐 La Cassaforte'},
