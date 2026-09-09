@@ -2315,7 +2315,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v14.21</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v14.22</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -5668,13 +5668,20 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrVassoio">
   <div class="brand"><div class="t1" style="font-size:clamp(18px,3.4vw,32px)">🎪 IL VASSOIO DEL CAMERIERE</div></div>
   <div class="panel mt" style="max-width:480px" id="vassoioSetup">
-    <div class="label">Punti massimi al secondo (3 bicchieri, tutti centrati)</div>
+    <div class="label">Dimensione del vassoio (difficoltà)</div>
+    <select id="vassoioLevel" style="width:100%; text-align:center">
+      <option value="facile" selected>🟢 Facile</option>
+      <option value="medio">🟡 Medio</option>
+      <option value="difficile">🟠 Difficile</option>
+      <option value="difficilissimo">🔴 Difficilissimo</option>
+    </select>
+    <div class="label mt">Punti massimi al secondo (3 bicchieri, tutti centrati)</div>
     <input type="number" id="vassoioPts" value="100" min="0" style="text-align:center">
     <div class="label mt">Penalità per ogni bicchiere che cade</div>
     <input type="number" id="vassoioDropPenalty" value="150" min="0" style="text-align:center">
     <div class="label mt">Durata (secondi)</div>
     <input type="number" id="vassoioDuration" value="20" min="10" style="text-align:center">
-    <div class="byline mt" style="opacity:.75">🎪 Come Tieni l'Equilibrio, ma con TRE bicchieri da tenere in equilibrio sullo stesso vassoio contemporaneamente: la difficoltà non è una zona più piccola, è doverli seguire tutti insieme. Ogni bicchiere che cade dal vassoio dà una penalità e riduce il punteggio massimo ottenibile.</div>
+    <div class="byline mt" style="opacity:.75">🎪 Come Tieni l'Equilibrio, ma con TRE bicchieri da tenere in equilibrio sullo stesso vassoio contemporaneamente: la difficoltà nasce sia dal doverli seguire tutti insieme, sia dalla dimensione del vassoio scelta sopra — più è piccolo, meno spazio di manovra c'è prima che un bicchiere cada. Ogni bicchiere che cade dà una penalità e riduce il punteggio massimo ottenibile.</div>
     <button class="btn mg mt" style="width:100%" onclick="vassoioStart()">🎪 FAI PARTIRE IL GIOCO!</button>
   </div>
   <div id="vassoioLive" style="display:none; width:100%" class="center">
@@ -7926,7 +7933,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1421; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1422; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -16166,7 +16173,10 @@ function aranciaFinishRound(){
    tempo — è proprio questo che li rende difficili da seguire tutti insieme, a differenza di un solo
    bicchiere (Tieni l'Equilibrio).
 ================================================================ */
-const VASSOIO_ACCEL = 5.2, VASSOIO_FRICTION = 0.96, VASSOIO_SAFE_FRAC = 0.6;
+const VASSOIO_ACCEL = 5.2, VASSOIO_FRICTION = 0.96;
+// Dimensione visiva del vassoio per ogni livello: più piccolo il vassoio disegnato, più piccola anche
+// l'area sicura corrispondente (VASSOIO_LEVELS), così quello che si vede corrisponde a quello che si gioca.
+const VASSOIO_SIZE_PX = { facile:340, medio:230, difficile:150, difficilissimo:95 };
 function showPlayerVassoio(g){
   const m = g.vassoio||{};
   $('vassoiopName').textContent = P.name;
@@ -16186,17 +16196,26 @@ function showPlayerVassoio(g){
     P.vassoioDurationSec = m.durationSec;
     P.vassoioPtsPerSec = m.ptsPerSec;
     P.vassoioDropPenalty = m.dropPenalty;
+    P.vassoioSafeFrac = m.safeFrac || 0.6;
     P.vassoioScore = 0;
     P.vassoioSubmitted = false;
     P.vassoioTiltX = 0; P.vassoioTiltY = 0;
-    // tre bicchieri, ciascuno con un piccolo scostamento iniziale diverso dal centro
+    // tre bicchieri, ciascuno con un piccolo scostamento iniziale diverso dal centro, scalato in
+    // proporzione alla soglia del livello: così nascono sempre ben dentro l'area sicura, qualunque sia
+    // la dimensione del vassoio, e non cadono per sbaglio ancora prima di iniziare
+    const sf = P.vassoioSafeFrac;
     P.vassoioGlasses = [
-      { x:0.12, y:0.06, vx:0, vy:0, alive:true },
-      { x:-0.09, y:0.11, vx:0, vy:0, alive:true },
-      { x:0.04, y:-0.13, vx:0, vy:0, alive:true },
+      { x:0.20*sf, y:0.10*sf, vx:0, vy:0, alive:true },
+      { x:-0.15*sf, y:0.18*sf, vx:0, vy:0, alive:true },
+      { x:0.07*sf, y:-0.22*sf, vx:0, vy:0, alive:true },
     ];
     P.vassoioDropped = 0;
     $('vassoioFbMsg').style.display='none';
+    const trayEl = $('vassoioTray');
+    if (trayEl){
+      const levelKey = Object.keys(VASSOIO_LEVELS).find(k => VASSOIO_LEVELS[k]===P.vassoioSafeFrac) || 'facile';
+      trayEl.style.maxWidth = (VASSOIO_SIZE_PX[levelKey]||340)+'px';
+    }
     for (let i=0;i<3;i++){
       const el = $('vassoioGlass'+i);
       if (el){ el.classList.remove('dropped'); el.style.left='50%'; el.style.top='50%'; }
@@ -16252,7 +16271,7 @@ function vassoioTick(){
     glass.x += glass.vx*dt; glass.y += glass.vy*dt;
     const dist = Math.hypot(glass.x, glass.y);
     const el = $('vassoioGlass'+i);
-    if (dist > 1){
+    if (dist > P.vassoioSafeFrac){
       glass.alive = false;
       P.vassoioDropped++;
       P.vassoioScore -= P.vassoioDropPenalty;
@@ -16260,8 +16279,12 @@ function vassoioTick(){
       if (navigator.vibrate) navigator.vibrate(100);
       return;
     }
-    if (el){ el.style.left = (50+glass.x*50)+'%'; el.style.top = (50+glass.y*50)+'%'; }
-    sommaVicinanza += Math.max(0, 1 - dist/VASSOIO_SAFE_FRAC);
+    // La posizione visiva è scalata rispetto alla soglia del livello (non sempre su 1.0 fisso): così il
+    // bicchiere occupa per intero il vassoio disegnato, qualunque sia la sua dimensione, arrivando
+    // vicino al bordo vero proprio quando sta per cadere.
+    const renderScale = 50 * 0.92 / P.vassoioSafeFrac;
+    if (el){ el.style.left = (50+glass.x*renderScale)+'%'; el.style.top = (50+glass.y*renderScale)+'%'; }
+    sommaVicinanza += Math.max(0, 1 - dist/P.vassoioSafeFrac);
   });
   const aliveCount = P.vassoioGlasses.filter(g=>g.alive).length;
   if (aliveCount>0) P.vassoioScore += P.vassoioPtsPerSec * (sommaVicinanza/3) * dt;
@@ -24757,6 +24780,10 @@ function scuotiEnd(){
    il punteggio totale finale di ciascuno, da ordinare in classifica.
 ================================================================ */
 const EQUILIBRIO_LEVELS = { normale:0.65, difficile:0.45, estremo:0.28, diabolico:0.14 };
+// Livelli del Vassoio del Cameriere: sia la soglia di caduta/punteggio SIA la dimensione visiva del
+// vassoio (in pixel, vedi VASSOIO_SIZE_PX lato telefono) si riducono insieme, così un vassoio "piccolo"
+// è davvero più piccolo da vedere E più difficile da gestire, non solo uno dei due.
+const VASSOIO_LEVELS = { facile:0.6, medio:0.3, difficile:0.18, difficilissimo:0.09 };
 let EQUILIBRIO = {};
 function openEquilibrio(){
   if (!isGameEnabled('equilibrio')) return alert('⚠️ Questo minigioco non è compreso nella licenza attiva. Contatta Alberto per sbloccarlo.');
@@ -25279,16 +25306,18 @@ function openVassoio(){
   showScreen('scrVassoio');
 }
 function vassoioStart(){
+  const levelKey = $('vassoioLevel').value;
+  const safeFrac = VASSOIO_LEVELS[levelKey] || VASSOIO_LEVELS.facile;
   const ptsPerSec = Math.max(0, +$('vassoioPts').value||100);
   const dropPenalty = Math.max(0, +$('vassoioDropPenalty').value||150);
   const durationSec = Math.max(10, +$('vassoioDuration').value||20);
   const startAt = serverNow();
   VASSOIO = { ended:false, startAt, durationSec };
-  G.ref.update({ status:'vassoio', vassoio:{ phase:'play', ptsPerSec, dropPenalty, durationSec, startAt, results:{} } });
+  G.ref.update({ status:'vassoio', vassoio:{ phase:'play', ptsPerSec, dropPenalty, safeFrac, durationSec, startAt, results:{} } });
   $('vassoioSetup').style.display='none'; $('vassoioLive').style.display='block';
   $('vassoioMsg').textContent = '🎪 TENETE I BICCHIERI IN EQUILIBRIO...';
   $('vassoioResults').innerHTML = '';
-  pjSend({type:'vassoioStart', startAt, durationSec});
+  pjSend({type:'vassoioStart', startAt, durationSec, safeFrac});
   clearInterval(VASSOIO.timerInt);
   VASSOIO.timerInt = setInterval(()=>{
     const elapsedSec = Math.max(0,(serverNow()-startAt)/1000);
@@ -28472,6 +28501,12 @@ function pjRouteInner(m){
       showScreen('scrPjVassoio');
       $('pjVassoioMsg').textContent = 'Ognuno tiene in equilibrio i propri bicchieri sul telefono!';
       $('pjVassoioResults').innerHTML = '';
+      const pjTray = document.querySelector('.vsTray.pjTray');
+      if (pjTray){
+        const levelKey = Object.keys(VASSOIO_LEVELS).find(k => VASSOIO_LEVELS[k]===m.safeFrac) || 'facile';
+        const pjSizePx = { facile:420, medio:280, difficile:185, difficilissimo:120 };
+        pjTray.style.maxWidth = (pjSizePx[levelKey]||420)+'px';
+      }
       clearInterval(window._vassoioPjTimerInt);
       window._vassoioPjTimerInt = setInterval(()=>{
         const elapsedSec = Math.max(0, (serverNow()-m.startAt)/1000);
