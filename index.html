@@ -2315,7 +2315,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v14.18</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v14.20</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -7924,7 +7924,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1418; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1420; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -9252,6 +9252,7 @@ function verificaCodiceEAvvia(codice, silente){
     const finalizza = ()=>{
       window.CAPONE_MINIGIOCHI_ABILITATI = lic.minigiochi_abilitati; // se manca, isGameEnabled() blocca tutto: nessun gioco è mai concesso senza abilitazione esplicita
       localStorage.setItem('capone_licenza_codice', codice);
+      syncGiochiCatalogo(); // aggiorna subito il catalogo su Firebase per il pannello licenze, non solo quando si aprono i menu Giochi/Moduli più avanti
       if(!silente) closeLicenseModal();
       if (pendingQuizIndex >= 0) promptVenue(codice, pendingQuizIndex);
       else alert('✅ Licenza collegata a questo dispositivo: '+codice);
@@ -15453,6 +15454,7 @@ function showPlayerDadiMatti(g){
   }
 }
 function dadiMattiRequestPermission(){
+  dadiMattiInitAudio(); // creato QUI, in risposta diretta e sincrona al tocco: i browser sono più permissivi così che dentro un .then() successivo
   const finishSetup = ()=>{ P.dadiMattiPermGranted = true; dadiMattiBeginRound(); };
   if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function'){
     DeviceMotionEvent.requestPermission().then(state=>{
@@ -15472,10 +15474,45 @@ function dadiMattiBeginRound(){
   window.addEventListener('devicemotion', dadiMattiMotionHandler);
   clearInterval(P.dadiMattiTimerInt);
   P.dadiMattiTimerInt = setInterval(dadiMattiTick, 60);
+  dadiMattiInitAudio(); // creato/sbloccato qui, sullo stesso tocco che concede il permesso ai sensori
+}
+// Il rumore dei dadi che si scontrano è generato al volo (rumore bianco filtrato, con inviluppo che
+// decade in fretta, tipo "click"), non un file audio: nessun problema di diritti, e il tono cambia
+// ogni volta per dare l'idea di più dadi diversi che sbattono tra loro.
+function dadiMattiInitAudio(){
+  if (P.dadiMattiAudioCtx) return;
+  try{ P.dadiMattiAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); }catch(e){}
+}
+function dadiMattiPlayClack(){
+  const ctx = P.dadiMattiAudioCtx;
+  if (!ctx) return;
+  const bufferSize = Math.floor(ctx.sampleRate * 0.035);
+  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i=0;i<bufferSize;i++) data[i] = (Math.random()*2-1) * Math.exp(-i/(bufferSize*0.22));
+  const noise = ctx.createBufferSource();
+  noise.buffer = buffer;
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.frequency.value = 1200 + Math.random()*2400;
+  filter.Q.value = 1.1;
+  const gain = ctx.createGain();
+  gain.gain.value = 0.4;
+  noise.connect(filter).connect(gain).connect(ctx.destination);
+  noise.start();
+}
+function dadiMattiScheduleClack(){
+  const delay = 70 + Math.random()*110; // tra 70 e 180ms: ritmo irregolare, come dadi veri
+  P.dadiMattiClackTO = setTimeout(()=>{
+    if (!P.dadiMattiRolling) return;
+    dadiMattiPlayClack();
+    dadiMattiScheduleClack();
+  }, delay);
 }
 function dadiMattiStopLocalLoop(){
   window.removeEventListener('devicemotion', dadiMattiMotionHandler);
   clearInterval(P.dadiMattiTumbleInt);
+  clearTimeout(P.dadiMattiClackTO);
   // NB: il ciclo del timer (P.dadiMattiTimerInt) NON si ferma qui apposta: la barra del tempo deve
   // continuare a scorrere fino alla fine della manche anche dopo che questo giocatore ha già ottenuto
   // la sua somma, esattamente come succede in regia e sul proiettore (segnalato da Alberto).
@@ -15502,6 +15539,7 @@ function dadiMattiStartRolling(){
       cube.style.transform = `rotateX(${Math.random()*360}deg) rotateY(${Math.random()*360}deg)`;
     }
   }, 220);
+  dadiMattiScheduleClack();
 }
 function dadiMattiTick(){
   if (!P.dadiMattiStartAt) return;
@@ -15520,6 +15558,7 @@ function dadiMattiSettleAll(){
   P.dadiMattiSettled = true;
   P.dadiMattiRolling = false;
   clearInterval(P.dadiMattiTumbleInt);
+  clearTimeout(P.dadiMattiClackTO);
   let sum = 0;
   for (let i=0;i<10;i++){
     const val = 1+Math.floor(Math.random()*6);
