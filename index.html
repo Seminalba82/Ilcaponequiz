@@ -2315,7 +2315,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v14.20</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v14.21</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -5563,7 +5563,9 @@ body.suspense-on #pfRank{ display:none !important; }
     <input type="number" id="colpoSeccoP5" value="150" min="0" style="text-align:center">
     <div class="label mt">Penalità per chi parte in anticipo</div>
     <input type="number" id="colpoSeccoEarlyPenalty" value="200" min="0" style="text-align:center">
-    <div class="byline mt" style="opacity:.75">🥊 Al segnale "VIA!" (dopo un'attesa imprevedibile, come un vero semaforo), ogni giocatore deve sferrare un colpo secco e deciso col telefono in mano, il più veloce possibile. Chi si muove prima del segnale viene penalizzato.</div>
+    <div class="label mt">Tempo per reagire dopo il VIA (secondi)</div>
+    <input type="number" id="colpoSeccoReactWindow" value="3" min="1" step="0.5" style="text-align:center">
+    <div class="byline mt" style="opacity:.75">🥊 Al segnale "VIA!" (dopo un'attesa imprevedibile, come un vero semaforo), ogni giocatore deve sferrare un colpo secco e deciso col telefono in mano, il più veloce possibile. Chi si muove prima del segnale viene penalizzato. Passato il tempo per reagire impostato sopra, il gioco si chiude comunque: chi non ha ancora colpito riceve solo l'esito "troppo lento", senza aspettare oltre.</div>
     <button class="btn mg mt" style="width:100%" onclick="colpoSeccoStart()">🥊 FAI PARTIRE IL GIOCO!</button>
   </div>
   <div id="colpoSeccoLive" style="display:none; width:100%" class="center">
@@ -7924,7 +7926,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1420; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1421; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -15947,6 +15949,7 @@ function showPlayerColpoSecco(g){
   if (P.colpoSeccoGoAt !== m.goAt){
     P.colpoSeccoGoAt = m.goAt;
     P.colpoSeccoEarlyPenalty = m.earlyPenalty;
+    P.colpoSeccoReactWindowSec = m.reactWindowSec;
     P.colpoSeccoSubmitted = false;
     P.colpoSeccoWentGo = false;
     $('colpoSeccoFbMsg').style.display='none';
@@ -15999,8 +16002,8 @@ function colpoSeccoMotionHandler(event){
   }
 }
 function colpoSeccoWatch(){
-  if (!P.colpoSeccoActive || P.colpoSeccoWentGo || P.colpoSeccoSubmitted) return;
-  if (serverNow() >= P.colpoSeccoGoAt){
+  if (!P.colpoSeccoActive || P.colpoSeccoSubmitted) return;
+  if (!P.colpoSeccoWentGo && serverNow() >= P.colpoSeccoGoAt){
     P.colpoSeccoWentGo = true;
     const icon = $('colpoSeccoIcon');
     icon.classList.add('csGo'); icon.textContent = '💥';
@@ -16008,6 +16011,26 @@ function colpoSeccoWatch(){
     $('colpoSeccoGoMsg').style.display='block';
     if (navigator.vibrate) navigator.vibrate(80);
   }
+  // Finestra di tempo per reagire scaduta: si chiude qui, non si aspetta oltre (segnalato da Alberto,
+  // per evitare che il gioco resti fermo in attesa di chi non colpisce mai).
+  if (P.colpoSeccoWentGo && serverNow() >= P.colpoSeccoGoAt + P.colpoSeccoReactWindowSec*1000){
+    colpoSeccoTimeUp();
+  }
+}
+function colpoSeccoTimeUp(){
+  if (P.colpoSeccoSubmitted) return;
+  P.colpoSeccoSubmitted = true;
+  P.colpoSeccoActive = false;
+  colpoSeccoStopLocalLoop();
+  P.ref.child('colposecco/results/'+P.id).set({ name:P.name, missed:true });
+  const icon = $('colpoSeccoIcon');
+  icon.classList.remove('csGo'); icon.classList.add('csDone');
+  icon.textContent = '🐌';
+  $('colpoSeccoGoMsg').style.display='none'; $('colpoSeccoWaitMsg').style.display='none';
+  const msg = $('colpoSeccoFbMsg');
+  msg.style.display='block'; msg.className = 'feedback mtb fb-no';
+  msg.textContent = `🐌 TROPPO LENTO! Non hai reagito in tempo`;
+  if (navigator.vibrate) navigator.vibrate(150);
 }
 function colpoSeccoSubmit(jumped, reactionMs){
   if (P.colpoSeccoSubmitted) return;
@@ -25114,11 +25137,12 @@ function openColpoSecco(){
 function colpoSeccoStart(){
   const pts = [1,2,3,4,5].map(i => Math.max(0, +$('colpoSeccoP'+i).value||0));
   const earlyPenalty = Math.max(0, +$('colpoSeccoEarlyPenalty').value||200);
+  const reactWindowSec = Math.max(1, +$('colpoSeccoReactWindow').value||3);
   const startAt = serverNow();
   const goDelayMs = 1800 + Math.floor(Math.random()*3200); // 1,8s-5,0s: imprevedibile, come un vero semaforo
   const goAt = startAt + goDelayMs;
   COLPOSECCO = { ended:false, finalized:false, pts, earlyPenalty };
-  G.ref.update({ status:'colposecco', colposecco:{ phase:'wait', pts, earlyPenalty, startAt, goAt, results:{} } });
+  G.ref.update({ status:'colposecco', colposecco:{ phase:'wait', pts, earlyPenalty, reactWindowSec, startAt, goAt, results:{} } });
   $('colpoSeccoSetup').style.display='none'; $('colpoSeccoLive').style.display='block';
   $('colpoSeccoMsg').textContent = '🥊 PRONTI... ASPETTATE IL SEGNALE!';
   $('colpoSeccoCount').textContent = '';
@@ -25127,10 +25151,13 @@ function colpoSeccoStart(){
   clearTimeout(COLPOSECCO.goTO);
   COLPOSECCO.goTO = setTimeout(()=>{
     pjSend({type:'colpoSeccoGo'});
-    $('colpoSeccoMsg').textContent = '🥊 VIA! Aspettando le reazioni...';
+    $('colpoSeccoMsg').textContent = `🥊 VIA! Avete ${reactWindowSec}s per reagire...`;
   }, Math.max(0, goAt - serverNow()));
+  // Timeout di sicurezza allineato al tempo di reazione impostato: non più un'attesa fissa lunga,
+  // così il gioco si chiude in fretta invece di aspettare indefinitamente chi non colpisce mai
+  // (segnalato da Alberto: si rischiava di restare fermi aspettando tutti i colpi).
   clearTimeout(COLPOSECCO.finalizeTO);
-  COLPOSECCO.finalizeTO = setTimeout(()=> colpoSeccoFinalize(), Math.max(0, goAt - serverNow()) + 8000);
+  COLPOSECCO.finalizeTO = setTimeout(()=> colpoSeccoFinalize(), Math.max(0, goAt - serverNow()) + reactWindowSec*1000 + 600);
   G.ref.child('colposecco/results').off();
   G.ref.child('colposecco/results').on('value', s=>{
     const results = s.val()||{};
@@ -25140,7 +25167,7 @@ function colpoSeccoStart(){
       return (a.reactionMs??999999)-(b.reactionMs??999999);
     });
     $('colpoSeccoResults').innerHTML = entries.slice(0,5).map(p=>
-      `<div class="leadRow"><span class="pos">${p.jumped?'🚩':'🥊'}</span> ${esc(p.name)} <span class="pts">${p.jumped?'anticipato':(p.reactionMs/1000).toFixed(3)+'s'}</span></div>`
+      `<div class="leadRow"><span class="pos">${p.jumped?'🚩':(p.missed?'🐌':'🥊')}</span> ${esc(p.name)} <span class="pts">${p.jumped?'anticipato':(p.missed?'troppo lento':(p.reactionMs/1000).toFixed(3)+'s')}</span></div>`
     ).join('') || '<div class="byline center" style="opacity:.7">Nessuno ha ancora reagito...</div>';
     pjSend({type:'colpoSeccoResults', rows: entries.slice(0,5)});
   });
@@ -25156,7 +25183,7 @@ function colpoSeccoFinalize(){
     const entries = Object.entries(results);
     if (!entries.length) return;
     const deltas = {};
-    const valid = entries.filter(([,r])=>!r.jumped).sort((a,b)=>(a[1].reactionMs)-(b[1].reactionMs));
+    const valid = entries.filter(([,r])=>!r.jumped && !r.missed).sort((a,b)=>(a[1].reactionMs)-(b[1].reactionMs));
     valid.slice(0,5).forEach(([pid], i)=>{ deltas[pid] = (deltas[pid]||0) + (COLPOSECCO.pts[i]||0); });
     entries.filter(([,r])=>r.jumped).forEach(([pid])=>{ deltas[pid] = (deltas[pid]||0) - COLPOSECCO.earlyPenalty; });
     const proms = Object.entries(deltas).map(([pid, delta])=>
@@ -28399,7 +28426,7 @@ function pjRouteInner(m){
     }
     else if (m.type==='colpoSeccoResults') {
       $('pjColpoSeccoResults').innerHTML = (m.rows||[]).map(p=>
-        `<div class="leadRow"><span class="pos">${p.jumped?'🚩':'🥊'}</span> ${esc(p.name)} <span class="pts">${p.jumped?'anticipato':(p.reactionMs/1000).toFixed(3)+'s'}</span></div>`
+        `<div class="leadRow"><span class="pos">${p.jumped?'🚩':(p.missed?'🐌':'🥊')}</span> ${esc(p.name)} <span class="pts">${p.jumped?'anticipato':(p.missed?'troppo lento':(p.reactionMs/1000).toFixed(3)+'s')}</span></div>`
       ).join('');
     }
     else if (m.type==='aranciaState') {
