@@ -2269,8 +2269,12 @@ body.barOn.barCollapsed .screen.active{padding-bottom:70px;}
 .wheel{width:100%; aspect-ratio:1; border-radius:50%; position:relative; border:6px solid var(--gold);
   box-shadow:0 10px 0 rgba(0,0,0,.5), 0 0 30px rgba(255,201,60,.35), inset 0 0 24px rgba(0,0,0,.55);
   transition:none;}
-.wheel .wlbl{position:absolute; left:50%; top:50%; font-family:'Bungee'; font-size:clamp(9px,1.4vw,15px);
-  color:#fff; text-shadow:0 1px 3px rgba(0,0,0,.8); -webkit-text-stroke:2px rgba(0,0,0,.55); paint-order:stroke fill; transform-origin:0 0; white-space:nowrap; letter-spacing:.5px;}
+.wheel .wlbl{position:absolute; left:50%; top:50%; font-family:'Bungee'; font-size:14px;
+  color:#fff; text-shadow:0 1px 3px rgba(0,0,0,.8); -webkit-text-stroke:1.5px rgba(0,0,0,.55); paint-order:stroke fill; transform-origin:0 0; white-space:nowrap; letter-spacing:.5px;}
+/* NB: font-size e -webkit-text-stroke qui sono solo un valore di riserva per il primo istante prima
+   che JS li calcoli in proporzione alla dimensione VERA di ciascuna ruota (placeWheelLabels): un
+   telefono stretto e un proiettore largo renderizzano le ruote a dimensioni molto diverse, quindi un
+   carattere fisso o legato alla larghezza della pagina risultava incoerente da un posto all'altro. */
 .wheel.spin{animation:wheelSpin .5s linear infinite;}
 @keyframes wheelSpin{to{transform:rotate(360deg);}}
 .wheelHub{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:22%; aspect-ratio:1; border-radius:50%; z-index:3;
@@ -2320,7 +2324,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v14.37</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v14.38</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -7917,7 +7921,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1437; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1438; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -18328,9 +18332,17 @@ function placeWheelLabels(box){
   const w = box._wheel, order = box._order;
   const seg = 360/order.length;
   const trueRadius = w.getBoundingClientRect().width / 2;
+  const raggioValido = trueRadius > 0 ? trueRadius : Math.min(window.innerWidth*0.185, 185);
   // Vicino al bordo esterno (non più a metà raggio): il testo ora corre in verticale lungo il raggio,
   // quindi deve partire da vicino al bordo e rientrare verso il centro, non stare a metà strada.
-  const labelRadius = trueRadius > 0 ? trueRadius * 0.78 : Math.min(window.innerWidth*0.145, 145);
+  const labelRadius = raggioValido * 0.78;
+  // Carattere e contorno proporzionati alla dimensione VERA di questa ruota (non più a una percentuale
+  // della larghezza dello schermo): un telefono stretto e un proiettore largo fanno rendere le ruote a
+  // dimensioni molto diverse, quindi un carattere legato alla larghezza pagina risultava sproporzionato
+  // e incoerente da un posto all'altro (segnalato da Alberto: numeri disomogenei, alcuni fuori posto).
+  // Così restano sempre della stessa proporzione rispetto alla propria ruota, ovunque compaiano.
+  const fontSizePx = Math.max(8, Math.min(22, raggioValido * 0.135));
+  const strokePx = Math.max(1, raggioValido * 0.018);
   w.querySelectorAll('.wlbl').forEach((l,i)=>{
     l.textContent = order[i];
     const angolo = i*seg + seg/2;
@@ -18343,6 +18355,8 @@ function placeWheelLabels(box){
     const correzione = (base > 90 && base < 270) ? 180 : 0;
     l.style.transform = `rotate(${angolo}deg) translateY(${-labelRadius}px) rotate(${90+correzione}deg)`;
     l.style.transformOrigin = '0 0';
+    l.style.fontSize = fontSizePx+'px';
+    l.style.webkitTextStroke = strokePx+'px rgba(0,0,0,.55)';
   });
 }
 function renderWheels(rowEl, orders, pickable, onPick){
