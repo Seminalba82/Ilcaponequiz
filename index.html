@@ -2320,7 +2320,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v14.35</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v14.36</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -7917,7 +7917,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1435; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1436; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -18331,7 +18331,12 @@ function placeWheelLabels(box){
   const labelRadius = trueRadius > 0 ? trueRadius * 0.58 : Math.min(window.innerWidth*0.11, 108);
   w.querySelectorAll('.wlbl').forEach((l,i)=>{
     l.textContent = order[i];
-    l.style.transform = `rotate(${i*seg+seg/2}deg) translateY(${-labelRadius}px)`;
+    const angolo = i*seg + seg/2;
+    // Nella metà inferiore della ruota, ruotare il testo verso il bordo lo farebbe apparire capovolto
+    // (leggibile solo girando la testa): aggiungo una contro-rotazione di 180° solo lì, così il numero
+    // resta sempre dritto e leggibile, qualunque sia lo spicchio (segnalato da Alberto).
+    const correzione = (angolo > 90 && angolo < 270) ? 180 : 0;
+    l.style.transform = `rotate(${angolo}deg) translateY(${-labelRadius}px) rotate(${correzione}deg)`;
     l.style.transformOrigin = '0 0';
   });
 }
