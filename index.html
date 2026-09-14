@@ -2320,7 +2320,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v14.23</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v14.27</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -5758,8 +5758,8 @@ body.suspense-on #pfRank{ display:none !important; }
     </select>
     <div class="label mt">Punti massimi al secondo (colore perfetto)</div>
     <input type="number" id="trovaColorePts" value="100" min="0" style="text-align:center">
-    <div class="label mt">Soglia di tolleranza (più basso = più severo)</div>
-    <input type="number" id="trovaColoreThreshold" value="90" min="10" style="text-align:center">
+    <div class="label mt">Soglia di tolleranza in gradi di tonalità, 0-180 (più basso = più severo)</div>
+    <input type="number" id="trovaColoreThreshold" value="35" min="5" max="180" style="text-align:center">
     <div class="label mt">Penalità al secondo, oltre la soglia</div>
     <input type="number" id="trovaColorePenalty" value="20" min="0" style="text-align:center">
     <div class="label mt">Durata (secondi)</div>
@@ -5884,8 +5884,8 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="panel mt" style="max-width:480px" id="mimetizzatiSetup">
     <div class="label">Punti massimi al secondo (mimetizzati alla perfezione)</div>
     <input type="number" id="mimetizzatiPts" value="100" min="0" style="text-align:center">
-    <div class="label mt">Soglia di tolleranza (più basso = più severo)</div>
-    <input type="number" id="mimetizzatiThreshold" value="90" min="10" style="text-align:center">
+    <div class="label mt">Soglia di tolleranza in gradi di tonalità, 0-180 (più basso = più severo)</div>
+    <input type="number" id="mimetizzatiThreshold" value="35" min="5" max="180" style="text-align:center">
     <div class="label mt">Penalità al secondo, oltre la soglia</div>
     <input type="number" id="mimetizzatiPenalty" value="20" min="0" style="text-align:center">
     <div class="label mt">Durata totale (secondi) — include anche il tempo per "fissare" il proprio colore</div>
@@ -6770,6 +6770,7 @@ body.suspense-on #pfRank{ display:none !important; }
   </div>
   <div class="ranaMicWrap"><div class="ranaMicBar" id="ranaMicBar"></div></div>
   <div class="ranaHint" id="ranaHint">🎤 URLA FORTE PER FAR SALTARE LA RANA!</div>
+  <div class="byline center" style="opacity:.75; margin-top:4px">Ogni urlo vale un salto avanti. Chi arriva per primo vince!</div>
   <div class="ranaWinnerBanner" id="ranapWinnerBanner"></div>
 </div>
 
@@ -7480,6 +7481,7 @@ body.suspense-on #pfRank{ display:none !important; }
     <div class="pill" id="hrspScore"></div>
   </div>
   <div class="byline mt" id="hrspStatus">🎰 SU QUALE CAVALLO SCOMMETTI?</div>
+  <div class="byline center" style="opacity:.75; margin-top:4px">Scommetti sul cavallo vincente e poi grida forte e ripetutamente il suo nome per fargli vincere la corsa!!!</div>
   <div class="hrsPickGrid" id="hrsPickGrid"></div>
   <div class="hrsTrack mt" id="hrsTrackPl" style="min-height:220px"></div>
   <div class="hypeWrap" id="hypeWrap" style="display:none">
@@ -7938,7 +7940,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1423; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1427; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -15561,11 +15563,16 @@ function dadiMattiTick(){
   const elapsedSec = (serverNow() - P.dadiMattiStartAt)/1000;
   const frac = Math.max(0, 1 - elapsedSec/P.dadiMattiDurationSec);
   const bar = $('dadiMattiTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%'; // sempre aggiornata, anche a somma già ottenuta
-  if (frac<=0){ clearInterval(P.dadiMattiTimerInt); return; } // manche davvero finita per tutti: qui posso fermare il ciclo
-  if (P.dadiMattiSettled) return; // già ottenuta la somma: continuo solo ad aggiornare la barra, nessun altro controllo
-  const stoppedShaking = P.dadiMattiRolling && (now - P.dadiMattiLastShakeAt > 700);
-  const timeUp = elapsedSec >= P.dadiMattiDurationSec;
-  if (stoppedShaking || timeUp) dadiMattiSettleAll();
+  // IMPORTANTE: il controllo per fermare i dadi va fatto PRIMA di decidere se chiudere il ciclo per
+  // tempo scaduto, non dopo — altrimenti, quando il tempo finiva naturalmente senza che il giocatore
+  // avesse mai smesso di scuotere, il ciclo usciva subito senza mai chiamare dadiMattiSettleAll(): i
+  // dadi restavano bloccati a girare per sempre, senza nessun risultato (bug segnalato da Alberto).
+  if (!P.dadiMattiSettled){
+    const stoppedShaking = P.dadiMattiRolling && (now - P.dadiMattiLastShakeAt > 700);
+    const timeUp = elapsedSec >= P.dadiMattiDurationSec;
+    if (stoppedShaking || timeUp) dadiMattiSettleAll();
+  }
+  if (frac<=0) clearInterval(P.dadiMattiTimerInt); // manche davvero finita per tutti: qui posso fermare il ciclo
 }
 function dadiMattiSettleAll(){
   if (P.dadiMattiSettled) return;
@@ -16344,6 +16351,7 @@ function showPlayerTrovaColore(g){
     P.trovaColoreThresholdDist = m.thresholdDist;
     P.trovaColorePenaltyPerSec = m.penaltyPerSec;
     P.trovaColoreTargetColor = m.targetColor;
+    P.trovaColoreTargetName = m.targetName;
     P.trovaColoreScore = 0;
     P.trovaColoreSubmitted = false;
     $('trovaColoreFbMsg').style.display='none';
@@ -16398,8 +16406,39 @@ function trovaColoreSampleColor(){
   for (let i=0;i<data.length;i+=4){ r+=data[i]; g+=data[i+1]; b+=data[i+2]; n++; }
   return { r:r/n, g:g/n, b:b/n };
 }
-function trovaColoreDist(c1,c2){
-  return Math.sqrt((c1.r-c2.r)**2 + (c1.g-c2.g)**2 + (c1.b-c2.b)**2);
+function rgbToHsv(r,g,b){
+  r/=255; g/=255; b/=255;
+  const max=Math.max(r,g,b), min=Math.min(r,g,b), d=max-min;
+  let h=0;
+  if (d!==0){
+    if (max===r) h = ((g-b)/d) % 6;
+    else if (max===g) h = (b-r)/d + 2;
+    else h = (r-g)/d + 4;
+    h *= 60;
+    if (h<0) h += 360;
+  }
+  const s = max===0 ? 0 : d/max;
+  const v = max;
+  return {h,s,v};
+}
+// Confronto per TONALITÀ (tinta), non per distanza RGB pura: un oggetto vero in sala non ha mai
+// esattamente il colore "teorico" del bersaglio, soprattutto con poca luce o luce colorata di sala —
+// la luminosità cambia parecchio, ma la tonalità di base resta quasi identica. Confrontando quella,
+// un rosso scuro in un angolo buio conta ancora come "rosso", invece di essere respinto perché troppo
+// scuro (bug segnalato da Alberto: alcuni colori veri non venivano accettati).
+function trovaColoreDist(sampled, target, targetName){
+  const hs = rgbToHsv(sampled.r, sampled.g, sampled.b);
+  const ht = rgbToHsv(target.r, target.g, target.b);
+  if (ht.s < 0.12) return Math.abs(hs.v - ht.v) * 200; // bersaglio acromatico (nero/bianco): confronto la luminosità, non la tonalità
+  if (hs.v < 0.10 || hs.s < 0.15) return 999; // campione troppo scuro o troppo scolorito: la tonalità non è affidabile, nessun colore vero riconoscibile
+  let diff = Math.abs(hs.h - ht.h) % 360;
+  if (diff > 180) diff = 360 - diff;
+  // Il marrone è, in pratica, un arancione scuro e poco acceso: la sola tonalità non basta a
+  // distinguerlo da un arancione vero e vivido (sono a soli 4° l'uno dall'altro). Per questo bersaglio
+  // aggiungo un controllo extra su luminosità e saturazione, così un arancione acceso non conta come
+  // marrone solo perché la tinta di base è la stessa.
+  if (targetName === 'marrone' && (hs.v > 0.68 || hs.s > 0.80)) return 999;
+  return diff; // in gradi, 0-180
 }
 function trovaColoreTick(){
   if (!P.trovaColoreStartAt || !P.trovaColoreActive) return;
@@ -16411,7 +16450,7 @@ function trovaColoreTick(){
   let pct = 0;
   const reticle = $('trovaColoreReticle');
   if (sampled){
-    const dist = trovaColoreDist(sampled, P.trovaColoreTargetColor);
+    const dist = trovaColoreDist(sampled, P.trovaColoreTargetColor, P.trovaColoreTargetName);
     if (dist <= P.trovaColoreThresholdDist){
       pct = 1 - dist/P.trovaColoreThresholdDist;
       P.trovaColoreScore += P.trovaColorePtsPerSec * pct * dt;
@@ -25380,7 +25419,7 @@ function trovaColoreStart(){
   const finalKey = targetKey==='random' ? nomiColori[Math.floor(Math.random()*nomiColori.length)] : targetKey;
   const targetColor = TC_PALETTE[finalKey];
   const ptsPerSec = Math.max(0, +$('trovaColorePts').value||100);
-  const thresholdDist = Math.max(10, +$('trovaColoreThreshold').value||90);
+  const thresholdDist = Math.max(10, +$('trovaColoreThreshold').value||35);
   const penaltyPerSec = Math.max(0, +$('trovaColorePenalty').value||20);
   const durationSec = Math.max(10, +$('trovaColoreDuration').value||20);
   const startAt = serverNow();
@@ -25496,7 +25535,7 @@ function openMimetizzati(){
 }
 function mimetizzatiStart(){
   const ptsPerSec = Math.max(0, +$('mimetizzatiPts').value||100);
-  const thresholdDist = Math.max(10, +$('mimetizzatiThreshold').value||90);
+  const thresholdDist = Math.max(10, +$('mimetizzatiThreshold').value||35);
   const penaltyPerSec = Math.max(0, +$('mimetizzatiPenalty').value||20);
   const durationSec = Math.max(15, +$('mimetizzatiDuration').value||25);
   const startAt = serverNow();
