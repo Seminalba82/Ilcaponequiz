@@ -2324,7 +2324,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v14.38</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v14.39</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -7921,7 +7921,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1438; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1439; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -18345,6 +18345,11 @@ function placeWheelLabels(box){
   const strokePx = Math.max(1, raggioValido * 0.018);
   w.querySelectorAll('.wlbl').forEach((l,i)=>{
     l.textContent = order[i];
+    l.style.fontSize = fontSizePx+'px';
+    l.style.webkitTextStroke = strokePx+'px rgba(0,0,0,.55)';
+    // Misuro la larghezza VERA di questo numero (cambia da 3 a 4 cifre) solo ora, dopo avergli dato
+    // testo e carattere: mi serve per ricentrarlo, vedi sotto.
+    const larghezzaTesto = l.offsetWidth;
     const angolo = i*seg + seg/2;
     // Testo radiale (come i numeri di un contachilometri): la prima cifra vicino al bordo, le altre
     // verso il centro — non più curvo lungo la circonferenza. La rotazione base di 90° allinea il testo
@@ -18353,10 +18358,15 @@ function placeWheelLabels(box){
     // tangenziale: verificato angolo per angolo con un test dedicato prima di questa correzione).
     const base = (angolo + 90) % 360;
     const correzione = (base > 90 && base < 270) ? 180 : 0;
-    l.style.transform = `rotate(${angolo}deg) translateY(${-labelRadius}px) rotate(${90+correzione}deg)`;
+    // L'ultimo translateX è il tassello che mancava: con l'origine della rotazione fissata su un solo
+    // angolo del testo (in alto a sinistra, non al centro), il "peso" del numero finiva sempre spostato
+    // di lato rispetto al vero centro dello spicchio, invece di restarci sopra — tanto più evidente
+    // quanto più lungo il numero (es. 4 cifre). Verificato disegnando una riga guida esattamente al
+    // centro di ogni spicchio e confrontandola con la posizione reale dei numeri (segnalato da Alberto,
+    // ancora sfalsati dopo i primi tentativi): sposto il testo indietro di metà della sua stessa
+    // larghezza, così il suo centro vero finisce esattamente sulla riga guida, non il suo angolo.
+    l.style.transform = `rotate(${angolo}deg) translateY(${-labelRadius}px) rotate(${90+correzione}deg) translateX(${-larghezzaTesto/2}px)`;
     l.style.transformOrigin = '0 0';
-    l.style.fontSize = fontSizePx+'px';
-    l.style.webkitTextStroke = strokePx+'px rgba(0,0,0,.55)';
   });
 }
 function renderWheels(rowEl, orders, pickable, onPick){
