@@ -2277,6 +2277,14 @@ body.barOn.barCollapsed .screen.active{padding-bottom:70px;}
    carattere fisso o legato alla larghezza della pagina risultava incoerente da un posto all'altro. */
 .wheel.spin{animation:wheelSpin .5s linear infinite;}
 @keyframes wheelSpin{to{transform:rotate(360deg);}}
+/* Il cappello ora è dentro la ruota (per restare centrato sul vero cerchio, non sul contenitore più
+   grande attorno), quindi senza questo accorgimento girerebbe insieme a lei: sia durante la rotazione
+   veloce, sia nell'atterraggio finale su un numero, finendo storto invece che dritto. Questa
+   contro-rotazione annulla esattamente quella del genitore durante il giro veloce, tenendolo sempre
+   verticale; per l'atterraggio finale, la contro-rotazione equivalente viene applicata via JS in
+   wheelsStopAll, con la stessa durata e la stessa curva di rallentamento della ruota stessa. */
+.wheel.spin .wheelHub{animation:wheelHubCounterSpin .5s linear infinite;}
+@keyframes wheelHubCounterSpin{to{transform:translate(-50%,-50%) rotate(-360deg);}}
 .wheelHub{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:22%; aspect-ratio:1; border-radius:50%; z-index:3;
   background:radial-gradient(circle at 38% 30%, #2a1a4d, #0b0614 75%); border:3px solid var(--gold);
   display:flex; align-items:center; justify-content:center; font-size:clamp(14px,2.6vw,26px);
@@ -2324,7 +2332,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v14.39</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v14.41</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -7921,7 +7929,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1439; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1441; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -18316,9 +18324,15 @@ function shuffledWheel(){ const a=[...(WH.currentValues||WHEEL_VALUES)]; for(let
 function buildWheel(box, order, name){
   const seg = 360/order.length;
   const grad = order.map((_,i)=>`${WHEEL_COLORS[i%WHEEL_COLORS.length]} ${i*seg}deg ${(i+1)*seg}deg`).join(',');
+  // Il cappello ora è DENTRO la ruota (non più un fratello nel contenitore esterno): prima il suo
+  // "centrato al 50%" si calcolava sul riquadro del contenitore, che è più alto della ruota stessa
+  // (include lo spazio della freccetta sopra e il nome/il valore sotto) — finiva quindi spostato dal
+  // vero centro del cerchio. Misurato: 6px a sinistra e 9px più in basso del centro vero (segnalato da
+  // Alberto). Mettendolo dentro la ruota, il suo 50%/50% si calcola sul cerchio vero, non sul
+  // contenitore più grande attorno.
   box.innerHTML = `<div class="wheel" style="background:conic-gradient(${grad})">` +
     order.map(()=>`<span class="wlbl"> </span>`).join('') +
-    `</div><div class="wheelHub">🎩</div><div class="wheelName">${name}</div><div class="wheelVal"> </div>`;
+    `<div class="wheelHub">🎩</div></div><div class="wheelName">${name}</div><div class="wheelVal"> </div>`;
   const w = box.querySelector('.wheel');
   box._wheel = w; box._order = order;
   // NB: le etichette NON si posizionano qui apposta. Se lo facessimo subito, misurando la larghezza
@@ -18389,7 +18403,14 @@ function renderWheels(rowEl, orders, pickable, onPick){
     rowEl._boxes.forEach(box => placeWheelLabels(box));
   }));
 }
-function wheelsSpinAll(rowEl){ (rowEl._boxes||[]).forEach(b=>{ b._wheel.style.transition='none'; b._wheel.style.transform=''; b._wheel.classList.add('spin'); b.querySelector('.wheelVal').textContent=' '; }); }
+function wheelsSpinAll(rowEl){ (rowEl._boxes||[]).forEach(b=>{
+  b._wheel.style.transition='none'; b._wheel.style.transform=''; b._wheel.classList.add('spin'); b.querySelector('.wheelVal').textContent=' ';
+  const hub = b.querySelector('.wheelHub');
+  // Ripulisco lo stile lasciato dall'atterraggio del giro precedente: altrimenti quella contro-rotazione
+  // "ferma" resterebbe scritta qui sopra e bloccherebbe la nuova animazione di contro-rotazione veloce
+  // di questo giro (le regole scritte direttamente sull'elemento vincono sempre su quelle della classe).
+  hub.style.transition = 'none'; hub.style.transform = 'translate(-50%,-50%)'; hub.style.animation = '';
+}); }
 function wheelsStopAll(rowEl, resIdx, done){
   (rowEl._boxes||[]).forEach((b,k)=>{
     setTimeout(()=>{
@@ -18397,7 +18418,16 @@ function wheelsStopAll(rowEl, resIdx, done){
       const final = 360*4 - (resIdx[k]*seg + seg/2);
       b._wheel.classList.remove('spin');
       b._wheel.style.transition = `transform ${WHEEL_STOPS[k]}ms cubic-bezier(.12,.75,.2,1)`;
-      requestAnimationFrame(()=> requestAnimationFrame(()=>{ b._wheel.style.transform = `rotate(${final}deg)`; }));
+      const hub = b.querySelector('.wheelHub');
+      hub.style.animation = 'none'; // tolgo la contro-rotazione "a scatti" del giro veloce, ora serve quella fine qui sotto
+      hub.style.transition = `transform ${WHEEL_STOPS[k]}ms cubic-bezier(.12,.75,.2,1)`;
+      requestAnimationFrame(()=> requestAnimationFrame(()=>{
+        b._wheel.style.transform = `rotate(${final}deg)`;
+        // Stessa rotazione della ruota, di segno opposto e con la stessa transizione: così il cappello
+        // arriva dritto esattamente nello stesso istante in cui la ruota si ferma sul numero vincente,
+        // invece di restare storto in base a dove è atterrata (bug segnalato da Alberto).
+        hub.style.transform = `translate(-50%,-50%) rotate(${-final}deg)`;
+      }));
       setTimeout(()=>{
         b.querySelector('.wheelVal').textContent = b._order[resIdx[k]] + ' PT';
         beepHz(300+k*120, 160);
