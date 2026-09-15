@@ -2335,7 +2335,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v14.46</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v14.47</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -7940,7 +7940,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1446; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1447; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -8524,7 +8524,10 @@ function mergeGo(){
 }
 function editQuiz(i){ curQuiz = JSON.parse(JSON.stringify(quizzes[i])); curQuiz._idx = i; $('edTitle').value = curQuiz.title; renderEdQuestions(); showScreen('scrEditor'); }
 function delQuiz(i){ if(confirm('Eliminare "'+quizzes[i].title+'"?')){ quizzes.splice(i,1); persist(); loadQuizList(); } }
-function persist(){ try{ localStorage.setItem(LSKEY, JSON.stringify(quizzes)); }catch(e){ alert('⚠️ Memoria piena: i file audio/foto occupano troppo spazio. Usa file più piccoli o esporta il quiz in JSON.'); } }
+function persist(){
+  try{ localStorage.setItem(LSKEY, JSON.stringify(quizzes)); return true; }
+  catch(e){ return false; } // il messaggio all'utente lo decide chi chiama, in base al contesto (vedi saveQuiz)
+}
 
 const QE_TYPE_LABEL = { mult:'Multipla', open:'Aperta', wordsearch:'🔤 Trova parola', anagram:'🔤➰ Anagramma', image:'🖼️ Solo Immagine' };
 function renderEdQuestions(){
@@ -8887,8 +8890,15 @@ function saveQuiz(andPlay){
   curQuiz.title = t;
   if (curQuiz._idx>=0) quizzes[curQuiz._idx] = JSON.parse(JSON.stringify(curQuiz));
   else { quizzes.unshift(JSON.parse(JSON.stringify(curQuiz))); curQuiz._idx = 0; }
-  persist();
-  if (confirm('✔ Quiz salvato! Vuoi anche fare subito un backup di tutti i tuoi dati (utile per non perderli mai)?')) backupAllQuizzes();
+  const salvatoDavvero = persist();
+  if (!salvatoDavvero){
+    // NON mostro più "Quiz salvato!" quando in realtà il salvataggio in memoria è fallito (era fuorviante:
+    // l'utente vedeva prima "memoria piena" e subito dopo, contraddittoriamente, "salvato con successo").
+    // Scarico subito una copia JSON completa, così il lavoro fatto non va perso comunque, anche senza
+    // che l'utente debba ricordarsi di premere "Esporta" da sé (segnalato da Alberto).
+    exportQuiz();
+    alert('⚠️ Memoria del dispositivo piena: le modifiche NON sono state salvate qui sul dispositivo (di solito capita quando ci sono molte foto o audio nel quiz). Ho scaricato comunque una copia completa in JSON, che trovi tra i tuoi download: usa "📥 Importa" per recuperarla su questo o un altro dispositivo. Per salvarlo qui in modo stabile, prova a usare foto più leggere, o a eliminare qualche quiz vecchio che non ti serve più.');
+  } else if (confirm('✔ Quiz salvato! Vuoi anche fare subito un backup di tutti i tuoi dati (utile per non perderli mai)?')) backupAllQuizzes();
   if (andPlay) playQuiz(curQuiz._idx); else { loadQuizList(); showScreen('scrHome'); }
 }
 function captureLocalDataSnapshot(){
@@ -9053,7 +9063,7 @@ $('importFile').addEventListener('change', e=>{
           if (quizzes.some(existing=>existing.title===q.title)) { skipped++; return; } // evito doppioni se lo reimporti per sbaglio
           delete q._idx; quizzes.push(q); added++;
         });
-        persist(); loadQuizList();
+        const salvatoDavvero1 = persist(); loadQuizList();
         // ripristino anche le altre categorie salvate localmente, se presenti nel backup (evitando doppioni per titolo)
         let waAdded=0, hrsAdded=0, fdAdded=0, msgAdded=0;
         if (Array.isArray(data.waGroups)){
@@ -9081,11 +9091,24 @@ $('importFile').addEventListener('change', e=>{
         }
         if (data.msgContact){ try{ if(!localStorage.getItem('capone_msg_contact')) localStorage.setItem('capone_msg_contact', data.msgContact); }catch(e){} }
         const extras = [waAdded&&`${waAdded} gruppi WhatsApp`, hrsAdded>0&&`${hrsAdded} nomi cavalli`, fdAdded&&`${fdAdded} set Trova le Differenze`, msgAdded&&`${msgAdded} messaggi`].filter(Boolean).join(', ');
-        alert(`✔ Backup ripristinato: ${added} quiz aggiunti${skipped?`, ${skipped} già presenti (saltati)`:''}${extras?`. Inoltre: ${extras}.`:''}`);
+        if (!salvatoDavvero1){
+          // Stesso principio di saveQuiz(): non dico "ripristinato con successo" se in realtà la memoria
+          // del dispositivo era piena e il salvataggio locale è fallito — capita facilmente importando
+          // un backup grande. Il file del backup che l'utente ha appena importato resta comunque sul suo
+          // dispositivo, quindi nessun dato è perso: basta liberare spazio e reimportarlo.
+          alert('⚠️ Memoria del dispositivo piena: non sono riuscito a salvare qui il backup importato (di solito capita con backup grandi, pieni di foto o audio). Il file del backup che hai appena importato è ancora sul tuo dispositivo: libera un po\' di spazio (elimina qualche quiz vecchio, o usa foto più leggere) e reimportalo.');
+        } else {
+          alert(`✔ Backup ripristinato: ${added} quiz aggiunti${skipped?`, ${skipped} già presenti (saltati)`:''}${extras?`. Inoltre: ${extras}.`:''}`);
+        }
       } else {
         if(!data.questions) throw 0;
-        delete data._idx; quizzes.push(data); persist(); loadQuizList();
-        alert('✔ Quiz "'+data.title+'" importato!');
+        delete data._idx; quizzes.push(data);
+        const salvatoDavvero2 = persist(); loadQuizList();
+        if (!salvatoDavvero2){
+          alert('⚠️ Memoria del dispositivo piena: non sono riuscito a salvare qui il quiz "'+data.title+'" (di solito capita quando ci sono molte foto o audio). Il file che hai appena importato è ancora sul tuo dispositivo: libera un po\' di spazio e reimportalo.');
+        } else {
+          alert('✔ Quiz "'+data.title+'" importato!');
+        }
       }
     }catch(_){ alert('File non valido.'); }
   };
