@@ -2335,7 +2335,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v14.44</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v14.46</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -5545,6 +5545,7 @@ body.suspense-on #pfRank{ display:none !important; }
     <div class="mfArena" id="manoFermaArena"><div class="mfRing" id="manoFermaRing"></div><div class="mfOrbWrap"><div class="mfOrb" id="manoFermaOrb"></div></div></div>
     <div class="mfPctBig" id="manoFermaPctBig">0%</div>
     <div class="byline center">fermezza</div>
+    <div class="byline center" style="opacity:.75; margin-top:4px">Non importa se orizzontale o verticale.. più stai fermo, più punti guadagni!</div>
     <div class="piBar" style="max-width:420px"><div class="piBarFill" id="manoFermaTimeBarFill" style="background:linear-gradient(90deg,var(--lime),var(--cyan))"></div></div>
   </div>
   <div class="feedback mtb" id="manoFermaFbMsg" style="display:none"></div>
@@ -7939,7 +7940,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1444; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1446; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -15663,10 +15664,33 @@ function bussolaBeginRound(){
   P.bussolaLastTick = Date.now();
   clearInterval(P.bussolaTimerInt);
   P.bussolaTimerInt = setInterval(bussolaTick, 100);
+  bussolaScheduleNextTarget(); // avvia la propria catena indipendente per lo spostamento del bersaglio
 }
 function bussolaStopLocalLoop(){
   window.removeEventListener('deviceorientation', bussolaMotionHandler);
   clearInterval(P.bussolaTimerInt);
+  clearTimeout(P.bussolaTargetTO);
+}
+// Sposta il bersaglio con una propria catena di setTimeout, ricalcolata ogni volta sul tempo VERO
+// trascorso (non un ritardo fisso che potrebbe accumulare uno scarto) — indipendente dal ciclo di
+// bussolaTick() che calcola il punteggio. Segnalato da Alberto: il bersaglio si spostava solo la prima
+// volta e poi restava fermo; tenerlo separato dal ciclo del punteggio lo rende più affidabile, perché
+// un eventuale rallentamento di quel ciclo (per qualunque motivo) non blocca più anche questo.
+function bussolaScheduleNextTarget(){
+  clearTimeout(P.bussolaTargetTO);
+  if (!P.bussolaStartAt || !P.bussolaActive) return;
+  const elapsedSec = (serverNow() - P.bussolaStartAt)/1000;
+  const intervalloAttuale = Math.floor(elapsedSec / P.bussolaIntervalloSec);
+  if (intervalloAttuale !== P.bussolaCurrentInterval){
+    P.bussolaCurrentInterval = intervalloAttuale;
+    P.bussolaTargetHeading = bussolaTargetForInterval(P.bussolaSeed, intervalloAttuale);
+    bcPositionTarget('bussolaDial', P.bussolaTargetHeading);
+    if (navigator.vibrate) navigator.vibrate(40); // piccolo avviso: il bersaglio si è appena spostato
+  }
+  if (elapsedSec >= P.bussolaDurationSec) return; // manche finita: la ferma bussolaFinishRound(), non serve ripianificare
+  const prossimoCambio = (P.bussolaCurrentInterval+1) * P.bussolaIntervalloSec;
+  const msMancanti = Math.max(50, (prossimoCambio - elapsedSec)*1000 + 50);
+  P.bussolaTargetTO = setTimeout(bussolaScheduleNextTarget, msMancanti);
 }
 function bussolaMotionHandler(event){
   let heading;
@@ -15685,16 +15709,8 @@ function bussolaTick(){
   const dt = Math.min(0.2, (now - P.bussolaLastTick)/1000);
   P.bussolaLastTick = now;
   const elapsedSec = (serverNow() - P.bussolaStartAt)/1000;
-  // Il bersaglio cambia al ritmo scelto dalla regia (facile/medio/difficile): quando cambia
-  // intervallo, ricalcolo la nuova direzione e la ridisegno sulla ghiera. Da qui in poi, finché non ci
-  // si riallinea, i punti si fermano da soli (la differenza angolare non sarà più piccola).
-  const intervalloAttuale = Math.floor(elapsedSec / P.bussolaIntervalloSec);
-  if (intervalloAttuale !== P.bussolaCurrentInterval){
-    P.bussolaCurrentInterval = intervalloAttuale;
-    P.bussolaTargetHeading = bussolaTargetForInterval(P.bussolaSeed, intervalloAttuale);
-    bcPositionTarget('bussolaDial', P.bussolaTargetHeading);
-    if (navigator.vibrate) navigator.vibrate(40); // piccolo avviso: il bersaglio si è appena spostato
-  }
+  // Il bersaglio (P.bussolaTargetHeading) è tenuto aggiornato da bussolaScheduleNextTarget(), una
+  // catena indipendente dedicata: qui uso solo il suo valore corrente per calcolare i punti.
   const diff = bcAngularDiff(P.bussolaHeading, P.bussolaTargetHeading);
   let pct;
   if (diff <= P.bussolaThresholdDeg){
