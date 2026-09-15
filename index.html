@@ -2335,7 +2335,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v14.43</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v14.44</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -5381,7 +5381,13 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrBussola">
   <div class="brand"><div class="t1" style="font-size:clamp(18px,3.4vw,32px)">🧭 LA BUSSOLA MALEDETTA</div></div>
   <div class="panel mt" style="max-width:480px" id="bussolaSetup">
-    <div class="label">Punti massimi al secondo (puntando esattamente giusto)</div>
+    <div class="label">Difficoltà (ogni quanto salta il bersaglio)</div>
+    <select id="bussolaLevel" style="width:100%; text-align:center">
+      <option value="facile" selected>🟢 Facile — ogni 10 secondi</option>
+      <option value="medio">🟡 Medio — ogni 5 secondi</option>
+      <option value="difficile">🔴 Difficile — ogni 3 secondi</option>
+    </select>
+    <div class="label mt">Punti massimi al secondo (puntando esattamente giusto)</div>
     <input type="number" id="bussolaPts" value="100" min="0" style="text-align:center">
     <div class="label mt">Soglia di tolleranza (gradi entro cui si guadagna qualcosa)</div>
     <input type="number" id="bussolaThreshold" value="45" min="5" max="180" style="text-align:center">
@@ -5389,7 +5395,7 @@ body.suspense-on #pfRank{ display:none !important; }
     <input type="number" id="bussolaPenalty" value="20" min="0" style="text-align:center">
     <div class="label mt">Durata (secondi)</div>
     <input type="number" id="bussolaDuration" value="20" min="10" style="text-align:center">
-    <div class="byline mt" style="opacity:.75">🧭 Ai giocatori viene assegnata una direzione a caso (uguale per tutti). Devono ruotare il telefono per puntarla: più sono precisi, più punti guadagnano ogni secondo; restando troppo lontani dalla direzione giusta (oltre la soglia), perdono punti invece di guadagnarne.</div>
+    <div class="byline mt" style="opacity:.75">🧭 Ai giocatori viene assegnata una direzione a caso (uguale per tutti). Devono ruotare il telefono per puntarla: più sono precisi, più punti guadagnano ogni secondo; restando troppo lontani dalla direzione giusta (oltre la soglia), perdono punti invece di guadagnarne. Il bersaglio salta in una nuova direzione al ritmo scelto sopra.</div>
     <button class="btn mg mt" style="width:100%" onclick="bussolaStart()">🧭 FAI PARTIRE IL GIOCO!</button>
   </div>
   <div id="bussolaLive" style="display:none; width:100%" class="center">
@@ -7933,7 +7939,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1443; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1444; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -15621,6 +15627,7 @@ function showPlayerBussola(g){
     P.bussolaThresholdDeg = m.thresholdDeg;
     P.bussolaPenaltyPerSec = m.penaltyPerSec;
     P.bussolaSeed = m.seed;
+    P.bussolaIntervalloSec = m.intervalloSec || 10;
     P.bussolaCurrentInterval = 0;
     P.bussolaTargetHeading = bussolaTargetForInterval(m.seed, 0);
     P.bussolaScore = 0;
@@ -15678,10 +15685,10 @@ function bussolaTick(){
   const dt = Math.min(0.2, (now - P.bussolaLastTick)/1000);
   P.bussolaLastTick = now;
   const elapsedSec = (serverNow() - P.bussolaStartAt)/1000;
-  // Il bersaglio cambia ogni BUSSOLA_INTERVALLO_SEC secondi: quando cambia intervallo, ricalcolo la
-  // nuova direzione e la ridisegno sulla ghiera. Da qui in poi, finché non ci si riallinea, i punti si
-  // fermano da soli (la differenza angolare non sarà più piccola), esattamente come richiesto.
-  const intervalloAttuale = Math.floor(elapsedSec / BUSSOLA_INTERVALLO_SEC);
+  // Il bersaglio cambia al ritmo scelto dalla regia (facile/medio/difficile): quando cambia
+  // intervallo, ricalcolo la nuova direzione e la ridisegno sulla ghiera. Da qui in poi, finché non ci
+  // si riallinea, i punti si fermano da soli (la differenza angolare non sarà più piccola).
+  const intervalloAttuale = Math.floor(elapsedSec / P.bussolaIntervalloSec);
   if (intervalloAttuale !== P.bussolaCurrentInterval){
     P.bussolaCurrentInterval = intervalloAttuale;
     P.bussolaTargetHeading = bussolaTargetForInterval(P.bussolaSeed, intervalloAttuale);
@@ -25122,7 +25129,7 @@ function bcAngularDiff(a, b){
 // regia all'inizio, così tutti (regia, proiettore, ogni telefono) vedono esattamente lo stesso
 // bersaglio nello stesso momento, senza bisogno di comunicarselo di continuo. Cambiando il bersaglio,
 // l'ago smette naturalmente di essere allineato: i punti si fermano da soli finché non lo si ritrova.
-const BUSSOLA_INTERVALLO_SEC = 10;
+const BUSSOLA_LEVELS = { facile:10, medio:5, difficile:3 };
 function bussolaTargetForInterval(seed, intervalIdx){
   const x = Math.sin(seed*12.9898 + intervalIdx*78.233) * 43758.5453;
   const frac = x - Math.floor(x);
@@ -25141,6 +25148,8 @@ function openBussola(){
   showScreen('scrBussola');
 }
 function bussolaStart(){
+  const levelKey = $('bussolaLevel').value;
+  const intervalloSec = BUSSOLA_LEVELS[levelKey] || BUSSOLA_LEVELS.facile;
   const ptsPerSec = Math.max(0, +$('bussolaPts').value||100);
   const thresholdDeg = Math.max(5, Math.min(180, +$('bussolaThreshold').value||45));
   const penaltyPerSec = Math.max(0, +$('bussolaPenalty').value||20);
@@ -25149,11 +25158,11 @@ function bussolaStart(){
   const targetHeading = bussolaTargetForInterval(seed, 0);
   const startAt = serverNow();
   BUSSOLA = { ended:false, startAt, durationSec, seed };
-  G.ref.update({ status:'bussola', bussola:{ phase:'play', ptsPerSec, thresholdDeg, penaltyPerSec, durationSec, seed, startAt, results:{} } });
+  G.ref.update({ status:'bussola', bussola:{ phase:'play', ptsPerSec, thresholdDeg, penaltyPerSec, intervalloSec, durationSec, seed, startAt, results:{} } });
   $('bussolaSetup').style.display='none'; $('bussolaLive').style.display='block';
   $('bussolaMsg').textContent = '🧭 RUOTATE VERSO LA DIREZIONE GIUSTA...';
   $('bussolaResults').innerHTML = '';
-  pjSend({type:'bussolaStart', startAt, durationSec, seed, targetHeading});
+  pjSend({type:'bussolaStart', startAt, durationSec, seed, intervalloSec, targetHeading});
   clearInterval(BUSSOLA.timerInt);
   BUSSOLA.timerInt = setInterval(()=>{
     const elapsedSec = Math.max(0,(serverNow()-startAt)/1000);
@@ -28529,7 +28538,7 @@ function pjRouteInner(m){
         const bar = $('pjBussolaTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%';
         // Stessa formula usata sui telefoni: così il pubblico vede il bersaglio spostarsi sul proiettore
         // esattamente nello stesso istante in cui si sposta per i giocatori.
-        const intervalloAttuale = Math.floor(elapsedSec / BUSSOLA_INTERVALLO_SEC);
+        const intervalloAttuale = Math.floor(elapsedSec / (m.intervalloSec||10));
         if (intervalloAttuale !== window._pjBussolaLastInterval){
           window._pjBussolaLastInterval = intervalloAttuale;
           bcPositionTarget('pjBussolaDial', bussolaTargetForInterval(m.seed, intervalloAttuale));
