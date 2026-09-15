@@ -2335,7 +2335,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v14.42</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v14.43</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -5428,6 +5428,7 @@ body.suspense-on #pfRank{ display:none !important; }
     <div class="bcDial" id="bussolaDial"></div>
     <div class="bcPctBig" id="bussolaPctBig">0%</div>
     <div class="byline center">precisione sul bersaglio</div>
+    <div class="byline center" style="opacity:.75; margin-top:4px">Ruota l'ago fino alla direzione giusta. Attento però, la bussola è maledetta!!!</div>
     <div class="piBar" style="max-width:420px"><div class="piBarFill" id="bussolaTimeBarFill" style="background:linear-gradient(90deg,var(--lime),var(--cyan))"></div></div>
   </div>
   <div class="feedback mtb" id="bussolaFbMsg" style="display:none"></div>
@@ -7932,7 +7933,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1442; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1443; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
@@ -15619,13 +15620,15 @@ function showPlayerBussola(g){
     P.bussolaPtsPerSec = m.ptsPerSec;
     P.bussolaThresholdDeg = m.thresholdDeg;
     P.bussolaPenaltyPerSec = m.penaltyPerSec;
-    P.bussolaTargetHeading = m.targetHeading;
+    P.bussolaSeed = m.seed;
+    P.bussolaCurrentInterval = 0;
+    P.bussolaTargetHeading = bussolaTargetForInterval(m.seed, 0);
     P.bussolaScore = 0;
     P.bussolaSubmitted = false;
     P.bussolaHeading = 0;
     $('bussolaFbMsg').style.display='none';
     bcBuildDial('bussolaDial');
-    bcPositionTarget('bussolaDial', m.targetHeading);
+    bcPositionTarget('bussolaDial', P.bussolaTargetHeading);
     if (P.bussolaPermGranted){
       bussolaBeginRound();
     } else {
@@ -15674,6 +15677,17 @@ function bussolaTick(){
   const now = Date.now();
   const dt = Math.min(0.2, (now - P.bussolaLastTick)/1000);
   P.bussolaLastTick = now;
+  const elapsedSec = (serverNow() - P.bussolaStartAt)/1000;
+  // Il bersaglio cambia ogni BUSSOLA_INTERVALLO_SEC secondi: quando cambia intervallo, ricalcolo la
+  // nuova direzione e la ridisegno sulla ghiera. Da qui in poi, finché non ci si riallinea, i punti si
+  // fermano da soli (la differenza angolare non sarà più piccola), esattamente come richiesto.
+  const intervalloAttuale = Math.floor(elapsedSec / BUSSOLA_INTERVALLO_SEC);
+  if (intervalloAttuale !== P.bussolaCurrentInterval){
+    P.bussolaCurrentInterval = intervalloAttuale;
+    P.bussolaTargetHeading = bussolaTargetForInterval(P.bussolaSeed, intervalloAttuale);
+    bcPositionTarget('bussolaDial', P.bussolaTargetHeading);
+    if (navigator.vibrate) navigator.vibrate(40); // piccolo avviso: il bersaglio si è appena spostato
+  }
   const diff = bcAngularDiff(P.bussolaHeading, P.bussolaTargetHeading);
   let pct;
   if (diff <= P.bussolaThresholdDeg){
@@ -15685,7 +15699,6 @@ function bussolaTick(){
   }
   $('bussolaPctBig').textContent = Math.round(pct*100)+'%';
 
-  const elapsedSec = (serverNow() - P.bussolaStartAt)/1000;
   const frac = Math.max(0, 1 - elapsedSec/P.bussolaDurationSec);
   const bar = $('bussolaTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%';
   if (elapsedSec >= P.bussolaDurationSec) bussolaFinishRound();
@@ -25103,6 +25116,18 @@ function bcAngularDiff(a, b){
   if (diff > 180) diff = 360-diff;
   return diff;
 }
+// Il bersaglio della Bussola Maledetta ora si sposta ogni 10 secondi, invece di restare fermo per
+// tutta la manche: ogni telefono calcola da solo, con la stessa formula, in quale direzione si trova
+// il bersaglio in un dato istante — partendo dallo stesso "seme" casuale mandato una sola volta dalla
+// regia all'inizio, così tutti (regia, proiettore, ogni telefono) vedono esattamente lo stesso
+// bersaglio nello stesso momento, senza bisogno di comunicarselo di continuo. Cambiando il bersaglio,
+// l'ago smette naturalmente di essere allineato: i punti si fermano da soli finché non lo si ritrova.
+const BUSSOLA_INTERVALLO_SEC = 10;
+function bussolaTargetForInterval(seed, intervalIdx){
+  const x = Math.sin(seed*12.9898 + intervalIdx*78.233) * 43758.5453;
+  const frac = x - Math.floor(x);
+  return Math.floor(frac*360);
+}
 let BUSSOLA = {};
 function openBussola(){
   if (!isGameEnabled('bussola')) return alert('⚠️ Questo minigioco non è compreso nella licenza attiva. Contatta Alberto per sbloccarlo.');
@@ -25120,14 +25145,15 @@ function bussolaStart(){
   const thresholdDeg = Math.max(5, Math.min(180, +$('bussolaThreshold').value||45));
   const penaltyPerSec = Math.max(0, +$('bussolaPenalty').value||20);
   const durationSec = Math.max(10, +$('bussolaDuration').value||20);
-  const targetHeading = Math.floor(Math.random()*360);
+  const seed = Math.random()*1000; // da qui, ogni telefono calcola da solo la sequenza dei bersagli
+  const targetHeading = bussolaTargetForInterval(seed, 0);
   const startAt = serverNow();
-  BUSSOLA = { ended:false, startAt, durationSec };
-  G.ref.update({ status:'bussola', bussola:{ phase:'play', ptsPerSec, thresholdDeg, penaltyPerSec, durationSec, targetHeading, startAt, results:{} } });
+  BUSSOLA = { ended:false, startAt, durationSec, seed };
+  G.ref.update({ status:'bussola', bussola:{ phase:'play', ptsPerSec, thresholdDeg, penaltyPerSec, durationSec, seed, startAt, results:{} } });
   $('bussolaSetup').style.display='none'; $('bussolaLive').style.display='block';
   $('bussolaMsg').textContent = '🧭 RUOTATE VERSO LA DIREZIONE GIUSTA...';
   $('bussolaResults').innerHTML = '';
-  pjSend({type:'bussolaStart', startAt, durationSec, targetHeading});
+  pjSend({type:'bussolaStart', startAt, durationSec, seed, targetHeading});
   clearInterval(BUSSOLA.timerInt);
   BUSSOLA.timerInt = setInterval(()=>{
     const elapsedSec = Math.max(0,(serverNow()-startAt)/1000);
@@ -28495,11 +28521,19 @@ function pjRouteInner(m){
       bcPositionTarget('pjBussolaDial', m.targetHeading);
       const needle = document.getElementById('pjBussolaDial_needleWrap');
       if (needle) needle.style.display = 'none'; // il proiettore non ha una propria bussola: mostra solo il bersaglio, non un ago
+      window._pjBussolaLastInterval = 0;
       clearInterval(window._bussolaPjTimerInt);
       window._bussolaPjTimerInt = setInterval(()=>{
         const elapsedSec = Math.max(0, (serverNow()-m.startAt)/1000);
         const frac = Math.max(0, 1 - elapsedSec/m.durationSec);
         const bar = $('pjBussolaTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%';
+        // Stessa formula usata sui telefoni: così il pubblico vede il bersaglio spostarsi sul proiettore
+        // esattamente nello stesso istante in cui si sposta per i giocatori.
+        const intervalloAttuale = Math.floor(elapsedSec / BUSSOLA_INTERVALLO_SEC);
+        if (intervalloAttuale !== window._pjBussolaLastInterval){
+          window._pjBussolaLastInterval = intervalloAttuale;
+          bcPositionTarget('pjBussolaDial', bussolaTargetForInterval(m.seed, intervalloAttuale));
+        }
         if (frac<=0) clearInterval(window._bussolaPjTimerInt);
       }, 200);
     }
