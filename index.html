@@ -2335,7 +2335,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v14.47</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v14.48</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -7940,9 +7940,76 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1447; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1448; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
+/* ================================================================
+   ARCHIVIO LOCALE DEI QUIZ — IndexedDB al posto di localStorage
+   localStorage ha un tetto imposto dal browser (5-10 MB in tutto, per qualunque sito): con foto e
+   audio dentro i quiz si riempiva in fretta. IndexedDB è la stessa identica cosa dal punto di vista
+   dell'utente (memoria del dispositivo, nessun server, nessun costo) ma con una capienza molto più
+   ampia, legata allo spazio libero reale sul dispositivo, pensata apposta per contenuti pesanti come
+   questi. Il modello dei dati resta IDENTICO a prima (un unico array "quizzes" in memoria, con lo
+   stesso indice posizionale usato ovunque nel codice): cambia solo DOVE e COME viene salvato.
+================================================================ */
+const IDB_NAME = 'CaponeQuizDB';
+const IDB_VERSION = 1;
+const IDB_STORE = 'quizzesStore';
+const IDB_RECORD_KEY = 'all'; // un unico record contiene l'intero array, stessa struttura di prima
+let idbConn = null; // istanza IndexedDB: nome diverso da "db", già usato da Firebase qui sotto
+function idbOpen(){
+  return new Promise((resolve, reject)=>{
+    if (idbConn) return resolve(idbConn);
+    if (!window.indexedDB) return reject(new Error('IndexedDB non disponibile su questo browser'));
+    const req = indexedDB.open(IDB_NAME, IDB_VERSION);
+    req.onupgradeneeded = (e)=>{
+      const database = e.target.result;
+      if (!database.objectStoreNames.contains(IDB_STORE)) database.createObjectStore(IDB_STORE);
+    };
+    req.onsuccess = (e)=>{ idbConn = e.target.result; resolve(idbConn); };
+    req.onerror = (e)=>{ reject(e.target.error || new Error('Apertura IndexedDB fallita')); };
+  });
+}
+function idbGetQuizzes(){
+  return idbOpen().then(database => new Promise((resolve, reject)=>{
+    const tx = database.transaction(IDB_STORE, 'readonly');
+    const req = tx.objectStore(IDB_STORE).get(IDB_RECORD_KEY);
+    req.onsuccess = ()=> resolve(req.result===undefined ? null : req.result);
+    req.onerror = (e)=> reject(e.target.error || new Error('Lettura IndexedDB fallita'));
+  }));
+}
+function idbSetQuizzes(arr){
+  return idbOpen().then(database => new Promise((resolve, reject)=>{
+    const tx = database.transaction(IDB_STORE, 'readwrite');
+    tx.objectStore(IDB_STORE).put(arr, IDB_RECORD_KEY);
+    tx.oncomplete = ()=> resolve(true);
+    tx.onerror = (e)=> reject(e.target.error || new Error('Scrittura IndexedDB fallita'));
+  }));
+}
+// Primo avvio con IndexedDB: se non c'è ancora nulla lì dentro, ma c'erano quiz salvati nel vecchio
+// sistema (localStorage), li travaso una volta sola. Il vecchio localStorage NON viene cancellato
+// subito: resta come rete di sicurezza, nel caso qualcosa vada storto in questo primo travaso.
+async function initQuizzesStorage(){
+  try{
+    let dati = await idbGetQuizzes();
+    if (dati === null){
+      const vecchi = localStorage.getItem(LSKEY);
+      if (vecchi){
+        try{ dati = JSON.parse(vecchi); }catch(e){ dati = []; }
+      } else {
+        dati = [];
+      }
+      await idbSetQuizzes(dati);
+    }
+    quizzes = dati;
+    return true;
+  }catch(e){
+    // IndexedDB non disponibile o fallita per qualche motivo: l'app resta comunque utilizzabile,
+    // ripiegando sul vecchio sistema (con lo spazio più piccolo di prima, ma funzionante).
+    try{ quizzes = JSON.parse(localStorage.getItem(LSKEY) || '[]'); }catch(e2){ quizzes = []; }
+    return false;
+  }
+}
 let db = null, fbOK = firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('INCOLLA');
 if (fbOK) { try { firebase.initializeApp(firebaseConfig); db = firebase.database(); } catch(e){ fbOK=false; } }
 let svOffset = 0;
@@ -8443,7 +8510,7 @@ function adjPointsRow(pid, sign){
 /* ================================================================
    EDITOR
 ================================================================ */
-let quizzes = JSON.parse(localStorage.getItem(LSKEY) || '[]');
+let quizzes = []; // popolato da initQuizzesStorage() in modo asincrono, vedi l'avvio del router più sotto
 let curQuiz = null, curQIdx = -1;
 
 function fmtLastUsed(ts){
@@ -8524,9 +8591,15 @@ function mergeGo(){
 }
 function editQuiz(i){ curQuiz = JSON.parse(JSON.stringify(quizzes[i])); curQuiz._idx = i; $('edTitle').value = curQuiz.title; renderEdQuestions(); showScreen('scrEditor'); }
 function delQuiz(i){ if(confirm('Eliminare "'+quizzes[i].title+'"?')){ quizzes.splice(i,1); persist(); loadQuizList(); } }
-function persist(){
-  try{ localStorage.setItem(LSKEY, JSON.stringify(quizzes)); return true; }
-  catch(e){ return false; } // il messaggio all'utente lo decide chi chiama, in base al contesto (vedi saveQuiz)
+async function persist(){
+  try{ await idbSetQuizzes(quizzes); return true; }
+  catch(e){
+    // IndexedDB non disponibile o fallita: come ultima spiaggia provo comunque il vecchio localStorage
+    // (probabilmente fallirà anche lì se il problema è proprio la mancanza di spazio, ma se il vero
+    // motivo è che IndexedDB non è disponibile su questo browser, questo tentativo può comunque salvare
+    // qualcosa). Il messaggio da mostrare all'utente lo decide comunque chi chiama, vedi saveQuiz().
+    try{ localStorage.setItem(LSKEY, JSON.stringify(quizzes)); return true; }catch(e2){ return false; }
+  }
 }
 
 const QE_TYPE_LABEL = { mult:'Multipla', open:'Aperta', wordsearch:'🔤 Trova parola', anagram:'🔤➰ Anagramma', image:'🖼️ Solo Immagine' };
@@ -8883,14 +8956,14 @@ function qeUpdateNavButtons(){
   $('qeBtnNext').disabled = curQIdx<0 || curQIdx>=total-1;
   $('qePosLabel').textContent = curQIdx>=0 ? `${curQIdx+1} di ${total}` : `nuova · ${total} salvate`;
 }
-function saveQuiz(andPlay){
+async function saveQuiz(andPlay){
   const t = $('edTitle').value.trim();
   if (!t) return alert('Dai un nome al quiz!');
   if (!curQuiz.questions.length) return alert('Aggiungi almeno una domanda!');
   curQuiz.title = t;
   if (curQuiz._idx>=0) quizzes[curQuiz._idx] = JSON.parse(JSON.stringify(curQuiz));
   else { quizzes.unshift(JSON.parse(JSON.stringify(curQuiz))); curQuiz._idx = 0; }
-  const salvatoDavvero = persist();
+  const salvatoDavvero = await persist();
   if (!salvatoDavvero){
     // NON mostro più "Quiz salvato!" quando in realtà il salvataggio in memoria è fallito (era fuorviante:
     // l'utente vedeva prima "memoria piena" e subito dopo, contraddittoriamente, "salvato con successo").
@@ -9052,7 +9125,7 @@ function exportQuiz(){
 function importQuiz(){ $('importFile').click(); }
 $('importFile').addEventListener('change', e=>{
   const f=e.target.files[0]; if(!f)return; const r=new FileReader();
-  r.onload=()=>{
+  r.onload=async ()=>{
     try{
       const data = JSON.parse(r.result);
       // riconosco da solo se è un backup con più quiz dentro, o un quiz singolo come prima
@@ -9063,7 +9136,7 @@ $('importFile').addEventListener('change', e=>{
           if (quizzes.some(existing=>existing.title===q.title)) { skipped++; return; } // evito doppioni se lo reimporti per sbaglio
           delete q._idx; quizzes.push(q); added++;
         });
-        const salvatoDavvero1 = persist(); loadQuizList();
+        const salvatoDavvero1 = await persist(); loadQuizList();
         // ripristino anche le altre categorie salvate localmente, se presenti nel backup (evitando doppioni per titolo)
         let waAdded=0, hrsAdded=0, fdAdded=0, msgAdded=0;
         if (Array.isArray(data.waGroups)){
@@ -9103,7 +9176,7 @@ $('importFile').addEventListener('change', e=>{
       } else {
         if(!data.questions) throw 0;
         delete data._idx; quizzes.push(data);
-        const salvatoDavvero2 = persist(); loadQuizList();
+        const salvatoDavvero2 = await persist(); loadQuizList();
         if (!salvatoDavvero2){
           alert('⚠️ Memoria del dispositivo piena: non sono riuscito a salvare qui il quiz "'+data.title+'" (di solito capita quando ci sono molte foto o audio). Il file che hai appena importato è ancora sul tuo dispositivo: libera un po\' di spazio e reimportalo.');
         } else {
@@ -29969,7 +30042,7 @@ const params = new URLSearchParams(location.search);
 const gp = params.get('g');
 if (params.get('proj')) { initProjector(); setupPromoBanner('projector'); }
 else if (gp) { initPlayer(gp); setupPromoBanner('player'); }
-else { $('fbWarn').style.display = fbOK?'none':'block'; loadQuizList(); showScreen('scrHome'); checkResumableGame(); setupPromoBanner('host'); }
+else { initQuizzesStorage().then(()=>{ $('fbWarn').style.display = fbOK?'none':'block'; loadQuizList(); showScreen('scrHome'); checkResumableGame(); setupPromoBanner('host'); }); }
 </script>
 </body>
 </html>
