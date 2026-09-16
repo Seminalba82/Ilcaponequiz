@@ -2335,7 +2335,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v14.48</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v14.49</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -2383,6 +2383,7 @@ body.suspense-on #pfRank{ display:none !important; }
     <div class="label">Nome del quiz</div>
     <input type="text" id="edTitle" placeholder="Es. Serata Anni '90 al Naselli" maxlength="60">
     <div class="label mt">Domande (<span id="edCount">0</span>) — quante ne vuoi, nessun limite</div>
+    <div class="byline" id="edWeightTop" style="opacity:.75">📦 Peso di questo quiz: 0 B</div>
     <div class="row mtb" style="flex-wrap:wrap">
       <button class="btn lm grow" onclick="openQEditor(-1)" data-tip="Aggiungi una nuova domanda in fondo alla scaletta">✚ Aggiungi domanda</button>
       <button class="btn ghost" onclick="showScreen('scrHome'); loadQuizList()" data-tip="Torna alla home senza avviare la partita">← Indietro</button>
@@ -2391,6 +2392,7 @@ body.suspense-on #pfRank{ display:none !important; }
       <button class="btn mg" onclick="saveQuiz(true)" data-tip="Salva e avvia subito la partita: genera il codice e apre la regia">▶ AVVIA QUIZ</button>
     </div>
     <div id="edQList"></div>
+    <div class="byline" id="edWeightBottom" style="opacity:.75">📦 Peso di questo quiz: 0 B</div>
     <div class="row mt" style="flex-wrap:wrap">
       <button class="btn lm grow" onclick="openQEditor(-1)" data-tip="Aggiungi una nuova domanda in fondo alla scaletta">✚ Aggiungi domanda</button>
       <button class="btn ghost" onclick="showScreen('scrHome'); loadQuizList()" data-tip="Torna alla home senza avviare la partita">← Indietro</button>
@@ -7940,7 +7942,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1448; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1449; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 /* ================================================================
@@ -8603,8 +8605,20 @@ async function persist(){
 }
 
 const QE_TYPE_LABEL = { mult:'Multipla', open:'Aperta', wordsearch:'🔤 Trova parola', anagram:'🔤➰ Anagramma', image:'🖼️ Solo Immagine' };
+function fmtBytes(n){
+  if (n < 1024) return n + ' B';
+  if (n < 1024*1024) return (n/1024).toFixed(0) + ' KB';
+  return (n/1024/1024).toFixed(1) + ' MB';
+}
+function updateQuizWeight(){
+  const peso = fmtBytes(JSON.stringify(curQuiz).length);
+  const el1 = $('edWeightTop'), el2 = $('edWeightBottom');
+  if (el1) el1.textContent = '📦 Peso di questo quiz: ' + peso;
+  if (el2) el2.textContent = '📦 Peso di questo quiz: ' + peso;
+}
 function renderEdQuestions(){
   const box = $('edQList'); box.innerHTML=''; $('edCount').textContent = curQuiz.questions.length;
+  updateQuizWeight(); // ricalcolo ogni volta che la scaletta cambia (aggiunta, modifica, foto/audio, ecc.)
   curQuiz.questions.forEach((q,i)=>{
     const d = document.createElement('div'); d.className='qCard';
     d.draggable = true; d.tabIndex = 0; d.dataset.i = i;
