@@ -2335,7 +2335,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v14.49</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v14.50</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -7942,7 +7942,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1449; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1450; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 /* ================================================================
@@ -7955,9 +7955,10 @@ const LSKEY = 'capone_quizzes_v3';
    stesso indice posizionale usato ovunque nel codice): cambia solo DOVE e COME viene salvato.
 ================================================================ */
 const IDB_NAME = 'CaponeQuizDB';
-const IDB_VERSION = 1;
+const IDB_VERSION = 2;
 const IDB_STORE = 'quizzesStore';
 const IDB_RECORD_KEY = 'all'; // un unico record contiene l'intero array, stessa struttura di prima
+const IDB_MISC_STORE = 'miscStore'; // archivio generico, per altri dati con foto (Trova le Differenze, Asta)
 let idbConn = null; // istanza IndexedDB: nome diverso da "db", già usato da Firebase qui sotto
 function idbOpen(){
   return new Promise((resolve, reject)=>{
@@ -7967,6 +7968,7 @@ function idbOpen(){
     req.onupgradeneeded = (e)=>{
       const database = e.target.result;
       if (!database.objectStoreNames.contains(IDB_STORE)) database.createObjectStore(IDB_STORE);
+      if (!database.objectStoreNames.contains(IDB_MISC_STORE)) database.createObjectStore(IDB_MISC_STORE);
     };
     req.onsuccess = (e)=>{ idbConn = e.target.result; resolve(idbConn); };
     req.onerror = (e)=>{ reject(e.target.error || new Error('Apertura IndexedDB fallita')); };
@@ -7987,6 +7989,41 @@ function idbSetQuizzes(arr){
     tx.oncomplete = ()=> resolve(true);
     tx.onerror = (e)=> reject(e.target.error || new Error('Scrittura IndexedDB fallita'));
   }));
+}
+// Coppia generica lettura/scrittura, riutilizzabile per qualunque altro dato con foto salvato in
+// locale (non solo i quiz): stesso principio di idbGetQuizzes/idbSetQuizzes, ma con una chiave a
+// scelta, cosicché aggiungere in futuro altre aree non richieda di ripetere tutto da capo.
+function idbGet(key){
+  return idbOpen().then(database => new Promise((resolve, reject)=>{
+    const tx = database.transaction(IDB_MISC_STORE, 'readonly');
+    const req = tx.objectStore(IDB_MISC_STORE).get(key);
+    req.onsuccess = ()=> resolve(req.result===undefined ? null : req.result);
+    req.onerror = (e)=> reject(e.target.error || new Error('Lettura IndexedDB fallita'));
+  }));
+}
+function idbSet(key, value){
+  return idbOpen().then(database => new Promise((resolve, reject)=>{
+    const tx = database.transaction(IDB_MISC_STORE, 'readwrite');
+    tx.objectStore(IDB_MISC_STORE).put(value, key);
+    tx.oncomplete = ()=> resolve(true);
+    tx.onerror = (e)=> reject(e.target.error || new Error('Scrittura IndexedDB fallita'));
+  }));
+}
+// Stesso principio di initQuizzesStorage(): se in IndexedDB non c'è ancora nulla per questa chiave,
+// ma c'era qualcosa nel vecchio localStorage, lo travaso una volta sola. Il vecchio localStorage resta
+// intatto come rete di sicurezza.
+async function idbMigrateFromLocalStorage(key, lsKey){
+  try{
+    let dati = await idbGet(key);
+    if (dati === null){
+      const vecchi = localStorage.getItem(lsKey);
+      dati = vecchi ? (()=>{ try{ return JSON.parse(vecchi); }catch(e){ return []; } })() : [];
+      await idbSet(key, dati);
+    }
+    return dati;
+  }catch(e){
+    try{ return JSON.parse(localStorage.getItem(lsKey) || '[]'); }catch(e2){ return []; }
+  }
 }
 // Primo avvio con IndexedDB: se non c'è ancora nulla lì dentro, ma c'erano quiz salvati nel vecchio
 // sistema (localStorage), li travaso una volta sola. Il vecchio localStorage NON viene cancellato
@@ -9167,9 +9204,9 @@ $('importFile').addEventListener('change', e=>{
           }catch(e){}
         }
         if (Array.isArray(data.findDiffSets)){
-          const cur = fdSavedList();
+          const cur = fdSavedList(); // stesso array di fdSavedCache: push() lo aggiorna già in memoria
           data.findDiffSets.forEach(s=>{ if (s && s.title && !cur.some(x=>x.title===s.title)){ cur.push(s); fdAdded++; } });
-          try{ localStorage.setItem('capone_fd_saved', JSON.stringify(cur)); }catch(e){}
+          await fdPersist();
         }
         if (Array.isArray(data.messages)){
           const cur = msgSavedList();
@@ -21938,8 +21975,12 @@ function openFindDiff(){
   showScreen('scrFindDiff');
   fdRenderSavedRow();
 }
-function fdSavedList(){
-  try{ return JSON.parse(localStorage.getItem('capone_fd_saved')||'[]'); }catch(e){ return []; }
+let fdSavedCache = [];
+async function initFdStorage(){ fdSavedCache = await idbMigrateFromLocalStorage('fd_saved', 'capone_fd_saved'); }
+function fdSavedList(){ return fdSavedCache; } // sincrona: il caricamento vero avviene una sola volta all'avvio, insieme ai quiz
+async function fdPersist(){
+  try{ await idbSet('fd_saved', fdSavedCache); return true; }
+  catch(e){ try{ localStorage.setItem('capone_fd_saved', JSON.stringify(fdSavedCache)); return true; }catch(e2){ return false; } }
 }
 function fdRenderSavedRow(){
   const list = fdSavedList();
@@ -21967,22 +22008,20 @@ function fdLoadSet(title){
 function fdDeleteSet(title){
   if (!title) return;
   if (!confirm(`Eliminare il set "${title}" salvato?`)) return;
-  const list = fdSavedList().filter(x=>x.title!==title);
-  try{ localStorage.setItem('capone_fd_saved', JSON.stringify(list)); }catch(e){}
+  fdSavedCache = fdSavedCache.filter(x=>x.title!==title);
+  fdPersist();
   fdRenderSavedRow();
 }
-function fdSaveSetPrompt(){
+async function fdSaveSetPrompt(){
   if (FD.markers.length!==5) return alert('Servono esattamente 5 punti segnati prima di salvare il set!');
   const title = prompt('Che nome vuoi dare a questo set (es. "Bar Da Nino — vetrina")?');
   if (!title || !title.trim()) return;
-  const list = fdSavedList();
-  const i = list.findIndex(s=>s.title===title.trim());
+  const i = fdSavedCache.findIndex(s=>s.title===title.trim());
   const entry = { title:title.trim(), orig:FD.orig, mod:FD.mod, markers:FD.markers };
-  if (i>=0) list[i] = entry; else list.push(entry);
-  try{
-    localStorage.setItem('capone_fd_saved', JSON.stringify(list));
-    alert(`✔ Set "${entry.title}" salvato! La prossima volta lo richiami dal menu, senza ricaricare nulla.`);
-  }catch(e){ alert('⚠️ Memoria piena: prova a eliminare qualche set salvato più vecchio, o usa foto più piccole.'); }
+  if (i>=0) fdSavedCache[i] = entry; else fdSavedCache.push(entry);
+  const ok = await fdPersist();
+  if (ok) alert(`✔ Set "${entry.title}" salvato! La prossima volta lo richiami dal menu, senza ricaricare nulla.`);
+  else alert('⚠️ Non sono riuscito a salvare questo set: prova a liberare un po\' di spazio sul dispositivo.');
 }
 $('fdOrigFile').addEventListener('change', e=>{
   const f = e.target.files[0]; if(!f) return;
@@ -24147,8 +24186,12 @@ function astaClearPhoto(){
   $('astaPhotoPreviewWrap').style.display='none';
 }
 /* ---- oggetti già pronti (nome + foto), salvati in locale — stesso schema di "Trova le Differenze" ---- */
-function astaSavedList(){
-  try{ return JSON.parse(localStorage.getItem('capone_asta_saved')||'[]'); }catch(e){ return []; }
+let astaSavedCache = [];
+async function initAstaStorage(){ astaSavedCache = await idbMigrateFromLocalStorage('asta_saved', 'capone_asta_saved'); }
+function astaSavedList(){ return astaSavedCache; } // sincrona: il caricamento vero avviene una sola volta all'avvio
+async function astaPersist(){
+  try{ await idbSet('asta_saved', astaSavedCache); return true; }
+  catch(e){ try{ localStorage.setItem('capone_asta_saved', JSON.stringify(astaSavedCache)); return true; }catch(e2){ return false; } }
 }
 function astaRenderPresetRow(){
   const list = astaSavedList();
@@ -24177,22 +24220,20 @@ function astaLoadPreset(name){
 function astaDeletePreset(name){
   if (!name) return;
   if (!confirm(`Eliminare l'oggetto "${name}" dall'elenco dei pronti?`)) return;
-  const list = astaSavedList().filter(x=>x.name!==name);
-  try{ localStorage.setItem('capone_asta_saved', JSON.stringify(list)); }catch(e){}
+  astaSavedCache = astaSavedCache.filter(x=>x.name!==name);
+  astaPersist();
   astaRenderPresetRow();
 }
-function astaSavePresetPrompt(){
+async function astaSavePresetPrompt(){
   const name = $('astaItemName').value.trim();
   if (!name) return alert("Scrivi prima il nome dell'oggetto!");
-  const list = astaSavedList();
-  const i = list.findIndex(s=>s.name===name);
+  const i = astaSavedCache.findIndex(s=>s.name===name);
   const entry = { name, photo: ASTA.photo||null };
-  if (i>=0) list[i] = entry; else list.push(entry);
-  try{
-    localStorage.setItem('capone_asta_saved', JSON.stringify(list));
-    astaRenderPresetRow();
-    alert(`✔ "${name}" salvato tra gli oggetti pronti! La prossima volta lo richiami dal menu, senza ricaricare nulla.`);
-  }catch(e){ alert('⚠️ Memoria piena: prova a eliminare qualche oggetto più vecchio, o usa foto più piccole.'); }
+  if (i>=0) astaSavedCache[i] = entry; else astaSavedCache.push(entry);
+  const ok = await astaPersist();
+  astaRenderPresetRow();
+  if (ok) alert(`✔ "${name}" salvato tra gli oggetti pronti! La prossima volta lo richiami dal menu, senza ricaricare nulla.`);
+  else alert('⚠️ Non sono riuscito a salvare questo oggetto: prova a liberare un po\' di spazio sul dispositivo.');
 }
 function openAsta(){
   if (!isGameEnabled('asta')) return alert('⚠️ Questo minigioco non è compreso nella licenza attiva. Contatta Alberto per sbloccarlo.');
@@ -30056,7 +30097,7 @@ const params = new URLSearchParams(location.search);
 const gp = params.get('g');
 if (params.get('proj')) { initProjector(); setupPromoBanner('projector'); }
 else if (gp) { initPlayer(gp); setupPromoBanner('player'); }
-else { initQuizzesStorage().then(()=>{ $('fbWarn').style.display = fbOK?'none':'block'; loadQuizList(); showScreen('scrHome'); checkResumableGame(); setupPromoBanner('host'); }); }
+else { Promise.all([initQuizzesStorage(), initFdStorage(), initAstaStorage()]).then(()=>{ $('fbWarn').style.display = fbOK?'none':'block'; loadQuizList(); showScreen('scrHome'); checkResumableGame(); setupPromoBanner('host'); }); }
 </script>
 </body>
 </html>
