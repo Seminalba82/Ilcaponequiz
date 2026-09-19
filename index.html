@@ -1307,7 +1307,9 @@ body.barOn.barCollapsed .screen.active{padding-bottom:70px;}
   100%{transform:translate(-50%,-50%) translate(var(--dx),var(--dy)) scale(0); opacity:0;}}
 .pjBacResolvedCount{font-family:'Bungee'; font-size:clamp(16px,3vw,22px); color:var(--muted); text-align:center; margin-top:4px;}
 /* ===== RADAR ===== */
-.radarDial{position:relative; width:100%; max-width:380px; aspect-ratio:1; margin:10px auto; cursor:pointer; user-select:none;}
+.radarDial{position:relative; width:100%; max-width:380px; aspect-ratio:1; margin:10px auto; cursor:pointer; user-select:none;
+  touch-action:none; -webkit-tap-highlight-color:transparent;}
+.radarDial svg{pointer-events:none;} /* i clic li gestisce sempre il div esterno, su tutta la sua area: nulla dentro l'SVG deve poterli "rubare" o ignorare */
 .radarDial.pjDial{max-width:460px; cursor:default;}
 .radarDial svg{width:100%; height:100%; display:block;}
 .radarHand{transform-origin:100px 100px; filter:drop-shadow(0 0 6px #ff3ea5);}
@@ -2406,7 +2408,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v14.54</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v14.55</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -5390,7 +5392,7 @@ body.suspense-on #pfRank{ display:none !important; }
     <div class="pill" id="radarpName" style="color:var(--gold)"></div>
     <div class="pill" id="radarpScore"></div>
   </div>
-  <div class="radarDial" id="radarDial" onclick="radarTap()"></div>
+  <div class="radarDial" id="radarDial"></div>
   <div class="byline center" style="opacity:.75">Clicca quando la lancetta sarà sul raggio rosa.. Più è piccolo, più punti si guadagnano</div>
   <div class="piBar" style="max-width:420px"><div class="piBarFill" id="radarTimeBarFill" style="background:linear-gradient(90deg,var(--lime),var(--cyan))"></div></div>
   <div class="radarCounter" id="radarCounter"></div>
@@ -8210,7 +8212,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1454; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1455; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 /* ================================================================
@@ -15732,6 +15734,14 @@ function showPlayerRadar(g){
   const myScore = ((g.players||{})[P.id]||{}).score||0;
   $('radarpScore').textContent = myScore+' pt';
   showScreen('scrPlayRadar');
+  // Il tocco lo gestisco con pointerdown invece di onclick: su telefono è molto più affidabile
+  // (parte subito al primo contatto, senza il rischio che un tocco imperfetto venga scambiato per un
+  // tentativo di scorrimento e "perso"). Lo collego una volta sola all'elemento, non ad ogni manche.
+  const dialEl = $('radarDial');
+  if (dialEl && !dialEl._radarTapBound){
+    dialEl._radarTapBound = true;
+    dialEl.addEventListener('pointerdown', (e)=>{ e.preventDefault(); radarTap(); });
+  }
   if (m.phase !== 'play'){
     radarStopLocalLoop();
     $('radarDial').innerHTML = '';
