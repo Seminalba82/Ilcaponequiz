@@ -1306,6 +1306,19 @@ body.barOn.barCollapsed .screen.active{padding-bottom:70px;}
 @keyframes pjBacSparkOut{0%{transform:translate(-50%,-50%) translate(0,0) scale(1); opacity:1;}
   100%{transform:translate(-50%,-50%) translate(var(--dx),var(--dy)) scale(0); opacity:0;}}
 .pjBacResolvedCount{font-family:'Bungee'; font-size:clamp(16px,3vw,22px); color:var(--muted); text-align:center; margin-top:4px;}
+/* ===== RADAR ===== */
+.radarDial{position:relative; width:100%; max-width:380px; aspect-ratio:1; margin:10px auto; cursor:pointer; user-select:none;}
+.radarDial.pjDial{max-width:460px; cursor:default;}
+.radarDial svg{width:100%; height:100%; display:block;}
+.radarHand{transform-origin:100px 100px; filter:drop-shadow(0 0 6px #ff3ea5);}
+.radarTargetArc{filter:drop-shadow(0 0 8px rgba(230,25,201,.6));}
+.radarCounter{font-family:'Orbitron',sans-serif; font-weight:900; font-size:clamp(24px,7vw,36px); color:var(--gold);
+  text-shadow:0 0 20px rgba(255,201,60,.5); text-align:center; margin-top:4px;}
+.radarScoreFloat{position:absolute; left:50%; top:40%; transform:translate(-50%,-50%); font-family:'Bungee';
+  font-size:22px; color:var(--lime); text-shadow:0 0 10px rgba(182,255,46,.6); pointer-events:none;
+  animation:radarFloatUp .65s ease-out forwards;}
+.radarScoreFloat.bad{color:#ff5a5a; text-shadow:0 0 10px rgba(255,90,90,.6);}
+@keyframes radarFloatUp{0%{opacity:1; transform:translate(-50%,-50%) translateY(0);} 100%{opacity:0; transform:translate(-50%,-50%) translateY(-40px);}}
 /* ===== TIENI L'EQUILIBRIO ===== */
 .eqArena{position:relative; width:100%; max-width:400px; aspect-ratio:1; margin:14px auto; border-radius:50%; overflow:hidden;
   background:radial-gradient(circle at 50% 50%, #2a1a45 0%, #1c1033 62%, #0b0614 100%);
@@ -2393,7 +2406,7 @@ body.suspense-on #pfRank{ display:none !important; }
 <div class="screen" id="scrHome">
   <div class="logoWrap" style="width:150px" data-logo></div>
   <div class="brand"><div class="t1">IL CAPONE</div><div class="t2">QUIZ <span class="v3">3.0</span></div></div>
-  <div class="byline">by <b>Alberto Seminerio</b> · v14.52</div>
+  <div class="byline">by <b>Alberto Seminerio</b> · v14.54</div>
   <div id="fbWarn" class="warn mtb" style="display:none; max-width:560px">
     ⚠️ <b>Firebase non configurato.</b> Apri il file e incolla la tua configurazione Firebase nella sezione <b>FIREBASE CONFIG</b> in cima al codice JavaScript (puoi usare lo stesso progetto di IL CAPONE CHAT).
   </div>
@@ -5323,6 +5336,67 @@ body.suspense-on #pfRank{ display:none !important; }
   <div class="feedback mtb" id="talpaFbMsg" style="display:none"></div>
 </div>
 
+<!-- ==================== REGIA: RADAR ==================== -->
+<div class="screen" id="scrRadar">
+  <div class="brand"><div class="t1" style="font-size:clamp(18px,3.4vw,32px)">📡 RADAR</div></div>
+  <div class="panel mt" style="max-width:480px" id="radarSetup">
+    <div class="label">Punti base (spicchio più facile, quello da 5 raggi)</div>
+    <input type="number" id="radarBasePts" value="50" min="0" style="text-align:center">
+    <div class="byline" style="opacity:.7; margin-top:2px">Raddoppia su 4 raggi, triplica su 3, quadruplica su 2, quintuplica su 1 raggio — calcolato da solo</div>
+    <div class="label mt">Penalità per ogni clic fuori dal bersaglio — 0 per disattivarla</div>
+    <input type="number" id="radarMissPenalty" value="0" min="0" style="text-align:center">
+    <div class="label mt">Difficoltà (velocità della lancetta)</div>
+    <select id="radarSpeed" style="width:100%; text-align:center">
+      <option value="facile" selected>🟢 Facile</option>
+      <option value="medio">🟡 Medio</option>
+      <option value="difficile">🟠 Difficile</option>
+      <option value="difficilissimo">🔴 Difficilissimo</option>
+      <option value="fulmine">⚡ Fulmine</option>
+    </select>
+    <div class="label mt">Durata (secondi)</div>
+    <select id="radarDuration" style="width:100%; text-align:center">
+      <option value="30">30 secondi</option>
+      <option value="40">40 secondi</option>
+      <option value="50">50 secondi</option>
+      <option value="60" selected>1 minuto</option>
+    </select>
+    <div class="byline mt" style="opacity:.75">📡 Ogni giocatore ha il proprio radar: una lancetta gira senza sosta e uno spicchio rosa appare in un punto a caso, largo da 1 a 5 raggi. Toccando lo schermo esattamente quando la lancetta è su quello spicchio, si guadagnano punti — più è piccolo, più valgono. Lo spicchio più piccolo (1 raggio) non resta comunque mai più di 4 secondi, così nessuno resta bloccato ad aspettarlo.</div>
+    <button class="btn mg mt" style="width:100%" onclick="radarStart()">📡 FAI PARTIRE IL GIOCO!</button>
+  </div>
+  <div id="radarLive" style="display:none; width:100%" class="center">
+    <div class="miniMsg" id="radarMsg"></div>
+    <div class="piBar" style="max-width:420px"><div class="piBarFill" id="radarHostTimeBarFill" style="background:linear-gradient(90deg,var(--lime),var(--cyan))"></div></div>
+    <div class="lead mt" id="radarResults" style="max-width:460px; width:100%"></div>
+    <div class="row mt">
+      <button class="btn ghost" id="radarBtnEnd" onclick="radarEnd()">🏁 Ferma qui</button>
+      <button class="btn cy" id="radarBtnAgain" onclick="openRadar()">🔁 Un'altra manche</button>
+    </div>
+  </div>
+  <div class="row mt"><button class="btn ghost" onclick="backToQuiz()" data-tip="Interrompe questo minigioco e torna alle domande del quiz">↩ Torna al quiz</button></div>
+</div>
+
+<!-- ==================== PROIETTORE: RADAR ==================== -->
+<div class="screen" id="scrPjRadar">
+  <div class="brand"><div class="t1" style="font-size:clamp(24px,3.6vw,42px)">📡 RADAR</div></div>
+  <div class="miniMsg">Clicca quando la lancetta sarà sul raggio rosa.. Più è piccolo, più punti si guadagnano</div>
+  <div class="radarDial pjDial" id="pjRadarDial"></div>
+  <div class="piBar" style="max-width:520px"><div class="piBarFill" id="pjRadarTimeBarFill" style="background:linear-gradient(90deg,var(--lime),var(--cyan))"></div></div>
+  <div class="lead mt" id="pjRadarResults" style="max-width:520px; width:100%; margin:0 auto"></div>
+</div>
+
+<!-- ==================== PLAYER: RADAR ==================== -->
+<div class="screen" id="scrPlayRadar" style="align-items:center; justify-content:center">
+  <div class="row" style="width:100%; justify-content:space-between">
+    <div class="pill" id="radarpName" style="color:var(--gold)"></div>
+    <div class="pill" id="radarpScore"></div>
+  </div>
+  <div class="radarDial" id="radarDial" onclick="radarTap()"></div>
+  <div class="byline center" style="opacity:.75">Clicca quando la lancetta sarà sul raggio rosa.. Più è piccolo, più punti si guadagnano</div>
+  <div class="piBar" style="max-width:420px"><div class="piBarFill" id="radarTimeBarFill" style="background:linear-gradient(90deg,var(--lime),var(--cyan))"></div></div>
+  <div class="radarCounter" id="radarCounter"></div>
+  <div class="feedback mtb" id="radarFbMsg" style="display:none"></div>
+</div>
+
 <!-- ==================== REGIA: SCUOTI FORTE ==================== -->
 <div class="screen" id="scrScuoti">
   <div class="brand"><div class="t1" style="font-size:clamp(18px,3.4vw,32px)">🫨 SCUOTI FORTE!</div></div>
@@ -8136,7 +8210,7 @@ const firebaseConfig = {
 };
 /* =============================================================== */
 
-const APP_V = 1452; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
+const APP_V = 1454; // versione app: la regia la scrive nella partita, i telefoni si auto-aggiornano
 const TIMES = [5,10,15,20,30,40,60,90,120];
 const LSKEY = 'capone_quizzes_v3';
 /* ================================================================
@@ -10598,6 +10672,7 @@ function listenGame(){
     else if (g.status==='bacchette') showPlayerBacchette(g);
     else if (g.status==='popit') showPlayerPopit(g);
     else if (g.status==='talpa') showPlayerTalpa(g);
+    else if (g.status==='radar') showPlayerRadar(g);
     else if (g.status==='scuoti') showPlayerScuoti(g);
     else if (g.status==='equilibrio') showPlayerEquilibrio(g);
     else if (g.status==='dadimatti') showPlayerDadiMatti(g);
@@ -15642,6 +15717,126 @@ function talpaFinishRound(){
   const msg = $('talpaFbMsg');
   msg.style.display = 'block'; msg.className = 'feedback mtb fb-ok';
   msg.textContent = `⏱ TEMPO SCADUTO! ${P.talpaScore} punti guadagnati`;
+  if (navigator.vibrate) navigator.vibrate([80,50,80,50,150]);
+}
+/* ================================================================
+   RADAR — telefono
+   Come Schiaccia la Talpa: ogni giocatore gioca sul proprio quadrante, calcolato e disegnato in
+   locale (nessun giro su Firebase ad ogni fotogramma). La rotazione della lancetta è ricavata ogni
+   volta dal tempo vero trascorso (non da un contatore che si accumula fotogramma per fotogramma), così
+   resta precisa anche se il telefono rallenta un istante.
+================================================================ */
+function showPlayerRadar(g){
+  const m = g.radar||{};
+  $('radarpName').textContent = P.name;
+  const myScore = ((g.players||{})[P.id]||{}).score||0;
+  $('radarpScore').textContent = myScore+' pt';
+  showScreen('scrPlayRadar');
+  if (m.phase !== 'play'){
+    radarStopLocalLoop();
+    $('radarDial').innerHTML = '';
+    $('radarCounter').textContent = '';
+    $('radarTimeBarFill').style.width = '0%';
+    $('radarFbMsg').style.display = 'none';
+    P.radarActive = false;
+    return;
+  }
+  if (P.radarStartAt !== m.startAt){
+    P.radarStartAt = m.startAt;
+    P.radarDurationSec = m.durationSec;
+    P.radarBasePts = m.basePts;
+    P.radarMissPenalty = m.missPenalty||0;
+    P.radarSpeedDeg = m.speedDeg;
+    P.radarScore = 0;
+    P.radarSubmitted = false;
+    P.radarActive = true;
+    $('radarFbMsg').style.display = 'none';
+    $('radarDial').innerHTML = radarBuildDialSvg();
+    $('radarCounter').textContent = 'Punti: 0';
+    radarStopLocalLoop();
+    radarNewTarget();
+    P.radarAnimId = requestAnimationFrame(radarAnimate);
+    P.radarTimerInt = setInterval(radarTick, 150);
+    radarTick();
+  }
+}
+function radarStopLocalLoop(){
+  if (P.radarAnimId) cancelAnimationFrame(P.radarAnimId);
+  clearInterval(P.radarTimerInt);
+  clearTimeout(P.radarTargetTimeout);
+}
+function radarTick(){
+  if (!P.radarStartAt) return;
+  const elapsedSec = (serverNow() - P.radarStartAt)/1000;
+  const frac = Math.max(0, 1 - elapsedSec/P.radarDurationSec);
+  const bar = $('radarTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%';
+  if (elapsedSec >= P.radarDurationSec && !P.radarSubmitted) radarFinishRound();
+}
+function radarAnimate(){
+  if (!P.radarActive) return;
+  const elapsedSec = (serverNow() - P.radarStartAt)/1000;
+  const angle = (elapsedSec * P.radarSpeedDeg) % 360;
+  const hand = document.querySelector('#radarDial .radarHand');
+  if (hand) hand.style.transform = `rotate(${angle}deg)`;
+  P.radarAnimId = requestAnimationFrame(radarAnimate);
+}
+function radarNewTarget(){
+  clearTimeout(P.radarTargetTimeout);
+  const size = 1 + Math.floor(Math.random()*5); // da 1 a 5 raggi
+  const start = Math.floor(Math.random()*RADAR_SEGMENTS);
+  P.radarTargetStart = start;
+  P.radarTargetSize = size;
+  const startDeg = start*RADAR_SEG_DEG, endDeg = startDeg + size*RADAR_SEG_DEG;
+  const arc = document.querySelector('#radarDial .radarTargetArc');
+  if (arc) arc.setAttribute('d', radarArcPath(startDeg, endDeg));
+  if (size === 1){
+    // salvagente: lo spicchio più piccolo (il più difficile da prendere) non resta mai più di 4 secondi
+    P.radarTargetTimeout = setTimeout(()=>{ if (P.radarActive) radarNewTarget(); }, RADAR_MAX_MS_SIZE1);
+  }
+}
+function radarTap(){
+  if (!P.radarActive) return;
+  const elapsedSec = (serverNow() - P.radarStartAt)/1000;
+  const angleNow = (elapsedSec * P.radarSpeedDeg) % 360;
+  const segNow = Math.floor(angleNow / RADAR_SEG_DEG);
+  const start = P.radarTargetStart, size = P.radarTargetSize;
+  let dentro = false;
+  for (let i=0;i<size;i++){ if ((start+i)%RADAR_SEGMENTS === segNow){ dentro = true; break; } }
+  if (dentro){
+    const pts = P.radarBasePts * RADAR_MULT[size];
+    P.radarScore += pts;
+    $('radarCounter').textContent = 'Punti: '+P.radarScore;
+    radarShowFloatingScore('+'+pts, false);
+    if (navigator.vibrate) navigator.vibrate(25);
+    radarNewTarget();
+  } else {
+    if (P.radarMissPenalty > 0){
+      P.radarScore = Math.max(0, P.radarScore - P.radarMissPenalty); // mai sotto zero, per non confondere con un punteggio negativo
+      $('radarCounter').textContent = 'Punti: '+P.radarScore;
+      radarShowFloatingScore('-'+P.radarMissPenalty, true);
+    }
+    if (navigator.vibrate) navigator.vibrate(P.radarMissPenalty>0 ? 45 : 12);
+  }
+}
+function radarShowFloatingScore(text, isPenalty){
+  const dial = $('radarDial'); if (!dial) return;
+  const fx = document.createElement('div');
+  fx.className = 'radarScoreFloat' + (isPenalty ? ' bad' : '');
+  fx.textContent = text;
+  dial.appendChild(fx);
+  setTimeout(()=> fx.remove(), 700);
+}
+function radarFinishRound(){
+  P.radarSubmitted = true;
+  P.radarActive = false;
+  radarStopLocalLoop();
+  P.ref.child('radar/results/'+P.id).set({ name:P.name, pts:P.radarScore });
+  P.ref.child('players/'+P.id+'/score').once('value').then(sc=>{
+    P.ref.child('players/'+P.id+'/score').set((sc.val()||0) + P.radarScore);
+  });
+  const msg = $('radarFbMsg');
+  msg.style.display = 'block'; msg.className = 'feedback mtb fb-ok';
+  msg.textContent = `⏱ TEMPO SCADUTO! ${P.radarScore} punti guadagnati`;
   if (navigator.vibrate) navigator.vibrate([80,50,80,50,150]);
 }
 /* ================================================================
@@ -25545,6 +25740,102 @@ function talpaEnd(){
 }
 
 /* ================================================================
+   RADAR — condiviso (regia/proiettore/telefono)
+   Ogni giocatore ha il proprio quadrante indipendente (come Schiaccia la Talpa): non c'è nessuna
+   sincronizzazione in tempo reale della lancetta o dello spicchio bersaglio, li calcola e disegna da
+   solo ogni telefono. Il quadrante è diviso in RADAR_SEGMENTS spicchi uguali; lo spicchio bersaglio
+   (rosa) copre da 1 a 5 spicchi contigui scelti a caso, e vale tanto più punti quanto più è piccolo.
+================================================================ */
+const RADAR_SEGMENTS = 24;
+const RADAR_SEG_DEG = 360/RADAR_SEGMENTS;
+const RADAR_MULT = {1:5, 2:4, 3:3, 4:2, 5:1};
+const RADAR_SPEEDS = { facile:30, medio:55, difficile:85, difficilissimo:130, fulmine:190 }; // gradi al secondo
+const RADAR_MAX_MS_SIZE1 = 4000; // salvagente: lo spicchio più piccolo non resta mai più di così, per non bloccare chi ha sfortuna
+function radarBuildDialSvg(){
+  let spokes = '';
+  for (let i=0;i<RADAR_SEGMENTS;i++){
+    const ang = (i*RADAR_SEG_DEG - 90) * Math.PI/180;
+    const x1 = 100+18*Math.cos(ang), y1 = 100+18*Math.sin(ang);
+    const x2 = 100+97*Math.cos(ang), y2 = 100+97*Math.sin(ang);
+    spokes += `<line x1="${x1.toFixed(2)}" y1="${y1.toFixed(2)}" x2="${x2.toFixed(2)}" y2="${y2.toFixed(2)}"/>`;
+  }
+  return `<svg viewBox="0 0 200 200">
+    <defs>
+      <radialGradient id="radarBg" cx="50%" cy="50%" r="60%"><stop offset="0%" stop-color="#1c1033"/><stop offset="100%" stop-color="#0b0614"/></radialGradient>
+      <linearGradient id="radarHandGrad" x1="100" y1="100" x2="100" y2="18" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#ffd76a"/><stop offset="100%" stop-color="#ff3ea5"/></linearGradient>
+    </defs>
+    <circle cx="100" cy="100" r="97" fill="url(#radarBg)" stroke="#3a2a5c" stroke-width="2"/>
+    <g stroke="#3a2a5c" stroke-width="1.2">${spokes}</g>
+    <path class="radarTargetArc" fill="#e619c9" opacity=".92"/>
+    <line class="radarHand" x1="100" y1="100" x2="100" y2="18" stroke="url(#radarHandGrad)" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="100" cy="100" r="16" fill="#0b0614" stroke="#ffe14d" stroke-width="3.5"/>
+  </svg>`;
+}
+function radarArcPath(startDeg, endDeg){
+  const rOuter = 92, rInner = 62;
+  const toRad = d => (d-90) * Math.PI/180;
+  const p = (r,d) => [100+r*Math.cos(toRad(d)), 100+r*Math.sin(toRad(d))];
+  const [x1,y1] = p(rOuter, startDeg), [x2,y2] = p(rOuter, endDeg);
+  const [x3,y3] = p(rInner, endDeg), [x4,y4] = p(rInner, startDeg);
+  const largeArc = (endDeg-startDeg) > 180 ? 1 : 0;
+  return `M ${x1.toFixed(2)} ${y1.toFixed(2)} A ${rOuter} ${rOuter} 0 ${largeArc} 1 ${x2.toFixed(2)} ${y2.toFixed(2)} L ${x3.toFixed(2)} ${y3.toFixed(2)} A ${rInner} ${rInner} 0 ${largeArc} 0 ${x4.toFixed(2)} ${y4.toFixed(2)} Z`;
+}
+/* ================================================================
+   RADAR — regia
+================================================================ */
+let RADAR = {};
+function openRadar(){
+  if (!isGameEnabled('radar')) return alert('⚠️ Questo minigioco non è compreso nella licenza attiva. Contatta Alberto per sbloccarlo.');
+  if (!G) return alert('Avvia prima una partita!');
+  cancelLiveQuestion(); closeModal();
+  G.ref.child('radar').off();
+  G.ref.update({ status:'radar', radar:{ phase:'idle' } });
+  RADAR = {};
+  $('radarSetup').style.display='block'; $('radarLive').style.display='none';
+  pjSend({type:'radarState'});
+  showScreen('scrRadar');
+}
+function radarStart(){
+  const basePts = Math.max(0, +$('radarBasePts').value||0);
+  const missPenalty = Math.max(0, +$('radarMissPenalty').value||0);
+  const speedKey = $('radarSpeed').value;
+  const speedDeg = RADAR_SPEEDS[speedKey] || RADAR_SPEEDS.facile;
+  const durationSec = +$('radarDuration').value || 60;
+  const startAt = serverNow();
+  RADAR = { ended:false, startAt, durationSec };
+  G.ref.update({ status:'radar', radar:{ phase:'play', startAt, durationSec, basePts, missPenalty, speedDeg, speedKey, results:{} } });
+  $('radarSetup').style.display='none'; $('radarLive').style.display='block';
+  $('radarMsg').textContent = '📡 SI PARTE! CLICCA QUANDO LA LANCETTA È SUL ROSA...';
+  $('radarResults').innerHTML = '';
+  pjSend({type:'radarStart', durationSec, speedDeg, startAt});
+  clearInterval(RADAR.timerInt);
+  RADAR.timerInt = setInterval(()=>{
+    const elapsedSec = Math.max(0,(serverNow()-startAt)/1000);
+    const frac = Math.max(0, 1-elapsedSec/durationSec);
+    const bar = $('radarHostTimeBarFill'); if (bar) bar.style.width=(frac*100)+'%';
+    if (frac<=0) clearInterval(RADAR.timerInt);
+  }, 200);
+  G.ref.child('radar/results').off();
+  G.ref.child('radar/results').on('value', s=>{
+    const results = s.val()||{};
+    const rows = Object.values(results).sort((a,b)=>(b.pts||0)-(a.pts||0)).slice(0,5);
+    $('radarResults').innerHTML = rows.map((p,i)=>
+      `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(p.name)} <span class="pts">+${p.pts}</span></div>`
+    ).join('') || '<div class="byline center" style="opacity:.7">Nessuno ha ancora finito...</div>';
+    pjSend({type:'radarResults', rows});
+  });
+}
+function radarEnd(){
+  if (!G) return;
+  RADAR.ended = true;
+  clearInterval(RADAR.timerInt);
+  G.ref.child('radar/results').off();
+  G.ref.child('radar').update({ phase:'idle' });
+  $('radarMsg').textContent = '🏁 Manche finita!';
+  pjSend({type:'radarState'});
+}
+
+/* ================================================================
    SCUOTI FORTE — regia
    Ogni giocatore conta le proprie scosse in autonomia sul telefono (nessun aggiornamento continuo su
    Firebase durante il conteggio, solo il risultato finale): al termine, la regia ordina tutti per
@@ -27644,6 +27935,7 @@ const GIOCHI_CATALOGO = [
   {k:'scossa', l:'⚡ La Scossa'},
   {k:'swiss', l:'⌚ Precisione Svizzera'},
   {k:'talpa', l:'🔨 Schiaccia la Talpa'},
+  {k:'radar', l:'📡 Radar'},
   {k:'scuoti', l:'🫨 Scuoti Forte!'},
   {k:'equilibrio', l:'⚖️ Tieni l\'Equilibrio'},
   {k:'bussola', l:'🧭 La Bussola Maledetta'},
@@ -27754,6 +28046,7 @@ const SKILL_GAMES = [
   {k:'puzzle', cats:['Logica'], cls:'', style:'background:linear-gradient(180deg,#2d6fd6,#163a70); color:#fff; box-shadow:0 7px 0 #0a1c38,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(45,111,214,.4)', fn:'openPuzzle', label:`🧩 Puzzle`},
   {k:'salumi', cats:['Dita Veloci'], cls:'', style:'background:linear-gradient(180deg,#e0264f,#7a0e2a); color:#fff; box-shadow:0 7px 0 #4a0518,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(224,38,79,.4)', fn:'openSalumi', label:`🔪 Salumi e Formaggi`},
   {k:'talpa', cats:['Dita Veloci'], cls:'', style:'background:linear-gradient(180deg,#e0264f,#7a0e2a); color:#fff; box-shadow:0 7px 0 #4a0518,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(224,38,79,.4)', fn:'openTalpa', label:`🔨 Schiaccia la Talpa`},
+  {k:'radar', cats:['Dita Veloci'], cls:'', style:'background:linear-gradient(180deg,#e619c9,#7a0e6e); color:#fff; box-shadow:0 7px 0 #4a0548,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(230,25,201,.4)', fn:'openRadar', label:`📡 Radar`},
   {k:'equilibrio', cats:["Colpo d'Occhio",'Oscillometro'], cls:'', style:'background:linear-gradient(180deg,#e8e8e8,#a8a8a8); color:#1c1c1c; box-shadow:0 7px 0 #5a5a5a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(200,200,200,.35)', fn:'openEquilibrio', label:`⚖️ Tieni l'Equilibrio`},
   {k:'bussola', cats:["Colpo d'Occhio",'Oscillometro'], cls:'', style:'background:linear-gradient(180deg,#e8e8e8,#a8a8a8); color:#1c1c1c; box-shadow:0 7px 0 #5a5a5a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(200,200,200,.35)', fn:'openBussola', label:`🧭 La Bussola Maledetta`},
   {k:'bicchiere', cats:["Colpo d'Occhio",'Oscillometro'], cls:'', style:'background:linear-gradient(180deg,#e8e8e8,#a8a8a8); color:#1c1c1c; box-shadow:0 7px 0 #5a5a5a,0 10px 0 rgba(0,0,0,.45),0 14px 30px rgba(200,200,200,.35)', fn:'openBicchiere', label:`🍹 Non Versare il Bicchiere`},
@@ -29298,6 +29591,47 @@ function pjRouteInner(m){
     }
     else if (m.type==='talpaResults') {
       $('pjTalpaResults').innerHTML = (m.rows||[]).map((p,i)=>
+        `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(p.name)} <span class="pts">+${p.pts}</span></div>`
+      ).join('');
+    }
+    else if (m.type==='radarState') {
+      showScreen('scrPjRadar');
+      clearInterval(window._radarPjTimerInt); clearInterval(window._radarPjAmbientTimeout);
+      $('pjRadarDial').innerHTML=''; $('pjRadarResults').innerHTML='';
+      $('pjRadarTimeBarFill').style.width='0%';
+    }
+    else if (m.type==='radarStart') {
+      showScreen('scrPjRadar');
+      $('pjRadarResults').innerHTML = '';
+      $('pjRadarDial').innerHTML = radarBuildDialSvg();
+      // solo decorativo: questo radar non riflette nessun telefono in particolare (ognuno gioca sul
+      // proprio, indipendente) — gira e cambia bersaglio solo per dare atmosfera alla scena
+      let pjAngolo = 0;
+      function pjRadarAnimaDecorativo(){
+        pjAngolo = (pjAngolo + m.speedDeg*0.05) % 360;
+        const hand = document.querySelector('#pjRadarDial .radarHand');
+        if (hand) hand.style.transform = `rotate(${pjAngolo}deg)`;
+        window._radarPjAnimId = requestAnimationFrame(pjRadarAnimaDecorativo);
+      }
+      pjRadarAnimaDecorativo();
+      function pjRadarNuovoBersaglioDecorativo(){
+        const size = 1+Math.floor(Math.random()*5);
+        const start = Math.floor(Math.random()*RADAR_SEGMENTS);
+        const arc = document.querySelector('#pjRadarDial .radarTargetArc');
+        if (arc) arc.setAttribute('d', radarArcPath(start*RADAR_SEG_DEG, (start+size)*RADAR_SEG_DEG));
+        window._radarPjAmbientTimeout = setTimeout(pjRadarNuovoBersaglioDecorativo, 1200+Math.random()*1600);
+      }
+      pjRadarNuovoBersaglioDecorativo();
+      clearInterval(window._radarPjTimerInt);
+      window._radarPjTimerInt = setInterval(()=>{
+        const elapsedSec = Math.max(0, (serverNow()-m.startAt)/1000);
+        const frac = Math.max(0, 1 - elapsedSec/m.durationSec);
+        const bar = $('pjRadarTimeBarFill'); if (bar) bar.style.width = (frac*100)+'%';
+        if (frac<=0){ clearInterval(window._radarPjTimerInt); clearTimeout(window._radarPjAmbientTimeout); cancelAnimationFrame(window._radarPjAnimId); }
+      }, 200);
+    }
+    else if (m.type==='radarResults') {
+      $('pjRadarResults').innerHTML = (m.rows||[]).map((p,i)=>
         `<div class="leadRow"><span class="pos">${i+1}°</span> ${esc(p.name)} <span class="pts">+${p.pts}</span></div>`
       ).join('');
     }
